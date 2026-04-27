@@ -6,6 +6,8 @@ export interface User {
   email: string;
   role: UserRole;
   avatar: string;
+  artistId?: string;
+  title?: string;
 }
 
 export interface Artist {
@@ -69,6 +71,7 @@ export interface TattooProject {
   artistId: string;
   title: string;
   description: string;
+  style: TattooStyle;
   status: 'active' | 'completed' | 'on-hold';
   stages: ProjectStage[];
   images: TattooImage[];
@@ -81,6 +84,7 @@ export type SessionStage = 'consultation' | 'outline' | 'shading' | 'color' | 't
 
 export interface Appointment {
   id: string;
+  projectId: string;
   clientId: string;
   artistId: string;
   date: string;
@@ -118,6 +122,42 @@ export interface InventoryItem {
   quantity: number;
   unit: string;
   minThreshold: number;
+}
+
+export interface WaiverTemplate {
+  id: string;
+  title: string;
+  description: string;
+  lastUpdated: string;
+  appliesTo: 'all' | 'touch-up';
+}
+
+export interface SignedWaiverRecord {
+  id: string;
+  templateId: string;
+  appointmentId: string;
+  clientId: string;
+  status: 'signed' | 'pending';
+  signedAt?: string;
+  signerName?: string;
+  signature?: string;
+  signedText?: string;
+}
+
+export type SocialDraftStatus = 'draft' | 'submitted' | 'approved' | 'published';
+
+export interface SocialDraft {
+  id: string;
+  assetId: string;
+  projectId: string;
+  artistId: string;
+  ownerAccount: 'studio' | 'artist';
+  formats: string[];
+  caption: string;
+  hook: string;
+  hashtags: string[];
+  status: SocialDraftStatus;
+  createdByUserId: string;
 }
 
 export interface DailyActivity {

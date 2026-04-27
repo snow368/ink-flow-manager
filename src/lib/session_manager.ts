@@ -1,4 +1,5 @@
-import { Appointment, SessionState, InventoryItem } from '../types';
+import { Appointment, SessionState } from '../types';
+import { getAppointmentFlow } from './studio_logic';
 
 export class SessionManager {
   private static instance: SessionManager;
@@ -17,8 +18,13 @@ export class SessionManager {
    * Initialize a new session from an appointment
    */
   public initializeSession(appointment: Appointment): SessionState {
-    if (!appointment.waiverSigned) {
-      throw new Error('Cannot start session: Waiver not signed.');
+    const flow = getAppointmentFlow(appointment);
+    if (flow.readiness === 'blocked') {
+      throw new Error(`Cannot start session: ${flow.blockers.join(', ')}.`);
+    }
+
+    if (flow.readiness === 'completed') {
+      throw new Error('Cannot start session: Appointment is already completed.');
     }
 
     const session: SessionState = {

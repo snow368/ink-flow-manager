@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
   LayoutDashboard, 
   Calendar, 
@@ -58,6 +58,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -67,10 +68,13 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { sessionManager } from './lib/session_manager';
-import { ARTISTS, CLIENTS, APPOINTMENTS, INVENTORY, RECENT_ACTIVITIES, USER, TATTOO_PROJECTS, TRANSLATIONS } from './constants';
+import { ARTISTS, CLIENTS, APPOINTMENTS, DEMO_USERS, INVENTORY, RECENT_ACTIVITIES, SIGNED_WAIVERS, USER, TATTOO_PROJECTS, TRANSLATIONS, WAIVER_TEMPLATES } from './constants';
 import { cn } from '@/lib/utils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area } from 'recharts';
-import { User, UserRole, TattooProject, Client, InventoryItem, Appointment } from './types';
+import { User, UserRole, TattooProject, Client, Appointment, SignedWaiverRecord, SocialDraft, SocialDraftStatus } from './types';
+import { formatCurrency, generateWaiverDocument, getAppointmentFlow, getAppointmentWaiverSummary, getDailyPulse, getInventoryForecast, withResolvedWaiverStatus } from './lib/studio_logic';
+import { fetchWaiverRecords, signWaiverDocuments } from './lib/waiver_api';
+import { createSocialDraft, fetchSocialDrafts, updateSocialDraftStatus } from './lib/social_drafts_api';
 
 const REVENUE_DATA = [
   { name: 'Mon', total: 1200 },
@@ -82,7 +86,24 @@ const REVENUE_DATA = [
   { name: 'Sun', total: 1500 },
 ];
 
-type View = 'dashboard' | 'calendar' | 'clients' | 'artists' | 'inventory' | 'waivers' | 'settings' | 'financial' | 'scan';
+type View = 'dashboard' | 'calendar' | 'clients' | 'projects' | 'portfolio' | 'artists' | 'inventory' | 'waivers' | 'settings' | 'financial' | 'scan';
+
+interface ConnectedAccount {
+  id: string;
+  platform: 'instagram' | 'youtube';
+  ownerType: 'studio' | 'artist';
+  ownerLabel: string;
+  connected: boolean;
+}
+
+const INITIAL_CONNECTED_ACCOUNTS: ConnectedAccount[] = [
+  { id: 'studio-instagram', platform: 'instagram', ownerType: 'studio', ownerLabel: 'InkFlow Studio', connected: true },
+  { id: 'studio-youtube', platform: 'youtube', ownerType: 'studio', ownerLabel: 'InkFlow Studio', connected: true },
+  { id: 'artist-1-instagram', platform: 'instagram', ownerType: 'artist', ownerLabel: 'Alex Thorne', connected: true },
+  { id: 'artist-1-youtube', platform: 'youtube', ownerType: 'artist', ownerLabel: 'Alex Thorne', connected: false },
+  { id: 'artist-2-instagram', platform: 'instagram', ownerType: 'artist', ownerLabel: 'Sarah Ink', connected: true },
+  { id: 'artist-2-youtube', platform: 'youtube', ownerType: 'artist', ownerLabel: 'Sarah Ink', connected: true },
+];
 
 export default function App() {
   const [activeView, setActiveView] = useState<View>('dashboard');
@@ -92,28 +113,99 @@ export default function App() {
   const [studioTheme, setStudioTheme] = useState<'minimalist' | 'traditional' | 'cyberpunk'>('minimalist');
   const [isVoiceLogging, setIsVoiceLogging] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState('');
-  const [activeSession, setActiveSession] = useState<{ projectId: string, startTime: string } | null>(null);
+  const [activeSession, setActiveSession] = useState<{ appointmentId: string, projectId: string, startTime: string } | null>(null);
   const [language, setLanguage] = useState('en');
+  const [waiverRecords, setWaiverRecords] = useState<SignedWaiverRecord[]>(SIGNED_WAIVERS);
+  const [isWaiverLoading, setIsWaiverLoading] = useState(true);
+  const [socialDrafts, setSocialDrafts] = useState<SocialDraft[]>([]);
+  const [connectedAccounts] = useState<ConnectedAccount[]>(INITIAL_CONNECTED_ACCOUNTS);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadWaiverRecords = async () => {
+      try {
+        const records = await fetchWaiverRecords();
+        if (isMounted) {
+          setWaiverRecords(records);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (isMounted) {
+          setIsWaiverLoading(false);
+        }
+      }
+    };
+
+    void loadWaiverRecords();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSocialDrafts = async () => {
+      try {
+        const drafts = await fetchSocialDrafts();
+        if (isMounted) {
+          setSocialDrafts(drafts);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    void loadSocialDrafts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const appointments = withResolvedWaiverStatus(APPOINTMENTS, WAIVER_TEMPLATES, waiverRecords);
 
   const t = (key: string) => {
     return TRANSLATIONS[language]?.[key] || TRANSLATIONS['en']?.[key] || key;
   };
 
-  const navItems = [
-    { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
-    { id: 'calendar', label: t('calendar'), icon: Calendar },
-    { id: 'clients', label: t('clients'), icon: Users },
-    { id: 'artists', label: t('artists'), icon: Palette },
-    { id: 'inventory', label: t('inventory'), icon: Package },
-    { id: 'financial', label: t('financial'), icon: BarChart3 },
-    { id: 'waivers', label: t('waivers'), icon: CheckCircle2 },
-    { id: 'scan', label: 'Scan Protocol', icon: Scan },
-    { id: 'settings', label: t('settings'), icon: Settings },
-  ];
+  const navItems = currentUser.role === 'artist'
+    ? [
+        { id: 'dashboard', label: 'Today', icon: LayoutDashboard },
+        { id: 'calendar', label: t('calendar'), icon: Calendar },
+        { id: 'clients', label: t('clients'), icon: Users },
+        { id: 'projects', label: 'Projects', icon: Target },
+        { id: 'portfolio', label: 'Portfolio', icon: Camera },
+        { id: 'waivers', label: t('waivers'), icon: CheckCircle2 },
+        { id: 'inventory', label: t('inventory'), icon: Package },
+        { id: 'settings', label: t('settings'), icon: Settings },
+      ]
+    : [
+        { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
+        { id: 'calendar', label: t('calendar'), icon: Calendar },
+        { id: 'clients', label: t('clients'), icon: Users },
+        { id: 'artists', label: t('artists'), icon: Palette },
+        { id: 'inventory', label: t('inventory'), icon: Package },
+        { id: 'financial', label: t('financial'), icon: BarChart3 },
+        { id: 'waivers', label: t('waivers'), icon: CheckCircle2 },
+        { id: 'settings', label: t('settings'), icon: Settings },
+      ];
 
-  const handleRoleChange = (role: UserRole) => {
-    setCurrentUser({ ...currentUser, role });
+  const handleUserChange = (userId: string) => {
+    const nextUser = DEMO_USERS.find((item) => item.id === userId);
+    if (nextUser) {
+      setCurrentUser(nextUser);
+    }
   };
+
+  useEffect(() => {
+    if (currentUser.role === 'artist' && (activeView === 'artists' || activeView === 'financial')) {
+      setActiveView('dashboard');
+    }
+  }, [activeView, currentUser.role]);
 
   return (
     <div className={cn(
@@ -228,6 +320,7 @@ export default function App() {
               {activeView === 'dashboard' && (
                 <DashboardView 
                   user={currentUser} 
+                  appointments={appointments}
                   isVoiceLogging={isVoiceLogging}
                   setIsVoiceLogging={setIsVoiceLogging}
                   voiceTranscript={voiceTranscript}
@@ -237,23 +330,40 @@ export default function App() {
                   t={t}
                 />
               )}
-              {activeView === 'calendar' && <CalendarView theme={studioTheme} />}
-              {activeView === 'clients' && <ClientsView />}
+              {activeView === 'calendar' && <CalendarView theme={studioTheme} appointments={appointments} />}
+              {activeView === 'clients' && <ClientsView user={currentUser} />}
               {activeView === 'artists' && <ArtistsView />}
+              {activeView === 'projects' && <ProjectsView user={currentUser} />}
+              {activeView === 'portfolio' && (
+                <PortfolioView
+                  user={currentUser}
+                  socialDrafts={socialDrafts}
+                  connectedAccounts={connectedAccounts}
+                  onSocialDraftsChange={setSocialDrafts}
+                />
+              )}
               {activeView === 'inventory' && <InventoryView />}
               {activeView === 'financial' && <FinancialView user={currentUser} />}
               {activeView === 'scan' && <ScanView />}
-              {activeView === 'waivers' && <WaiversView />}
+              {activeView === 'waivers' && (
+                <WaiversView
+                  appointments={appointments}
+                  waiverRecords={waiverRecords}
+                  isLoading={isWaiverLoading}
+                  onRecordsChange={setWaiverRecords}
+                />
+              )}
               {activeView === 'settings' && (
                 <SettingsView 
                   user={currentUser} 
-                  onRoleChange={handleRoleChange} 
+                  onUserChange={handleUserChange} 
                   studioName={studioName}
                   onStudioNameChange={setStudioName}
                   studioTheme={studioTheme}
                   onThemeChange={setStudioTheme}
                   language={language}
                   onLanguageChange={setLanguage}
+                  connectedAccounts={connectedAccounts}
                 />
               )}
             </motion.div>
@@ -266,6 +376,7 @@ export default function App() {
 
 function DashboardView({ 
   user, 
+  appointments,
   isVoiceLogging, 
   setIsVoiceLogging, 
   voiceTranscript, 
@@ -275,12 +386,13 @@ function DashboardView({
   t
 }: { 
   user: User, 
+  appointments: Appointment[],
   isVoiceLogging: boolean, 
   setIsVoiceLogging: (v: boolean) => void,
   voiceTranscript: string,
   setVoiceTranscript: (t: string) => void,
-  activeSession: { projectId: string, startTime: string } | null,
-  setActiveSession: (s: { projectId: string, startTime: string } | null) => void,
+  activeSession: { appointmentId: string, projectId: string, startTime: string } | null,
+  setActiveSession: (s: { appointmentId: string, projectId: string, startTime: string } | null) => void,
   t: (key: string) => string
 }) {
   const isOwner = user.role === 'owner';
@@ -297,7 +409,7 @@ function DashboardView({
   // Calculate stats based on filter
   const getAptStats = () => {
     const now = new Date();
-    const filtered = APPOINTMENTS.filter(apt => {
+    const filtered = appointments.filter(apt => {
       const aptDate = new Date(apt.date);
       if (aptFilter === 'day') return apt.date === '2026-04-03';
       if (aptFilter === 'week') {
@@ -362,6 +474,15 @@ function DashboardView({
   ];
 
   const visibleStats = stats.filter(s => !s.private || isOwner);
+  const activeAppointment = activeSession
+    ? appointments.find((appointment) => appointment.id === activeSession.appointmentId) ?? null
+    : null;
+  const activeProject = activeAppointment
+    ? TATTOO_PROJECTS.find((project) => project.id === activeAppointment.projectId) ?? null
+    : null;
+  const sessionOptions = appointments
+    .filter((appointment) => appointment.status !== 'completed')
+    .sort((left, right) => `${left.date} ${left.startTime}`.localeCompare(`${right.date} ${right.startTime}`));
 
   return (
     <div className="space-y-8">
@@ -385,13 +506,27 @@ function DashboardView({
               <div className="flex gap-3">
                 <select 
                   className="bg-neutral-800 border-none rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                  onChange={(e) => setActiveSession({ projectId: e.target.value, startTime: new Date().toISOString() })}
+                  onChange={(e) => {
+                    const selectedAppointment = appointments.find((appointment) => appointment.id === e.target.value);
+                    if (!selectedAppointment) return;
+                    setActiveSession({
+                      appointmentId: selectedAppointment.id,
+                      projectId: selectedAppointment.projectId,
+                      startTime: new Date().toISOString(),
+                    });
+                  }}
                   defaultValue=""
                 >
-                  <option value="" disabled>Select Project</option>
-                  {TATTOO_PROJECTS.filter(p => p.status === 'active').map(p => (
-                    <option key={p.id} value={p.id}>{p.title}</option>
-                  ))}
+                  <option value="" disabled>Select Appointment</option>
+                  {sessionOptions.map((appointment) => {
+                    const project = TATTOO_PROJECTS.find((item) => item.id === appointment.projectId);
+                    const client = CLIENTS.find((item) => item.id === appointment.clientId);
+                    return (
+                      <option key={appointment.id} value={appointment.id}>
+                        {appointment.date} {appointment.startTime} - {project?.title ?? appointment.service} / {client?.name}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             </div>
@@ -405,7 +540,7 @@ function DashboardView({
                   <div>
                     <h2 className="text-xl font-bold">Active Session</h2>
                     <p className="text-neutral-400 text-xs">
-                      Project: {TATTOO_PROJECTS.find(p => p.id === activeSession.projectId)?.title}
+                      Project: {activeProject?.title} {activeAppointment ? `- ${activeAppointment.tattooStage}` : ''}
                     </p>
                   </div>
                 </div>
@@ -453,7 +588,7 @@ function DashboardView({
                     setActiveSession(null);
                     setIsVoiceLogging(false);
                     // Show success toast
-                    alert("Precision Achieved! \n- Supplies deducted\n- Aftercare sent\n- Follow-up scheduled\n- Profit updated");
+                    alert(`Precision Achieved! \n- ${activeProject?.title ?? 'Project'} session closed\n- Supplies deducted\n- Aftercare sent\n- Follow-up scheduled\n- Profit updated`);
                   }}
                   className="h-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl flex items-center justify-center gap-3 font-bold text-lg shadow-lg shadow-emerald-500/20"
                 >
@@ -891,7 +1026,7 @@ function DashboardView({
           </CardHeader>
           <CardContent>
             <div className={cn("space-y-4", !isOwner && "grid grid-cols-1 md:grid-cols-2 gap-4 space-y-0")}>
-              {APPOINTMENTS.filter(a => a.date === '2026-04-03').slice(0, isOwner ? 4 : 8).map((apt) => {
+              {appointments.filter(a => a.date === '2026-04-03').slice(0, isOwner ? 4 : 8).map((apt) => {
                 const artist = ARTISTS.find(a => a.id === apt.artistId);
                 const client = CLIENTS.find(c => c.id === apt.clientId);
                 return (
@@ -1127,34 +1262,90 @@ function ScanView() {
   );
 }
 
-function WaiversView() {
+function WaiversView({
+  appointments,
+  waiverRecords,
+  isLoading,
+  onRecordsChange,
+}: {
+  appointments: Appointment[],
+  waiverRecords: SignedWaiverRecord[],
+  isLoading: boolean,
+  onRecordsChange: (records: SignedWaiverRecord[]) => void,
+}) {
+  const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+  const [signerName, setSignerName] = useState('');
+  const [signature, setSignature] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const selectedAppointment = appointments.find((appointment) => appointment.id === selectedAppointmentId) ?? null;
+  const selectedClient = selectedAppointment ? CLIENTS.find((client) => client.id === selectedAppointment.clientId) ?? null : null;
+  const selectedArtist = selectedAppointment ? ARTISTS.find((artist) => artist.id === selectedAppointment.artistId) ?? null : null;
+  const selectedSummary = selectedAppointment ? getAppointmentWaiverSummary(selectedAppointment, WAIVER_TEMPLATES, waiverRecords) : null;
+  const generatedDocument = selectedAppointment && selectedClient && selectedSummary
+    ? generateWaiverDocument(selectedAppointment, selectedClient, selectedSummary.requiredTemplates, selectedArtist?.name)
+    : null;
+
+  const openSigningFlow = (appointment: Appointment) => {
+    const client = CLIENTS.find((item) => item.id === appointment.clientId);
+    setSelectedAppointmentId(appointment.id);
+    setSignerName(client?.name ?? '');
+    setSignature(client?.name ?? '');
+  };
+
+  const handleSign = async () => {
+    if (!selectedAppointment || !selectedClient || !selectedSummary || !generatedDocument) {
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const records = await signWaiverDocuments({
+        appointmentId: selectedAppointment.id,
+        clientId: selectedClient.id,
+        templateIds: selectedSummary.missingTemplates.map((template) => template.id),
+        signerName,
+        signature,
+        signedText: generatedDocument.body,
+      });
+
+      onRecordsChange(records);
+      setSelectedAppointmentId(null);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to save waiver.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const templateStats = WAIVER_TEMPLATES.map((template) => ({
+    ...template,
+    signed: waiverRecords.filter((record) => record.templateId === template.id && record.status === 'signed').length,
+    pending: waiverRecords.filter((record) => record.templateId === template.id && record.status === 'pending').length,
+  }));
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">Digital Waivers</h1>
-          <p className="text-neutral-500">Manage legal agreements and health protocols.</p>
+          <p className="text-neutral-500">Choose an appointment, generate the legal packet, and save the signed waiver to the local server.</p>
         </div>
-        <Button className="bg-black text-white gap-2">
-          <Plus size={18} />
-          <span>New Waiver</span>
-        </Button>
+        <Badge className="bg-black text-white border-none px-3 py-1">Server sync</Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          { title: 'Standard Tattoo Waiver', signed: 142, pending: 3, lastUpdated: '2026-03-20' },
-          { title: 'Health & Safety Protocol', signed: 145, pending: 0, lastUpdated: '2026-03-15' },
-          { title: 'Minor Consent Form', signed: 12, pending: 1, lastUpdated: '2026-04-01' },
-          { title: 'Touch-up Agreement', signed: 28, pending: 5, lastUpdated: '2026-03-28' },
-        ].map((waiver) => (
-          <Card key={waiver.title} className="border-none shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {templateStats.map((waiver) => (
+          <Card key={waiver.id} className="border-none shadow-sm">
             <CardContent className="p-6 space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-neutral-100 rounded-lg">
                   <FileText size={20} />
                 </div>
-                <h3 className="font-bold">{waiver.title}</h3>
+                <div>
+                  <h3 className="font-bold">{waiver.title}</h3>
+                  <p className="text-xs text-neutral-500">{waiver.description}</p>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 bg-neutral-50 rounded-xl">
@@ -1168,21 +1359,136 @@ function WaiversView() {
               </div>
               <div className="flex items-center justify-between pt-2">
                 <span className="text-[10px] text-neutral-400">Updated: {waiver.lastUpdated}</span>
-                <Button variant="ghost" size="sm" className="text-xs h-8">View Template</Button>
+                <Badge variant="outline" className="text-[10px] uppercase">{waiver.appliesTo}</Badge>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <Card className="border-none shadow-sm">
+        <CardHeader>
+          <CardTitle>Appointment Waiver Queue</CardTitle>
+          <CardDescription>
+            {isLoading ? 'Loading server records...' : 'Select an appointment to generate the packet for the client.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Appointment</TableHead>
+                <TableHead>Client</TableHead>
+                <TableHead>Required Documents</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {appointments.map((appointment) => {
+                const client = CLIENTS.find((item) => item.id === appointment.clientId);
+                const project = TATTOO_PROJECTS.find((item) => item.id === appointment.projectId);
+                const summary = getAppointmentWaiverSummary(appointment, WAIVER_TEMPLATES, waiverRecords);
+                return (
+                  <TableRow key={appointment.id}>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{appointment.date}</span>
+                        <span className="text-xs text-neutral-500">{appointment.startTime} - {project?.title ?? appointment.service}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{client?.name}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {summary.requiredTemplates.map((template) => (
+                          <Badge key={template.id} variant="outline">{template.title}</Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {summary.isReady ? (
+                        <Badge className="bg-emerald-100 text-emerald-700 border-none">Signed</Badge>
+                      ) : (
+                        <Badge className="bg-orange-100 text-orange-700 border-none">
+                          {summary.missingTemplates.length} missing
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => openSigningFlow(appointment)}>
+                        {summary.isReady ? 'Review Packet' : 'Open Waiver'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Dialog open={!!selectedAppointment} onOpenChange={(open) => !open && setSelectedAppointmentId(null)}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden">
+          {selectedAppointment && selectedClient && selectedSummary && generatedDocument && (
+            <>
+              <DialogHeader className="p-6 pb-0">
+                <DialogTitle>{generatedDocument.title}</DialogTitle>
+                <DialogDescription>
+                  Appointment #{selectedAppointment.id} for {selectedClient.name}. Missing documents: {selectedSummary.missingTemplates.length || 0}.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-0">
+                <div className="p-6 border-r border-neutral-100 space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSummary.requiredTemplates.map((template) => (
+                      <Badge key={template.id} variant="outline">{template.title}</Badge>
+                    ))}
+                  </div>
+                  <textarea
+                    readOnly
+                    value={generatedDocument.body}
+                    className="w-full min-h-[320px] rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-sm leading-6 outline-none"
+                  />
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Client name</label>
+                    <Input value={signerName} onChange={(e) => setSignerName(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Signature</label>
+                    <Input value={signature} onChange={(e) => setSignature(e.target.value)} placeholder="Type full legal name" />
+                  </div>
+                  <div className="p-4 rounded-2xl bg-neutral-50 space-y-2 text-xs text-neutral-600">
+                    <p className="font-semibold text-neutral-900">Server save target</p>
+                    <p>`data/waiver-records.json`</p>
+                    <p>Once signed, this appointment becomes waiver-ready immediately across the app.</p>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSelectedAppointmentId(null)}>Cancel</Button>
+                <Button
+                  onClick={handleSign}
+                  disabled={isSaving || !signerName.trim() || !signature.trim() || selectedSummary.missingTemplates.length === 0}
+                >
+                  {selectedSummary.missingTemplates.length === 0 ? 'Already Signed' : isSaving ? 'Saving...' : 'Sign And Save'}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberpunk' }) {
+function CalendarView({ theme, appointments }: { theme: 'minimalist' | 'traditional' | 'cyberpunk', appointments: Appointment[] }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [calendarMode, setCalendarMode] = useState<'day' | 'month'>('month');
 
   const selectedDateStr = date ? format(date, 'yyyy-MM-dd') : '';
-  const dayAppointments = APPOINTMENTS.filter(apt => apt.date === selectedDateStr);
+  const dayAppointments = appointments.filter(apt => apt.date === selectedDateStr);
+  const pulse = getDailyPulse(date ?? new Date(), appointments, INVENTORY, CLIENTS);
   
   const morningApts = dayAppointments.filter(apt => {
     const hour = parseInt(apt.startTime.split(':')[0]);
@@ -1227,7 +1533,7 @@ function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberp
           </div>
           <div>
             <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Today's Pulse</p>
-            <p className="text-lg font-bold text-emerald-900">$2,450 Expected</p>
+            <p className="text-lg font-bold text-emerald-900">{formatCurrency(pulse.expectedRevenue)} Expected</p>
           </div>
         </div>
         <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
@@ -1236,7 +1542,9 @@ function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberp
           </div>
           <div>
             <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Inventory Alert</p>
-            <p className="text-sm font-medium text-blue-900">3 RL Needles low. Restock suggested.</p>
+            <p className="text-sm font-medium text-blue-900">
+              {pulse.lowStockItems[0] ? `${pulse.lowStockItems[0].name} low. Restock suggested.` : 'No critical stockouts today.'}
+            </p>
           </div>
         </div>
         <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-center gap-4">
@@ -1245,7 +1553,7 @@ function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberp
           </div>
           <div>
             <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wider">Safety Check</p>
-            <p className="text-sm font-medium text-amber-900">2 Clients with allergies today.</p>
+            <p className="text-sm font-medium text-amber-900">{pulse.allergyCount} Clients with allergies today.</p>
           </div>
         </div>
       </div>
@@ -1315,7 +1623,7 @@ function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberp
                     const dayNum = i - 2; // Mock calendar start
                     const isToday = dayNum === 3;
                     const dateStr = `2026-04-${dayNum.toString().padStart(2, '0')}`;
-                    const apts = APPOINTMENTS.filter(a => a.date === dateStr);
+                    const apts = appointments.filter(a => a.date === dateStr);
                     
                     return (
                       <div key={i} className={cn(
@@ -1418,7 +1726,7 @@ function CalendarView({ theme }: { theme: 'minimalist' | 'traditional' | 'cyberp
 }
 
 interface AppointmentCardProps {
-  apt: any;
+  apt: Appointment;
   theme?: 'minimalist' | 'traditional' | 'cyberpunk';
   key?: string | number;
 }
@@ -1426,6 +1734,8 @@ interface AppointmentCardProps {
 function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
   const artist = ARTISTS.find(a => a.id === apt.artistId);
   const client = CLIENTS.find(c => c.id === apt.clientId);
+  const project = TATTOO_PROJECTS.find((item) => item.id === apt.projectId);
+  const flow = getAppointmentFlow(apt, client);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -1455,6 +1765,19 @@ function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
       case 'realism': return <Eye size={14} />;
       case 'geometric': return <Box size={14} />;
       default: return <Sparkles size={14} />;
+    }
+  };
+
+  const getFlowTone = () => {
+    switch (flow.readiness) {
+      case 'blocked':
+        return 'bg-red-50 text-red-700 border-red-100';
+      case 'attention':
+        return 'bg-amber-50 text-amber-700 border-amber-100';
+      case 'ready':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      default:
+        return 'bg-neutral-900 text-white border-neutral-900';
     }
   };
 
@@ -1518,6 +1841,22 @@ function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
         </Badge>
       </div>
 
+      <div className="mb-3 flex flex-wrap gap-2">
+        <Badge variant="outline" className={cn("border", getFlowTone())}>
+          {flow.readiness}
+        </Badge>
+        {flow.blockers.slice(0, 1).map((item) => (
+          <Badge key={item} variant="outline" className="border-red-100 bg-red-50 text-red-700">
+            {item}
+          </Badge>
+        ))}
+        {!flow.blockers.length && flow.warnings.slice(0, 1).map((item) => (
+          <Badge key={item} variant="outline" className="border-amber-100 bg-amber-50 text-amber-700">
+            {item}
+          </Badge>
+        ))}
+      </div>
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className={cn(
@@ -1535,6 +1874,9 @@ function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
               {client?.name}
               {apt.status === 'vip' && <Sparkles size={14} className="text-amber-500" />}
             </h4>
+            <p className={cn("text-[10px] mt-0.5", theme === 'cyberpunk' ? "text-blue-300/70" : "text-neutral-400")}>
+              {project?.title ?? apt.service}
+            </p>
             <div className="flex items-center gap-2 mt-0.5">
               <span className={cn(
                 "text-[10px] flex items-center gap-1 px-1.5 py-0.5 rounded",
@@ -1601,20 +1943,23 @@ function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
         <Button 
           variant="outline" 
           size="sm" 
+          disabled={flow.readiness === 'blocked'}
           className={cn(
             "flex-1 text-[10px] h-8 rounded-xl transition-colors",
-            theme === 'cyberpunk' ? "bg-blue-600 text-white border-none hover:bg-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]" : "hover:bg-black hover:text-white"
+            theme === 'cyberpunk' ? "bg-blue-600 text-white border-none hover:bg-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]" : "hover:bg-black hover:text-white",
+            flow.readiness === 'blocked' && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-current"
           )}
           onClick={() => {
             try {
               sessionManager.initializeSession(apt);
-              alert('Session started! Presets loaded and media tagging active.');
+              const notes = flow.recommendations.slice(0, 2).join('\n- ');
+              alert(`Session started! Presets loaded and media tagging active.${notes ? `\n- ${notes}` : ''}`);
             } catch (e: any) {
               alert(e.message);
             }
           }}
         >
-          {apt.status === 'completed' ? 'View Details' : 'Start Session'}
+          {apt.status === 'completed' ? 'View Details' : flow.readiness === 'blocked' ? 'Resolve Blockers' : 'Start Session'}
         </Button>
         <Button 
           variant="outline" 
@@ -1635,36 +1980,63 @@ function AppointmentCard({ apt, theme = 'minimalist' }: AppointmentCardProps) {
   );
 }
 
-function ClientsView() {
-  const [selectedArtistId, setSelectedArtistId] = useState<string>('all');
+function ClientsView({ user }: { user: User }) {
+  const isRestrictedArtist = user.role === 'artist';
+  const [selectedArtistId, setSelectedArtistId] = useState<string>(isRestrictedArtist ? user.artistId ?? 'all' : 'all');
   const [selectedProject, setSelectedProject] = useState<TattooProject | null>(null);
   const [activeLightboxImage, setActiveLightboxImage] = useState<string | null>(null);
 
-  const filteredClients = CLIENTS.filter(client => 
-    selectedArtistId === 'all' || client.assignedArtistId === selectedArtistId
-  );
+  useEffect(() => {
+    setSelectedArtistId(isRestrictedArtist ? user.artistId ?? 'all' : 'all');
+  }, [isRestrictedArtist, user.artistId]);
+
+  const visibleArtistId = isRestrictedArtist
+    ? user.artistId ?? selectedArtistId
+    : selectedArtistId;
+
+  const filteredClients = CLIENTS.filter(client => {
+    if (isRestrictedArtist) {
+      return client.assignedArtistId === visibleArtistId;
+    }
+
+    return selectedArtistId === 'all' || client.assignedArtistId === selectedArtistId;
+  });
+  const getProjectAppointments = (projectId: string) =>
+    APPOINTMENTS
+      .filter((appointment) => appointment.projectId === projectId)
+      .sort((left, right) => `${left.date} ${left.startTime}`.localeCompare(`${right.date} ${right.startTime}`));
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold tracking-tight">Clients</h1>
-          <p className="text-neutral-500">Maintain your client database and digital projects.</p>
+          <p className="text-neutral-500">
+            {isRestrictedArtist
+              ? 'View your assigned clients and ongoing tattoo projects.'
+              : 'View all studio clients, their assigned artists, and project progress.'}
+          </p>
         </div>
         <div className="flex gap-3">
-          <div className="flex items-center gap-2 bg-white border border-neutral-200 rounded-full px-4 py-1">
-            <Palette size={16} className="text-neutral-400" />
-            <select 
-              className="bg-transparent border-none text-sm font-medium focus:ring-0 outline-none"
-              value={selectedArtistId}
-              onChange={(e) => setSelectedArtistId(e.target.value)}
-            >
-              <option value="all">All Artists</option>
-              {ARTISTS.map(artist => (
-                <option key={artist.id} value={artist.id}>{artist.name}</option>
-              ))}
-            </select>
-          </div>
+          {!isRestrictedArtist ? (
+            <div className="flex items-center gap-2 bg-white border border-neutral-200 rounded-full px-4 py-1">
+              <Palette size={16} className="text-neutral-400" />
+              <select 
+                className="bg-transparent border-none text-sm font-medium focus:ring-0 outline-none"
+                value={selectedArtistId}
+                onChange={(e) => setSelectedArtistId(e.target.value)}
+              >
+                <option value="all">All Artists</option>
+                {ARTISTS.map(artist => (
+                  <option key={artist.id} value={artist.id}>{artist.name}</option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <Badge className="bg-neutral-100 text-neutral-700 border-none px-4 py-2 rounded-full">
+              My Clients Only
+            </Badge>
+          )}
           <Button className="bg-black text-white gap-2 rounded-full">
             <Plus size={18} />
             <span>Add Client</span>
@@ -1703,6 +2075,9 @@ function ClientsView() {
                   <div>
                     <h3 className="text-lg font-bold">{client.name}</h3>
                     <p className="text-xs text-neutral-500">{client.email}</p>
+                    {!isRestrictedArtist && (
+                      <p className="text-[10px] text-neutral-400 mt-1">Assigned Artist: {artist?.name ?? 'Unassigned'}</p>
+                    )}
                   </div>
                   <Avatar className="h-8 w-8 border-2 border-white shadow-sm">
                     <AvatarImage src={artist?.avatar} />
@@ -1844,6 +2219,24 @@ function ClientsView() {
                         </div>
                       </div>
                     )}
+
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-bold uppercase tracking-wider text-neutral-400">Session Plan</h4>
+                      <div className="space-y-3">
+                        {getProjectAppointments(selectedProject.id).map((appointment, index) => (
+                          <div key={appointment.id} className="flex items-center justify-between rounded-2xl border border-neutral-100 p-4">
+                            <div>
+                              <p className="text-sm font-bold">Session {index + 1}</p>
+                              <p className="text-xs text-neutral-500">{appointment.date} {appointment.startTime}-{appointment.endTime}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-semibold uppercase text-neutral-500">{appointment.tattooStage}</p>
+                              <Badge variant="outline" className="mt-1">{appointment.status.replace('_', ' ')}</Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   {/* Right: Next Stage & Tools */}
@@ -1963,6 +2356,443 @@ function ClientsView() {
   );
 }
 
+function ProjectsView({ user }: { user: User }) {
+  const visibleProjects = TATTOO_PROJECTS
+    .filter((project) => user.role !== 'artist' || project.artistId === user.artistId)
+    .map((project) => ({
+      ...project,
+      client: CLIENTS.find((client) => client.id === project.clientId),
+      artist: ARTISTS.find((artist) => artist.id === project.artistId),
+      appointments: APPOINTMENTS
+        .filter((appointment) => appointment.projectId === project.id)
+        .sort((left, right) => `${left.date} ${left.startTime}`.localeCompare(`${right.date} ${right.startTime}`)),
+    }));
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
+          <p className="text-neutral-500">
+            {user.role === 'artist'
+              ? 'Track your multi-session tattoo work, upcoming stages, and client progress.'
+              : 'Track studio tattoo projects across artists, clients, and scheduled sessions.'}
+          </p>
+        </div>
+        <Badge className="bg-black text-white border-none px-3 py-1">{visibleProjects.length} Active Projects</Badge>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {visibleProjects.map((project) => {
+          const currentStage = project.stages.find((stage) => stage.status === 'current');
+          const nextAppointment = project.appointments.find((appointment) => appointment.status !== 'completed');
+          return (
+            <Card key={project.id} className="border-none shadow-sm overflow-hidden">
+              <CardContent className="p-6 space-y-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold">{project.title}</h3>
+                    <p className="text-sm text-neutral-500">{project.client?.name}</p>
+                    {user.role !== 'artist' && (
+                      <p className="text-[10px] mt-1 text-neutral-400">Assigned Artist: {project.artist?.name}</p>
+                    )}
+                  </div>
+                  <Badge className="bg-neutral-100 text-neutral-700 border-none">{project.status}</Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-2xl bg-neutral-50 p-4">
+                    <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-bold">Current Stage</p>
+                    <p className="mt-1 text-sm font-semibold">{currentStage?.name ?? 'Planning'}</p>
+                  </div>
+                  <div className="rounded-2xl bg-neutral-50 p-4">
+                    <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-bold">Next Session</p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {nextAppointment ? `${nextAppointment.date} ${nextAppointment.startTime}` : 'No session booked'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs font-medium">
+                    <span className="text-neutral-500">Project Progress</span>
+                    <span>{project.stages.filter((stage) => stage.status === 'completed').length}/{project.stages.length} done</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-neutral-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-black"
+                      style={{ width: `${(project.stages.filter((stage) => stage.status === 'completed').length / project.stages.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] uppercase tracking-wider text-neutral-400 font-bold">Session Plan</p>
+                  <div className="space-y-2">
+                    {project.appointments.map((appointment, index) => (
+                      <div key={appointment.id} className="flex items-center justify-between rounded-xl border border-neutral-100 px-4 py-3">
+                        <div>
+                          <p className="text-sm font-semibold">Session {index + 1}</p>
+                          <p className="text-[10px] text-neutral-500">{appointment.date} {appointment.startTime}-{appointment.endTime}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] uppercase tracking-wider text-neutral-500">{appointment.tattooStage}</p>
+                          <Badge variant="outline" className="mt-1">{appointment.status.replace('_', ' ')}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PortfolioView({
+  user,
+  socialDrafts,
+  connectedAccounts,
+  onSocialDraftsChange,
+}: {
+  user: User,
+  socialDrafts: SocialDraft[],
+  connectedAccounts: ConnectedAccount[],
+  onSocialDraftsChange: (drafts: SocialDraft[]) => void,
+}) {
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+  const [selectedFormats, setSelectedFormats] = useState<string[]>(['instagram']);
+  const [targetAccount, setTargetAccount] = useState<'studio' | 'artist'>('artist');
+
+  const portfolioAssets = TATTOO_PROJECTS
+    .filter((project) => user.role !== 'artist' || project.artistId === user.artistId)
+    .flatMap((project) =>
+      project.images.map((image, index) => ({
+        id: image.id,
+        url: image.url,
+        stage: image.stage,
+        project,
+        client: CLIENTS.find((client) => client.id === project.clientId),
+        artist: ARTISTS.find((artist) => artist.id === project.artistId),
+        timestamp: image.timestamp,
+        isPublic: index !== 0,
+        marketingApproved: index !== 0,
+        healedCandidate: image.stage.toLowerCase().includes('healed'),
+      })),
+    );
+
+  const selectedAsset = portfolioAssets.find((asset) => asset.id === selectedAssetId) ?? null;
+  const visibleDrafts = socialDrafts.filter((draft) => user.role !== 'artist' || draft.artistId === user.artistId);
+  const availableAccounts = connectedAccounts.filter((account) =>
+    account.connected && (account.ownerType === 'studio' || (account.ownerType === 'artist' && account.ownerLabel === user.name)),
+  );
+
+  const createDraft = async (status: SocialDraftStatus) => {
+    if (!selectedAsset) {
+      return;
+    }
+
+    const nextDraft: SocialDraft = {
+      id: `draft-${Date.now()}`,
+      assetId: selectedAsset.id,
+      projectId: selectedAsset.project.id,
+      artistId: selectedAsset.project.artistId,
+      ownerAccount: targetAccount,
+      formats: selectedFormats,
+      caption: `A closer look at this ${selectedAsset.project.style} piece for ${selectedAsset.client?.name}. Built through staged sessions for cleaner healing and stronger detail retention.`,
+      hook: `${selectedAsset.project.title} - ${selectedAsset.stage} in motion.`,
+      hashtags: ['tattoo', 'inkflow', selectedAsset.project.style.replace(/\s+/g, ''), 'tattooartist', 'workinprogress'],
+      status,
+      createdByUserId: user.id,
+    };
+
+    try {
+      const drafts = await createSocialDraft(nextDraft);
+      onSocialDraftsChange(drafts);
+      setSelectedAssetId(null);
+      setSelectedFormats(['instagram']);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to save social draft.');
+    }
+  };
+
+  const updateDraftStatus = async (draftId: string, status: SocialDraftStatus) => {
+    try {
+      const drafts = await updateSocialDraftStatus(draftId, status);
+      onSocialDraftsChange(drafts);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to update social draft.');
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold tracking-tight">Portfolio</h1>
+          <p className="text-neutral-500">
+            {user.role === 'artist'
+              ? 'Manage your public-ready tattoo media and prepare content for social channels.'
+              : 'Review artist portfolios, public-ready assets, and marketing-approved content.'}
+          </p>
+        </div>
+        <Badge className="bg-black text-white border-none px-3 py-1">{portfolioAssets.length} Media Assets</Badge>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
+        <Card className="border-none shadow-sm">
+          <CardHeader>
+            <CardTitle>Publishing Queue</CardTitle>
+            <CardDescription>
+              {user.role === 'artist'
+                ? 'Create drafts and submit them for approval or post to your connected account.'
+                : 'Review artist drafts, approve content, and publish to studio channels.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Project</TableHead>
+                  <TableHead>Formats</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Target</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {visibleDrafts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-neutral-500 py-8">
+                      No social drafts yet. Create one from the portfolio cards below.
+                    </TableCell>
+                  </TableRow>
+                ) : visibleDrafts.map((draft) => {
+                  const project = TATTOO_PROJECTS.find((item) => item.id === draft.projectId);
+                  const artist = ARTISTS.find((item) => item.id === draft.artistId);
+                  return (
+                    <TableRow key={draft.id}>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-semibold">{project?.title}</span>
+                          <span className="text-xs text-neutral-500">{artist?.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{draft.formats.join(', ')}</TableCell>
+                      <TableCell>
+                        <Badge className={cn(
+                          'border-none',
+                          draft.status === 'draft' && 'bg-neutral-100 text-neutral-700',
+                          draft.status === 'submitted' && 'bg-blue-100 text-blue-700',
+                          draft.status === 'approved' && 'bg-amber-100 text-amber-700',
+                          draft.status === 'published' && 'bg-emerald-100 text-emerald-700',
+                        )}>
+                          {draft.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{draft.ownerAccount === 'studio' ? 'Studio Account' : 'Artist Account'}</TableCell>
+                      <TableCell className="text-right">
+                        {user.role === 'artist' ? (
+                          draft.status === 'draft' ? (
+                            <Button size="sm" variant="outline" onClick={() => updateDraftStatus(draft.id, 'submitted')}>Submit</Button>
+                          ) : (
+                            <span className="text-xs text-neutral-500">Awaiting review</span>
+                          )
+                        ) : draft.status === 'submitted' ? (
+                          <Button size="sm" variant="outline" onClick={() => updateDraftStatus(draft.id, 'approved')}>Approve</Button>
+                        ) : draft.status === 'approved' ? (
+                          <Button size="sm" onClick={() => updateDraftStatus(draft.id, 'published')}>Publish</Button>
+                        ) : (
+                          <span className="text-xs text-neutral-500 capitalize">{draft.status}</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm">
+          <CardHeader>
+            <CardTitle>Connected Accounts</CardTitle>
+            <CardDescription>Publishing targets available to the current user.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {availableAccounts.map((account) => (
+              <div key={account.id} className="flex items-center justify-between rounded-2xl border border-neutral-100 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold capitalize">{account.platform}</p>
+                  <p className="text-xs text-neutral-500">{account.ownerLabel}</p>
+                </div>
+                <Badge className="bg-emerald-100 text-emerald-700 border-none">Connected</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {portfolioAssets.map((asset) => (
+          <Card key={asset.id} className="border-none shadow-sm overflow-hidden">
+            <div className="aspect-[4/3] relative">
+              <img src={asset.url} alt={asset.project.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              <div className="absolute top-3 left-3 flex gap-2">
+                <Badge className="bg-white/90 text-black border-none">{asset.project.style}</Badge>
+                {asset.marketingApproved && (
+                  <Badge className="bg-emerald-500 text-white border-none">Marketing OK</Badge>
+                )}
+              </div>
+            </div>
+            <CardContent className="p-5 space-y-4">
+              <div>
+                <h3 className="font-bold text-lg">{asset.project.title}</h3>
+                <p className="text-sm text-neutral-500">{asset.client?.name} · {asset.stage}</p>
+                {user.role !== 'artist' && (
+                  <p className="text-[10px] mt-1 text-neutral-400">Artist: {asset.artist?.name}</p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">{asset.isPublic ? 'Public Ready' : 'Private'}</Badge>
+                <Badge variant="outline">{asset.healedCandidate ? 'Healed' : 'Fresh/Progress'}</Badge>
+                <Badge variant="outline">{asset.timestamp.slice(0, 10)}</Badge>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="rounded-xl bg-neutral-50 p-3">
+                  <p className="text-neutral-400 uppercase tracking-wider">Reel Hook</p>
+                  <p className="mt-1 font-semibold">From {asset.stage} to finished impact</p>
+                </div>
+                <div className="rounded-xl bg-neutral-50 p-3">
+                  <p className="text-neutral-400 uppercase tracking-wider">Caption Angle</p>
+                  <p className="mt-1 font-semibold">{asset.project.style} detail breakdown</p>
+                </div>
+              </div>
+
+              <Button className="w-full bg-black text-white rounded-xl gap-2" onClick={() => setSelectedAssetId(asset.id)}>
+                <Share2 size={16} />
+                Generate Social Draft
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Dialog open={!!selectedAsset} onOpenChange={(open) => !open && setSelectedAssetId(null)}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden">
+          {selectedAsset && (
+            <>
+              <DialogHeader className="p-6 pb-0">
+                <DialogTitle>Social Draft Generator</DialogTitle>
+                <DialogDescription>
+                  Turn this portfolio asset into an Instagram Reel or YouTube Short draft without leaving the studio workflow.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.1fr] gap-0">
+                <div className="p-6 border-r border-neutral-100">
+                  <img src={selectedAsset.url} alt={selectedAsset.project.title} className="w-full aspect-[4/5] object-cover rounded-2xl" referrerPolicy="no-referrer" />
+                </div>
+                <div className="p-6 space-y-5">
+                  <div>
+                    <h3 className="text-lg font-bold">{selectedAsset.project.title}</h3>
+                    <p className="text-sm text-neutral-500">{selectedAsset.stage} · {selectedAsset.project.style}</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Output Formats</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { id: 'instagram', label: 'Instagram Reel', icon: Instagram },
+                        { id: 'youtube', label: 'YouTube Short', icon: Youtube },
+                      ].map((formatItem) => (
+                        <button
+                          key={formatItem.id}
+                          onClick={() => {
+                            setSelectedFormats((previous) =>
+                              previous.includes(formatItem.id)
+                                ? previous.filter((item) => item !== formatItem.id)
+                                : [...previous, formatItem.id],
+                            );
+                          }}
+                          className={cn(
+                            'rounded-2xl border-2 p-4 text-left transition-all',
+                            selectedFormats.includes(formatItem.id) ? 'border-black bg-neutral-50' : 'border-neutral-200',
+                          )}
+                        >
+                          <formatItem.icon size={20} />
+                          <p className="mt-3 text-sm font-semibold">{formatItem.label}</p>
+                          <p className="text-[10px] text-neutral-500 mt-1">9:16 vertical, branded outro, caption starter</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Publishing Target</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { id: 'artist', label: 'Artist Account' },
+                        { id: 'studio', label: 'Studio Account' },
+                      ].filter((item) => user.role !== 'artist' || item.id !== 'studio' || availableAccounts.some((account) => account.ownerType === 'studio')).map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setTargetAccount(item.id as 'studio' | 'artist')}
+                          className={cn(
+                            'rounded-2xl border-2 p-4 text-left transition-all',
+                            targetAccount === item.id ? 'border-black bg-neutral-50' : 'border-neutral-200',
+                          )}
+                        >
+                          <p className="text-sm font-semibold">{item.label}</p>
+                          <p className="text-[10px] mt-1 text-neutral-500">
+                            {item.id === 'studio' ? 'For studio-owned channels and manager publishing.' : 'For personal artist social channels.'}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-neutral-50 p-4 space-y-3 text-sm">
+                    <p className="font-semibold">Generated draft</p>
+                    <p>Hook: “{selectedAsset.project.title} - {selectedAsset.stage} in motion.”</p>
+                    <p>Caption: “A closer look at this {selectedAsset.project.style} piece for {selectedAsset.client?.name}. Built through staged sessions for cleaner healing and stronger detail retention.”</p>
+                    <p>Hashtags: #tattoo #inkflow #{selectedAsset.project.style.replace(/\s+/g, '')} #tattooartist #workinprogress</p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button variant="outline" className="flex-1 rounded-xl" onClick={() => setSelectedAssetId(null)}>
+                      Close
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1 rounded-xl"
+                      disabled={selectedFormats.length === 0}
+                      onClick={() => createDraft('draft')}
+                    >
+                      Save Draft
+                    </Button>
+                    <Button
+                      className="flex-1 bg-black text-white rounded-xl"
+                      disabled={selectedFormats.length === 0}
+                      onClick={() => createDraft(user.role === 'artist' ? 'submitted' : 'approved')}
+                    >
+                      {user.role === 'artist' ? 'Submit For Approval' : 'Create Approved Draft'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 function ArtistsView() {
   return (
     <div className="space-y-8">
@@ -2062,44 +2892,6 @@ function ArtistsView() {
 function InventoryView() {
   const [predictionRange, setPredictionRange] = useState<'week' | 'halfMonth' | 'month'>('week');
 
-  // Prediction Logic
-  const getPredictedUsage = (item: InventoryItem, range: 'week' | 'halfMonth' | 'month') => {
-    const now = new Date();
-    const rangeDays = range === 'week' ? 7 : range === 'halfMonth' ? 15 : 30;
-    const futureDate = new Date(now.getTime() + rangeDays * 24 * 60 * 60 * 1000);
-
-    const futureApts = APPOINTMENTS.filter(apt => {
-      const aptDate = new Date(apt.date);
-      return aptDate >= now && aptDate <= futureDate;
-    });
-
-    let totalUsage = 0;
-
-    futureApts.forEach(apt => {
-      // Base usage factors
-      const sizeMultiplier = apt.tattooSize === 'extra-large' ? 4 : apt.tattooSize === 'large' ? 2.5 : apt.tattooSize === 'medium' ? 1.5 : 0.8;
-      const stageMultiplier = apt.tattooStage === 'shading' ? 1.5 : apt.tattooStage === 'color' ? 2 : 1;
-
-      if (item.category === 'ink') {
-        // Realism uses more black/gray, Color stages use more color ink
-        const styleFactor = apt.tattooStyle === 'realism' ? 1.8 : 1;
-        totalUsage += 0.5 * sizeMultiplier * stageMultiplier * styleFactor;
-      } else if (item.category === 'needles') {
-        // Complex styles use more needles
-        const styleFactor = (apt.tattooStyle === 'realism' || apt.tattooStyle === 'japanese') ? 2 : 1;
-        totalUsage += 2 * sizeMultiplier * styleFactor;
-      } else if (item.category === 'ppe') {
-        // PPE is per appointment mostly, but longer sessions use more
-        totalUsage += 3 * (apt.tattooSize === 'extra-large' ? 2 : 1);
-      } else if (item.category === 'aftercare') {
-        // Size dependent
-        totalUsage += 1 * sizeMultiplier;
-      }
-    });
-
-    return Math.ceil(totalUsage);
-  };
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -2143,7 +2935,7 @@ function InventoryView() {
                 </TableHeader>
                 <TableBody>
                   {INVENTORY.map((item) => {
-                    const predicted = getPredictedUsage(item, predictionRange);
+                    const predicted = getInventoryForecast(item, APPOINTMENTS, predictionRange);
                     const isLow = item.quantity <= item.minThreshold;
                     const willBeLow = (item.quantity - predicted) <= item.minThreshold;
 
@@ -2331,22 +3123,24 @@ function WaiverView() {
 
 function SettingsView({ 
   user, 
-  onRoleChange, 
+  onUserChange, 
   studioName, 
   onStudioNameChange,
   studioTheme,
   onThemeChange,
   language,
-  onLanguageChange
+  onLanguageChange,
+  connectedAccounts
 }: { 
   user: User, 
-  onRoleChange: (role: UserRole) => void,
+  onUserChange: (userId: string) => void,
   studioName: string,
   onStudioNameChange: (name: string) => void,
   studioTheme: 'minimalist' | 'traditional' | 'cyberpunk',
   onThemeChange: (theme: 'minimalist' | 'traditional' | 'cyberpunk') => void,
   language: string,
-  onLanguageChange: (lang: string) => void
+  onLanguageChange: (lang: string) => void,
+  connectedAccounts: ConnectedAccount[]
 }) {
   const [tempName, setTempName] = useState(studioName);
   const [isSaving, setIsSaving] = useState(false);
@@ -2368,25 +3162,58 @@ function SettingsView({
         {/* Role Switcher for Demo */}
         <Card className="border-none shadow-sm bg-neutral-900 text-white">
           <CardHeader>
-            <CardTitle className="text-white">Role Management (Demo Mode)</CardTitle>
-            <CardDescription className="text-neutral-400">Switch roles to see how the UI changes for different users.</CardDescription>
+            <CardTitle className="text-white">Account Switcher (Demo Mode)</CardTitle>
+            <CardDescription className="text-neutral-400">Switch between actual demo accounts so permissions follow the signed-in user, not just the role label.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-3">
-              {(['owner', 'artist', 'staff'] as UserRole[]).map((role) => (
+            <div className="space-y-3">
+              {DEMO_USERS.map((demoUser) => (
                 <Button 
-                  key={role}
-                  variant={user.role === role ? 'secondary' : 'outline'}
+                  key={demoUser.id}
+                  variant={user.id === demoUser.id ? 'secondary' : 'outline'}
                   className={cn(
-                    "capitalize",
-                    user.role === role ? "bg-white text-black" : "text-white border-neutral-700 hover:bg-neutral-800"
+                    "w-full justify-between",
+                    user.id === demoUser.id ? "bg-white text-black" : "text-white border-neutral-700 hover:bg-neutral-800"
                   )}
-                  onClick={() => onRoleChange(role)}
+                  onClick={() => onUserChange(demoUser.id)}
                 >
-                  {role}
+                  <span className="text-left">
+                    <span className="block font-semibold">{demoUser.name}</span>
+                    <span className={cn("block text-[10px] uppercase tracking-wider", user.id === demoUser.id ? "text-neutral-600" : "text-neutral-400")}>
+                      {demoUser.role} {demoUser.title ? `- ${demoUser.title}` : ''}
+                    </span>
+                  </span>
+                  {demoUser.artistId && (
+                    <Badge variant="outline" className={cn(user.id === demoUser.id ? "border-neutral-300 text-neutral-700" : "border-neutral-700 text-neutral-300")}>
+                      Artist #{demoUser.artistId}
+                    </Badge>
+                  )}
                 </Button>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-none shadow-sm">
+          <CardHeader>
+            <CardTitle>Connected Channels</CardTitle>
+            <CardDescription>Studio and artist publishing accounts available in the portfolio workflow.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {connectedAccounts.map((account) => (
+              <div key={account.id} className="flex items-center justify-between rounded-xl border border-neutral-100 px-4 py-3">
+                <div>
+                  <p className="text-sm font-semibold capitalize">{account.platform}</p>
+                  <p className="text-xs text-neutral-500">{account.ownerLabel} · {account.ownerType}</p>
+                </div>
+                <Badge className={cn(
+                  'border-none',
+                  account.connected ? 'bg-emerald-100 text-emerald-700' : 'bg-neutral-100 text-neutral-700'
+                )}>
+                  {account.connected ? 'Connected' : 'Not linked'}
+                </Badge>
+              </div>
+            ))}
           </CardContent>
         </Card>
 

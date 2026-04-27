@@ -1,12 +1,43 @@
-import { Artist, Client, Appointment, InventoryItem, DailyActivity, User, TattooProject } from './types';
+import { Artist, Client, Appointment, InventoryItem, DailyActivity, User, TattooProject, WaiverTemplate, SignedWaiverRecord } from './types';
 
 export const USER: User = {
   id: 'admin-1',
   name: 'Alex Owner',
   email: 'alex@inkflow.com',
   role: 'owner',
-  avatar: 'https://i.pravatar.cc/150?u=alex-owner'
+  avatar: 'https://i.pravatar.cc/150?u=alex-owner',
+  title: 'Studio Owner'
 };
+
+export const DEMO_USERS: User[] = [
+  USER,
+  {
+    id: 'artist-1',
+    name: 'Alex Thorne',
+    email: 'alex.thorne@inkflow.com',
+    role: 'artist',
+    artistId: '1',
+    avatar: 'https://i.pravatar.cc/150?u=alex',
+    title: 'Senior Artist'
+  },
+  {
+    id: 'artist-2',
+    name: 'Sarah Ink',
+    email: 'sarah@inkflow.com',
+    role: 'artist',
+    artistId: '2',
+    avatar: 'https://i.pravatar.cc/150?u=sarah',
+    title: 'Resident Artist'
+  },
+  {
+    id: 'staff-1',
+    name: 'Mia Front Desk',
+    email: 'mia@inkflow.com',
+    role: 'staff',
+    avatar: 'https://i.pravatar.cc/150?u=mia-front-desk',
+    title: 'Front Desk Manager'
+  }
+];
 
 export const TRANSLATIONS: Record<string, any> = {
   en: {
@@ -254,6 +285,7 @@ export const TATTOO_PROJECTS: TattooProject[] = [
     artistId: '1',
     title: 'Cyberpunk Sleeve',
     description: 'Full arm realism project with neon accents.',
+    style: 'realism',
     status: 'active',
     stages: [
       { name: 'Consultation', status: 'completed', description: 'Design finalized and deposit paid.' },
@@ -272,6 +304,7 @@ export const TATTOO_PROJECTS: TattooProject[] = [
     artistId: '1',
     title: 'Geometric Back Piece',
     description: 'Large scale geometric pattern across the back.',
+    style: 'geometric',
     status: 'active',
     stages: [
       { name: 'Consultation', status: 'completed', description: 'Design finalized.' },
@@ -281,12 +314,43 @@ export const TATTOO_PROJECTS: TattooProject[] = [
     images: [
       { id: 'img3', url: 'https://picsum.photos/seed/tattoo3/400/400', stage: 'Consultation', timestamp: '2026-03-25T11:00:00Z' },
     ]
+  },
+  {
+    id: 'p3',
+    clientId: '2',
+    artistId: '2',
+    title: 'Small Floral',
+    description: 'Delicate minimalist floral piece with a quick one-session plan and optional touch-up.',
+    style: 'minimalist',
+    status: 'active',
+    stages: [
+      { name: 'Consultation', status: 'completed', description: 'Placement approved and dimensions confirmed.' },
+      { name: 'Outline', status: 'current', description: 'Primary fine-line pass scheduled.', plannedTools: ['3RL', 'Black Ink'] },
+      { name: 'Healed Check', status: 'upcoming', description: 'Review healing and offer touch-up if needed.', plannedTools: ['Aftercare Balm'] },
+    ],
+    images: []
+  },
+  {
+    id: 'p4',
+    clientId: '4',
+    artistId: '3',
+    title: 'Traditional Rose',
+    description: 'Single-session chest rose with bold lines and color packing.',
+    style: 'traditional',
+    status: 'active',
+    stages: [
+      { name: 'Consultation', status: 'completed', description: 'Color palette approved.' },
+      { name: 'Color', status: 'current', description: 'Primary application session.', plannedTools: ['9RL', 'Red Ink', 'Aftercare Balm'] },
+      { name: 'Healed Check', status: 'upcoming', description: 'Follow-up check after healing.', plannedTools: ['Touch-up Kit'] },
+    ],
+    images: []
   }
 ];
 
 export const APPOINTMENTS: Appointment[] = [
   { 
     id: '1', 
+    projectId: 'p1',
     clientId: '1', 
     artistId: '1', 
     date: '2026-04-03', 
@@ -307,6 +371,7 @@ export const APPOINTMENTS: Appointment[] = [
   },
   { 
     id: '2', 
+    projectId: 'p3',
     clientId: '2', 
     artistId: '2', 
     date: '2026-04-03', 
@@ -327,6 +392,7 @@ export const APPOINTMENTS: Appointment[] = [
   },
   { 
     id: '3', 
+    projectId: 'p2',
     clientId: '3', 
     artistId: '1', 
     date: '2026-04-04', 
@@ -347,6 +413,7 @@ export const APPOINTMENTS: Appointment[] = [
   },
   { 
     id: '4', 
+    projectId: 'p4',
     clientId: '4', 
     artistId: '3', 
     date: '2026-04-05', 
@@ -367,6 +434,7 @@ export const APPOINTMENTS: Appointment[] = [
   },
   { 
     id: '5', 
+    projectId: 'p1',
     clientId: '1', 
     artistId: '1', 
     date: '2026-04-10', 
@@ -392,6 +460,43 @@ export const INVENTORY: InventoryItem[] = [
   { id: '2', name: 'Needles (3RL)', category: 'needles', quantity: 45, unit: 'pcs', minThreshold: 20 },
   { id: '3', name: 'Gloves (M)', category: 'ppe', quantity: 2, unit: 'boxes', minThreshold: 5 },
   { id: '4', name: 'Aftercare Balm', category: 'aftercare', quantity: 30, unit: 'tins', minThreshold: 10 },
+];
+
+export const WAIVER_TEMPLATES: WaiverTemplate[] = [
+  {
+    id: 'standard',
+    title: 'Standard Tattoo Waiver',
+    description: 'Core consent for tattoo procedure, healing expectations, and client acknowledgement.',
+    lastUpdated: '2026-03-20',
+    appliesTo: 'all',
+  },
+  {
+    id: 'health',
+    title: 'Health & Safety Protocol',
+    description: 'Medical disclosure, allergy flags, and sanitation confirmation.',
+    lastUpdated: '2026-03-15',
+    appliesTo: 'all',
+  },
+  {
+    id: 'touchup',
+    title: 'Touch-up Agreement',
+    description: 'Additional terms for healing review and complimentary touch-up windows.',
+    lastUpdated: '2026-03-28',
+    appliesTo: 'touch-up',
+  },
+];
+
+export const SIGNED_WAIVERS: SignedWaiverRecord[] = [
+  { id: 'w1', templateId: 'standard', appointmentId: '1', clientId: '1', status: 'signed', signedAt: '2026-04-02T16:30:00Z' },
+  { id: 'w2', templateId: 'health', appointmentId: '1', clientId: '1', status: 'signed', signedAt: '2026-04-02T16:35:00Z' },
+  { id: 'w3', templateId: 'standard', appointmentId: '2', clientId: '2', status: 'pending' },
+  { id: 'w4', templateId: 'health', appointmentId: '2', clientId: '2', status: 'pending' },
+  { id: 'w5', templateId: 'standard', appointmentId: '3', clientId: '3', status: 'signed', signedAt: '2026-04-01T13:00:00Z' },
+  { id: 'w6', templateId: 'health', appointmentId: '3', clientId: '3', status: 'pending' },
+  { id: 'w7', templateId: 'standard', appointmentId: '4', clientId: '4', status: 'signed', signedAt: '2026-04-04T12:00:00Z' },
+  { id: 'w8', templateId: 'health', appointmentId: '4', clientId: '4', status: 'signed', signedAt: '2026-04-04T12:05:00Z' },
+  { id: 'w9', templateId: 'standard', appointmentId: '5', clientId: '1', status: 'signed', signedAt: '2026-04-09T18:00:00Z' },
+  { id: 'w10', templateId: 'health', appointmentId: '5', clientId: '1', status: 'signed', signedAt: '2026-04-09T18:05:00Z' },
 ];
 
 export const RECENT_ACTIVITIES: DailyActivity[] = [
