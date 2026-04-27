@@ -1,10 +1,9 @@
-﻿import { useNavigate } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Tab {
   path: string;
   label: string;
-  icon: LucideIcon;
+  icon: any;
 }
 
 interface TabBarProps {
@@ -16,20 +15,35 @@ export default function TabBar({ tabs, activeTab }: TabBarProps) {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex items-center justify-around bg-ink-900 border-t border-ink-700" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      {tabs.map(tab => {
+    <nav style={{
+      display: 'flex',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      backgroundColor: '#1e293b',
+      borderTop: '1px solid #334155',
+      paddingBottom: 'env(safe-area-inset-bottom)',
+      minHeight: '64px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+    }}>
+      {tabs.map((tab) => {
         const isActive = activeTab === tab.path;
-        const Icon = tab.icon;
         return (
           <button
             key={tab.path}
             onClick={() => navigate(tab.path)}
-            className={`flex flex-col items-center gap-0.5 py-2 min-h-[48px] min-w-[48px] active:scale-95 transition-transform ${
-              isActive ? 'text-white' : 'text-ink-400'
-            }`}
+            style={{
+              flex: 1,
+              padding: '12px 0',
+              background: 'none',
+              border: 'none',
+              color: isActive ? '#ffffff' : '#94a3b8',
+              cursor: 'pointer',
+              textAlign: 'center',
+              fontSize: '14px',
+            }}
           >
-            <Icon size={24} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? 'currentColor' : 'none'} />
-            <span className="text-[10px] font-medium">{tab.label}</span>
+            {tab.label}
           </button>
         );
       })}

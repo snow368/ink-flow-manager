@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Users, User } from 'lucide-react';
 import TabBar from './components/TabBar';
@@ -36,19 +36,19 @@ export default function App() {
     { path: '/me', label: 'Me', icon: User },
   ];
 
-  const activeTab = tabs.find(t => location.pathname.startsWith(t.path))?.path || '/today';
+  const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
   return (
     <ErrorBoundary>
-      <div className="flex flex-col h-dvh bg-ink-950">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
         {!isOnline && <OfflineBanner />}
-        <main className="flex-1 overflow-y-auto hide-scrollbar">
+        <div style={{ flex: 1, overflowY: 'auto' }}>
           <Routes>
             <Route path="/today" element={<Today />} />
             <Route path="/clients" element={<Clients />} />
             <Route path="/me" element={<Me />} />
           </Routes>
-        </main>
+        </div>
         <TabBar tabs={tabs} activeTab={activeTab} />
       </div>
     </ErrorBoundary>
