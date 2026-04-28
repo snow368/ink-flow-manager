@@ -39,7 +39,9 @@ export interface UserRecord {
   artistId?: string;
   deviceId?: string;
   verified: boolean;
-  verificationType?: 'shop' | 'competition';
+  verificationType?: 'shop' | 'competition' | 'social';
+  studioName?: string;
+  licenseShopName?: string;
   createdAt: number;
 }
 

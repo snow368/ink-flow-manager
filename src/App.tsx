@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Verification from './pages/Verification';
 import ClientDetail from './pages/ClientDetail';
 import AppointmentForm from './pages/AppointmentForm';
+import WaiverSign from './pages/WaiverSign';
 import { db, type ClientRecord } from './db';
 
 export default function App() {
@@ -45,7 +46,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="/client/:id" element={<ClientDetail />} />
             <Route path="/client/new" element={<NewClientForm />} />
             <Route path="/appointment/new" element={<AppointmentForm />} />
+            <Route path="/waiver/:appointmentId" element={<WaiverSign />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>
@@ -126,27 +128,22 @@ function NewClientForm() {
   return (
     <div style={{ padding: 24, color: 'white' }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>New Client</h2>
-
       <input placeholder="Name (required)" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
       <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
       <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-
       <div style={{ marginBottom: 12 }}>
-        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 8 }}>⚠️ Common Allergies</p>
+        <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 8 }}>Allergies</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {commonAllergies.map(item => (
             <button
               key={item}
               onClick={() => toggleAllergy(item)}
               style={{
-                padding: '6px 12px',
-                borderRadius: 8,
+                padding: '6px 12px', borderRadius: 8,
                 border: allergies.includes(item) ? '2px solid #e11d48' : '2px solid #334155',
                 background: allergies.includes(item) ? '#e11d4833' : 'transparent',
                 color: allergies.includes(item) ? '#fca5a5' : '#94a3b8',
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: 'pointer',
+                fontSize: 13, fontWeight: 500, cursor: 'pointer',
               }}
             >
               {allergies.includes(item) ? '✓ ' : ''}{item}
@@ -154,65 +151,30 @@ function NewClientForm() {
           ))}
         </div>
       </div>
-
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <input
           placeholder="Custom allergy..."
           value={customAllergy}
           onChange={e => setCustomAllergy(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomAllergy(); } }}
           style={{ ...inputStyle, flex: 1, marginBottom: 0 }}
         />
-        <button
-          onClick={addCustomAllergy}
-          disabled={!customAllergy.trim()}
-          style={{
-            padding: '12px 16px',
-            borderRadius: 10,
-            border: 'none',
-            background: customAllergy.trim() ? '#334155' : '#1e293b',
-            color: 'white',
-            fontSize: 14,
-            cursor: customAllergy.trim() ? 'pointer' : 'default',
-          }}
-        >
+        <button onClick={addCustomAllergy} disabled={!customAllergy.trim()}
+          style={{ padding: '12px 16px', borderRadius: 10, border: 'none', background: customAllergy.trim() ? '#334155' : '#1e293b', color: 'white', fontSize: 14 }}>
           Add
         </button>
       </div>
-
       {allergies.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
           {allergies.map((a, i) => (
-            <span
-              key={i}
-              onClick={() => toggleAllergy(a)}
-              style={{
-                padding: '4px 10px',
-                borderRadius: 8,
-                background: '#7f1d1d',
-                color: '#fca5a5',
-                fontSize: 12,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-              }}
-            >
-              ⚠ {a} ✕
+            <span key={i} onClick={() => toggleAllergy(a)}
+              style={{ padding: '4px 10px', borderRadius: 8, background: '#7f1d1d', color: '#fca5a5', fontSize: 12, cursor: 'pointer' }}>
+              {a} ✕
             </span>
           ))}
         </div>
       )}
-
-      <button
-        onClick={handleSave}
-        disabled={saving || !name.trim()}
-        style={{
-          width: '100%', padding: 14, borderRadius: 12, border: 'none',
-          background: saving || !name.trim() ? '#4b5563' : '#e11d48',
-          color: 'white', fontSize: 16, fontWeight: 600,
-        }}
-      >
+      <button onClick={handleSave} disabled={saving || !name.trim()}
+        style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !name.trim() ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600 }}>
         {saving ? 'Saving...' : 'Save Client'}
       </button>
     </div>
@@ -220,14 +182,8 @@ function NewClientForm() {
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '12px 16px',
-  marginBottom: 12,
-  borderRadius: 12,
-  border: '1px solid #334155',
-  background: '#1e293b',
-  color: 'white',
-  fontSize: 16,
-  outline: 'none',
-  boxSizing: 'border-box',
+  width: '100%', padding: '12px 16px', marginBottom: 12,
+  borderRadius: 12, border: '1px solid #334155',
+  background: '#1e293b', color: 'white', fontSize: 16,
+  outline: 'none', boxSizing: 'border-box',
 };
