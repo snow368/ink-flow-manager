@@ -1,6 +1,6 @@
 import { db } from "../db";
 
-const WAIVER_TEMPLATES: Record<string, (clientName: string, shopName: string, artistName: string, allergies?: string[]) => string> = {
+const WAIVER_TEMPLATES: Record<string, (clientName: string, shopName: string, artistName: string) => string> = {
   consent: (clientName, shopName, artistName) => `
 CONSENT FOR TATTOO PROCEDURE
 
@@ -14,36 +14,16 @@ I understand that:
 
 I release ${artistName} and ${shopName} from all liability arising from the procedure.
 
-Client Name: ${clientName}
 Client Signature: _______________
 Date: _______________
 
-Artist Name: ${artistName}
-Artist Signature: _______________
+Artist: ${artistName}
 `.trim(),
 
-  health: (clientName, shopName, artistName, allergies) => `
-HEALTH & SAFETY DECLARATION
+  health: (clientName, shopName, artistName) => `
+HEALTH DECLARATION
 
-Client: ${clientName}
-Studio: ${shopName}
-
-${allergies && allergies.length > 0 ? `⚠️ Known Allergies: ${allergies.join(', ')}` : '⚠️ No known allergies recorded.'}
-
-Please answer the following questions truthfully:
-
-1. Are you pregnant or nursing?
-2. Do you have any blood-borne diseases (Hepatitis, HIV, etc.)?
-3. Do you have any skin conditions (psoriasis, eczema, etc.)?
-4. Are you diabetic or have any heart conditions?
-5. Are you currently taking any blood-thinning medications?
-6. Have you consumed alcohol or drugs in the last 12 hours?
-7. Do you have any allergies to latex, inks, or antiseptics?
-
-I confirm that the above information is true and complete.
-
-Signature: _______________
-Date: _______________
+I confirm that the following health questions have been answered truthfully and that all information is complete and accurate to the best of my knowledge.
 `.trim(),
 
   aftercare: (clientName, shopName, artistName) => `
@@ -70,14 +50,13 @@ export async function generateWaiverContent(
   appointmentType: string,
   clientName: string,
   artistName: string,
-  shopName?: string,
-  allergies?: string[]
+  shopName?: string
 ): Promise<string> {
   const effectiveShopName = shopName || artistName + "'s Studio";
 
   const type = appointmentType.toLowerCase();
   if (type.includes('cover') || type.includes('removal')) {
-    return WAIVER_TEMPLATES.consent(clientName, effectiveShopName, artistName) + '\n\n---\n\n' + WAIVER_TEMPLATES.health(clientName, effectiveShopName, artistName, allergies);
+    return WAIVER_TEMPLATES.consent(clientName, effectiveShopName, artistName) + '\n\n---\n\n' + WAIVER_TEMPLATES.health(clientName, effectiveShopName, artistName);
   }
   if (type.includes('touch')) {
     return WAIVER_TEMPLATES.consent(clientName, effectiveShopName, artistName) + '\n\n---\n\n' + WAIVER_TEMPLATES.aftercare(clientName, effectiveShopName, artistName);

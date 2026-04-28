@@ -35,13 +35,16 @@ export interface UserRecord {
   id: string;
   email: string;
   name: string;
-  role: 'owner' | 'artist' | 'staff';
+  role: 'artist' | 'owner' | 'staff' | 'pro' | 'plus';
   artistId?: string;
   deviceId?: string;
   verified: boolean;
   verificationType?: 'shop' | 'competition' | 'social';
   studioName?: string;
   licenseShopName?: string;
+  googleDriveConnected?: boolean;
+  googleDriveFolderId?: string;
+  lastBackupAt?: number;
   createdAt: number;
 }
 
