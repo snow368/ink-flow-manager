@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type InventoryRecord } from '../db';
 import { getInventoryGuide, speakGuide, tryOCR, addInventoryFromPhoto, shouldShowGuide, markScanComplete } from '../lib/inventoryCamera';
