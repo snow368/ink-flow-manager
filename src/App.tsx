@@ -13,7 +13,10 @@ import ClientDetail from './pages/ClientDetail';
 import AppointmentForm from './pages/AppointmentForm';
 import WaiverSign from './pages/WaiverSign';
 import SessionPage from './pages/SessionPage';
+import InventoryPage from './pages/InventoryPage';
+import Referral from './pages/Referral';
 import { db, type ClientRecord } from './db';
+import { processReferralOnRegister } from './lib/referralLogic';
 
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -47,7 +50,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -67,6 +70,8 @@ export default function App() {
             <Route path="/appointment/new" element={<AppointmentForm />} />
             <Route path="/waiver/:appointmentId" element={<WaiverSign />} />
             <Route path="/session/:appointmentId" element={<SessionPage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/referral" element={<Referral />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>
@@ -114,8 +119,7 @@ function NewClientForm() {
         allergies: allergies.length > 0 ? allergies : undefined, createdAt: now,
       });
       navigate('/clients');
-    } catch (e) { console.error(e); alert('Failed to save client'); }
-    finally { setSaving(false); }
+    } catch (e) { console.error(e); } finally { setSaving(false); }
   };
 
   return (
@@ -128,34 +132,22 @@ function NewClientForm() {
         <p style={{ fontSize: 14, color: '#94a3b8', marginBottom: 8 }}>Allergies</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {commonAllergies.map(item => (
-            <button key={item} onClick={() => toggleAllergy(item)} style={{
-              padding: '6px 12px', borderRadius: 8,
-              border: allergies.includes(item) ? '2px solid #e11d48' : '2px solid #334155',
-              background: allergies.includes(item) ? '#e11d4833' : 'transparent',
-              color: allergies.includes(item) ? '#fca5a5' : '#94a3b8',
-              fontSize: 13, fontWeight: 500, cursor: 'pointer',
-            }}>{allergies.includes(item) ? '✓ ' : ''}{item}</button>
+            <button key={item} onClick={() => toggleAllergy(item)} style={{ padding: '6px 12px', borderRadius: 8, border: allergies.includes(item) ? '2px solid #e11d48' : '2px solid #334155', background: allergies.includes(item) ? '#e11d4833' : 'transparent', color: allergies.includes(item) ? '#fca5a5' : '#94a3b8', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>{allergies.includes(item) ? '✓ ' : ''}{item}</button>
           ))}
         </div>
       </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-        <input placeholder="Custom allergy..." value={customAllergy} onChange={e => setCustomAllergy(e.target.value)}
-          style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
-        <button onClick={addCustomAllergy} disabled={!customAllergy.trim()}
-          style={{ padding: '12px 16px', borderRadius: 10, border: 'none', background: customAllergy.trim() ? '#334155' : '#1e293b', color: 'white', fontSize: 14 }}>Add</button>
+        <input placeholder="Custom allergy..." value={customAllergy} onChange={e => setCustomAllergy(e.target.value)} style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+        <button onClick={addCustomAllergy} disabled={!customAllergy.trim()} style={{ padding: '12px 16px', borderRadius: 10, border: 'none', background: customAllergy.trim() ? '#334155' : '#1e293b', color: 'white', fontSize: 14 }}>Add</button>
       </div>
       {allergies.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
           {allergies.map((a, i) => (
-            <span key={i} onClick={() => toggleAllergy(a)}
-              style={{ padding: '4px 10px', borderRadius: 8, background: '#7f1d1d', color: '#fca5a5', fontSize: 12, cursor: 'pointer' }}>{a} ✕</span>
+            <span key={i} onClick={() => toggleAllergy(a)} style={{ padding: '4px 10px', borderRadius: 8, background: '#7f1d1d', color: '#fca5a5', fontSize: 12, cursor: 'pointer' }}>{a} ✕</span>
           ))}
         </div>
       )}
-      <button onClick={handleSave} disabled={saving || !name.trim()}
-        style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !name.trim() ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600 }}>
-        {saving ? 'Saving...' : 'Save Client'}
-      </button>
+      <button onClick={handleSave} disabled={saving || !name.trim()} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !name.trim() ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600 }}>{saving ? 'Saving...' : 'Save Client'}</button>
     </div>
   );
 }

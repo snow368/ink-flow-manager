@@ -1,272 +1,289 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { db, type InventoryRecord } from '../db';
-import { getInventoryGuide, speakGuide, tryOCR, addInventoryFromPhoto, shouldShowGuide, markScanComplete } from '../lib/inventoryCamera';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { db, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord } from '../db';
+import {
+  createSession, addTimelineEvent, addConsumable, addPhoto,
+  addNote, finishSession, getElapsedMinutes, generateSummary,
+} from '../lib/sessionManager';
+import { getCommandsForLocale } from '../lib/voiceCommands';
 
-export default function InventoryPage() {
+export default function SessionPage() {
+  const { appointmentId } = useParams<{ appointmentId: string }>();
   const navigate = useNavigate();
-  const [items, setItems] = useState<InventoryRecord[]>([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [showCamera, setShowCamera] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [category, setCategory] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [reorderLevel, setReorderLevel] = useState(5);
-  const [unit, setUnit] = useState('pcs');
-  const [message, setMessage] = useState('');
-  const [guideStep, setGuideStep] = useState(0);
-  const [photoData, setPhotoData] = useState('');
-  const [ocrResult, setOcrResult] = useState('');
-  const [showGuide, setShowGuide] = useState(shouldShowGuide());
+  const [appointment, setAppointment] = useState<AppointmentRecord | null>(null);
+  const [client, setClient] = useState<ClientRecord | null>(null);
+  const [session, setSession] = useState<SessionRecord | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+  const [voiceActive, setVoiceActive] = useState(false);
+  const [voiceText, setVoiceText] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
+  const [error, setError] = useState('');
+  const [inventoryItems, setInventoryItems] = useState<InventoryRecord[]>([]);
+  const [cameraReady, setCameraReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const guide = getInventoryGuide();
+  const recognitionRef = useRef<any>(null);
 
-  const loadItems = () => db.inventory.orderBy('name').toArray().then(setItems);
-  useEffect(() => { loadItems(); }, []);
+  // 盘点弹窗状态
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [checkoutItems, setCheckoutItems] = useState<{ id: string; name: string; used: number }[]>([]);
+  const [markedConsumables, setMarkedConsumables] = useState<Map<string, number>>(new Map());
 
-  const resetForm = () => {
-    setName(''); setCategory(''); setQuantity(1); setReorderLevel(5); setUnit('pcs');
-    setEditId(null); setShowAdd(false); setPhotoData(''); setOcrResult(''); setGuideStep(0);
-  };
+  useEffect(() => {
+    if (!appointmentId) return;
+    db.appointments.get(appointmentId).then(a => {
+      if (!a) { setError('Appointment not found'); return; }
+      setAppointment(a);
+      db.clients.get(a.clientId).then(c => setClient(c || null));
+      const s = createSession(a);
+      setSession(s);
+      tryStartCamera();
+    });
+    db.inventory.orderBy('name').toArray().then(setInventoryItems);
+    return () => {
+      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+    };
+  }, [appointmentId]);
 
-  const handleSave = async () => {
-    if (!name.trim()) return;
-    const now = Date.now();
-    if (editId) {
-      await db.inventory.update(editId, { name: name.trim(), category: category.trim() || undefined, quantity, reorderLevel, unit });
-      setMessage('Item updated.');
-    } else {
-      if (photoData) {
-        await addInventoryFromPhoto(photoData, name.trim(), category, quantity, unit);
-      } else {
-        const id = 'inv_' + now + '_' + Math.random().toString(36).slice(2, 6);
-        await db.inventory.add({ id, name: name.trim(), category: category.trim() || 'General', quantity, reorderLevel, unit, createdAt: now });
-      }
-      setMessage('Item added.');
-      markScanComplete();
+  const tick = useCallback(() => {
+    if (session) setElapsed(getElapsedMinutes(session));
+  }, [session]);
+
+  const startTimer = () => { tick(); const i = setInterval(tick, 10000); setTimerInterval(i); };
+  const pauseTimer = () => { if (timerInterval) { clearInterval(timerInterval); setTimerInterval(null); } if (session) setSession({ ...session, status: 'paused', pausedAt: Date.now() }); };
+  const resumeTimer = () => { if (session) setSession({ ...session, status: 'active' }); const i = setInterval(tick, 10000); setTimerInterval(i); };
+
+  useEffect(() => {
+    if (session?.status === 'active') startTimer();
+    return () => { if (timerInterval) clearInterval(timerInterval); };
+  }, [session?.status]);
+
+  // 语音播报（保留报时功能）
+  const speakMessage = (text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = navigator.language;
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
     }
-    resetForm();
-    loadItems();
   };
 
-  const handleEdit = (item: InventoryRecord) => {
-    setEditId(item.id); setName(item.name); setCategory(item.category || '');
-    setQuantity(item.quantity); setReorderLevel(item.reorderLevel); setUnit(item.unit);
-    setShowAdd(true);
-  };
+  const hours = Math.floor(elapsed / 60);
+  const mins = elapsed % 60;
+  const timeDisplay = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  const addMessage = (msg: string) => setMessages(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this item?')) return;
-    await db.inventory.delete(id);
-    loadItems();
-  };
-
-  const handleQuickAdd = async (item: InventoryRecord, delta: number) => {
-    const newQty = Math.max(0, item.quantity + delta);
-    await db.inventory.update(item.id, { quantity: newQty });
-    loadItems();
-  };
-
-  const startCamera = async () => {
-    const showDetailedGuide = shouldShowGuide();
-    setShowGuide(showDetailedGuide);
-    setShowCamera(true);
-    setGuideStep(1);
-    if (showDetailedGuide) {
-      speakGuide(guide.step1, true);
-    }
+  // 摄像头
+  const tryStartCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
-        audio: false,
-      });
+      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current?.play();
-          if (showDetailedGuide) {
-            setTimeout(() => { setGuideStep(2); speakGuide(guide.step2, true); }, 2000);
-          }
-        };
-      }
-    } catch {
-      setMessage('Camera access denied');
-      setShowCamera(false);
-      setGuideStep(0);
-    }
+      if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.setAttribute('playsinline', 'true'); videoRef.current.onloadedmetadata = () => videoRef.current?.play().then(() => setCameraReady(true)).catch(() => {}); setTimeout(() => { if (!cameraReady) setCameraReady(false); }, 5000); }
+    } catch { setCameraReady(false); }
   };
-
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    setShowCamera(false);
-    setGuideStep(0);
-  };
-
-  const capturePhoto = () => {
+  const stopCamera = () => { if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; } setCameraReady(false); };
+  const takePhoto = () => {
     const video = videoRef.current;
-    if (!video) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.drawImage(video, 0, 0);
-    const data = canvas.toDataURL('image/jpeg', 0.9);
-    setPhotoData(data);
+    if (!video || !session || !cameraReady) { addMessage('Camera not ready'); speakMessage('Camera not available'); return; }
+    const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d'); if (!ctx) return; ctx.drawImage(video, 0, 0);
+    const cropX = canvas.width * 0.1, cropY = canvas.height * 0.1, cropW = canvas.width * 0.8, cropH = canvas.height * 0.8;
+    const cropped = document.createElement('canvas'); cropped.width = cropW; cropped.height = cropH;
+    cropped.getContext('2d')?.drawImage(canvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    const data = cropped.toDataURL('image/jpeg', 0.85);
+    setSession(addPhoto(session, data));
+    addMessage('Photo captured');
+    speakMessage('Photo saved');
+  };
+
+  // 语音
+  const toggleVoice = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) { addMessage('Voice not supported'); return; }
+    if (voiceActive) { recognitionRef.current?.stop(); setVoiceActive(false); return; }
+    const recognition = new SpeechRecognition(); recognition.continuous = true; recognition.interimResults = false; recognition.lang = navigator.language;
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+      setVoiceText(transcript);
+      const commands = getCommandsForLocale();
+      const action = commands[transcript] || Object.keys(commands).find(k => transcript.includes(k));
+      if (action) {
+        const cmd = commands[action || transcript] || action;
+        if (cmd === 'take_photo') { if (!cameraReady) tryStartCamera().then(() => setTimeout(takePhoto, 1500)); else takePhoto(); }
+        else if (cmd === 'announce_time') { const msg = `${elapsed} minutes elapsed`; addMessage(msg); speakMessage(msg); }
+        else if (cmd === 'pause_timer') { pauseTimer(); addMessage('Paused'); }
+        else if (cmd === 'resume_timer') { resumeTimer(); addMessage('Resumed'); }
+        else if (cmd === 'end_session') handleFinishClick();
+        else addMessage('Command: ' + cmd);
+      }
+    };
+    recognition.onerror = () => setVoiceActive(false);
+    recognition.start(); recognitionRef.current = recognition;
+    setVoiceActive(true); addMessage('Voice active');
+  };
+
+  // 标记耗材（施工中只标记，不扣库存）
+  const handleMarkItem = (item: InventoryRecord) => {
+    if (!session) return;
+    const prev = markedConsumables.get(item.id) || 0;
+    const updated = new Map(markedConsumables);
+    updated.set(item.id, prev + 1);
+    setMarkedConsumables(updated);
+    addMessage(`Marked: ${item.name} (${prev + 1})`);
+  };
+
+  // 点 Finish Session → 先弹出盘点弹窗
+  const handleFinishClick = () => {
+    const items: { id: string; name: string; used: number }[] = [];
+    for (const [id, used] of markedConsumables) {
+      const item = inventoryItems.find(i => i.id === id);
+      if (item) items.push({ id, name: item.name, used });
+    }
+    setCheckoutItems(items);
+    setShowCheckout(true);
+  };
+
+  // 确认盘点 → 扣库存 → 结束Session
+  const handleConfirmCheckout = async () => {
+    if (!session || !appointment) return;
+    if (timerInterval) clearInterval(timerInterval);
     stopCamera();
 
-    setGuideStep(3);
-    if (shouldShowGuide()) {
-      speakGuide(guide.step4, true);
-    }
-    tryOCR(data).then(text => {
-      if (text && text.length > 2) {
-        setName(text.slice(0, 60));
-        setOcrResult(text.slice(0, 60));
-        if (shouldShowGuide()) speakGuide(guide.success, true);
-      } else {
-        setOcrResult('');
-        if (shouldShowGuide()) speakGuide(guide.ocrFailed, true);
+    // 批量扣库存
+    for (const item of checkoutItems) {
+      if (item.used <= 0) continue;
+      const invItem = await db.inventory.get(item.id);
+      if (invItem) {
+        await db.inventory.update(item.id, { quantity: Math.max(0, invItem.quantity - item.used) });
       }
-    });
+    }
 
-    setShowAdd(true);
+    const finished = await finishSession(session);
+    setSession(finished);
+    addMessage(`Session finished! ${finished.photos.length} photos. ${checkoutItems.reduce((s, i) => s + i.used, 0)} items consumed.`);
+    setShowCheckout(false);
+    setTimeout(() => navigate('/today'), 2000);
   };
 
-  const remainingScans = Math.max(0, 3 - parseInt(localStorage.getItem('inkflow_scan_guide_count') || '0', 10));
+  const handleSkipCheckout = async () => {
+    if (!session || !appointment) return;
+    if (timerInterval) clearInterval(timerInterval);
+    stopCamera();
+    const finished = await finishSession(session);
+    setSession(finished);
+    addMessage(`Session finished! ${finished.photos.length} photos. No inventory deducted.`);
+    setShowCheckout(false);
+    setTimeout(() => navigate('/today'), 2000);
+  };
+
+  if (error) return <div style={{ padding: 24, color: 'white' }}><p>{error}</p><button onClick={() => navigate(-1)} style={{ color: '#60a5fa' }}>Go back</button></div>;
+  if (!session) return <div style={{ padding: 24, color: 'white', textAlign: 'center' }}><p>Starting session...</p></div>;
 
   return (
-    <div style={{ padding: 24, color: 'white' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 'bold' }}>Inventory</h2>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={startCamera}
-            style={{ padding: '8px 16px', borderRadius: 22, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
-            📷 Scan
-          </button>
-          <button onClick={() => { resetForm(); setShowAdd(!showAdd); }}
-            style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: '#e11d48', color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
-        </div>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
+      <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
 
-      {showCamera && (
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ position: 'relative', borderRadius: 14, overflow: 'hidden', background: '#000', marginBottom: 10 }}>
-            <video ref={videoRef} autoPlay playsInline muted style={{ width: '100%', height: 280, objectFit: 'cover', display: 'block' }} />
-            <div style={{ position: 'absolute', bottom: 16, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 10 }}>
-              <button onClick={capturePhoto}
-                style={{ padding: '12px 32px', borderRadius: 12, border: '3px solid white', background: 'rgba(225,29,72,0.9)', color: 'white', fontSize: 16, fontWeight: 700 }}>
-                Capture
-              </button>
-              <button onClick={stopCamera}
-                style={{ padding: '12px 20px', borderRadius: 12, border: 'none', background: 'rgba(0,0,0,0.7)', color: 'white', fontSize: 14 }}>
-                Cancel
-              </button>
-            </div>
-          </div>
-          {showGuide ? (
-            <div style={{ background: '#1e293b', borderRadius: 10, padding: 12 }}>
-              <p style={{ fontSize: 13, color: guideStep >= 1 ? '#e2e8f0' : '#64748b' }}>
-                {guideStep >= 1 ? '✅ ' : '① '}{guide.step1}
-              </p>
-              <p style={{ fontSize: 13, color: guideStep >= 2 ? '#e2e8f0' : '#64748b' }}>
-                {guideStep >= 2 ? '✅ ' : '② '}{guide.step2}
-              </p>
-              <p style={{ fontSize: 13, color: guideStep >= 3 ? '#e2e8f0' : '#64748b' }}>
-                {guideStep >= 3 ? '✅ ' : '③ '}{guide.step3}
-              </p>
-              <p style={{ fontSize: 13, color: '#64748b' }}>
-                ④ {guide.step4}
-              </p>
-              <p style={{ fontSize: 11, color: '#64748b', marginTop: 6 }}>
-                Guide auto-hides after {remainingScans} more scan{remainingScans === 1 ? '' : 's'}
-              </p>
-            </div>
-          ) : (
-            <p style={{ fontSize: 12, color: '#64748b', textAlign: 'center' }}>
-              Aim at product label and tap Capture
+      {/* 盘点弹窗 */}
+      {showCheckout && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div style={{ background: '#1e293b', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4 }}>Session Complete</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16 }}>
+              {checkoutItems.length > 0 ? 'Review consumables used in this session:' : 'No consumables were marked during this session. Want to add any?'}
             </p>
-          )}
-        </div>
-      )}
 
-      {showAdd && !showCamera && (
-        <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 16 }}>
-          {photoData && (
-            <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 10, maxHeight: 180 }}>
-              <img src={photoData} alt="product" style={{ width: '100%', objectFit: 'cover' }} />
-            </div>
-          )}
-          {ocrResult && (
-            <div style={{ background: '#14532d', padding: '6px 10px', borderRadius: 8, marginBottom: 8 }}>
-              <p style={{ fontSize: 12, color: '#86efac' }}>📝 Recognized: {ocrResult}</p>
-            </div>
-          )}
-          <input placeholder="Product name" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-          <input placeholder="Category (e.g. Ink, Needles)" value={category} onChange={e => setCategory(e.target.value)} style={inputStyle} />
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input type="number" placeholder="Qty" value={quantity} onChange={e => setQuantity(Number(e.target.value))} style={{ ...inputStyle, flex: 1 }} />
-            <input type="number" placeholder="Reorder at" value={reorderLevel} onChange={e => setReorderLevel(Number(e.target.value))} style={{ ...inputStyle, flex: 1 }} />
-            <input placeholder="Unit" value={unit} onChange={e => setUnit(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
-          </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-            <button onClick={handleSave} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#22c55e', color: 'white', fontSize: 14, fontWeight: 600 }}>
-              {editId ? 'Update' : 'Add to Inventory'}
+            {checkoutItems.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+                {checkoutItems.map(item => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f172a', borderRadius: 8, padding: '8px 12px' }}>
+                    <span style={{ fontSize: 14 }}>{item.name}</span>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: Math.max(0, i.used - 1) } : i))} style={qtySmallBtn}>−</button>
+                      <span style={{ fontSize: 14, fontWeight: 600, minWidth: 24, textAlign: 'center' }}>{item.used}</span>
+                      <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: i.used + 1 } : i))} style={qtySmallBtn}>+</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>You can skip or go back to add consumables manually.</p>
+            )}
+
+            <button onClick={handleConfirmCheckout} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: '#22c55e', color: 'white', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+              Confirm & Finish
             </button>
-            <button onClick={resetForm} style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8' }}>Cancel</button>
+            <button onClick={handleSkipCheckout} style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14 }}>
+              Skip — Don't deduct inventory
+            </button>
+            <button onClick={() => setShowCheckout(false)} style={{ width: '100%', marginTop: 6, padding: 8, borderRadius: 8, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12 }}>
+              Cancel — Return to session
+            </button>
           </div>
         </div>
       )}
 
-      {message && (
-        <div style={{ background: '#1e293b', padding: 10, borderRadius: 8, marginBottom: 12, border: '1px solid #22c55e' }}>
-          <p style={{ fontSize: 13, color: '#34d399' }}>{message}</p>
+      {/* 顶部 */}
+      <div style={{ padding: '12px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 'bold' }}>Session</h2>
+          {cameraReady && <div style={{ width: 8, height: 8, borderRadius: 4, background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} title="Camera ready" />}
         </div>
-      )}
+        <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>✕</button>
+      </div>
+      {client && <p style={{ color: '#94a3b8', fontSize: 13, padding: '0 16px' }}>{client.name} · {appointment?.type?.replace('_', ' ')}</p>}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {items.map(item => (
-          <div key={item.id} style={{ background: item.quantity <= item.reorderLevel ? '#3b1117' : '#1e293b', borderRadius: 12, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 15, fontWeight: 600 }}>{item.name}</p>
-              <p style={{ fontSize: 12, color: '#94a3b8' }}>{item.category} · {item.quantity} {item.unit} · Reorder at {item.reorderLevel}</p>
-            </div>
-            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-              <button onClick={() => handleQuickAdd(item, -1)} style={qtyBtn}>−</button>
-              <span style={{ fontSize: 14, fontWeight: 600, minWidth: 24, textAlign: 'center' }}>{item.quantity}</span>
-              <button onClick={() => handleQuickAdd(item, 1)} style={qtyBtn}>+</button>
-              <button onClick={() => handleEdit(item)} style={actionBtn}>✎</button>
-              <button onClick={() => handleDelete(item.id)} style={actionBtn}>✕</button>
-            </div>
-          </div>
-        ))}
+      {/* 计时器 */}
+      <div style={{ textAlign: 'center', padding: '12px 0' }}>
+        <span style={{ fontSize: 42, fontWeight: 700, fontFamily: 'monospace' }}>{timeDisplay}</span>
+        <span style={{ fontSize: 14, color: session.status === 'paused' ? '#fbbf24' : '#34d399', marginLeft: 10 }}>
+          {session.status === 'active' ? '●' : session.status === 'paused' ? '⏸' : ''}
+        </span>
       </div>
 
-      <button onClick={() => navigate('/me')} style={{ marginTop: 16, width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8' }}>
-        ← Back to Settings
-      </button>
+      {/* 按钮 */}
+      <div style={{ display: 'flex', gap: 8, padding: '0 24px', marginBottom: 12 }}>
+        {session.status === 'active' ? <button onClick={pauseTimer} style={ctrlBtn('#fbbf24')}>⏸ Pause</button> : <button onClick={resumeTimer} style={ctrlBtn('#34d399')}>▶ Resume</button>}
+        <button onClick={toggleVoice} style={ctrlBtn(voiceActive ? '#ef4444' : '#8b5cf6')}>{voiceActive ? '🎤 Voice Off' : '🎤 Voice On'}</button>
+      </div>
+
+      {voiceActive && <p style={{ color: '#a78bfa', fontSize: 13, padding: '0 24px', marginBottom: 6 }}>Say "photo", "timer", "pause", "done"</p>}
+
+      {/* 耗材标记（只标记不扣） */}
+      <div style={{ padding: '0 24px', marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {inventoryItems.filter(i => i.quantity > 0).map(item => (
+            <button key={item.id} onClick={() => handleMarkItem(item)}
+              style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#cbd5e1', fontSize: 12, cursor: 'pointer' }}>
+              {item.name} {markedConsumables.has(item.id) ? `(${markedConsumables.get(item.id)})` : ''}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 日志 */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px', marginBottom: 12 }}>
+        <div style={{ background: '#1e293b', borderRadius: 14, padding: 14, minHeight: 80 }}>
+          {messages.length === 0 ? <p style={{ color: '#64748b', fontSize: 13 }}>Session log</p> : messages.map((m, i) => <p key={i} style={{ fontSize: 12, color: '#94a3b8', marginBottom: 2 }}>{m}</p>)}
+        </div>
+      </div>
+
+      {/* Finish */}
+      <div style={{ padding: '12px 24px' }}>
+        <button onClick={handleFinishClick} style={{ width: '100%', padding: 16, borderRadius: 16, border: 'none', background: '#22c55e', color: 'white', fontSize: 18, fontWeight: 700 }}>
+          Finish Session
+        </button>
+        <div style={{ height: 'env(safe-area-inset-bottom, 12px)' }} />
+      </div>
     </div>
   );
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '10px 14px', marginBottom: 8,
-  borderRadius: 10, border: '1px solid #334155', background: '#0f172a',
-  color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
-};
-const qtyBtn: React.CSSProperties = {
-  width: 28, height: 28, borderRadius: 14, border: '1px solid #334155',
-  background: 'transparent', color: 'white', fontSize: 16, display: 'flex',
-  alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-};
-const actionBtn: React.CSSProperties = {
-  width: 28, height: 28, borderRadius: 8, border: 'none',
-  background: '#334155', color: '#94a3b8', fontSize: 12, cursor: 'pointer',
+const ctrlBtn = (bg: string): React.CSSProperties => ({
+  flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: bg, color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+});
+const qtySmallBtn: React.CSSProperties = {
+  width: 28, height: 28, borderRadius: 14, border: '1px solid #475569', background: 'transparent', color: 'white', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 };
