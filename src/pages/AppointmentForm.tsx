@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { db, type ClientRecord, type AppointmentRecord } from '../db';
+﻿import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { db, type ClientRecord, type AppointmentRecord, type LeadRecord, type LeadRevisionRecord } from '../db';
+import { THEME } from '../lib/theme';
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [selectedClient, setSelectedClient] = useState('');
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -20,6 +22,9 @@ export default function AppointmentForm() {
   const [initialStatus, setInitialStatus] = useState<'unconfirmed' | 'deposit_paid'>('unconfirmed');
   const [conflictWarning, setConflictWarning] = useState('');
   const [nextAvailableTime, setNextAvailableTime] = useState('');
+  const [fromLead, setFromLead] = useState<LeadRecord | null>(null);
+  const [finalRevision, setFinalRevision] = useState<LeadRevisionRecord | null>(null);
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
 
   const durationPresets = [
     { label: '30min', value: 30 },
@@ -46,6 +51,23 @@ export default function AppointmentForm() {
   };
 
   useEffect(() => { loadClients(); }, []);
+  useEffect(() => {
+    const clientId = searchParams.get('clientId');
+    const leadId = searchParams.get('leadId');
+    if (clientId) setSelectedClient(clientId);
+    if (!leadId) return;
+    db.leads.get(leadId).then((lead) => {
+      if (!lead) return;
+      setFromLead(lead);
+      if (lead.preferredDate) setDate(lead.preferredDate);
+      if (lead.preferredTime) setTime(lead.preferredTime);
+      if (lead.finalRevisionId) {
+        db.leadRevisions.get(lead.finalRevisionId).then((rev) => setFinalRevision(rev || null));
+      } else {
+        setFinalRevision(null);
+      }
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     checkConflicts();
@@ -150,7 +172,7 @@ export default function AppointmentForm() {
   const showQuickCreate = !loadingClients && clients.length === 0;
 
   return (
-    <div style={{ padding: 24, color: 'white', paddingBottom: 110 }}>
+    <div style={{ padding: 24, color: THEME.text.primary, paddingBottom: 110 }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>New Appointment</h2>
       {error && <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}><p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p></div>}
 
@@ -159,7 +181,7 @@ export default function AppointmentForm() {
           <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>Quick Add Client</p>
           <input placeholder="Client name" value={quickName} onChange={e => setQuickName(e.target.value)} style={inputStyle} />
           <input placeholder="Phone (optional)" value={quickPhone} onChange={e => setQuickPhone(e.target.value)} style={inputStyle} />
-          <button onClick={handleQuickCreateClient} disabled={creatingClient || !quickName.trim()} style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', background: creatingClient || !quickName.trim() ? '#4b5563' : '#e11d48', color: 'white', fontSize: 14, fontWeight: 600 }}>{creatingClient ? 'Adding...' : 'Add Client & Continue'}</button>
+          <button onClick={handleQuickCreateClient} disabled={creatingClient || !quickName.trim()} style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', background: creatingClient || !quickName.trim() ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 14, fontWeight: 600 }}>{creatingClient ? 'Adding...' : 'Add Client & Continue'}</button>
           <p onClick={() => navigate('/client/new')} style={{ textAlign: 'center', marginTop: 12, color: '#94a3b8', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>or create a full client profile</p>
         </div>
       ) : (
@@ -171,7 +193,7 @@ export default function AppointmentForm() {
             </select>
           )}
 
-          {/* 快捷日期按钮 */}
+          {/* 蹇嵎鏃ユ湡鎸夐挳 */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
             {datePresets.map(p => (
               <button key={p.value} onClick={() => { const d = new Date(); d.setDate(d.getDate() + p.value); setDate(d.toISOString().slice(0, 10)); }} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #475569', background: '#1e293b', color: '#e2e8f0', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
@@ -180,45 +202,78 @@ export default function AppointmentForm() {
             ))}
           </div>
 
-          {/* 日期选择器 - 亮色图标 */}
+          {/* 鏃ユ湡閫夋嫨鍣?- 浜壊鍥炬爣 */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Date</label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ ...inputStyle, marginBottom: 0, colorScheme: 'dark' }} />
           </div>
 
-          {/* 时间选择器 - 亮色图标 */}
+          {/* 鏃堕棿閫夋嫨鍣?- 浜壊鍥炬爣 */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Time</label>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} style={{ ...inputStyle, marginBottom: 0, colorScheme: 'dark' }} />
           </div>
 
-          {/* 时长选择 */}
+          {/* 鏃堕暱閫夋嫨 */}
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Duration</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             {durationPresets.map(p => (
-              <button key={p.value} onClick={() => { setDuration(p.value); setCustomDuration(''); }} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: (duration === p.value && !customDuration) ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{p.label}</button>
+              <button key={p.value} onClick={() => { setDuration(p.value); setCustomDuration(''); }} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: (duration === p.value && !customDuration) ? '#e11d48' : '#334155', color: THEME.text.primary, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{p.label}</button>
             ))}
           </div>
           <input type="number" placeholder="Custom minutes" value={customDuration} onChange={e => { setCustomDuration(e.target.value); if (e.target.value) setDuration(0); }} style={{ ...inputStyle, marginBottom: 12 }} />
 
-          {/* 预约类型 */}
+          {/* 棰勭害绫诲瀷 */}
           <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>{appointmentTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
 
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Deposit Status</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <button onClick={() => setInitialStatus('unconfirmed')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'unconfirmed' ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setInitialStatus('unconfirmed')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'unconfirmed' ? '#e11d48' : '#334155', color: THEME.text.primary, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Pending Deposit
             </button>
-            <button onClick={() => setInitialStatus('deposit_paid')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'deposit_paid' ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setInitialStatus('deposit_paid')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'deposit_paid' ? '#e11d48' : '#334155', color: THEME.text.primary, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Deposit Paid
             </button>
           </div>
+
+          {fromLead && (
+            <div style={{ background: '#1e293b', border: '1px solid #334155', color: '#e2e8f0', borderRadius: 10, padding: 10, marginBottom: 12 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Lead Review</p>
+              <p style={{ fontSize: 12, color: '#94a3b8' }}>Source: {fromLead.source}</p>
+              {fromLead.changeRequest && <p style={{ fontSize: 12, marginTop: 4 }}>Change request: {fromLead.changeRequest}</p>}
+              {fromLead.note && <p style={{ fontSize: 12, marginTop: 4 }}>Notes: {fromLead.note}</p>}
+              {finalRevision && (
+                <div style={{ marginTop: 6, padding: 8, border: '1px solid #166534', borderRadius: 8, background: '#0f2a1b' }}>
+                  <p style={{ fontSize: 12, color: '#86efac', fontWeight: 700, marginBottom: 3 }}>Final Revision v{finalRevision.version}</p>
+                  {finalRevision.note && <p style={{ fontSize: 12 }}>Summary: {finalRevision.note}</p>}
+                  {finalRevision.changeRequest && <p style={{ fontSize: 12, marginTop: 2 }}>Changes: {finalRevision.changeRequest}</p>}
+                  {finalRevision.referenceImages && finalRevision.referenceImages.length > 0 && (
+                    <p style={{ fontSize: 12, marginTop: 2, color: '#93c5fd' }}>Images in final revision: {finalRevision.referenceImages.length}</p>
+                  )}
+                </div>
+              )}
+              {fromLead.allergies && fromLead.allergies.length > 0 && (
+                <p style={{ fontSize: 12, marginTop: 4, color: '#fca5a5' }}>
+                  Allergy Alert ({fromLead.allergySeverity || 'low'}): {fromLead.allergies.join(', ')}
+                </p>
+              )}
+              {fromLead.referenceImages && fromLead.referenceImages.length > 0 && (
+                <p style={{ fontSize: 12, marginTop: 4, color: '#93c5fd' }}>
+                  Reference images: {fromLead.referenceImages.length}
+                </p>
+              )}
+              <label style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#cbd5e1' }}>
+                <input type="checkbox" checked={reviewConfirmed} onChange={e => setReviewConfirmed(e.target.checked)} />
+                I reviewed this lead info and confirm this appointment setup.
+              </label>
+            </div>
+          )}
 
           {conflictWarning && (
             <div style={{ background: '#7c2d12', border: '1px solid #ea580c', color: '#fed7aa', borderRadius: 10, padding: 10, marginBottom: 12 }}>
               <p style={{ fontSize: 13 }}>{conflictWarning}</p>
               {nextAvailableTime && (
-                <button onClick={() => setTime(nextAvailableTime)} style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: '#ea580c', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => setTime(nextAvailableTime)} style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: '#ea580c', color: THEME.text.primary, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                   Use next available: {nextAvailableTime}
                 </button>
               )}
@@ -226,7 +281,7 @@ export default function AppointmentForm() {
           )}
 
           <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px)', background: 'linear-gradient(to top, #0f172a 80%, rgba(15,23,42,0.2))' }}>
-            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : 'Create Appointment'}</button>
+            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : 'Create Appointment'}</button>
           </div>
         </>
       )}
@@ -237,6 +292,7 @@ export default function AppointmentForm() {
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '12px 16px',
   borderRadius: 12, border: '1px solid #475569', background: '#1e293b',
-  color: 'white', fontSize: 16, outline: 'none', boxSizing: 'border-box',
+  color: THEME.text.primary, fontSize: 16, outline: 'none', boxSizing: 'border-box',
 };
 const selectStyle: React.CSSProperties = { ...inputStyle, marginBottom: 12, appearance: 'auto' };
+

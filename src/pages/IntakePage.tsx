@@ -1,0 +1,177 @@
+﻿import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { db } from '../db';
+
+const ALLERGY_OPTIONS = [
+  'Latex gloves',
+  'Alcohol antiseptic',
+  'Adhesive tape',
+  'Red ink',
+  'Yellow ink',
+  'Anesthetic',
+];
+
+export default function IntakePage() {
+  const { artistId } = useParams<{ artistId: string }>();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [source, setSource] = useState<'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other'>('instagram');
+  const [bodyPart, setBodyPart] = useState('');
+  const [style, setStyle] = useState('');
+  const [size, setSize] = useState('');
+  const [budget, setBudget] = useState('');
+  const [preferredDate, setPreferredDate] = useState('');
+  const [preferredTime, setPreferredTime] = useState('');
+  const [note, setNote] = useState('');
+  const [changeRequest, setChangeRequest] = useState('');
+  const [allergies, setAllergies] = useState<string[]>([]);
+  const [allergySeverity, setAllergySeverity] = useState<'low' | 'medium' | 'high'>('low');
+  const [allergyNote, setAllergyNote] = useState('');
+  const [referenceImages, setReferenceImages] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files) return;
+    const max = Math.min(6 - referenceImages.length, files.length);
+    const list: string[] = [];
+    for (let i = 0; i < max; i++) {
+      const file = files[i];
+      const data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.readAsDataURL(file);
+      });
+      list.push(data);
+    }
+    setReferenceImages(prev => [...prev, ...list]);
+  };
+
+  const toggleAllergy = (item: string) => {
+    setAllergies(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item]);
+  };
+
+  const submit = async () => {
+    if (!artistId || !name.trim()) return;
+    setSubmitting(true);
+    try {
+      const now = Date.now();
+      await db.leads.add({
+        id: `lead_${now}_${Math.random().toString(36).slice(2, 6)}`,
+        artistId,
+        name: name.trim(),
+        phone: phone.trim() || undefined,
+        email: email.trim() || undefined,
+        source,
+        status: 'new',
+        bodyPart: bodyPart.trim() || undefined,
+        style: style.trim() || undefined,
+        size: size.trim() || undefined,
+        budget: budget.trim() || undefined,
+        preferredDate: preferredDate || undefined,
+        preferredTime: preferredTime || undefined,
+        note: note.trim() || undefined,
+        changeRequest: changeRequest.trim() || undefined,
+        referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
+        allergies: allergies.length > 0 ? allergies : undefined,
+        allergySeverity: allergies.length > 0 ? allergySeverity : undefined,
+        allergyNote: allergyNote.trim() || undefined,
+        createdAt: now,
+      });
+      setDone(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!artistId) return <div style={{ padding: 24 }}>Invalid intake link.</div>;
+  if (done) return <div style={{ padding: 24, color: 'white', background: '#0f172a', minHeight: '100dvh' }}><h2>Thanks</h2><p>Your request was submitted. The studio will contact you soon.</p></div>;
+
+  return (
+    <div style={{ background: '#0f172a', minHeight: '100dvh', color: 'white', padding: 24 }}>
+      <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Tattoo Intake</h2>
+      <p style={{ color: '#94a3b8', marginBottom: 16 }}>Tell us what you want. You can upload reference images and allergy info.</p>
+
+      <input placeholder="Name (required)" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+      <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+      <select value={source} onChange={e => setSource(e.target.value as any)} style={inputStyle}>
+        <option value="instagram">Instagram</option>
+        <option value="facebook">Facebook</option>
+        <option value="tiktok">TikTok</option>
+        <option value="referral">Referral</option>
+        <option value="walk_in">Walk-in</option>
+        <option value="other">Other</option>
+      </select>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <input placeholder="Body part" value={bodyPart} onChange={e => setBodyPart(e.target.value)} style={inputStyle} />
+        <input placeholder="Style" value={style} onChange={e => setStyle(e.target.value)} style={inputStyle} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <input placeholder="Size" value={size} onChange={e => setSize(e.target.value)} style={inputStyle} />
+        <input placeholder="Budget" value={budget} onChange={e => setBudget(e.target.value)} style={inputStyle} />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <input type="date" value={preferredDate} onChange={e => setPreferredDate(e.target.value)} style={inputStyle} />
+        <input type="time" value={preferredTime} onChange={e => setPreferredTime(e.target.value)} style={inputStyle} />
+      </div>
+
+      <textarea placeholder="Describe your idea" value={note} onChange={e => setNote(e.target.value)} rows={3} style={textAreaStyle} />
+      <textarea placeholder="What would you like to change from references?" value={changeRequest} onChange={e => setChangeRequest(e.target.value)} rows={3} style={textAreaStyle} />
+
+      <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Allergies (if any)</p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+        {ALLERGY_OPTIONS.map(a => (
+          <button key={a} onClick={() => toggleAllergy(a)} style={{ padding: '6px 10px', borderRadius: 999, border: allergies.includes(a) ? '1px solid #e11d48' : '1px solid #334155', background: allergies.includes(a) ? '#4c0519' : '#1e293b', color: allergies.includes(a) ? '#fda4af' : '#cbd5e1', cursor: 'pointer' }}>{a}</button>
+        ))}
+      </div>
+      {allergies.length > 0 && (
+        <>
+          <select value={allergySeverity} onChange={e => setAllergySeverity(e.target.value as any)} style={inputStyle}>
+            <option value="low">Low concern</option>
+            <option value="medium">Medium concern</option>
+            <option value="high">High concern</option>
+          </select>
+          <textarea placeholder="Allergy details" value={allergyNote} onChange={e => setAllergyNote(e.target.value)} rows={2} style={textAreaStyle} />
+        </>
+      )}
+
+      <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Reference images (max 6)</p>
+      <input type="file" accept="image/*" multiple onChange={e => void handleFiles(e.target.files)} style={{ marginBottom: 10 }} />
+      {referenceImages.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
+          {referenceImages.map((src, i) => <img key={i} src={src} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 8 }} />)}
+        </div>
+      )}
+
+      <button onClick={submit} disabled={submitting || !name.trim()} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: submitting ? '#475569' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
+        {submitting ? 'Submitting...' : 'Submit Request'}
+      </button>
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 12px',
+  marginBottom: 8,
+  borderRadius: 10,
+  border: '1px solid #334155',
+  background: '#1e293b',
+  color: 'white',
+  boxSizing: 'border-box',
+};
+
+const textAreaStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 12px',
+  marginBottom: 8,
+  borderRadius: 10,
+  border: '1px solid #334155',
+  background: '#1e293b',
+  color: 'white',
+  boxSizing: 'border-box',
+  resize: 'vertical',
+};

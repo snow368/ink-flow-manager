@@ -6,6 +6,7 @@ import {
   addNote, finishSession, getElapsedMinutes, generateSummary,
 } from '../lib/sessionManager';
 import { getCommandsForLocale } from '../lib/voiceCommands';
+import { THEME } from '../lib/theme';
 
 export default function SessionPage() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
@@ -183,13 +184,13 @@ export default function SessionPage() {
   if (!session) return <div style={{ padding: 24, color: 'white', textAlign: 'center' }}><p>Starting session...</p></div>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: THEME.bg.app, color: 'white' }}>
       <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
 
       {/* 鐩樼偣寮圭獥 */}
       {showCheckout && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ background: '#1e293b', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 }}>
+          <div style={{ background: THEME.bg.panel, borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 }}>
             <h3 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 4 }}>Session Complete</h3>
             <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16 }}>
               {checkoutItems.length > 0 ? 'Review consumables used in this session:' : 'No consumables were marked during this session. Want to add any?'}
@@ -212,7 +213,7 @@ export default function SessionPage() {
               <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>You can skip or go back to add consumables manually.</p>
             )}
 
-            <button onClick={handleConfirmCheckout} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: '#22c55e', color: 'white', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
+            <button onClick={handleConfirmCheckout} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: THEME.brand.success, color: 'white', fontSize: 16, fontWeight: 700, marginBottom: 8 }}>
               Confirm & Finish
             </button>
             <button onClick={handleSkipCheckout} style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14 }}>
@@ -229,7 +230,7 @@ export default function SessionPage() {
       <div style={{ padding: '12px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <h2 style={{ fontSize: 18, fontWeight: 'bold' }}>Session</h2>
-          {cameraReady && <div style={{ width: 8, height: 8, borderRadius: 4, background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} title="Camera ready" />}
+          {cameraReady && <div style={{ width: 8, height: 8, borderRadius: 4, background: THEME.brand.success, boxShadow: '0 0 4px #22c55e' }} title="Camera ready" />}
         </div>
         <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>X</button>
       </div>
@@ -256,7 +257,7 @@ export default function SessionPage() {
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {inventoryItems.filter(i => i.quantity > 0).map(item => (
             <button key={item.id} onClick={() => handleMarkItem(item)}
-              style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#cbd5e1', fontSize: 12, cursor: 'pointer' }}>
+              style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: THEME.bg.panel, color: '#cbd5e1', fontSize: 12, cursor: 'pointer' }}>
               {item.name} {markedConsumables.has(item.id) ? `(${markedConsumables.get(item.id)})` : ''}
             </button>
           ))}
@@ -265,14 +266,14 @@ export default function SessionPage() {
 
       {/* 鏃ュ織 */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px', marginBottom: 12 }}>
-        <div style={{ background: '#1e293b', borderRadius: 14, padding: 14, minHeight: 80 }}>
+        <div style={{ background: THEME.bg.panel, borderRadius: 14, padding: 14, minHeight: 80 }}>
           {messages.length === 0 ? <p style={{ color: '#64748b', fontSize: 13 }}>Session log</p> : messages.map((m, i) => <p key={i} style={{ fontSize: 12, color: '#94a3b8', marginBottom: 2 }}>{m}</p>)}
         </div>
       </div>
 
       {/* Finish */}
       <div style={{ padding: '12px 24px' }}>
-        <button onClick={handleFinishClick} style={{ width: '100%', padding: 16, borderRadius: 16, border: 'none', background: '#22c55e', color: 'white', fontSize: 18, fontWeight: 700 }}>
+        <button onClick={handleFinishClick} style={{ width: '100%', padding: 16, borderRadius: 16, border: 'none', background: THEME.brand.success, color: 'white', fontSize: 18, fontWeight: 700 }}>
           Finish Session
         </button>
         <div style={{ height: 'env(safe-area-inset-bottom, 12px)' }} />
@@ -287,5 +288,6 @@ const ctrlBtn = (bg: string): React.CSSProperties => ({
 const qtySmallBtn: React.CSSProperties = {
   width: 28, height: 28, borderRadius: 14, border: '1px solid #475569', background: 'transparent', color: 'white', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 };
+
 
 

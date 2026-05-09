@@ -15,6 +15,10 @@ import WaiverSign from './pages/WaiverSign';
 import SessionPage from './pages/SessionPage';
 import InventoryPage from './pages/InventoryPage';
 import Referral from './pages/Referral';
+import Outreach from './pages/Outreach';
+import IntakePage from './pages/IntakePage';
+import LeadsPage from './pages/LeadsPage';
+import LeadRevisePage from './pages/LeadRevisePage';
 import { db } from './db';
 
 export default function App() {
@@ -49,7 +53,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -71,6 +75,10 @@ export default function App() {
             <Route path="/session/:appointmentId" element={<SessionPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/referral" element={<Referral />} />
+            <Route path="/outreach" element={<Outreach />} />
+            <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/intake/:artistId" element={<IntakePage />} />
+            <Route path="/intake/revise/:leadId" element={<LeadRevisePage />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>

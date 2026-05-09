@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
+import { THEME } from '../lib/theme';
 
 export default function Today() {
   const navigate = useNavigate();
@@ -10,6 +11,15 @@ export default function Today() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [dateAppointmentCounts, setDateAppointmentCounts] = useState<Map<string, number>>(new Map());
   const [dragOverDate, setDragOverDate] = useState('');
+  const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
+  const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string })[]>>(new Map());
+  const [conflictModal, setConflictModal] = useState<{
+    open: boolean;
+    appointmentId: string;
+    targetDate: string;
+    conflictWith: string;
+    options: string[];
+  }>({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] });
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
@@ -18,6 +28,7 @@ export default function Today() {
       if (!u) { navigate('/register'); return; }
       setUser(u);
       loadAppointmentsForDate(u, selectedDate);
+      loadAppointmentsForWeek(u, selectedDate);
       loadFutureDateCounts(u);
     });
   }, [navigate, selectedDate]);
@@ -43,6 +54,31 @@ export default function Today() {
     const counts = new Map<string, number>();
     futureApps.forEach(a => counts.set(a.date, (counts.get(a.date) || 0) + 1));
     setDateAppointmentCounts(counts);
+  }
+
+  async function loadAppointmentsForWeek(u: UserRecord, anchorDate: string) {
+    const start = new Date(anchorDate);
+    const day = start.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + diffToMonday);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    let query = db.appointments.where('date').between(start.toISOString().slice(0, 10), end.toISOString().slice(0, 10));
+    if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    const apps = await query.toArray();
+    const enriched = await Promise.all(apps.map(async a => {
+      const client = await db.clients.get(a.clientId);
+      return { ...a, clientName: client?.name || 'Unknown' };
+    }));
+
+    const grouped = new Map<string, (AppointmentRecord & { clientName?: string })[]>();
+    for (const a of enriched.sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time))) {
+      const list = grouped.get(a.date) || [];
+      list.push(a);
+      grouped.set(a.date, list);
+    }
+    setWeekAppointments(grouped);
   }
 
   const toMinutes = (t: string) => {
@@ -101,6 +137,32 @@ export default function Today() {
     return '';
   };
 
+  const findMultipleAvailableTimes = (
+    list: AppointmentRecord[],
+    targetDate: string,
+    artistId: string,
+    duration: number,
+    preferredTime: string,
+    excludeId: string,
+    limit = 3
+  ) => {
+    const out: string[] = [];
+    let candidate = toMinutes(preferredTime);
+    const dayEnd = 22 * 60;
+    while (candidate + duration <= dayEnd && out.length < limit) {
+      const blocked = list.some(a => {
+        if (a.id === excludeId) return false;
+        if (a.date !== targetDate || a.artistId !== artistId || a.status === 'cancelled') return false;
+        const s = toMinutes(a.time);
+        const e = s + a.duration;
+        return hasOverlap(candidate, candidate + duration, s, e);
+      });
+      if (!blocked) out.push(toTimeString(candidate));
+      candidate += 15;
+    }
+    return out;
+  };
+
   const updateAppointmentInState = (id: string, patch: Partial<AppointmentRecord>) => {
     setAppointments(prev => prev.map(a => a.id === id ? { ...a, ...patch } : a));
   };
@@ -108,37 +170,48 @@ export default function Today() {
   const handleStatusUpdate = async (id: string, status: AppointmentRecord['status']) => {
     await db.appointments.update(id, { status });
     updateAppointmentInState(id, { status });
-    if (user) loadFutureDateCounts(user);
+    if (user) {
+      loadFutureDateCounts(user);
+      loadAppointmentsForWeek(user, selectedDate);
+    }
+  };
+
+  const applyMove = async (appointmentId: string, targetDate: string, finalTime: string) => {
+    await db.appointments.update(appointmentId, { date: targetDate, time: finalTime });
+    updateAppointmentInState(appointmentId, { date: targetDate, time: finalTime });
+    if (user) {
+      loadAppointmentsForDate(user, selectedDate);
+      loadAppointmentsForWeek(user, selectedDate);
+      loadFutureDateCounts(user);
+    }
   };
 
   const handleDropToDate = async (targetDate: string, appointmentId: string) => {
-    const moving = appointments.find(a => a.id === appointmentId);
+    const movingFromState =
+      appointments.find(a => a.id === appointmentId) ||
+      Array.from(weekAppointments.values()).flat().find(a => a.id === appointmentId);
+    const moving = movingFromState || await db.appointments.get(appointmentId);
     if (!moving || moving.date === targetDate) return;
 
     const all = await db.appointments.toArray();
     const conflict = findConflict(all, targetDate, moving.time, moving.duration, moving.artistId, moving.id);
-    let finalTime = moving.time;
-
     if (conflict) {
-      const suggested = findNextAvailableTime(all, targetDate, moving.artistId, moving.duration, moving.time, moving.id);
-      if (!suggested) {
+      const options = findMultipleAvailableTimes(all, targetDate, moving.artistId, moving.duration, moving.time, moving.id);
+      if (options.length === 0) {
         alert(`Cannot move to ${targetDate}. No available slot for ${moving.duration} minutes.`);
         return;
       }
-      const ok = confirm(
-        `Time conflict on ${targetDate} at ${moving.time}.\n` +
-        `Move to next available slot ${suggested} instead?`
-      );
-      if (!ok) return;
-      finalTime = suggested;
+      const conflictName = (await db.clients.get(conflict.clientId))?.name || 'Unknown';
+      setConflictModal({
+        open: true,
+        appointmentId: moving.id,
+        targetDate,
+        conflictWith: `${conflict.time} - ${conflictName}`,
+        options,
+      });
+      return;
     }
-
-    await db.appointments.update(moving.id, { date: targetDate, time: finalTime });
-    updateAppointmentInState(moving.id, { date: targetDate, time: finalTime });
-    if (user) {
-      loadAppointmentsForDate(user, selectedDate);
-      loadFutureDateCounts(user);
-    }
+    await applyMove(moving.id, targetDate, moving.time);
   };
 
   const weekDays = (() => {
@@ -156,14 +229,35 @@ export default function Today() {
     return days;
   })();
 
+  const activeWeekDays = (() => {
+    const start = new Date(selectedDate);
+    const day = start.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + diffToMonday);
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const days: { date: Date; label: string; dateStr: string }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      days.push({ date: d, label: dayNames[i], dateStr: d.toISOString().slice(0, 10) });
+    }
+    return days;
+  })();
+
   const isToday = selectedDate === new Date().toISOString().slice(0, 10);
   if (!user) return <div style={{ padding: 24, color: 'white' }}>Loading...</div>;
 
   return (
-    <div style={{ padding: 24, color: 'white', paddingBottom: 12 }}>
+    <div style={{ padding: 24, color: THEME.text.primary, paddingBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{ fontSize: 20, fontWeight: 'bold' }}>{isToday ? 'Today' : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
-        <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: '#e11d48', color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>Day</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>Week</button>
+          </div>
+          <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: 8, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #1e293b', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -193,7 +287,7 @@ export default function Today() {
               <span style={{ fontSize: 16, fontWeight: selected ? 700 : 500 }}>{day.date.getDate()}</span>
               {count > 0 && !selected ? (
                 count === 1 ? (
-                  <div style={{ width: 5, height: 5, borderRadius: 3, background: '#e11d48', boxShadow: '0 0 4px rgba(225,29,72,0.6)' }} />
+                  <div style={{ width: 5, height: 5, borderRadius: 3, background: THEME.brand.primary, boxShadow: '0 0 4px rgba(225,29,72,0.6)' }} />
                 ) : (
                   <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', marginTop: 2, textShadow: '0 0 6px rgba(0,0,0,0.8)' }}>{count >= 4 ? '4+' : count}</span>
                 )
@@ -205,12 +299,12 @@ export default function Today() {
         })}
       </div>
 
-      {appointments.length === 0 ? (
+      {viewMode === 'day' && appointments.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: 60 }}>
           <p style={{ fontSize: 48, marginBottom: 16 }}>No Appointments</p>
           <p style={{ fontSize: 16, color: '#94a3b8' }}>No appointments on this day</p>
         </div>
-      ) : (
+      ) : viewMode === 'day' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {appointments.map(app => (
             <AppointmentCard
@@ -219,6 +313,102 @@ export default function Today() {
               onStatusUpdate={handleStatusUpdate}
             />
           ))}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(180px, 1fr))', gap: 10, overflowX: 'auto', paddingBottom: 8 }}>
+          {activeWeekDays.map(day => {
+            const list = weekAppointments.get(day.dateStr) || [];
+            const selected = day.dateStr === selectedDate;
+            return (
+              <div
+                key={day.dateStr}
+                onDragOver={(e) => { e.preventDefault(); setDragOverDate(day.dateStr); }}
+                onDragLeave={() => setDragOverDate('')}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  const appointmentId = e.dataTransfer.getData('text/plain');
+                  setDragOverDate('');
+                  if (appointmentId) await handleDropToDate(day.dateStr, appointmentId);
+                }}
+                style={{
+                  background: selected ? '#182234' : '#0b1220',
+                  border: dragOverDate === day.dateStr ? '1px solid #f43f5e' : selected ? '1px solid #475569' : '1px solid #243244',
+                  boxShadow: dragOverDate === day.dateStr ? '0 0 0 1px rgba(244,63,94,0.35) inset' : 'none',
+                  borderRadius: 12,
+                  padding: 10,
+                  minHeight: 240,
+                }}
+              >
+                <button onClick={() => { setSelectedDate(day.dateStr); setViewMode('day'); }} style={{ width: '100%', border: 'none', background: 'transparent', color: 'white', textAlign: 'left', cursor: 'pointer', marginBottom: 8 }}>
+                  <div style={{ fontSize: 12, color: '#94a3b8' }}>{day.label}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: 16, fontWeight: 700 }}>{day.date.getDate()}</div>
+                    <span style={{ fontSize: 11, color: '#93c5fd', background: '#1e3a5f', borderRadius: 999, padding: '2px 7px' }}>{list.length}</span>
+                  </div>
+                </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {list.length === 0 ? (
+                    <p style={{ fontSize: 12, color: '#64748b' }}>No appointments</p>
+                  ) : list.map(item => (
+                    <div
+                      key={item.id}
+                      draggable
+                      onDragStart={(e) => e.dataTransfer.setData('text/plain', item.id)}
+                      style={{
+                        borderLeft: `3px solid ${STATUS_COLORS[item.status] || '#9ca3af'}`,
+                        background: THEME.bg.panel,
+                        border: '1px solid #334155',
+                        borderRadius: 8,
+                        padding: 8,
+                        cursor: 'grab',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700 }}>{item.time}</div>
+                        <span style={{ width: 7, height: 7, borderRadius: 99, background: STATUS_COLORS[item.status] || '#9ca3af' }} />
+                      </div>
+                      <div style={{ fontSize: 12, color: '#cbd5e1' }}>{item.clientName}</div>
+                      <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{STATUS_LABELS[item.status] || item.status}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {conflictModal.open && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 16 }}>
+          <div style={{ width: '100%', maxWidth: 380, background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 14 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Time Conflict</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>
+              Conflicts with: <span style={{ color: '#e2e8f0' }}>{conflictModal.conflictWith}</span>
+            </p>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 10 }}>
+              Choose a suggested slot for {conflictModal.targetDate}:
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
+              {conflictModal.options.map(option => (
+                <button
+                  key={option}
+                  onClick={async () => {
+                    await applyMove(conflictModal.appointmentId, conflictModal.targetDate, option);
+                    setConflictModal({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] });
+                  }}
+                  style={{ border: 'none', borderRadius: 8, padding: '10px 12px', background: '#334155', color: 'white', textAlign: 'left', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setConflictModal({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] })}
+              style={{ width: '100%', border: '1px solid #475569', borderRadius: 8, padding: '9px 10px', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -251,7 +441,7 @@ function AppointmentCard({
     <div
       draggable
       onDragStart={(e) => e.dataTransfer.setData('text/plain', appointment.id)}
-      style={{ background: '#1e293b', borderRadius: 14, padding: 14, borderLeft: '4px solid ' + color, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      style={{ background: THEME.bg.panel, borderRadius: 14, padding: 14, borderLeft: '4px solid ' + color, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       title="Drag to another date to reschedule"
     >
       <div style={{ flex: 1 }}>
@@ -279,4 +469,5 @@ function AppointmentCard({
     </div>
   );
 }
+
 

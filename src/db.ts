@@ -11,6 +11,8 @@ export class InkFlowDB extends Dexie {
   portfolio!: Table<PortfolioRecord>;
   socialDrafts!: Table<SocialDraftRecord>;
   referrals!: Table<ReferralRecord>;
+  leads!: Table<LeadRecord>;
+  leadRevisions!: Table<LeadRevisionRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -25,6 +27,33 @@ export class InkFlowDB extends Dexie {
       portfolio: 'id, artistId, createdAt',
       socialDrafts: 'id, platform, status, createdAt',
       referrals: 'id, inviterId, inviteeId, status, createdAt',
+    });
+    this.version(2).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt',
+    });
+    this.version(3).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
     });
   }
 }
@@ -109,4 +138,42 @@ export interface ReferralRecord {
   id: string; inviterId: string; inviteeId: string;
   status: 'pending'|'registered'|'verified'|'rewarded';
   rewardGranted: boolean; createdAt: number;
+}
+
+export interface LeadRecord {
+  id: string;
+  artistId: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  source: 'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other';
+  status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
+  bodyPart?: string;
+  style?: string;
+  size?: string;
+  budget?: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  note?: string;
+  changeRequest?: string;
+  referenceImages?: string[];
+  allergies?: string[];
+  allergySeverity?: 'low' | 'medium' | 'high';
+  allergyNote?: string;
+  finalRevisionId?: string;
+  finalRevisionVersion?: number;
+  nextFollowUpAt?: number;
+  createdAt: number;
+}
+
+export interface LeadRevisionRecord {
+  id: string;
+  leadId: string;
+  version: number;
+  actor: 'client' | 'artist' | 'staff';
+  channel?: 'instagram' | 'facebook' | 'whatsapp' | 'sms' | 'tiktok' | 'other';
+  note?: string;
+  changeRequest?: string;
+  referenceImages?: string[];
+  createdAt: number;
 }
