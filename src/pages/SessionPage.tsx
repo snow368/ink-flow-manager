@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord } from '../db';
 import {
@@ -25,7 +25,7 @@ export default function SessionPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<any>(null);
 
-  // 盘点弹窗状态
+  // 鐩樼偣寮圭獥鐘舵€?
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<{ id: string; name: string; used: number }[]>([]);
   const [markedConsumables, setMarkedConsumables] = useState<Map<string, number>>(new Map());
@@ -59,7 +59,7 @@ export default function SessionPage() {
     return () => { if (timerInterval) clearInterval(timerInterval); };
   }, [session?.status]);
 
-  // 语音播报（保留报时功能）
+  // 璇煶鎾姤锛堜繚鐣欐姤鏃跺姛鑳斤級
   const speakMessage = (text: string) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -75,7 +75,7 @@ export default function SessionPage() {
   const timeDisplay = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   const addMessage = (msg: string) => setMessages(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
 
-  // 摄像头
+  // 鎽勫儚澶?
   const tryStartCamera = async () => {
     try {
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
@@ -99,7 +99,7 @@ export default function SessionPage() {
     speakMessage('Photo saved');
   };
 
-  // 语音
+  // 璇煶
   const toggleVoice = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) { addMessage('Voice not supported'); return; }
@@ -125,7 +125,7 @@ export default function SessionPage() {
     setVoiceActive(true); addMessage('Voice active');
   };
 
-  // 标记耗材（施工中只标记，不扣库存）
+  // 鏍囪鑰楁潗锛堟柦宸ヤ腑鍙爣璁帮紝涓嶆墸搴撳瓨锛?
   const handleMarkItem = (item: InventoryRecord) => {
     if (!session) return;
     const prev = markedConsumables.get(item.id) || 0;
@@ -135,7 +135,7 @@ export default function SessionPage() {
     addMessage(`Marked: ${item.name} (${prev + 1})`);
   };
 
-  // 点 Finish Session → 先弹出盘点弹窗
+  // 鐐?Finish Session 鈫?鍏堝脊鍑虹洏鐐瑰脊绐?
   const handleFinishClick = () => {
     const items: { id: string; name: string; used: number }[] = [];
     for (const [id, used] of markedConsumables) {
@@ -146,13 +146,13 @@ export default function SessionPage() {
     setShowCheckout(true);
   };
 
-  // 确认盘点 → 扣库存 → 结束Session
+  // 纭鐩樼偣 鈫?鎵ｅ簱瀛?鈫?缁撴潫Session
   const handleConfirmCheckout = async () => {
     if (!session || !appointment) return;
     if (timerInterval) clearInterval(timerInterval);
     stopCamera();
 
-    // 批量扣库存
+    // 鎵归噺鎵ｅ簱瀛?
     for (const item of checkoutItems) {
       if (item.used <= 0) continue;
       const invItem = await db.inventory.get(item.id);
@@ -186,7 +186,7 @@ export default function SessionPage() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
       <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
 
-      {/* 盘点弹窗 */}
+      {/* 鐩樼偣寮圭獥 */}
       {showCheckout && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ background: '#1e293b', borderRadius: 16, padding: 20, width: '100%', maxWidth: 400 }}>
@@ -201,7 +201,7 @@ export default function SessionPage() {
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f172a', borderRadius: 8, padding: '8px 12px' }}>
                     <span style={{ fontSize: 14 }}>{item.name}</span>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: Math.max(0, i.used - 1) } : i))} style={qtySmallBtn}>−</button>
+                      <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: Math.max(0, i.used - 1) } : i))} style={qtySmallBtn}>-</button>
                       <span style={{ fontSize: 14, fontWeight: 600, minWidth: 24, textAlign: 'center' }}>{item.used}</span>
                       <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: i.used + 1 } : i))} style={qtySmallBtn}>+</button>
                     </div>
@@ -216,42 +216,42 @@ export default function SessionPage() {
               Confirm & Finish
             </button>
             <button onClick={handleSkipCheckout} style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14 }}>
-              Skip — Don't deduct inventory
+              Skip - Do not deduct inventory
             </button>
             <button onClick={() => setShowCheckout(false)} style={{ width: '100%', marginTop: 6, padding: 8, borderRadius: 8, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12 }}>
-              Cancel — Return to session
+              Cancel - Return to session
             </button>
           </div>
         </div>
       )}
 
-      {/* 顶部 */}
+      {/* 椤堕儴 */}
       <div style={{ padding: '12px 16px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <h2 style={{ fontSize: 18, fontWeight: 'bold' }}>Session</h2>
           {cameraReady && <div style={{ width: 8, height: 8, borderRadius: 4, background: '#22c55e', boxShadow: '0 0 4px #22c55e' }} title="Camera ready" />}
         </div>
-        <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>✕</button>
+        <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>X</button>
       </div>
-      {client && <p style={{ color: '#94a3b8', fontSize: 13, padding: '0 16px' }}>{client.name} · {appointment?.type?.replace('_', ' ')}</p>}
+      {client && <p style={{ color: '#94a3b8', fontSize: 13, padding: '0 16px' }}>{client.name} - {appointment?.type?.replace('_', ' ')}</p>}
 
-      {/* 计时器 */}
+      {/* 璁℃椂鍣?*/}
       <div style={{ textAlign: 'center', padding: '12px 0' }}>
         <span style={{ fontSize: 42, fontWeight: 700, fontFamily: 'monospace' }}>{timeDisplay}</span>
         <span style={{ fontSize: 14, color: session.status === 'paused' ? '#fbbf24' : '#34d399', marginLeft: 10 }}>
-          {session.status === 'active' ? '●' : session.status === 'paused' ? '⏸' : ''}
+          {session.status === 'active' ? 'Live' : session.status === 'paused' ? 'Paused' : ''}
         </span>
       </div>
 
-      {/* 按钮 */}
+      {/* 鎸夐挳 */}
       <div style={{ display: 'flex', gap: 8, padding: '0 24px', marginBottom: 12 }}>
-        {session.status === 'active' ? <button onClick={pauseTimer} style={ctrlBtn('#fbbf24')}>⏸ Pause</button> : <button onClick={resumeTimer} style={ctrlBtn('#34d399')}>▶ Resume</button>}
-        <button onClick={toggleVoice} style={ctrlBtn(voiceActive ? '#ef4444' : '#8b5cf6')}>{voiceActive ? '🎤 Voice Off' : '🎤 Voice On'}</button>
+        {session.status === 'active' ? <button onClick={pauseTimer} style={ctrlBtn('#fbbf24')}>Pause</button> : <button onClick={resumeTimer} style={ctrlBtn('#34d399')}>Resume</button>}
+        <button onClick={toggleVoice} style={ctrlBtn(voiceActive ? '#ef4444' : '#8b5cf6')}>{voiceActive ? 'Voice Off' : 'Voice On'}</button>
       </div>
 
       {voiceActive && <p style={{ color: '#a78bfa', fontSize: 13, padding: '0 24px', marginBottom: 6 }}>Say "photo", "timer", "pause", "done"</p>}
 
-      {/* 耗材标记（只标记不扣） */}
+      {/* 鑰楁潗鏍囪锛堝彧鏍囪涓嶆墸锛?*/}
       <div style={{ padding: '0 24px', marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {inventoryItems.filter(i => i.quantity > 0).map(item => (
@@ -263,7 +263,7 @@ export default function SessionPage() {
         </div>
       </div>
 
-      {/* 日志 */}
+      {/* 鏃ュ織 */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px', marginBottom: 12 }}>
         <div style={{ background: '#1e293b', borderRadius: 14, padding: 14, minHeight: 80 }}>
           {messages.length === 0 ? <p style={{ color: '#64748b', fontSize: 13 }}>Session log</p> : messages.map((m, i) => <p key={i} style={{ fontSize: 12, color: '#94a3b8', marginBottom: 2 }}>{m}</p>)}
@@ -287,3 +287,5 @@ const ctrlBtn = (bg: string): React.CSSProperties => ({
 const qtySmallBtn: React.CSSProperties = {
   width: 28, height: 28, borderRadius: 14, border: '1px solid #475569', background: 'transparent', color: 'white', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
 };
+
+

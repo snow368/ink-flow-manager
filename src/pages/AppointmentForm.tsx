@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, type ClientRecord } from '../db';
+import { db, type ClientRecord, type AppointmentRecord } from '../db';
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
@@ -17,6 +17,9 @@ export default function AppointmentForm() {
   const [quickName, setQuickName] = useState('');
   const [quickPhone, setQuickPhone] = useState('');
   const [creatingClient, setCreatingClient] = useState(false);
+  const [initialStatus, setInitialStatus] = useState<'unconfirmed' | 'deposit_paid'>('unconfirmed');
+  const [conflictWarning, setConflictWarning] = useState('');
+  const [nextAvailableTime, setNextAvailableTime] = useState('');
 
   const durationPresets = [
     { label: '30min', value: 30 },
@@ -44,6 +47,68 @@ export default function AppointmentForm() {
 
   useEffect(() => { loadClients(); }, []);
 
+  useEffect(() => {
+    checkConflicts();
+  }, [date, time, duration, customDuration, selectedClient]);
+
+  const toMinutes = (t: string) => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  };
+
+  const toTimeString = (mins: number) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
+  const hasOverlap = (aStart: number, aEnd: number, bStart: number, bEnd: number) => aStart < bEnd && bStart < aEnd;
+
+  const checkConflicts = async () => {
+    const finalDuration = customDuration ? parseInt(customDuration, 10) : duration;
+    if (!time || !finalDuration || finalDuration < 5) {
+      setConflictWarning('');
+      setNextAvailableTime('');
+      return;
+    }
+
+    const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
+    const sameDay = await db.appointments.where('date').equals(date).toArray();
+    const sameArtist = sameDay.filter(a => a.artistId === artistId && a.status !== 'cancelled');
+    const sorted = [...sameArtist].sort((a, b) => a.time.localeCompare(b.time));
+
+    const newStart = toMinutes(time);
+    const newEnd = newStart + finalDuration;
+    const conflict = sorted.find(a => {
+      const start = toMinutes(a.time);
+      const end = start + a.duration;
+      return hasOverlap(newStart, newEnd, start, end);
+    });
+
+    if (!conflict) {
+      setConflictWarning('');
+      setNextAvailableTime('');
+      return;
+    }
+
+    setConflictWarning(`Time conflict with ${conflict.time} appointment.`);
+    let candidate = newStart + 15;
+    const dayEnd = 22 * 60;
+    while (candidate + finalDuration <= dayEnd) {
+      const blocked = sorted.some(a => {
+        const start = toMinutes(a.time);
+        const end = start + a.duration;
+        return hasOverlap(candidate, candidate + finalDuration, start, end);
+      });
+      if (!blocked) {
+        setNextAvailableTime(toTimeString(candidate));
+        return;
+      }
+      candidate += 15;
+    }
+    setNextAvailableTime('');
+  };
+
   const handleQuickCreateClient = async () => {
     if (!quickName.trim() || creatingClient) return;
     setCreatingClient(true);
@@ -67,7 +132,7 @@ export default function AppointmentForm() {
     try {
       const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
       const id = 'appt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, status: 'unconfirmed', waiverCompleted: false, createdAt: Date.now() });
+      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, status: initialStatus, waiverCompleted: false, createdAt: Date.now() });
       navigate('/today');
     } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
     finally { setSaving(false); }
@@ -85,7 +150,7 @@ export default function AppointmentForm() {
   const showQuickCreate = !loadingClients && clients.length === 0;
 
   return (
-    <div style={{ padding: 24, color: 'white' }}>
+    <div style={{ padding: 24, color: 'white', paddingBottom: 110 }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>New Appointment</h2>
       {error && <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}><p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p></div>}
 
@@ -139,7 +204,30 @@ export default function AppointmentForm() {
           {/* 预约类型 */}
           <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>{appointmentTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
 
-          <button onClick={handleSave} disabled={saving || !selectedClient} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : 'Create Appointment'}</button>
+          <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Deposit Status</p>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+            <button onClick={() => setInitialStatus('unconfirmed')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'unconfirmed' ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              Pending Deposit
+            </button>
+            <button onClick={() => setInitialStatus('deposit_paid')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'deposit_paid' ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              Deposit Paid
+            </button>
+          </div>
+
+          {conflictWarning && (
+            <div style={{ background: '#7c2d12', border: '1px solid #ea580c', color: '#fed7aa', borderRadius: 10, padding: 10, marginBottom: 12 }}>
+              <p style={{ fontSize: 13 }}>{conflictWarning}</p>
+              {nextAvailableTime && (
+                <button onClick={() => setTime(nextAvailableTime)} style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: '#ea580c', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  Use next available: {nextAvailableTime}
+                </button>
+              )}
+            </div>
+          )}
+
+          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px)', background: 'linear-gradient(to top, #0f172a 80%, rgba(15,23,42,0.2))' }}>
+            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : 'Create Appointment'}</button>
+          </div>
         </>
       )}
     </div>

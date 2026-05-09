@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type SessionRecord, type AppointmentRecord, type ClientRecord } from '../db';
 
@@ -28,7 +28,7 @@ export default function Portfolio() {
 
       {sessions.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: 60 }}>
-          <p style={{ fontSize: 48, marginBottom: 16 }}>📸</p>
+          <p style={{ fontSize: 48, marginBottom: 16 }}>No Photos</p>
           <p style={{ fontSize: 16, color: '#94a3b8' }}>No session photos yet</p>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 8 }}>
             Complete a session with photos to see them here
@@ -45,10 +45,9 @@ export default function Portfolio() {
                 </span>
               </p>
               <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>
-                {new Date(session.startedAt).toLocaleDateString()} · {session.actualDuration}min · {session.photos.length} photos
+                {new Date(session.startedAt).toLocaleDateString()} - {session.actualDuration}min - {session.photos.length} photos
               </p>
 
-              {/* 照片网格 */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {session.photos.slice(0, 6).map((photo, i) => (
                   <div key={i} style={{ borderRadius: 8, overflow: 'hidden', aspectRatio: '1/1', background: '#0f172a' }}>
@@ -57,7 +56,6 @@ export default function Portfolio() {
                 ))}
               </div>
 
-              {/* 生成社媒草稿按钮 */}
               {session.photos.length >= 2 && (
                 <button
                   onClick={() => navigate(`/social-draft?sessionId=${session.id}`)}
@@ -67,7 +65,7 @@ export default function Portfolio() {
                     fontSize: 14, fontWeight: 600,
                   }}
                 >
-                  🎬 Generate Reel from {session.photos.length} photos
+                  Generate Reel from {session.photos.length} photos
                 </button>
               )}
             </div>

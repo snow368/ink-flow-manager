@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collectDeviceFingerprint, checkDeviceBinding, checkIPRegistrationLimit, incrementIPRegistrationCount } from '../lib/fingerprint';
 import { db } from '../db';
@@ -13,24 +13,36 @@ export default function Register() {
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'artist'|'owner'|'staff'|'pro'|'plus'>('artist');
+  const [role, setRole] = useState<'artist' | 'owner' | 'staff' | 'pro' | 'plus'>('artist');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     async function check() {
       const fp = await collectDeviceFingerprint();
       setDeviceId(fp.hash);
+
       if (mode === 'login') {
         const boundUser = await checkDeviceBinding(fp.hash);
-        if (boundUser) { localStorage.setItem('inkflow_current_user', boundUser); navigate('/today', { replace: true }); return; }
+        if (boundUser) {
+          localStorage.setItem('inkflow_current_user', boundUser);
+          navigate('/today', { replace: true });
+          return;
+        }
       }
+
       if (mode === 'register') {
         const bound = await checkDeviceBinding(fp.hash);
-        if (bound) { setError('This device is already registered. Switch to login.'); return; }
+        if (bound) {
+          setError('This device is already registered. Switch to login.');
+          return;
+        }
         const ipCheck = checkIPRegistrationLimit();
-        if (!ipCheck.allowed) { setError('Registration limit reached on this network'); }
+        if (!ipCheck.allowed) {
+          setError('Registration limit reached on this network.');
+        }
       }
     }
+
     check();
   }, [mode, navigate]);
 
@@ -43,9 +55,14 @@ export default function Register() {
         await db.users.update(user.id, { deviceId });
         localStorage.setItem('inkflow_current_user', user.id);
         navigate('/today', { replace: true });
-      } else { setError('No account found with this email'); }
-    } catch { setError('Login failed'); }
-    finally { setSubmitting(false); }
+      } else {
+        setError('No account found with this email.');
+      }
+    } catch {
+      setError('Login failed.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleRegister = async () => {
@@ -55,36 +72,59 @@ export default function Register() {
       const now = Date.now();
       const userId = 'user_' + now + '_' + Math.random().toString(36).slice(2, 8);
       await db.users.add({
-        id: userId, email, name, role, deviceId,
-        verified: false, createdAt: now,
+        id: userId,
+        email,
+        name,
+        role,
+        deviceId,
+        verified: false,
+        createdAt: now,
       });
       localStorage.setItem('inkflow_current_user', userId);
       incrementIPRegistrationCount();
 
-      // 处理邀请码
       if (refCode) {
         await processReferralOnRegister(userId, refCode);
       }
 
       navigate('/today?welcome=1', { replace: true });
-    } catch { setError('Registration failed'); }
-    finally { setSubmitting(false); }
+    } catch {
+      setError('Registration failed.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div style={{ padding: 24, color: 'white' }}>
-      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 24 }}>{mode === 'register' ? 'Register InkFlow' : 'Login'}</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 24 }}>
+        {mode === 'register' ? 'Register InkFlow' : 'Login'}
+      </h2>
 
       {refCode && mode === 'register' && (
         <div style={{ background: '#14532d', padding: 10, borderRadius: 10, marginBottom: 16 }}>
-          <p style={{ fontSize: 13, color: '#86efac' }}>🎉 You were invited! Both you and your friend will get free Pro after verification.</p>
+          <p style={{ fontSize: 13, color: '#86efac' }}>
+            You were invited. Both accounts receive free Pro time after verification.
+          </p>
         </div>
       )}
 
-      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 16 }}>Device ID: {deviceId || 'Collecting...'}</p>
-      {error && <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}><p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p></div>}
-      {mode === 'register' && <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />}
+      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 16 }}>
+        Device ID: {deviceId || 'Collecting...'}
+      </p>
+
+      {error && (
+        <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}>
+          <p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p>
+        </div>
+      )}
+
+      {mode === 'register' && (
+        <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+      )}
+
       <input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+
       {mode === 'register' && (
         <select value={role} onChange={e => setRole(e.target.value as any)} style={{ ...inputStyle, marginBottom: 16 }}>
           <option value="artist">Artist (Free)</option>
@@ -94,10 +134,24 @@ export default function Register() {
           <option value="staff">Staff</option>
         </select>
       )}
-      <button onClick={mode === 'register' ? handleRegister : handleLogin} disabled={submitting || !email || (mode === 'register' && !name)}
-        style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: (!email || (mode === 'register' && !name)) ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600 }}>
+
+      <button
+        onClick={mode === 'register' ? handleRegister : handleLogin}
+        disabled={submitting || !email || (mode === 'register' && !name)}
+        style={{
+          width: '100%',
+          padding: 14,
+          borderRadius: 12,
+          border: 'none',
+          background: (!email || (mode === 'register' && !name)) ? '#4b5563' : '#e11d48',
+          color: 'white',
+          fontSize: 16,
+          fontWeight: 600,
+        }}
+      >
         {submitting ? 'Processing...' : mode === 'register' ? 'Register' : 'Login'}
       </button>
+
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 14, color: '#94a3b8' }}>
         {mode === 'register' ? (
           <>Already have an account? <span onClick={() => { setMode('login'); setError(''); }} style={{ color: '#60a5fa', textDecoration: 'underline', cursor: 'pointer' }}>Login</span></>
@@ -110,7 +164,14 @@ export default function Register() {
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '12px 16px', marginBottom: 12,
-  borderRadius: 12, border: '1px solid #334155', background: '#1e293b',
-  color: 'white', fontSize: 16, outline: 'none', boxSizing: 'border-box',
+  width: '100%',
+  padding: '12px 16px',
+  marginBottom: 12,
+  borderRadius: 12,
+  border: '1px solid #334155',
+  background: '#1e293b',
+  color: 'white',
+  fontSize: 16,
+  outline: 'none',
+  boxSizing: 'border-box',
 };

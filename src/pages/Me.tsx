@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
 import { seedDemoData, resetDatabase } from '../lib/devTools';
@@ -92,7 +92,7 @@ export default function Me() {
         <p style={{ fontSize: 14, color: '#94a3b8' }}>Role: {user.role === 'artist' ? 'Artist (Free)' : user.role === 'owner' ? 'Owner' : user.role === 'pro' ? 'Pro' : user.role === 'plus' ? 'Plus' : 'Staff'}</p>
       </div>
 
-      {/* 邀请入口 */}
+      {/* Referral Entry */}
       {user.verified && (
         <button onClick={() => navigate('/referral')}
           style={{
@@ -102,12 +102,12 @@ export default function Me() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}>
           <div>
-            <p style={{ fontSize: 15 }}>👥 Invite Friends, Get Free Pro</p>
+            <p style={{ fontSize: 15 }}>Invite Friends, Get Free Pro</p>
             <p style={{ fontSize: 12, color: '#c4b5fd', marginTop: 2 }}>
-              {referralCount} verified · {proDays}d Pro earned
+              {referralCount} verified - {proDays}d Pro earned
             </p>
           </div>
-          <span style={{ fontSize: 18 }}>→</span>
+          <span style={{ fontSize: 18 }}>{'>'}</span>
         </button>
       )}
 
@@ -130,27 +130,27 @@ export default function Me() {
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/inventory')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
-          📦 Inventory Management
+          Inventory Management
         </button>
       </div>
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 8 }}>Manual Backup</p>
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <button onClick={handleExport} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600 }}>📤 Export</button>
-          <button onClick={() => fileInputRef.current?.click()} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#334155', color: 'white', fontSize: 13, fontWeight: 600 }}>📥 Import</button>
+          <button onClick={handleExport} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600 }}>Export</button>
+          <button onClick={() => fileInputRef.current?.click()} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#334155', color: 'white', fontSize: 13, fontWeight: 600 }}>Import</button>
           <input type="file" accept=".json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleImport} />
         </div>
       </div>
 
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => setShowDevTools(!showDevTools)} style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px dashed #475569', background: 'transparent', color: '#64748b', fontSize: 13 }}>
-          {showDevTools ? 'Hide Dev Tools' : '🛠 Dev Tools'}
+          {showDevTools ? 'Hide Dev Tools' : 'Dev Tools'}
         </button>
         {showDevTools && (
           <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button onClick={async () => { await seedDemoData(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600 }}>📦 Fill Demo Data</button>
-            <button onClick={async () => { await resetDatabase(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 14, fontWeight: 600 }}>🔥 Reset All Data</button>
+            <button onClick={async () => { await seedDemoData(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600 }}>Fill Demo Data</button>
+            <button onClick={async () => { await resetDatabase(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 14, fontWeight: 600 }}>Reset All Data</button>
           </div>
         )}
       </div>
@@ -161,3 +161,4 @@ export default function Me() {
     </div>
   );
 }
+
