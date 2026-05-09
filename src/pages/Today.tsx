@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, type UserRecord, type AppointmentRecord } from '../db';
+import { db, type UserRecord, type AppointmentRecord, type LeadRecord } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { THEME } from '../lib/theme';
 
@@ -13,6 +13,7 @@ export default function Today() {
   const [dragOverDate, setDragOverDate] = useState('');
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string })[]>>(new Map());
+  const [dueLeads, setDueLeads] = useState<LeadRecord[]>([]);
   const [conflictModal, setConflictModal] = useState<{
     open: boolean;
     appointmentId: string;
@@ -30,8 +31,19 @@ export default function Today() {
       loadAppointmentsForDate(u, selectedDate);
       loadAppointmentsForWeek(u, selectedDate);
       loadFutureDateCounts(u);
+      loadDueLeads(u);
     });
   }, [navigate, selectedDate]);
+
+  async function loadDueLeads(u: UserRecord) {
+    const artistId = u.artistId || u.id;
+    const now = Date.now();
+    const leads = await db.leads.where('artistId').equals(artistId).toArray();
+    const due = leads
+      .filter(l => !!l.nextFollowUpAt && l.nextFollowUpAt <= now && l.status !== 'won' && l.status !== 'lost')
+      .sort((a, b) => (a.nextFollowUpAt || 0) - (b.nextFollowUpAt || 0));
+    setDueLeads(due);
+  }
 
   async function loadAppointmentsForDate(u: UserRecord, date: string) {
     let query = db.appointments.where('date').equals(date);
@@ -176,6 +188,12 @@ export default function Today() {
     }
   };
 
+  const postponeLeadFollowUp = async (leadId: string, minutes: number) => {
+    const target = Date.now() + minutes * 60 * 1000;
+    await db.leads.update(leadId, { nextFollowUpAt: target });
+    if (user) await loadDueLeads(user);
+  };
+
   const applyMove = async (appointmentId: string, targetDate: string, finalTime: string) => {
     await db.appointments.update(appointmentId, { date: targetDate, time: finalTime });
     updateAppointmentInState(appointmentId, { date: targetDate, time: finalTime });
@@ -258,6 +276,33 @@ export default function Today() {
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
         </div>
+      </div>
+
+      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <p style={{ fontSize: 13, color: '#fca5a5', fontWeight: 700 }}>Must Follow Up Now: {dueLeads.length}</p>
+          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 8, padding: '4px 8px', fontSize: 12, cursor: 'pointer' }}>Open Leads</button>
+        </div>
+        {dueLeads.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#94a3b8' }}>No overdue follow-ups right now.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {dueLeads.slice(0, 5).map(lead => (
+              <div key={lead.id} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700 }}>{lead.name}</p>
+                  <span style={{ fontSize: 11, color: '#fca5a5' }}>{lead.nextFollowUpAt ? new Date(lead.nextFollowUpAt).toLocaleString() : ''}</span>
+                </div>
+                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>{lead.note || lead.changeRequest || 'No detail'}</p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button onClick={() => void postponeLeadFollowUp(lead.id, 24 * 60)} style={smallBtn}>Done +1d</button>
+                  <button onClick={() => void postponeLeadFollowUp(lead.id, 3 * 24 * 60)} style={smallBtn}>Done +3d</button>
+                  <button onClick={() => void postponeLeadFollowUp(lead.id, 7 * 24 * 60)} style={smallBtn}>Done +7d</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: 8, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #1e293b', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -469,5 +514,15 @@ function AppointmentCard({
     </div>
   );
 }
+
+const smallBtn: React.CSSProperties = {
+  border: '1px solid #334155',
+  background: 'transparent',
+  color: '#cbd5e1',
+  borderRadius: 8,
+  padding: '4px 8px',
+  fontSize: 11,
+  cursor: 'pointer',
+};
 
 

@@ -24,6 +24,7 @@ import { db } from './db';
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [dueFollowUpCount, setDueFollowUpCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -46,6 +47,41 @@ export default function App() {
     }
   }, [location.pathname, navigate]);
 
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setDueFollowUpCount(0);
+      return;
+    }
+
+    let stopped = false;
+    const currentUser = localStorage.getItem('inkflow_current_user') || '';
+
+    const loadDueFollowUps = async () => {
+      if (!currentUser) return;
+      const now = Date.now();
+      const leads = await db.leads.where('artistId').equals(currentUser).toArray();
+      if (stopped) return;
+      const due = leads.filter(
+        (l) =>
+          !!l.nextFollowUpAt &&
+          l.nextFollowUpAt <= now &&
+          l.status !== 'won' &&
+          l.status !== 'lost'
+      );
+      setDueFollowUpCount(due.length);
+    };
+
+    void loadDueFollowUps();
+    const timer = window.setInterval(() => {
+      void loadDueFollowUps();
+    }, 60 * 1000);
+
+    return () => {
+      stopped = true;
+      window.clearInterval(timer);
+    };
+  }, [isLoggedIn, location.pathname]);
+
   const tabs = [
     { path: '/today', label: 'Today', icon: Calendar },
     { path: '/clients', label: 'Clients', icon: Users },
@@ -62,6 +98,21 @@ export default function App() {
     <ErrorBoundary>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
         {!isOnline && <OfflineBanner />}
+        {isLoggedIn && dueFollowUpCount > 0 && !location.pathname.startsWith('/leads') && (
+          <div
+            onClick={() => navigate('/leads')}
+            style={{
+              background: '#7f1d1d',
+              color: '#fee2e2',
+              padding: '10px 14px',
+              fontSize: 13,
+              borderBottom: '1px solid #991b1b',
+              cursor: 'pointer',
+            }}
+          >
+            {dueFollowUpCount} follow-up{dueFollowUpCount > 1 ? 's' : ''} due now. Tap to open Leads.
+          </div>
+        )}
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <Routes>
             <Route path="/register" element={<Register />} />
