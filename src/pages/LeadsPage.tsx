@@ -40,6 +40,15 @@ function loadPresets(artistId: string): FollowPreset[] {
   }
 }
 
+function recommendMinutesFromText(text: string): number {
+  const t = text.toLowerCase();
+  if (/tomorrow|明天|tmr/.test(t)) return 24 * 60;
+  if (/next week|下周|monday|周一/.test(t)) return 7 * 24 * 60;
+  if (/later|之后|过几天|3天|three days|few days/.test(t)) return 3 * 24 * 60;
+  if (/urgent|asap|today|今天|马上/.test(t)) return 4 * 60;
+  return 2 * 24 * 60;
+}
+
 export default function LeadsPage() {
   const navigate = useNavigate();
   const [artistId, setArtistId] = useState('');
@@ -54,6 +63,7 @@ export default function LeadsPage() {
   const [followPresets, setFollowPresets] = useState<FollowPreset[]>(DEFAULT_PRESETS);
   const [newPresetLabel, setNewPresetLabel] = useState('');
   const [newPresetDays, setNewPresetDays] = useState('');
+  const [manualFollowByLead, setManualFollowByLead] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -64,7 +74,7 @@ export default function LeadsPage() {
   }, []);
 
   useEffect(() => {
-    loadRevisions();
+    void loadRevisions();
   }, [leads]);
 
   useEffect(() => {
@@ -134,6 +144,21 @@ export default function LeadsPage() {
     const target = Date.now() + minutes * 60 * 1000;
     await db.leads.update(leadId, { nextFollowUpAt: target });
     await refresh();
+  };
+
+  const setFollowUpExact = async (leadId: string) => {
+    const raw = manualFollowByLead[leadId];
+    if (!raw) return;
+    const ts = new Date(raw).getTime();
+    if (!Number.isFinite(ts)) return;
+    await db.leads.update(leadId, { nextFollowUpAt: ts });
+    await refresh();
+  };
+
+  const recommendFollowUp = async (lead: LeadRecord) => {
+    const latestRev = (revisionsByLead.get(lead.id) || [])[0];
+    const text = [latestRev?.note, latestRev?.changeRequest, lead.note, lead.changeRequest].filter(Boolean).join(' ');
+    await setFollowUp(lead.id, recommendMinutesFromText(text));
   };
 
   const clearFollowUp = async (leadId: string) => {
@@ -215,6 +240,15 @@ export default function LeadsPage() {
   };
 
   const filtered = useMemo(() => filter === 'all' ? leads : leads.filter(l => l.status === filter), [leads, filter]);
+  const dueToday = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const end = start + 24 * 60 * 60 * 1000;
+    return leads
+      .filter(l => !!l.nextFollowUpAt && l.nextFollowUpAt >= start && l.nextFollowUpAt < end)
+      .sort((a, b) => (a.nextFollowUpAt || 0) - (b.nextFollowUpAt || 0));
+  }, [leads]);
+
   const intakeLink = `${window.location.origin}/intake/${artistId}`;
   const getReviseLink = (leadId: string) => `${window.location.origin}/intake/revise/${leadId}`;
 
@@ -231,6 +265,25 @@ export default function LeadsPage() {
         <button onClick={() => navigator.clipboard.writeText(intakeLink)} style={{ border: 'none', borderRadius: 8, background: '#334155', color: 'white', padding: '8px 12px', cursor: 'pointer' }}>Copy Intake Link</button>
       </div>
 
+      <div style={{ background: '#3f1d1d', border: '1px solid #7f1d1d', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+        <p style={{ fontSize: 13, color: '#fecaca', fontWeight: 700, marginBottom: 8 }}>Due Today: {dueToday.length}</p>
+        {dueToday.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#fca5a5' }}>No follow-ups due today.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {dueToday.slice(0, 5).map(lead => (
+              <button
+                key={lead.id}
+                onClick={() => document.getElementById(`lead-${lead.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                style={{ ...btnStyle, textAlign: 'left', color: '#fecaca', borderColor: '#7f1d1d' }}
+              >
+                {lead.name} - {lead.nextFollowUpAt ? new Date(lead.nextFollowUpAt).toLocaleTimeString() : ''}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Follow-up presets (artist-defined)</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
@@ -242,21 +295,8 @@ export default function LeadsPage() {
           ))}
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 80px', gap: 6 }}>
-          <input
-            placeholder="Preset name (e.g. Next week)"
-            value={newPresetLabel}
-            onChange={e => setNewPresetLabel(e.target.value)}
-            style={{ ...textAreaStyle, height: 36, marginBottom: 0 }}
-          />
-          <input
-            type="number"
-            min={1}
-            step={1}
-            placeholder="Days"
-            value={newPresetDays}
-            onChange={e => setNewPresetDays(e.target.value)}
-            style={{ ...textAreaStyle, height: 36, marginBottom: 0 }}
-          />
+          <input placeholder="Preset name (e.g. Next week)" value={newPresetLabel} onChange={e => setNewPresetLabel(e.target.value)} style={{ ...textAreaStyle, height: 36, marginBottom: 0 }} />
+          <input type="number" min={1} step={1} placeholder="Days" value={newPresetDays} onChange={e => setNewPresetDays(e.target.value)} style={{ ...textAreaStyle, height: 36, marginBottom: 0 }} />
           <button onClick={addFollowPreset} style={{ ...btnStyle, height: 36 }}>Add</button>
         </div>
       </div>
@@ -275,31 +315,15 @@ export default function LeadsPage() {
           const draftImages = draftImagesByLead[lead.id] || [];
           const isDue = !!lead.nextFollowUpAt && lead.nextFollowUpAt <= Date.now();
           return (
-            <div key={lead.id} style={{ background: '#1e293b', border: `1px solid ${isDue ? '#dc2626' : '#334155'}`, borderRadius: 12, padding: 12 }}>
+            <div id={`lead-${lead.id}`} key={lead.id} style={{ background: '#1e293b', border: `1px solid ${isDue ? '#dc2626' : '#334155'}`, borderRadius: 12, padding: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <p style={{ fontSize: 15, fontWeight: 700 }}>{lead.name}</p>
                 <span style={{ background: `${STATUS_COLORS[lead.status]}33`, color: STATUS_COLORS[lead.status], borderRadius: 8, padding: '2px 8px', fontSize: 11 }}>{lead.status}</span>
               </div>
-              {lead.finalRevisionVersion && (
-                <p style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>
-                  Final Revision: v{lead.finalRevisionVersion}
-                </p>
-              )}
-              {lead.nextFollowUpAt && (
-                <p style={{ fontSize: 11, color: isDue ? '#fca5a5' : '#93c5fd', marginBottom: 4 }}>
-                  Follow-up: {isDue ? 'Due now' : 'Scheduled'} at {new Date(lead.nextFollowUpAt).toLocaleString()}
-                </p>
-              )}
+              {lead.finalRevisionVersion && <p style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>Final Revision: v{lead.finalRevisionVersion}</p>}
+              {lead.nextFollowUpAt && <p style={{ fontSize: 11, color: isDue ? '#fca5a5' : '#93c5fd', marginBottom: 4 }}>Follow-up: {isDue ? 'Due now' : 'Scheduled'} at {new Date(lead.nextFollowUpAt).toLocaleString()}</p>}
               <p style={{ fontSize: 12, color: '#94a3b8' }}>{lead.phone || 'No phone'} - {lead.source}</p>
               <p style={{ fontSize: 12, color: '#cbd5e1', marginTop: 4 }}>{lead.note || lead.changeRequest || 'No details'}</p>
-              {lead.allergies && lead.allergies.length > 0 && (
-                <p style={{ fontSize: 12, color: '#fca5a5', marginTop: 4 }}>Allergy Alert ({lead.allergySeverity || 'low'}): {lead.allergies.join(', ')}</p>
-              )}
-              {lead.referenceImages && lead.referenceImages.length > 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginTop: 6 }}>
-                  {lead.referenceImages.slice(0, 4).map((img, i) => <img key={i} src={img} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 6 }} />)}
-                </div>
-              )}
 
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                 <button onClick={() => updateStatus(lead.id, 'contacted')} style={btnStyle}>Contacted</button>
@@ -310,14 +334,19 @@ export default function LeadsPage() {
               </div>
 
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-                {followPresets.map(p => (
-                  <button key={p.id} onClick={() => void setFollowUp(lead.id, p.minutes)} style={{ ...btnStyle, padding: '5px 8px' }}>
-                    {p.label}
-                  </button>
-                ))}
-                {lead.nextFollowUpAt && (
-                  <button onClick={() => void clearFollowUp(lead.id)} style={{ ...btnStyle, padding: '5px 8px', color: '#fca5a5' }}>Clear Follow-up</button>
-                )}
+                {followPresets.map(p => <button key={p.id} onClick={() => void setFollowUp(lead.id, p.minutes)} style={{ ...btnStyle, padding: '5px 8px' }}>{p.label}</button>)}
+                <button onClick={() => void recommendFollowUp(lead)} style={{ ...btnStyle, padding: '5px 8px', color: '#93c5fd' }}>AI Recommend</button>
+                {lead.nextFollowUpAt && <button onClick={() => void clearFollowUp(lead.id)} style={{ ...btnStyle, padding: '5px 8px', color: '#fca5a5' }}>Clear Follow-up</button>}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px', gap: 6, marginTop: 8 }}>
+                <input
+                  type="datetime-local"
+                  value={manualFollowByLead[lead.id] || ''}
+                  onChange={e => setManualFollowByLead(prev => ({ ...prev, [lead.id]: e.target.value }))}
+                  style={{ ...textAreaStyle, height: 36, marginBottom: 0 }}
+                />
+                <button onClick={() => void setFollowUpExact(lead.id)} style={{ ...btnStyle, height: 36 }}>Set Exact</button>
               </div>
 
               <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #334155' }}>
@@ -327,24 +356,9 @@ export default function LeadsPage() {
                   <button onClick={() => setQuickActionByLead(prev => ({ ...prev, [lead.id]: 'awaiting_confirmation' }))} style={{ ...chipStyle, padding: '11px 12px', fontSize: 13, background: (quickActionByLead[lead.id] || 'contacted') === 'awaiting_confirmation' ? '#334155' : 'transparent' }}>Awaiting Confirm</button>
                   <button onClick={() => setQuickActionByLead(prev => ({ ...prev, [lead.id]: 'booked_slot' }))} style={{ ...chipStyle, padding: '11px 12px', fontSize: 13, background: (quickActionByLead[lead.id] || 'contacted') === 'booked_slot' ? '#334155' : 'transparent' }}>Booked Slot</button>
                 </div>
-                <input
-                  placeholder="One-line takeaway (optional)"
-                  value={draftNoteByLead[lead.id] || ''}
-                  onChange={e => setDraftNoteByLead(prev => ({ ...prev, [lead.id]: e.target.value }))}
-                  style={{ ...textAreaStyle, height: 36 }}
-                />
-                <textarea
-                  placeholder="What changed this round? (optional)"
-                  value={draftChangeByLead[lead.id] || ''}
-                  onChange={e => setDraftChangeByLead(prev => ({ ...prev, [lead.id]: e.target.value }))}
-                  rows={1}
-                  style={textAreaStyle}
-                />
-                <select
-                  value={draftChannelByLead[lead.id] || 'whatsapp'}
-                  onChange={e => setDraftChannelByLead(prev => ({ ...prev, [lead.id]: e.target.value as LeadRevisionRecord['channel'] }))}
-                  style={{ ...textAreaStyle, height: 42, marginBottom: 8, fontSize: 13 }}
-                >
+                <input placeholder="One-line takeaway (optional)" value={draftNoteByLead[lead.id] || ''} onChange={e => setDraftNoteByLead(prev => ({ ...prev, [lead.id]: e.target.value }))} style={{ ...textAreaStyle, height: 36 }} />
+                <textarea placeholder="What changed this round? (optional)" value={draftChangeByLead[lead.id] || ''} onChange={e => setDraftChangeByLead(prev => ({ ...prev, [lead.id]: e.target.value }))} rows={1} style={textAreaStyle} />
+                <select value={draftChannelByLead[lead.id] || 'whatsapp'} onChange={e => setDraftChannelByLead(prev => ({ ...prev, [lead.id]: e.target.value as LeadRevisionRecord['channel'] }))} style={{ ...textAreaStyle, height: 42, marginBottom: 8, fontSize: 13 }}>
                   <option value="whatsapp">WhatsApp</option>
                   <option value="instagram">Instagram</option>
                   <option value="facebook">Facebook</option>
@@ -353,41 +367,19 @@ export default function LeadsPage() {
                   <option value="other">Other</option>
                 </select>
                 <input type="file" accept="image/*" multiple onChange={e => void handleDraftFiles(lead.id, e.target.files)} style={{ marginBottom: 6 }} />
-                {draftImages.length > 0 && (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 6 }}>
-                    {draftImages.map((img, i) => <img key={i} src={img} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 6 }} />)}
-                  </div>
-                )}
+                {draftImages.length > 0 && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 6 }}>{draftImages.map((img, i) => <img key={i} src={img} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 6 }} />)}</div>}
                 <button onClick={() => void addRevision(lead.id)} style={{ ...btnStyle, width: '100%', padding: '11px 12px', background: '#334155', color: 'white', fontSize: 13, fontWeight: 700 }}>Save Quick Log</button>
 
                 {revisions.length > 0 && (
                   <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {revisions.map(rev => (
                       <div key={rev.id} style={{ background: '#111827', border: '1px solid #243244', borderRadius: 8, padding: 8 }}>
-                        <p style={{ fontSize: 11, color: '#93c5fd', marginBottom: 3 }}>
-                          v{rev.version} - {rev.actor}
-                          {rev.channel ? ` via ${rev.channel}` : ''}
-                          {' - '}{new Date(rev.createdAt).toLocaleString()}
-                        </p>
+                        <p style={{ fontSize: 11, color: '#93c5fd', marginBottom: 3 }}>v{rev.version} - {rev.actor}{rev.channel ? ` via ${rev.channel}` : ''}{' - '}{new Date(rev.createdAt).toLocaleString()}</p>
                         {rev.note && <p style={{ fontSize: 12, color: '#cbd5e1' }}>{rev.note}</p>}
                         {rev.changeRequest && <p style={{ fontSize: 12, color: '#fda4af', marginTop: 2 }}>Change: {rev.changeRequest}</p>}
-                        {rev.referenceImages && rev.referenceImages.length > 0 && (
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginTop: 6 }}>
-                            {rev.referenceImages.slice(0, 4).map((img, i) => <img key={i} src={img} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 6 }} />)}
-                          </div>
-                        )}
                         <button
                           onClick={() => void setFinalRevision(lead.id, rev)}
-                          style={{
-                            marginTop: 6,
-                            border: '1px solid #334155',
-                            borderRadius: 6,
-                            background: lead.finalRevisionId === rev.id ? '#166534' : 'transparent',
-                            color: lead.finalRevisionId === rev.id ? '#86efac' : '#cbd5e1',
-                            padding: '5px 8px',
-                            fontSize: 11,
-                            cursor: 'pointer',
-                          }}
+                          style={{ marginTop: 6, border: '1px solid #334155', borderRadius: 6, background: lead.finalRevisionId === rev.id ? '#166534' : 'transparent', color: lead.finalRevisionId === rev.id ? '#86efac' : '#cbd5e1', padding: '5px 8px', fontSize: 11, cursor: 'pointer' }}
                         >
                           {lead.finalRevisionId === rev.id ? 'Final Selected' : 'Set as Final'}
                         </button>
