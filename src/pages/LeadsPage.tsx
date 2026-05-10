@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+锘縤mport { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type LeadRecord, type LeadRevisionRecord } from '../db';
 
@@ -42,10 +42,10 @@ function loadPresets(artistId: string): FollowPreset[] {
 
 function recommendMinutesFromText(text: string): number {
   const t = text.toLowerCase();
-  if (/tomorrow|明天|tmr/.test(t)) return 24 * 60;
-  if (/next week|下周|monday|周一/.test(t)) return 7 * 24 * 60;
-  if (/later|之后|过几天|3天|three days|few days/.test(t)) return 3 * 24 * 60;
-  if (/urgent|asap|today|今天|马上/.test(t)) return 4 * 60;
+  if (/tomorrow|鏄庡ぉ|tmr/.test(t)) return 24 * 60;
+  if (/next week|涓嬪懆|monday|鍛ㄤ竴/.test(t)) return 7 * 24 * 60;
+  if (/later|涔嬪悗|杩囧嚑澶﹟3澶﹟three days|few days/.test(t)) return 3 * 24 * 60;
+  if (/urgent|asap|today|浠婂ぉ|椹笂/.test(t)) return 4 * 60;
   return 2 * 24 * 60;
 }
 
@@ -253,22 +253,25 @@ export default function LeadsPage() {
   const getReviseLink = (leadId: string) => `${window.location.origin}/intake/revise/${leadId}`;
 
   return (
-    <div style={{ padding: 24, color: 'white', background: '#0f172a', minHeight: '100dvh' }}>
+    <div style={{ padding: 20, color: 'white', background: '#0f172a', minHeight: '100dvh', maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800 }}>Leads</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>Leads</h2>
         <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
       </div>
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-        <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Your intake link</p>
-        <div style={{ background: '#0b1220', border: '1px solid #334155', borderRadius: 10, padding: 10, fontSize: 12, wordBreak: 'break-all', marginBottom: 8 }}>{intakeLink}</div>
+        <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Your intake link</p>
+        <div style={{ background: '#0b1220', border: '1px solid #334155', borderRadius: 10, padding: 10, fontSize: 12,
+  fontWeight: 600, wordBreak: 'break-all', marginBottom: 8 }}>{intakeLink}</div>
         <button onClick={() => navigator.clipboard.writeText(intakeLink)} style={{ border: 'none', borderRadius: 8, background: '#334155', color: 'white', padding: '8px 12px', cursor: 'pointer' }}>Copy Intake Link</button>
       </div>
 
       <div style={{ background: '#3f1d1d', border: '1px solid #7f1d1d', borderRadius: 12, padding: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 13, color: '#fecaca', fontWeight: 700, marginBottom: 8 }}>Due Today: {dueToday.length}</p>
         {dueToday.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#fca5a5' }}>No follow-ups due today.</p>
+          <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#fca5a5' }}>No follow-ups due today.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {dueToday.slice(0, 5).map(lead => (
@@ -285,7 +288,8 @@ export default function LeadsPage() {
       </div>
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-        <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Follow-up presets (artist-defined)</p>
+        <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#94a3b8', marginBottom: 8 }}>Follow-up presets (artist-defined)</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
           {followPresets.map(p => (
             <span key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#0f172a', border: '1px solid #334155', borderRadius: 999, padding: '5px 8px', fontSize: 12 }}>
@@ -322,8 +326,10 @@ export default function LeadsPage() {
               </div>
               {lead.finalRevisionVersion && <p style={{ fontSize: 11, color: '#86efac', marginBottom: 4 }}>Final Revision: v{lead.finalRevisionVersion}</p>}
               {lead.nextFollowUpAt && <p style={{ fontSize: 11, color: isDue ? '#fca5a5' : '#93c5fd', marginBottom: 4 }}>Follow-up: {isDue ? 'Due now' : 'Scheduled'} at {new Date(lead.nextFollowUpAt).toLocaleString()}</p>}
-              <p style={{ fontSize: 12, color: '#94a3b8' }}>{lead.phone || 'No phone'} - {lead.source}</p>
-              <p style={{ fontSize: 12, color: '#cbd5e1', marginTop: 4 }}>{lead.note || lead.changeRequest || 'No details'}</p>
+              <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#94a3b8' }}>{lead.phone || 'No phone'} - {lead.source}</p>
+              <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#cbd5e1', marginTop: 4 }}>{lead.note || lead.changeRequest || 'No details'}</p>
 
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                 <button onClick={() => updateStatus(lead.id, 'contacted')} style={btnStyle}>Contacted</button>
@@ -350,7 +356,8 @@ export default function LeadsPage() {
               </div>
 
               <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #334155' }}>
-                <p style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>Quick Log (15-sec mode)</p>
+                <p style={{ fontSize: 12,
+  fontWeight: 700, marginBottom: 6 }}>Quick Log (15-sec mode)</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6, marginBottom: 8 }}>
                   <button onClick={() => setQuickActionByLead(prev => ({ ...prev, [lead.id]: 'contacted' }))} style={{ ...chipStyle, padding: '11px 12px', fontSize: 13, background: (quickActionByLead[lead.id] || 'contacted') === 'contacted' ? '#334155' : 'transparent' }}>Contacted</button>
                   <button onClick={() => setQuickActionByLead(prev => ({ ...prev, [lead.id]: 'awaiting_confirmation' }))} style={{ ...chipStyle, padding: '11px 12px', fontSize: 13, background: (quickActionByLead[lead.id] || 'contacted') === 'awaiting_confirmation' ? '#334155' : 'transparent' }}>Awaiting Confirm</button>
@@ -375,8 +382,10 @@ export default function LeadsPage() {
                     {revisions.map(rev => (
                       <div key={rev.id} style={{ background: '#111827', border: '1px solid #243244', borderRadius: 8, padding: 8 }}>
                         <p style={{ fontSize: 11, color: '#93c5fd', marginBottom: 3 }}>v{rev.version} - {rev.actor}{rev.channel ? ` via ${rev.channel}` : ''}{' - '}{new Date(rev.createdAt).toLocaleString()}</p>
-                        {rev.note && <p style={{ fontSize: 12, color: '#cbd5e1' }}>{rev.note}</p>}
-                        {rev.changeRequest && <p style={{ fontSize: 12, color: '#fda4af', marginTop: 2 }}>Change: {rev.changeRequest}</p>}
+                        {rev.note && <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#cbd5e1' }}>{rev.note}</p>}
+                        {rev.changeRequest && <p style={{ fontSize: 12,
+  fontWeight: 600, color: '#fda4af', marginTop: 2 }}>Change: {rev.changeRequest}</p>}
                         <button
                           onClick={() => void setFinalRevision(lead.id, rev)}
                           style={{ marginTop: 6, border: '1px solid #334155', borderRadius: 6, background: lead.finalRevisionId === rev.id ? '#166534' : 'transparent', color: lead.finalRevisionId === rev.id ? '#86efac' : '#cbd5e1', padding: '5px 8px', fontSize: 11, cursor: 'pointer' }}
@@ -401,14 +410,15 @@ const btnStyle: React.CSSProperties = {
   background: 'transparent',
   color: '#cbd5e1',
   borderRadius: 8,
-  padding: '6px 9px',
+  padding: '8px 11px',
   cursor: 'pointer',
   fontSize: 12,
+  fontWeight: 600,
 };
 
 const textAreaStyle: React.CSSProperties = {
   width: '100%',
-  padding: '10px 12px',
+  padding: '11px 12px',
   marginBottom: 6,
   borderRadius: 8,
   border: '1px solid #334155',
@@ -426,3 +436,6 @@ const chipStyle: React.CSSProperties = {
   fontSize: 11,
   cursor: 'pointer',
 };
+
+
+

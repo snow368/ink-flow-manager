@@ -266,9 +266,9 @@ export default function Today() {
   if (!user) return <div style={{ padding: 24, color: 'white' }}>Loading...</div>;
 
   return (
-    <div style={{ padding: 24, color: THEME.text.primary, paddingBottom: 12 }}>
+    <div style={{ padding: 20, color: THEME.text.primary, paddingBottom: 12, maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 'bold' }}>{isToday ? 'Today' : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? 'Today' : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
             <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>Day</button>
