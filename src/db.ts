@@ -147,6 +147,7 @@ export interface LeadRecord {
   phone?: string;
   email?: string;
   source: 'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other';
+  creativeId?: string;
   status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
   bodyPart?: string;
   style?: string;

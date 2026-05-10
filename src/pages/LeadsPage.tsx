@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, type LeadRecord, type LeadRevisionRecord } from '../db';
+import { db, type LeadRecord, type LeadRevisionRecord, type PortfolioRecord } from '../db';
 
 type FollowPreset = {
   id: string;
@@ -49,6 +49,20 @@ function recommendMinutesFromText(text: string): number {
   return 2 * 24 * 60;
 }
 
+function parseMoney(input?: string): number {
+  if (!input) return 0;
+  const num = Number(String(input).replace(/[^0-9.]/g, ''));
+  return Number.isFinite(num) ? num : 0;
+}
+
+function spendKey(artistId: string, days: 7 | 30) {
+  return `inkflow_roi_spend_${artistId}_${days}`;
+}
+
+function creativeSpendKey(artistId: string, days: 7 | 30) {
+  return `inkflow_roi_creative_spend_${artistId}_${days}`;
+}
+
 export default function LeadsPage() {
   const navigate = useNavigate();
   const [artistId, setArtistId] = useState('');
@@ -65,6 +79,10 @@ export default function LeadsPage() {
   const [newPresetDays, setNewPresetDays] = useState('');
   const [manualFollowByLead, setManualFollowByLead] = useState<Record<string, string>>({});
   const [statsWindowDays, setStatsWindowDays] = useState<7 | 30>(7);
+  const [spendBySource, setSpendBySource] = useState<Record<string, string>>({});
+  const [spendByCreative, setSpendByCreative] = useState<Record<string, string>>({});
+  const [promoAssets, setPromoAssets] = useState<PortfolioRecord[]>([]);
+  const [selectedCreativeId, setSelectedCreativeId] = useState('');
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -72,6 +90,13 @@ export default function LeadsPage() {
     setArtistId(current);
     setFollowPresets(loadPresets(current));
     db.leads.where('artistId').equals(current).reverse().sortBy('createdAt').then(setLeads);
+    db.portfolio.where('artistId').equals(current).toArray().then(items => {
+      const approved = items
+        .filter(p => p.consentForPromotion)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      setPromoAssets(approved);
+      if (approved.length > 0) setSelectedCreativeId(approved[0].id);
+    });
   }, []);
 
   useEffect(() => {
@@ -82,6 +107,44 @@ export default function LeadsPage() {
     if (!artistId) return;
     localStorage.setItem(presetsKey(artistId), JSON.stringify(followPresets));
   }, [artistId, followPresets]);
+
+  useEffect(() => {
+    if (!artistId) return;
+    const raw = localStorage.getItem(spendKey(artistId, statsWindowDays));
+    if (!raw) {
+      setSpendBySource({});
+      return;
+    }
+    try {
+      setSpendBySource(JSON.parse(raw) as Record<string, string>);
+    } catch {
+      setSpendBySource({});
+    }
+  }, [artistId, statsWindowDays]);
+
+  useEffect(() => {
+    if (!artistId) return;
+    localStorage.setItem(spendKey(artistId, statsWindowDays), JSON.stringify(spendBySource));
+  }, [artistId, statsWindowDays, spendBySource]);
+
+  useEffect(() => {
+    if (!artistId) return;
+    const raw = localStorage.getItem(creativeSpendKey(artistId, statsWindowDays));
+    if (!raw) {
+      setSpendByCreative({});
+      return;
+    }
+    try {
+      setSpendByCreative(JSON.parse(raw) as Record<string, string>);
+    } catch {
+      setSpendByCreative({});
+    }
+  }, [artistId, statsWindowDays]);
+
+  useEffect(() => {
+    if (!artistId) return;
+    localStorage.setItem(creativeSpendKey(artistId, statsWindowDays), JSON.stringify(spendByCreative));
+  }, [artistId, statsWindowDays, spendByCreative]);
 
   const loadRevisions = async () => {
     if (leads.length === 0) {
@@ -278,8 +341,42 @@ export default function LeadsPage() {
       l => (l.status === 'contacted' || l.status === 'booked') && (!!l.note || !!l.changeRequest || !!l.referenceImages?.length)
     ).length;
 
-    return { total, contactRate, bookedRate, winRate, sourceRows, dueThisWeek, likelyConvertible };
-  }, [leads, statsWindowDays]);
+    const roiRows = sourceRows.map(row => {
+      const spend = parseMoney(spendBySource[row.source] || '0');
+      const cpl = row.total > 0 ? spend / row.total : 0;
+      const wonLeads = scoped.filter(l => l.source === row.source && l.status === 'won');
+      const revenue = wonLeads.reduce((sum, l) => sum + parseMoney(l.budget), 0);
+      const revenuePerLead = row.total > 0 ? revenue / row.total : 0;
+      const roiScore = spend > 0 ? revenue / spend : revenue > 0 ? 999 : 0;
+      const suggestion = roiScore >= 2 && row.rate >= 20 ? 'Increase budget' : roiScore < 1 || row.rate < 8 ? 'Reduce/test new creative' : 'Keep & optimize';
+      return { ...row, spend, cpl, revenue, revenuePerLead, roiScore, suggestion };
+    });
+
+    const creativeMap = new Map<string, { total: number; won: number; revenue: number }>();
+    for (const l of scoped) {
+      if (!l.creativeId) continue;
+      const item = creativeMap.get(l.creativeId) || { total: 0, won: 0, revenue: 0 };
+      item.total += 1;
+      if (l.status === 'won') item.won += 1;
+      item.revenue += parseMoney(l.budget);
+      creativeMap.set(l.creativeId, item);
+    }
+    const creativeRows = Array.from(creativeMap.entries())
+      .map(([creativeId, v]) => {
+        const spend = parseMoney(spendByCreative[creativeId] || '0');
+        const winRateByCreative = v.total > 0 ? Math.round((v.won / v.total) * 100) : 0;
+        const cpl = v.total > 0 ? spend / v.total : 0;
+        const revenuePerLead = v.total > 0 ? v.revenue / v.total : 0;
+        const roiScore = spend > 0 ? v.revenue / spend : v.revenue > 0 ? 999 : 0;
+        const status = roiScore < 1 && v.total >= 3 ? 'pause' : roiScore >= 2 && winRateByCreative >= 20 ? 'scale' : 'keep';
+        return { creativeId, total: v.total, win: v.won, winRate: winRateByCreative, cpl, revenuePerLead, roiScore, status };
+      })
+      .sort((a, b) => b.roiScore - a.roiScore || b.winRate - a.winRate)
+      .slice(0, 5);
+
+    const bestCreative = creativeRows.length > 0 ? creativeRows[0] : null;
+    return { total, contactRate, bookedRate, winRate, sourceRows, dueThisWeek, likelyConvertible, roiRows, creativeRows, bestCreative };
+  }, [leads, statsWindowDays, spendBySource, spendByCreative]);
 
   const dueToday = useMemo(() => {
     const now = new Date();
@@ -292,6 +389,17 @@ export default function LeadsPage() {
 
   const intakeLink = `${window.location.origin}/intake/${artistId}`;
   const getReviseLink = (leadId: string) => `${window.location.origin}/intake/revise/${leadId}`;
+  const channelLinks = [
+    { label: 'Instagram', source: 'instagram' },
+    { label: 'Facebook', source: 'facebook' },
+    { label: 'TikTok', source: 'tiktok' },
+    { label: 'Referral', source: 'referral' },
+    { label: 'Walk-in', source: 'walk_in' },
+    { label: 'Other', source: 'other' },
+  ].map(item => {
+    const cr = selectedCreativeId ? `&cr=${encodeURIComponent(selectedCreativeId)}` : '';
+    return { ...item, url: `${intakeLink}?src=${item.source}${cr}` };
+  });
 
   return (
     <div style={{ padding: 20, color: 'white', background: '#0f172a', minHeight: '100dvh', maxWidth: 1180, margin: '0 auto' }}>
@@ -338,9 +446,101 @@ export default function LeadsPage() {
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 12,
   fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>Your intake link</p>
+        <select
+          value={selectedCreativeId}
+          onChange={e => setSelectedCreativeId(e.target.value)}
+          style={{ ...textAreaStyle, height: 36, marginBottom: 8 }}
+        >
+          <option value="">No creative tag</option>
+          {promoAssets.map(a => (
+            <option key={a.id} value={a.id}>
+              {a.tags?.[0] ? `${a.tags[0]} - ${a.id.slice(-6)}` : `Creative ${a.id.slice(-6)}`}
+            </option>
+          ))}
+        </select>
         <div style={{ background: '#0b1220', border: '1px solid #334155', borderRadius: 10, padding: 10, fontSize: 12,
   fontWeight: 600, wordBreak: 'break-all', marginBottom: 8 }}>{intakeLink}</div>
         <button onClick={() => navigator.clipboard.writeText(intakeLink)} style={{ border: 'none', borderRadius: 8, background: '#334155', color: 'white', padding: '8px 12px', cursor: 'pointer' }}>Copy Intake Link</button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 8, marginTop: 10 }}>
+          {channelLinks.map(c => (
+            <div key={c.source} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
+              <p style={{ fontSize: 12, color: '#cbd5e1', marginBottom: 6 }}>{c.label}</p>
+              <div style={{ fontSize: 11, color: '#64748b', wordBreak: 'break-all', marginBottom: 6 }}>{c.url}</div>
+              <button onClick={() => navigator.clipboard.writeText(c.url)} style={miniBtn}>Copy {c.label} Link</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#cbd5e1', marginBottom: 8 }}>Channel ROI (manual ad spend)</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 8, marginBottom: 10 }}>
+          {stats.roiRows.map(row => (
+            <div key={row.source} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ fontSize: 12, color: '#e2e8f0' }}>{row.source}</span>
+                <span style={{ fontSize: 11, color: '#93c5fd' }}>Win {row.rate}%</span>
+              </div>
+              <input
+                placeholder="Ad spend in window"
+                value={spendBySource[row.source] || ''}
+                onChange={e => setSpendBySource(prev => ({ ...prev, [row.source]: e.target.value }))}
+                style={{ ...textAreaStyle, height: 34, marginBottom: 6 }}
+              />
+              <p style={{ fontSize: 11, color: '#94a3b8' }}>CPL: ${row.cpl.toFixed(2)} | Rev/Lead: ${row.revenuePerLead.toFixed(2)}</p>
+              <p style={{ fontSize: 11, color: '#94a3b8' }}>ROI: {row.roiScore.toFixed(2)}x</p>
+              <p style={{ fontSize: 11, color: row.suggestion === 'Increase budget' ? '#86efac' : row.suggestion.startsWith('Reduce') ? '#fca5a5' : '#fcd34d', marginTop: 4 }}>
+                Suggestion: {row.suggestion}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: '#cbd5e1', marginBottom: 8 }}>Creative ROI (from tattoo photos/videos)</p>
+        {stats.bestCreative && (
+          <button
+            onClick={() => {
+              const best = `${intakeLink}?src=instagram&cr=${encodeURIComponent(stats.bestCreative!.creativeId)}`;
+              navigator.clipboard.writeText(best);
+            }}
+            style={{ ...miniBtn, marginBottom: 8, color: '#86efac', borderColor: '#166534' }}
+          >
+            Copy Best Creative Link
+          </button>
+        )}
+        {stats.creativeRows.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#64748b' }}>No creative-tagged leads yet. Share links with a selected creative tag.</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 8 }}>
+            {stats.creativeRows.map(row => (
+              <div key={row.creativeId} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 12, color: '#e2e8f0' }}>Creative {row.creativeId.slice(-6)}</span>
+                  <span style={{ fontSize: 11, color: '#93c5fd' }}>Win {row.winRate}%</span>
+                </div>
+                {promoAssets.find(a => a.id === row.creativeId)?.imageUrl && (
+                  <img
+                    src={promoAssets.find(a => a.id === row.creativeId)!.imageUrl}
+                    style={{ width: '100%', maxHeight: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 6 }}
+                  />
+                )}
+                <input
+                  placeholder="Creative spend in window"
+                  value={spendByCreative[row.creativeId] || ''}
+                  onChange={e => setSpendByCreative(prev => ({ ...prev, [row.creativeId]: e.target.value }))}
+                  style={{ ...textAreaStyle, height: 34, marginBottom: 6 }}
+                />
+                <p style={{ fontSize: 11, color: '#94a3b8' }}>CPL: ${row.cpl.toFixed(2)} | Rev/Lead: ${row.revenuePerLead.toFixed(2)}</p>
+                <p style={{ fontSize: 11, color: '#94a3b8' }}>ROI: {row.roiScore.toFixed(2)}x ({row.win}/{row.total})</p>
+                <p style={{ fontSize: 11, marginTop: 4, color: row.status === 'pause' ? '#fca5a5' : row.status === 'scale' ? '#86efac' : '#fcd34d' }}>
+                  Action: {row.status === 'pause' ? 'Pause creative' : row.status === 'scale' ? 'Scale budget' : 'Keep testing'}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div style={{ background: '#3f1d1d', border: '1px solid #7f1d1d', borderRadius: 12, padding: 12, marginBottom: 12 }}>
@@ -531,6 +731,16 @@ const metricValue: React.CSSProperties = {
   fontWeight: 800,
   color: '#f8fafc',
   lineHeight: 1.1,
+};
+
+const miniBtn: React.CSSProperties = {
+  border: '1px solid #334155',
+  background: 'transparent',
+  color: '#cbd5e1',
+  borderRadius: 8,
+  padding: '6px 8px',
+  fontSize: 11,
+  cursor: 'pointer',
 };
 
 

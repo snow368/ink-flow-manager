@@ -1,5 +1,5 @@
-﻿import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+﻿import { useMemo, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { db } from '../db';
 
 const ALLERGY_OPTIONS = [
@@ -13,10 +13,20 @@ const ALLERGY_OPTIONS = [
 
 export default function IntakePage() {
   const { artistId } = useParams<{ artistId: string }>();
+  const location = useLocation();
+  const sourceFromQuery = useMemo(() => {
+    const raw = new URLSearchParams(location.search).get('src');
+    const valid = ['instagram', 'facebook', 'tiktok', 'referral', 'walk_in', 'other'];
+    return valid.includes(raw || '') ? (raw as 'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other') : null;
+  }, [location.search]);
+  const creativeIdFromQuery = useMemo(
+    () => new URLSearchParams(location.search).get('cr') || undefined,
+    [location.search]
+  );
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [source, setSource] = useState<'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other'>('instagram');
+  const [source, setSource] = useState<'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other'>(sourceFromQuery || 'instagram');
   const [bodyPart, setBodyPart] = useState('');
   const [style, setStyle] = useState('');
   const [size, setSize] = useState('');
@@ -64,6 +74,7 @@ export default function IntakePage() {
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         source,
+        creativeId: creativeIdFromQuery,
         status: 'new',
         bodyPart: bodyPart.trim() || undefined,
         style: style.trim() || undefined,
@@ -175,3 +186,4 @@ const textAreaStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   resize: 'vertical',
 };
+
