@@ -22,6 +22,8 @@ import LeadRevisePage from './pages/LeadRevisePage';
 import DepositPolicyPage from './pages/DepositPolicyPage';
 import PaymentSettingsPage from './pages/PaymentSettingsPage';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
+import ClientPaymentPage from './pages/ClientPaymentPage';
+import ClientPaymentStatusPage from './pages/ClientPaymentStatusPage';
 import { db } from './db';
 import { detectInitialLanguage } from './lib/i18n';
 
@@ -138,6 +140,8 @@ export default function App() {
             <Route path="/deposit-policy" element={<DepositPolicyPage />} />
             <Route path="/payment-settings" element={<PaymentSettingsPage />} />
             <Route path="/payment-history" element={<PaymentHistoryPage />} />
+            <Route path="/pay/:leadId" element={<ClientPaymentPage />} />
+            <Route path="/pay/status/:leadId" element={<ClientPaymentStatusPage />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>
