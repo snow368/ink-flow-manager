@@ -47,6 +47,7 @@ Take the generated signing secret and set `STRIPE_WEBHOOK_SECRET`.
 - `POST /api/stripe/connect/account-link`
 - `POST /api/stripe/checkout-session`
 - `POST /api/stripe/webhook`
+- `POST /api/stripe/refund`
 - `GET /api/health`
 - `GET /api/stripe/payments/:artistId`
 

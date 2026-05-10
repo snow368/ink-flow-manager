@@ -155,6 +155,39 @@ app.post('/api/stripe/checkout-session', async (req, res) => {
   }
 });
 
+app.post('/api/stripe/refund', async (req, res) => {
+  try {
+    const { paymentIntentId, amount, reason, actor, leadId, artistId } = req.body || {};
+    if (!paymentIntentId) {
+      return res.status(400).json({ error: 'paymentIntentId is required' });
+    }
+    const refundPayload = { payment_intent: String(paymentIntentId) };
+    if (amount && Number(amount) > 0) refundPayload.amount = Math.round(Number(amount) * 100);
+    const refund = await stripe.refunds.create(refundPayload);
+
+    const all = readPayments();
+    all.push({
+      id: `refund_req_${refund.id}_${Date.now()}`,
+      type: 'refund_requested',
+      refundId: refund.id,
+      paymentIntentId: paymentIntentId,
+      leadId: leadId || '',
+      artistId: artistId || '',
+      reason: reason || '',
+      actor: actor || '',
+      amount: refund.amount || 0,
+      currency: refund.currency || 'usd',
+      createdAt: Date.now(),
+    });
+    writePayments(all);
+
+    return res.json({ ok: true, refundId: refund.id, status: refund.status });
+  } catch (error) {
+    console.error('[refund]', error);
+    return res.status(500).json({ error: 'Failed to create refund' });
+  }
+});
+
 app.post('/api/stripe/webhook', (req, res) => {
   try {
     const sig = req.headers['stripe-signature'];

@@ -192,8 +192,10 @@ export interface LeadRecord {
   paymentStatus?: 'unpaid' | 'pending_verify' | 'paid' | 'refunded' | 'waived';
   paymentAmount?: string;
   paymentCurrency?: string;
+  paymentIntentId?: string;
   paymentProofImages?: string[];
   paymentProofNote?: string;
+  paymentRefundReason?: string;
   paymentUpdatedAt?: number;
   bodyPart?: string;
   style?: string;

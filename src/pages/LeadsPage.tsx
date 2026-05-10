@@ -251,7 +251,13 @@ export default function LeadsPage() {
       for (const item of items) {
         if (!item?.leadId) continue;
         if (item.type === 'deposit_paid') {
-          await db.leads.update(item.leadId, { status: 'booked', paymentStatus: 'paid', paymentMethod: 'stripe_connect', paymentUpdatedAt: Date.now() });
+          await db.leads.update(item.leadId, {
+            status: 'booked',
+            paymentStatus: 'paid',
+            paymentMethod: 'stripe_connect',
+            paymentIntentId: item.paymentIntentId || undefined,
+            paymentUpdatedAt: Date.now(),
+          });
         }
         if (item.type === 'refund') {
           await db.leads.update(item.leadId, { status: 'contacted', paymentStatus: 'refunded', paymentUpdatedAt: Date.now() });
@@ -461,6 +467,39 @@ export default function LeadsPage() {
       paymentStatus: 'paid',
       paymentUpdatedAt: Date.now(),
       status: 'booked',
+    });
+    await refresh();
+  };
+
+  const refundPayment = async (lead: LeadRecord) => {
+    const reason = (draftPaymentNoteByLead[lead.id] || '').trim() || 'Refund requested';
+    const amount = Number(draftPaymentAmountByLead[lead.id] || lead.paymentAmount || '0');
+    if (lead.paymentMethod === 'stripe_connect' && lead.paymentIntentId) {
+      try {
+        const r = await fetch('http://localhost:8787/api/stripe/refund', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            paymentIntentId: lead.paymentIntentId,
+            amount: amount > 0 ? amount : undefined,
+            reason,
+            actor: artistId,
+            leadId: lead.id,
+            artistId: lead.artistId,
+          }),
+        });
+        const data = await r.json();
+        if (!r.ok) throw new Error(data?.error || 'refund failed');
+      } catch (e: any) {
+        alert(`Refund failed: ${e?.message || 'unknown error'}`);
+        return;
+      }
+    }
+    await db.leads.update(lead.id, {
+      paymentStatus: 'refunded',
+      paymentRefundReason: reason,
+      paymentUpdatedAt: Date.now(),
+      status: 'contacted',
     });
     await refresh();
   };
@@ -845,6 +884,9 @@ export default function LeadsPage() {
               <p style={{ fontSize: 11, color: '#a5b4fc', marginTop: 4 }}>
                 Payment: {lead.paymentStatus || 'unpaid'} | Method: {paymentMethodLabel(lead.paymentMethod)}{lead.paymentAmount ? ` | ${lead.paymentAmount} ${lead.paymentCurrency || ''}` : ''}
               </p>
+              {lead.paymentRefundReason && (
+                <p style={{ fontSize: 11, color: '#fca5a5', marginTop: 2 }}>Refund reason: {lead.paymentRefundReason}</p>
+              )}
               <p style={{ fontSize: 11, color: '#93c5fd', marginTop: 3 }}>
                 Mode: {lead.consultMode === 'consult_booking' ? 'Book consultation' : lead.consultMode === 'walk_in_direct' ? 'Direct walk-in' : 'Online chat first'}
               </p>
@@ -905,6 +947,9 @@ export default function LeadsPage() {
                   <button onClick={() => void savePaymentDraft(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Save Payment Draft</button>
                   {lead.paymentStatus === 'pending_verify' && (
                     <button onClick={() => void approvePayment(lead)} style={{ ...btnStyle, color: '#86efac' }}>Approve as Paid</button>
+                  )}
+                  {lead.paymentStatus === 'paid' && (
+                    <button onClick={() => void refundPayment(lead)} style={{ ...btnStyle, color: '#fca5a5' }}>Refund</button>
                   )}
                 </div>
               </div>
