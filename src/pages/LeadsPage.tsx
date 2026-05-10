@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type LeadRecord, type LeadRevisionRecord, type PortfolioRecord, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
@@ -65,6 +65,10 @@ function creativeSpendKey(artistId: string, days: 7 | 30) {
   return `inkflow_roi_creative_spend_${artistId}_${days}`;
 }
 
+function paymentSyncCursorKey(artistId: string) {
+  return `inkflow_payment_sync_cursor_${artistId}`;
+}
+
 function nextStepHint(mode?: LeadRecord['consultMode']) {
   if (mode === 'consult_booking') return 'Next: offer 15-30 min consult slots and lock one.';
   if (mode === 'walk_in_direct') return 'Next: send address, arrival time, and 24h/3h reminders.';
@@ -115,6 +119,8 @@ export default function LeadsPage() {
   const [promoAssets, setPromoAssets] = useState<PortfolioRecord[]>([]);
   const [selectedCreativeId, setSelectedCreativeId] = useState('');
   const [suggestedSlotsByLead, setSuggestedSlotsByLead] = useState<Record<string, string[]>>({});
+  const [syncingPayments, setSyncingPayments] = useState(false);
+  const syncingPaymentsRef = useRef(false);
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -180,6 +186,21 @@ export default function LeadsPage() {
     localStorage.setItem(creativeSpendKey(artistId, statsWindowDays), JSON.stringify(spendByCreative));
   }, [artistId, statsWindowDays, spendByCreative]);
 
+  useEffect(() => {
+    if (!artistId) return;
+    const timer = window.setInterval(() => {
+      void syncPayments(artistId);
+    }, 30 * 1000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void syncPayments(artistId);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [artistId]);
+
   const loadRevisions = async () => {
     if (leads.length === 0) {
       setRevisionsByLead(new Map());
@@ -204,11 +225,17 @@ export default function LeadsPage() {
   };
 
   const syncPayments = async (currentArtistId: string) => {
+    if (!currentArtistId || syncingPaymentsRef.current) return;
+    syncingPaymentsRef.current = true;
+    setSyncingPayments(true);
     try {
-      const r = await fetch(`http://localhost:8787/api/stripe/payments/${encodeURIComponent(currentArtistId)}`);
+      const cursorKey = paymentSyncCursorKey(currentArtistId);
+      const since = Number(localStorage.getItem(cursorKey) || '0');
+      const r = await fetch(`http://localhost:8787/api/stripe/payments/${encodeURIComponent(currentArtistId)}?since=${since}`);
       if (!r.ok) return;
       const data = await r.json();
       const items = Array.isArray(data?.items) ? data.items : [];
+      let maxTs = since;
       for (const item of items) {
         if (!item?.leadId) continue;
         if (item.type === 'deposit_paid') {
@@ -217,10 +244,15 @@ export default function LeadsPage() {
         if (item.type === 'refund') {
           await db.leads.update(item.leadId, { status: 'contacted' });
         }
+        if (Number(item.createdAt) > maxTs) maxTs = Number(item.createdAt);
       }
+      localStorage.setItem(cursorKey, String(maxTs));
       await refresh();
     } catch {
       // ignore network issues
+    } finally {
+      syncingPaymentsRef.current = false;
+      setSyncingPayments(false);
     }
   };
 
@@ -543,7 +575,7 @@ export default function LeadsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{t(lang, 'leads')}</h2>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => void syncPayments(artistId)} style={{ border: '1px solid #334155', background: 'transparent', color: '#86efac', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Sync Payments</button>
+          <button disabled={syncingPayments} onClick={() => void syncPayments(artistId)} style={{ border: '1px solid #334155', background: 'transparent', color: syncingPayments ? '#64748b' : '#86efac', borderRadius: 10, padding: '8px 12px', cursor: syncingPayments ? 'not-allowed' : 'pointer' }}>{syncingPayments ? 'Syncing...' : 'Sync Payments'}</button>
           <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'back')}</button>
         </div>
       </div>
@@ -899,6 +931,8 @@ const miniBtn: React.CSSProperties = {
   fontSize: 11,
   cursor: 'pointer',
 };
+
+
 
 
 

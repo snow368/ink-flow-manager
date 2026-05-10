@@ -53,8 +53,9 @@ app.get('/api/health', (_req, res) => {
 
 app.get('/api/stripe/payments/:artistId', (req, res) => {
   const artistId = req.params.artistId;
+  const since = Number(req.query.since || '0');
   const items = readPayments()
-    .filter((x) => x.artistId === artistId)
+    .filter((x) => x.artistId === artistId && (!since || x.createdAt > since))
     .sort((a, b) => b.createdAt - a.createdAt);
   res.json({ items });
 });
