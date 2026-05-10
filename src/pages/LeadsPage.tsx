@@ -77,6 +77,10 @@ function paymentMethodLabel(method?: LeadRecord['paymentMethod']) {
   return 'Not set';
 }
 
+function payReminderKey(leadId: string, stage: '24h' | '48h') {
+  return `inkflow_pay_reminder_${leadId}_${stage}`;
+}
+
 function nextStepHint(mode?: LeadRecord['consultMode']) {
   if (mode === 'consult_booking') return 'Next: offer 15-30 min consult slots and lock one.';
   if (mode === 'walk_in_direct') return 'Next: send address, arrival time, and 24h/3h reminders.';
@@ -153,6 +157,10 @@ export default function LeadsPage() {
 
   useEffect(() => {
     void loadRevisions();
+  }, [leads]);
+
+  useEffect(() => {
+    void runUnpaidReminders();
   }, [leads]);
 
   useEffect(() => {
@@ -251,6 +259,7 @@ export default function LeadsPage() {
       for (const item of items) {
         if (!item?.leadId) continue;
         if (item.type === 'deposit_paid') {
+          const target = await db.leads.get(item.leadId);
           await db.leads.update(item.leadId, {
             status: 'booked',
             paymentStatus: 'paid',
@@ -258,9 +267,11 @@ export default function LeadsPage() {
             paymentIntentId: item.paymentIntentId || undefined,
             paymentUpdatedAt: Date.now(),
           });
+          if (target) await automateAfterPaid(target);
         }
         if (item.type === 'refund') {
           await db.leads.update(item.leadId, { status: 'contacted', paymentStatus: 'refunded', paymentUpdatedAt: Date.now() });
+          await db.leads.update(item.leadId, { nextFollowUpAt: Date.now() + 48 * 60 * 60 * 1000 });
         }
         if (Number(item.createdAt) > maxTs) maxTs = Number(item.createdAt);
       }
@@ -368,6 +379,51 @@ export default function LeadsPage() {
     const selected = candidates.sort((a, b) => a.score - b.score).slice(0, 3);
     const out = selected.map(x => `${x.date} ${x.time}`);
     setSuggestedSlotsByLead(prev => ({ ...prev, [lead.id]: out }));
+    return out;
+  };
+
+  const createDraftAppointmentIfMissing = async (lead: LeadRecord, slots?: string[]) => {
+    const exists = await db.appointments.where('projectId').equals(lead.id).toArray();
+    if (exists.length > 0) return;
+    const first = slots?.[0];
+    const date = first ? first.slice(0, 10) : (lead.preferredDate || new Date().toISOString().slice(0, 10));
+    const time = first ? first.slice(11, 16) : (lead.preferredTime || '14:00');
+    await db.appointments.add({
+      id: `app_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      clientId: `lead_${lead.id}`,
+      projectId: lead.id,
+      artistId: lead.artistId,
+      date,
+      time,
+      duration: 120,
+      type: 'deposit_locked_draft',
+      status: 'deposit_paid',
+      waiverCompleted: false,
+      createdAt: Date.now(),
+    });
+  };
+
+  const automateAfterPaid = async (lead: LeadRecord) => {
+    const slots = await suggestRealSlots(lead);
+    await createDraftAppointmentIfMissing(lead, slots);
+  };
+
+  const runUnpaidReminders = async () => {
+    const now = Date.now();
+    for (const lead of leads) {
+      if (lead.paymentStatus !== 'unpaid' && lead.paymentStatus !== 'pending_verify') continue;
+      const age = now - lead.createdAt;
+      const k24 = payReminderKey(lead.id, '24h');
+      const k48 = payReminderKey(lead.id, '48h');
+      if (age >= 24 * 60 * 60 * 1000 && !localStorage.getItem(k24)) {
+        await db.leads.update(lead.id, { nextFollowUpAt: now, status: 'contacted' });
+        localStorage.setItem(k24, String(now));
+      }
+      if (age >= 48 * 60 * 60 * 1000 && !localStorage.getItem(k48)) {
+        await db.leads.update(lead.id, { nextFollowUpAt: now, status: 'contacted' });
+        localStorage.setItem(k48, String(now));
+      }
+    }
   };
 
   const copySuggestedMessage = (lead: LeadRecord) => {
@@ -491,6 +547,7 @@ export default function LeadsPage() {
       paymentUpdatedAt: Date.now(),
       status: 'booked',
     });
+    await automateAfterPaid(lead);
     await refresh();
   };
 
@@ -523,6 +580,7 @@ export default function LeadsPage() {
       paymentRefundReason: reason,
       paymentUpdatedAt: Date.now(),
       status: 'contacted',
+      nextFollowUpAt: Date.now() + 48 * 60 * 60 * 1000,
     });
     await refresh();
   };
