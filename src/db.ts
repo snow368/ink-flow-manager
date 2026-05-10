@@ -148,6 +148,7 @@ export interface LeadRecord {
   email?: string;
   source: 'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other';
   creativeId?: string;
+  consultMode?: 'online_chat' | 'consult_booking' | 'walk_in_direct';
   status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
   bodyPart?: string;
   style?: string;

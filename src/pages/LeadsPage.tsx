@@ -63,6 +63,33 @@ function creativeSpendKey(artistId: string, days: 7 | 30) {
   return `inkflow_roi_creative_spend_${artistId}_${days}`;
 }
 
+function nextStepHint(mode?: LeadRecord['consultMode']) {
+  if (mode === 'consult_booking') return 'Next: offer 15-30 min consult slots and lock one.';
+  if (mode === 'walk_in_direct') return 'Next: send address, arrival time, and 24h/3h reminders.';
+  return 'Next: send 3 time options + deposit link in chat.';
+}
+
+function toMinutes(time: string) {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function toTime(mins: number) {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+function toDateTimeValue(ts: number) {
+  const d = new Date(ts);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mi = String(d.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+}
+
 export default function LeadsPage() {
   const navigate = useNavigate();
   const [artistId, setArtistId] = useState('');
@@ -83,6 +110,7 @@ export default function LeadsPage() {
   const [spendByCreative, setSpendByCreative] = useState<Record<string, string>>({});
   const [promoAssets, setPromoAssets] = useState<PortfolioRecord[]>([]);
   const [selectedCreativeId, setSelectedCreativeId] = useState('');
+  const [suggestedSlotsByLead, setSuggestedSlotsByLead] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -228,6 +256,48 @@ export default function LeadsPage() {
   const clearFollowUp = async (leadId: string) => {
     await db.leads.update(leadId, { nextFollowUpAt: undefined });
     await refresh();
+  };
+
+  const suggestRealSlots = async (lead: LeadRecord) => {
+    const duration = 120;
+    const artistAppointments = (await db.appointments.where('artistId').equals(lead.artistId).toArray())
+      .filter(a => a.status !== 'cancelled');
+    const preferredDate = lead.preferredDate || new Date().toISOString().slice(0, 10);
+    const preferredTime = lead.preferredTime || '14:00';
+    const startDate = new Date(preferredDate + 'T00:00:00');
+    const candidates: { date: string; time: string; score: number }[] = [];
+
+    for (let dayOffset = 0; dayOffset <= 2; dayOffset++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + dayOffset);
+      const date = d.toISOString().slice(0, 10);
+      const dayApps = artistAppointments.filter(a => a.date === date);
+      const preferredMin = toMinutes(preferredTime);
+
+      for (let mins = 10 * 60; mins <= 20 * 60; mins += 30) {
+        const end = mins + duration;
+        if (end > 22 * 60) continue;
+        const conflict = dayApps.some(a => {
+          const s = toMinutes(a.time);
+          const e = s + a.duration;
+          return mins < e && s < end;
+        });
+        if (conflict) continue;
+        const score = Math.abs(mins - preferredMin) + dayOffset * 180;
+        candidates.push({ date, time: toTime(mins), score });
+      }
+    }
+
+    const selected = candidates.sort((a, b) => a.score - b.score).slice(0, 3);
+    const out = selected.map(x => `${x.date} ${x.time}`);
+    setSuggestedSlotsByLead(prev => ({ ...prev, [lead.id]: out }));
+  };
+
+  const copySuggestedMessage = (lead: LeadRecord) => {
+    const slots = suggestedSlotsByLead[lead.id] || [];
+    if (slots.length === 0) return;
+    const text = `Hi ${lead.name}, here are 3 available slots:\\n1) ${slots[0]}\\n2) ${slots[1] || '-'}\\n3) ${slots[2] || '-'}\\nReply with your preferred slot and I will confirm + send deposit link.`;
+    navigator.clipboard.writeText(text);
   };
 
   const addFollowPreset = () => {
@@ -604,8 +674,12 @@ export default function LeadsPage() {
               {lead.nextFollowUpAt && <p style={{ fontSize: 11, color: isDue ? '#fca5a5' : '#93c5fd', marginBottom: 4 }}>Follow-up: {isDue ? 'Due now' : 'Scheduled'} at {new Date(lead.nextFollowUpAt).toLocaleString()}</p>}
               <p style={{ fontSize: 12,
   fontWeight: 600, color: '#94a3b8' }}>{lead.phone || 'No phone'} - {lead.source}</p>
+              <p style={{ fontSize: 11, color: '#93c5fd', marginTop: 3 }}>
+                Mode: {lead.consultMode === 'consult_booking' ? 'Book consultation' : lead.consultMode === 'walk_in_direct' ? 'Direct walk-in' : 'Online chat first'}
+              </p>
               <p style={{ fontSize: 12,
   fontWeight: 600, color: '#cbd5e1', marginTop: 4 }}>{lead.note || lead.changeRequest || 'No details'}</p>
+              <p style={{ fontSize: 11, color: '#fcd34d', marginTop: 4 }}>{nextStepHint(lead.consultMode)}</p>
 
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                 <button onClick={() => updateStatus(lead.id, 'contacted')} style={btnStyle}>Contacted</button>
@@ -620,6 +694,18 @@ export default function LeadsPage() {
                 <button onClick={() => void recommendFollowUp(lead)} style={{ ...btnStyle, padding: '5px 8px', color: '#93c5fd' }}>AI Recommend</button>
                 {lead.nextFollowUpAt && <button onClick={() => void clearFollowUp(lead.id)} style={{ ...btnStyle, padding: '5px 8px', color: '#fca5a5' }}>Clear Follow-up</button>}
               </div>
+
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+                <button onClick={() => void suggestRealSlots(lead)} style={{ ...btnStyle, color: '#86efac' }}>Suggest 3 Real Slots</button>
+                {suggestedSlotsByLead[lead.id]?.length ? (
+                  <button onClick={() => copySuggestedMessage(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Slot Message</button>
+                ) : null}
+              </div>
+              {suggestedSlotsByLead[lead.id]?.length ? (
+                <div style={{ marginTop: 6, background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8, fontSize: 11, color: '#cbd5e1' }}>
+                  {suggestedSlotsByLead[lead.id].map((s, i) => <div key={s}>{i + 1}. {s}</div>)}
+                </div>
+              ) : null}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px', gap: 6, marginTop: 8 }}>
                 <input
