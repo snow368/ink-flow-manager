@@ -64,6 +64,7 @@ export default function LeadsPage() {
   const [newPresetLabel, setNewPresetLabel] = useState('');
   const [newPresetDays, setNewPresetDays] = useState('');
   const [manualFollowByLead, setManualFollowByLead] = useState<Record<string, string>>({});
+  const [statsWindowDays, setStatsWindowDays] = useState<7 | 30>(7);
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -240,6 +241,46 @@ export default function LeadsPage() {
   };
 
   const filtered = useMemo(() => filter === 'all' ? leads : leads.filter(l => l.status === filter), [leads, filter]);
+  const stats = useMemo(() => {
+    const now = Date.now();
+    const start = now - statsWindowDays * 24 * 60 * 60 * 1000;
+    const scoped = leads.filter(l => l.createdAt >= start);
+    const total = scoped.length;
+    const contacted = scoped.filter(l => ['contacted', 'booked', 'won'].includes(l.status)).length;
+    const booked = scoped.filter(l => ['booked', 'won'].includes(l.status)).length;
+    const won = scoped.filter(l => l.status === 'won').length;
+    const contactRate = total > 0 ? Math.round((contacted / total) * 100) : 0;
+    const bookedRate = total > 0 ? Math.round((booked / total) * 100) : 0;
+    const winRate = total > 0 ? Math.round((won / total) * 100) : 0;
+
+    const sourceMap = new Map<LeadRecord['source'], { total: number; won: number }>();
+    for (const l of scoped) {
+      const item = sourceMap.get(l.source) || { total: 0, won: 0 };
+      item.total += 1;
+      if (l.status === 'won') item.won += 1;
+      sourceMap.set(l.source, item);
+    }
+    const sourceRows = Array.from(sourceMap.entries())
+      .map(([source, v]) => ({
+        source,
+        total: v.total,
+        won: v.won,
+        rate: v.total > 0 ? Math.round((v.won / v.total) * 100) : 0,
+      }))
+      .sort((a, b) => b.rate - a.rate || b.total - a.total)
+      .slice(0, 5);
+
+    const weekEnd = now + 7 * 24 * 60 * 60 * 1000;
+    const dueThisWeek = leads.filter(
+      l => !!l.nextFollowUpAt && l.nextFollowUpAt <= weekEnd && l.status !== 'won' && l.status !== 'lost'
+    ).length;
+    const likelyConvertible = leads.filter(
+      l => (l.status === 'contacted' || l.status === 'booked') && (!!l.note || !!l.changeRequest || !!l.referenceImages?.length)
+    ).length;
+
+    return { total, contactRate, bookedRate, winRate, sourceRows, dueThisWeek, likelyConvertible };
+  }, [leads, statsWindowDays]);
+
   const dueToday = useMemo(() => {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -257,6 +298,41 @@ export default function LeadsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>Leads</h2>
         <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
+      </div>
+
+      <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#cbd5e1' }}>Conversion Dashboard</p>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={() => setStatsWindowDays(7)} style={{ ...btnStyle, background: statsWindowDays === 7 ? '#334155' : 'transparent' }}>7d</button>
+            <button onClick={() => setStatsWindowDays(30)} style={{ ...btnStyle, background: statsWindowDays === 30 ? '#334155' : 'transparent' }}>30d</button>
+          </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(120px, 1fr))', gap: 8, marginBottom: 8 }}>
+          <div style={metricCard}><p style={metricLabel}>New Leads</p><p style={metricValue}>{stats.total}</p></div>
+          <div style={metricCard}><p style={metricLabel}>Contact Rate</p><p style={metricValue}>{stats.contactRate}%</p></div>
+          <div style={metricCard}><p style={metricLabel}>Booked Rate</p><p style={metricValue}>{stats.bookedRate}%</p></div>
+          <div style={metricCard}><p style={metricLabel}>Win Rate</p><p style={metricValue}>{stats.winRate}%</p></div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(180px, 1fr))', gap: 8, marginBottom: 8 }}>
+          <div style={metricCard}><p style={metricLabel}>Due This Week</p><p style={metricValue}>{stats.dueThisWeek}</p></div>
+          <div style={metricCard}><p style={metricLabel}>Likely Convertible</p><p style={metricValue}>{stats.likelyConvertible}</p></div>
+        </div>
+        <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 10, padding: 8 }}>
+          <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Top Sources by Win Rate</p>
+          {stats.sourceRows.length === 0 ? (
+            <p style={{ fontSize: 12, color: '#64748b' }}>No source data in selected window.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {stats.sourceRows.map(row => (
+                <div key={row.source} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                  <span style={{ color: '#cbd5e1' }}>{row.source}</span>
+                  <span style={{ color: '#93c5fd' }}>{row.rate}% ({row.won}/{row.total})</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
@@ -435,6 +511,26 @@ const chipStyle: React.CSSProperties = {
   padding: '6px 10px',
   fontSize: 11,
   cursor: 'pointer',
+};
+
+const metricCard: React.CSSProperties = {
+  background: '#0f172a',
+  border: '1px solid #334155',
+  borderRadius: 10,
+  padding: 8,
+};
+
+const metricLabel: React.CSSProperties = {
+  fontSize: 11,
+  color: '#94a3b8',
+  marginBottom: 4,
+};
+
+const metricValue: React.CSSProperties = {
+  fontSize: 19,
+  fontWeight: 800,
+  color: '#f8fafc',
+  lineHeight: 1.1,
 };
 
 
