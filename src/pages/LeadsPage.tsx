@@ -438,6 +438,28 @@ export default function LeadsPage() {
     navigator.clipboard.writeText(link);
   };
 
+  const enqueueNotificationLog = async (
+    lead: LeadRecord,
+    templateType: 'payment_link' | 'payment_reminder_24h' | 'payment_reminder_48h',
+    payload: Record<string, unknown>
+  ) => {
+    try {
+      await fetch('http://localhost:8787/api/notifications/enqueue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-role': 'artist' },
+        body: JSON.stringify({
+          artistId: lead.artistId,
+          leadId: lead.id,
+          channel: 'manual_copy',
+          templateType,
+          payload,
+        }),
+      });
+    } catch {
+      // keep UX non-blocking
+    }
+  };
+
   const copyClientStatusLink = (lead: LeadRecord) => {
     const link = `${window.location.origin}/pay/status/${encodeURIComponent(lead.id)}`;
     navigator.clipboard.writeText(link);
@@ -454,6 +476,7 @@ export default function LeadsPage() {
       `You can check payment status here: ${statusLink}`,
     ].join('\n');
     navigator.clipboard.writeText(msg);
+    void enqueueNotificationLog(lead, 'payment_link', { payLink, statusLink });
   };
 
   const copyPaymentReminderMessage = (lead: LeadRecord, stage: '24h' | '48h') => {
@@ -471,6 +494,11 @@ export default function LeadsPage() {
           `Status link: ${statusLink}`,
         ].join('\n');
     navigator.clipboard.writeText(msg);
+    void enqueueNotificationLog(
+      lead,
+      stage === '24h' ? 'payment_reminder_24h' : 'payment_reminder_48h',
+      { payLink, statusLink, stage }
+    );
   };
 
   const copyDepositLink = async (lead: LeadRecord) => {

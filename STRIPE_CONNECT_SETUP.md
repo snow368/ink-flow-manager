@@ -21,6 +21,8 @@ Copy `server/.env.example` to `.env` (project root), then fill:
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_PLATFORM_FEE_PERCENT` (default 5)
+- `REQUIRE_API_KEY` (`true/false`)
+- `SERVER_API_KEY` (required when `REQUIRE_API_KEY=true`)
 
 ## 3) Stripe webhook (local)
 
@@ -50,9 +52,14 @@ Take the generated signing secret and set `STRIPE_WEBHOOK_SECRET`.
 - `POST /api/stripe/refund`
 - `GET /api/health`
 - `GET /api/stripe/payments/:artistId`
+- `GET /api/ledger/:artistId`
+- `POST /api/notifications/enqueue`
+- `GET /api/notifications/:artistId`
+- `GET /api/config/check`
 
 ## 6) Current limits (next step)
 
-- Connected account mapping is in-memory on server restart
-- Webhook events are persisted in `server/data/payments.json`; frontend syncs lead status from this feed
-- Country/currency matrix not yet expanded for non-US flows
+- Connected account mapping is persisted in `server/data/accounts.json`
+- Payment ledger is persisted in `server/data/ledger.json`
+- Notification queue is persisted in `server/data/notifications.json`
+- Webhook idempotency is persisted in `server/data/webhook_events.json`
