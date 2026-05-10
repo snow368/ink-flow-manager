@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db, type LeadRecord, type UserRecord } from '../db';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 function methodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'stripe_connect') return 'Stripe';
@@ -11,6 +12,7 @@ function methodLabel(method?: LeadRecord['paymentMethod']) {
 }
 
 export default function ClientPaymentPage() {
+  const lang = detectInitialLanguage();
   const { leadId } = useParams<{ leadId: string }>();
   const [lead, setLead] = useState<LeadRecord | null>(null);
   const [artist, setArtist] = useState<UserRecord | null>(null);
@@ -100,13 +102,13 @@ export default function ClientPaymentPage() {
     }
   };
 
-  if (!lead) return <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24 }}>Invalid payment link.</div>;
+  if (!lead) return <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24 }}>{t(lang, 'invalid_payment_link')}</div>;
 
   return (
     <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24, maxWidth: 760, margin: '0 auto' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Pay Deposit</h2>
-      <p style={{ color: '#94a3b8', marginBottom: 10 }}>Client: {lead.name}</p>
-      <p style={{ color: '#94a3b8', marginBottom: 14 }}>Current status: {lead.paymentStatus || 'unpaid'} ({methodLabel(lead.paymentMethod)})</p>
+      <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>{t(lang, 'pay_deposit')}</h2>
+      <p style={{ color: '#94a3b8', marginBottom: 10 }}>{t(lang, 'client')}: {lead.name}</p>
+      <p style={{ color: '#94a3b8', marginBottom: 14 }}>{t(lang, 'current_status')}: {lead.paymentStatus || 'unpaid'} ({methodLabel(lead.paymentMethod)})</p>
 
       <select value={method} onChange={e => setMethod(e.target.value as LeadRecord['paymentMethod'])} style={input}>
         {enabledMethods.includes('stripe_connect') && <option value="stripe_connect">Stripe</option>}
@@ -114,7 +116,7 @@ export default function ClientPaymentPage() {
         {enabledMethods.includes('bank_transfer') && <option value="bank_transfer">Bank Transfer</option>}
         {enabledMethods.includes('cash') && <option value="cash">Cash at Studio</option>}
       </select>
-      <input value={amount} onChange={e => setAmount(e.target.value)} placeholder={`Amount (${artist?.paymentCurrency || 'USD'})`} style={input} />
+      <input value={amount} onChange={e => setAmount(e.target.value)} placeholder={`${t(lang, 'amount')} (${artist?.paymentCurrency || 'USD'})`} style={input} />
 
       {method === 'bank_transfer' && (
         <div style={{ background: '#111827', border: '1px solid #334155', borderRadius: 10, padding: 10, marginBottom: 10, whiteSpace: 'pre-wrap' }}>
@@ -134,8 +136,8 @@ export default function ClientPaymentPage() {
         </>
       )}
 
-      <button onClick={() => void submit()} style={btn}>Submit Payment</button>
-      <Link to={`/pay/status/${lead.id}`} style={{ display: 'inline-block', marginTop: 10, color: '#93c5fd' }}>Check Payment Status</Link>
+      <button onClick={() => void submit()} style={btn}>{t(lang, 'submit_payment')}</button>
+      <Link to={`/pay/status/${lead.id}`} style={{ display: 'inline-block', marginTop: 10, color: '#93c5fd' }}>{t(lang, 'check_payment_status')}</Link>
       {msg && <p style={{ marginTop: 10, color: '#86efac' }}>{msg}</p>}
     </div>
   );

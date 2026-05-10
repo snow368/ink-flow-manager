@@ -967,9 +967,9 @@ export default function LeadsPage() {
                 )}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <button onClick={() => void copyDepositLink(lead)} style={{ ...btnStyle, color: '#fcd34d' }}>Copy Deposit Link</button>
-                  <button onClick={() => copyClientPaymentLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Client Pay Link</button>
-                  <button onClick={() => copyClientStatusLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Client Status Link</button>
-                  <button onClick={() => copyPaymentTemplateMessage(lead)} style={{ ...btnStyle, color: '#86efac' }}>Copy Payment Message</button>
+                  <button onClick={() => copyClientPaymentLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>{t(lang, 'copy_client_pay_link')}</button>
+                  <button onClick={() => copyClientStatusLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>{t(lang, 'copy_client_status_link')}</button>
+                  <button onClick={() => copyPaymentTemplateMessage(lead)} style={{ ...btnStyle, color: '#86efac' }}>{t(lang, 'copy_payment_message')}</button>
                   <button onClick={() => void savePaymentDraft(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Save Payment Draft</button>
                   {lead.paymentStatus === 'pending_verify' && (
                     <button onClick={() => void approvePayment(lead)} style={{ ...btnStyle, color: '#86efac' }}>Approve as Paid</button>
