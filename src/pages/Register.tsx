@@ -2,6 +2,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collectDeviceFingerprint, checkDeviceBinding, checkIPRegistrationLimit, incrementIPRegistrationCount } from '../lib/fingerprint';
 import { db } from '../db';
+import { detectInitialLanguage, t } from '../lib/i18n';
 import { processReferralOnRegister } from '../lib/referralLogic';
 
 export default function Register() {
@@ -15,6 +16,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [role, setRole] = useState<'artist' | 'owner' | 'staff' | 'pro' | 'plus'>('artist');
   const [submitting, setSubmitting] = useState(false);
+  const lang = detectInitialLanguage();
 
   useEffect(() => {
     async function check() {
@@ -98,7 +100,7 @@ export default function Register() {
   return (
     <div style={{ padding: 24, color: 'white' }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 24 }}>
-        {mode === 'register' ? 'Register InkFlow' : 'Login'}
+        {mode === 'register' ? 'Register InkFlow' : t(lang, 'login')}
       </h2>
 
       {refCode && mode === 'register' && (
@@ -149,7 +151,7 @@ export default function Register() {
           fontWeight: 600,
         }}
       >
-        {submitting ? 'Processing...' : mode === 'register' ? 'Register' : 'Login'}
+        {submitting ? t(lang, 'processing') : mode === 'register' ? t(lang, 'register') : t(lang, 'login')}
       </button>
 
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 14, color: '#94a3b8' }}>
@@ -175,3 +177,4 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
   boxSizing: 'border-box',
 };
+

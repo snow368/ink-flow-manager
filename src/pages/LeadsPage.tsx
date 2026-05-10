@@ -1,6 +1,8 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, type LeadRecord, type LeadRevisionRecord, type PortfolioRecord } from '../db';
+import { db, type LeadRecord, type LeadRevisionRecord, type PortfolioRecord, type UserRecord } from '../db';
+import { detectInitialLanguage, t } from '../lib/i18n';
+import { buildDepositLink, getSuggestedDepositAmount } from '../lib/payments';
 
 type FollowPreset = {
   id: string;
@@ -92,7 +94,9 @@ function toDateTimeValue(ts: number) {
 
 export default function LeadsPage() {
   const navigate = useNavigate();
+  const lang = detectInitialLanguage();
   const [artistId, setArtistId] = useState('');
+  const [artistUser, setArtistUser] = useState<UserRecord | null>(null);
   const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [filter, setFilter] = useState<LeadRecord['status'] | 'all'>('all');
   const [revisionsByLead, setRevisionsByLead] = useState<Map<string, LeadRevisionRecord[]>>(new Map());
@@ -116,6 +120,7 @@ export default function LeadsPage() {
     const current = localStorage.getItem('inkflow_current_user');
     if (!current) return;
     setArtistId(current);
+    db.users.get(current).then(u => setArtistUser(u || null));
     setFollowPresets(loadPresets(current));
     db.leads.where('artistId').equals(current).reverse().sortBy('createdAt').then(setLeads);
     db.portfolio.where('artistId').equals(current).toArray().then(items => {
@@ -125,6 +130,7 @@ export default function LeadsPage() {
       setPromoAssets(approved);
       if (approved.length > 0) setSelectedCreativeId(approved[0].id);
     });
+    void syncPayments(current);
   }, []);
 
   useEffect(() => {
@@ -195,6 +201,27 @@ export default function LeadsPage() {
     if (!artistId) return;
     const list = await db.leads.where('artistId').equals(artistId).reverse().sortBy('createdAt');
     setLeads(list);
+  };
+
+  const syncPayments = async (currentArtistId: string) => {
+    try {
+      const r = await fetch(`http://localhost:8787/api/stripe/payments/${encodeURIComponent(currentArtistId)}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      const items = Array.isArray(data?.items) ? data.items : [];
+      for (const item of items) {
+        if (!item?.leadId) continue;
+        if (item.type === 'deposit_paid') {
+          await db.leads.update(item.leadId, { status: 'booked' });
+        }
+        if (item.type === 'refund') {
+          await db.leads.update(item.leadId, { status: 'contacted' });
+        }
+      }
+      await refresh();
+    } catch {
+      // ignore network issues
+    }
   };
 
   const toClient = async (lead: LeadRecord) => {
@@ -298,6 +325,46 @@ export default function LeadsPage() {
     if (slots.length === 0) return;
     const text = `Hi ${lead.name}, here are 3 available slots:\\n1) ${slots[0]}\\n2) ${slots[1] || '-'}\\n3) ${slots[2] || '-'}\\nReply with your preferred slot and I will confirm + send deposit link.`;
     navigator.clipboard.writeText(text);
+  };
+
+  const copyDepositLink = async (lead: LeadRecord) => {
+    if (!artistUser) return;
+    const policyAmount = getSuggestedDepositAmount(artistId, lead);
+    const fallbackAmount = Number(artistUser.paymentDefaultDeposit || '0');
+    const amount = policyAmount > 0 ? policyAmount : (Number.isFinite(fallbackAmount) ? fallbackAmount : 0);
+    if (artistUser.paymentProvider === 'stripe_connect' && artistUser.stripeAccountId) {
+      try {
+        const base = window.location.origin;
+        const response = await fetch('http://localhost:8787/api/stripe/checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            connectedAccountId: artistUser.stripeAccountId,
+            amount,
+            currency: (artistUser.paymentCurrency || 'USD').toLowerCase(),
+            leadId: lead.id,
+            clientName: lead.name,
+            artistId: lead.artistId,
+            successUrl: `${base}/leads?pay=success&lead=${encodeURIComponent(lead.id)}`,
+            cancelUrl: `${base}/leads?pay=cancel&lead=${encodeURIComponent(lead.id)}`,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error || 'checkout create failed');
+        if (data?.url) {
+          await navigator.clipboard.writeText(data.url);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    const link = buildDepositLink(artistUser, lead, amount);
+    if (!link) {
+      alert('Set Payment Settings first (payment link template).');
+      return;
+    }
+    navigator.clipboard.writeText(link);
   };
 
   const addFollowPreset = () => {
@@ -474,8 +541,11 @@ export default function LeadsPage() {
   return (
     <div style={{ padding: 20, color: 'white', background: '#0f172a', minHeight: '100dvh', maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>Leads</h2>
-        <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
+        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{t(lang, 'leads')}</h2>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button onClick={() => void syncPayments(artistId)} style={{ border: '1px solid #334155', background: 'transparent', color: '#86efac', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Sync Payments</button>
+          <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'back')}</button>
+        </div>
       </div>
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
@@ -530,7 +600,7 @@ export default function LeadsPage() {
         </select>
         <div style={{ background: '#0b1220', border: '1px solid #334155', borderRadius: 10, padding: 10, fontSize: 12,
   fontWeight: 600, wordBreak: 'break-all', marginBottom: 8 }}>{intakeLink}</div>
-        <button onClick={() => navigator.clipboard.writeText(intakeLink)} style={{ border: 'none', borderRadius: 8, background: '#334155', color: 'white', padding: '8px 12px', cursor: 'pointer' }}>Copy Intake Link</button>
+        <button onClick={() => navigator.clipboard.writeText(intakeLink)} style={{ border: 'none', borderRadius: 8, background: '#334155', color: 'white', padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'copy_intake_link')}</button>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 8, marginTop: 10 }}>
           {channelLinks.map(c => (
             <div key={c.source} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
@@ -614,10 +684,10 @@ export default function LeadsPage() {
       </div>
 
       <div style={{ background: '#3f1d1d', border: '1px solid #7f1d1d', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-        <p style={{ fontSize: 13, color: '#fecaca', fontWeight: 700, marginBottom: 8 }}>Due Today: {dueToday.length}</p>
+        <p style={{ fontSize: 13, color: '#fecaca', fontWeight: 700, marginBottom: 8 }}>{t(lang, 'due_today')}: {dueToday.length}</p>
         {dueToday.length === 0 ? (
           <p style={{ fontSize: 12,
-  fontWeight: 600, color: '#fca5a5' }}>No follow-ups due today.</p>
+  fontWeight: 600, color: '#fca5a5' }}>{t(lang, 'no_followups_today')}</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {dueToday.slice(0, 5).map(lead => (
@@ -700,6 +770,7 @@ export default function LeadsPage() {
                 {suggestedSlotsByLead[lead.id]?.length ? (
                   <button onClick={() => copySuggestedMessage(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Slot Message</button>
                 ) : null}
+                <button onClick={() => void copyDepositLink(lead)} style={{ ...btnStyle, color: '#fcd34d' }}>Copy Deposit Link</button>
               </div>
               {suggestedSlotsByLead[lead.id]?.length ? (
                 <div style={{ marginTop: 6, background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8, fontSize: 11, color: '#cbd5e1' }}>
@@ -828,6 +899,7 @@ const miniBtn: React.CSSProperties = {
   fontSize: 11,
   cursor: 'pointer',
 };
+
 
 
 

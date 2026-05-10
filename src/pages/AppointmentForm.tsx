@@ -2,6 +2,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type ClientRecord, type AppointmentRecord, type LeadRecord, type LeadRevisionRecord } from '../db';
 import { THEME } from '../lib/theme';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function AppointmentForm() {
   const [fromLead, setFromLead] = useState<LeadRecord | null>(null);
   const [finalRevision, setFinalRevision] = useState<LeadRevisionRecord | null>(null);
   const [reviewConfirmed, setReviewConfirmed] = useState(false);
+  const lang = detectInitialLanguage();
 
   const durationPresets = [
     { label: '30min', value: 30 },
@@ -173,7 +175,7 @@ export default function AppointmentForm() {
 
   return (
     <div style={{ padding: 24, color: THEME.text.primary, paddingBottom: 110 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>New Appointment</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>{t(lang, 'new_appointment')}</h2>
       {error && <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}><p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p></div>}
 
       {showQuickCreate ? (
@@ -281,7 +283,7 @@ export default function AppointmentForm() {
           )}
 
           <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px)', background: 'linear-gradient(to top, #0f172a 80%, rgba(15,23,42,0.2))' }}>
-            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : 'Create Appointment'}</button>
+            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? t(lang, 'saving') : t(lang, 'create_appointment')}</button>
           </div>
         </>
       )}
@@ -295,4 +297,5 @@ const inputStyle: React.CSSProperties = {
   color: THEME.text.primary, fontSize: 16, outline: 'none', boxSizing: 'border-box',
 };
 const selectStyle: React.CSSProperties = { ...inputStyle, marginBottom: 12, appearance: 'auto' };
+
 

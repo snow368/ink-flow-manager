@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord, type LeadRecord } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { THEME } from '../lib/theme';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 export default function Today() {
   const navigate = useNavigate();
+  const lang = detectInitialLanguage();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [appointments, setAppointments] = useState<(AppointmentRecord & { clientName?: string })[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
@@ -268,11 +270,11 @@ export default function Today() {
   return (
     <div style={{ padding: 20, color: THEME.text.primary, paddingBottom: 12, maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? 'Today' : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? t(lang, 'today') : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
-            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>Day</button>
-            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>Week</button>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'day')}</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'week')}</button>
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
         </div>
@@ -346,8 +348,8 @@ export default function Today() {
 
       {viewMode === 'day' && appointments.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: 60 }}>
-          <p style={{ fontSize: 48, marginBottom: 16 }}>No Appointments</p>
-          <p style={{ fontSize: 16, color: '#94a3b8' }}>No appointments on this day</p>
+          <p style={{ fontSize: 48, marginBottom: 16 }}>{t(lang, 'no_appointments')}</p>
+          <p style={{ fontSize: 16, color: '#94a3b8' }}>{t(lang, 'no_appointments_day')}</p>
         </div>
       ) : viewMode === 'day' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -524,5 +526,4 @@ const smallBtn: React.CSSProperties = {
   fontSize: 11,
   cursor: 'pointer',
 };
-
 

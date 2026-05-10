@@ -20,7 +20,9 @@ import IntakePage from './pages/IntakePage';
 import LeadsPage from './pages/LeadsPage';
 import LeadRevisePage from './pages/LeadRevisePage';
 import DepositPolicyPage from './pages/DepositPolicyPage';
+import PaymentSettingsPage from './pages/PaymentSettingsPage';
 import { db } from './db';
+import { detectInitialLanguage } from './lib/i18n';
 
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -30,6 +32,7 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    document.documentElement.lang = detectInitialLanguage();
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
@@ -90,7 +93,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -132,6 +135,7 @@ export default function App() {
             <Route path="/intake/:artistId" element={<IntakePage />} />
             <Route path="/intake/revise/:leadId" element={<LeadRevisePage />} />
             <Route path="/deposit-policy" element={<DepositPolicyPage />} />
+            <Route path="/payment-settings" element={<PaymentSettingsPage />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>

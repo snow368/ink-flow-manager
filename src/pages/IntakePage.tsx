@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { db } from '../db';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 const ALLERGY_OPTIONS = [
   'Latex gloves',
@@ -16,6 +17,7 @@ const STYLE_OPTIONS = ['Fine line', 'Traditional', 'Japanese', 'Blackwork', 'Rea
 export default function IntakePage() {
   const { artistId } = useParams<{ artistId: string }>();
   const location = useLocation();
+  const lang = detectInitialLanguage();
   const sourceFromQuery = useMemo(() => {
     const raw = new URLSearchParams(location.search).get('src');
     const valid = ['instagram', 'facebook', 'tiktok', 'referral', 'walk_in', 'other'];
@@ -116,7 +118,7 @@ export default function IntakePage() {
 
   return (
     <div style={{ background: '#0f172a', minHeight: '100dvh', color: 'white', padding: 20, maxWidth: 760, margin: '0 auto' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>Tattoo Intake Form</h2>
+      <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>{t(lang, 'intake_form')}</h2>
       <p style={{ color: '#94a3b8', marginBottom: 14 }}>This takes about 2-3 minutes. The more detail you share, the faster we can quote and schedule.</p>
 
       <Section title="1) Contact">
@@ -219,7 +221,7 @@ export default function IntakePage() {
       </select>
 
       <button onClick={submit} disabled={submitting || !name.trim()} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: submitting ? '#475569' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
-        {submitting ? 'Submitting...' : 'Submit Request'}
+        {submitting ? 'Submitting...' : t(lang, 'submit_request')}
       </button>
     </div>
   );
@@ -256,3 +258,4 @@ const textAreaStyle: React.CSSProperties = {
   boxSizing: 'border-box',
   resize: 'vertical',
 };
+

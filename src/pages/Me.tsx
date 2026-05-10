@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
 import { seedDemoData, resetDatabase } from '../lib/devTools';
 import { getReferralStats } from '../lib/referralLogic';
+import { detectInitialLanguage, setStoredLanguage, t, type AppLanguage } from '../lib/i18n';
 
 export default function Me() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function Me() {
   const [message, setMessage] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [proDays, setProDays] = useState(0);
+  const [lang, setLang] = useState<AppLanguage>(detectInitialLanguage());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -84,7 +86,29 @@ export default function Me() {
 
   return (
     <div style={{ padding: 24, color: 'white' }}>
-      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>Me</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>{t(lang, 'me')}</h2>
+
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>{t(lang, 'language')}</p>
+        <select
+          value={lang}
+          onChange={e => {
+            const next = e.target.value as AppLanguage;
+            setLang(next);
+            setStoredLanguage(next);
+          }}
+          style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#0f172a', color: 'white' }}
+        >
+          <option value="en">English</option>
+          <option value="zh">中文</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="th">ไทย</option>
+          <option value="jp">日本語</option>
+        </select>
+      </div>
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontSize: 18, fontWeight: 600 }}>{user.name}</p>
@@ -130,21 +154,28 @@ export default function Me() {
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/leads')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
-          Lead Capture & Intake
+          {t(lang, 'lead_capture')}
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/payment-settings')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
+          Payment Settings
         </button>
       </div>
 
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/deposit-policy')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
-          Deposit Rules
+          {t(lang, 'deposit_rules')}
         </button>
       </div>
 
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/inventory')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
-          Inventory Management
+          {t(lang, 'inventory_management')}
         </button>
       </div>
 
@@ -170,7 +201,7 @@ export default function Me() {
       </div>
 
       <button onClick={handleLogout} style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14 }}>
-        Log Out
+        {t(lang, 'log_out')}
       </button>
     </div>
   );

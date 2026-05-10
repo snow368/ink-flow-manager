@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 type AmountMode = 'fixed' | 'percent';
 
@@ -42,6 +43,7 @@ export default function DepositPolicyPage() {
   const [artistId, setArtistId] = useState('');
   const [policy, setPolicy] = useState<DepositPolicy>(defaultPolicy());
   const [message, setMessage] = useState('');
+  const lang = detectInitialLanguage();
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user') || '';
@@ -73,8 +75,8 @@ export default function DepositPolicyPage() {
   return (
     <div style={{ padding: 20, color: 'white', maxWidth: 820, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800 }}>Deposit Rules</h2>
-        <button onClick={() => navigate('/me')} style={backBtn}>Back</button>
+        <h2 style={{ fontSize: 24, fontWeight: 800 }}>{t(lang, 'deposit_rules_title')}</h2>
+        <button onClick={() => navigate('/me')} style={backBtn}>{t(lang, 'back')}</button>
       </div>
 
       <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 12 }}>
@@ -97,7 +99,7 @@ export default function DepositPolicyPage() {
         onChange={patch => setItem('directBooking', patch)}
       />
 
-      <button onClick={save} style={saveBtn}>Save Rules</button>
+      <button onClick={save} style={saveBtn}>{t(lang, 'save_rules')}</button>
       {message && <p style={{ fontSize: 12, color: '#86efac', marginTop: 8 }}>{message}</p>}
     </div>
   );
@@ -159,3 +161,4 @@ const saveBtn: React.CSSProperties = {
   cursor: 'pointer',
   fontWeight: 700,
 };
+
