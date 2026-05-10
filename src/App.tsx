@@ -19,6 +19,7 @@ import Outreach from './pages/Outreach';
 import IntakePage from './pages/IntakePage';
 import LeadsPage from './pages/LeadsPage';
 import LeadRevisePage from './pages/LeadRevisePage';
+import DepositPolicyPage from './pages/DepositPolicyPage';
 import { db } from './db';
 
 export default function App() {
@@ -89,7 +90,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -130,6 +131,7 @@ export default function App() {
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/intake/:artistId" element={<IntakePage />} />
             <Route path="/intake/revise/:leadId" element={<LeadRevisePage />} />
+            <Route path="/deposit-policy" element={<DepositPolicyPage />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>

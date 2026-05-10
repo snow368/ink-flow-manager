@@ -135,6 +135,13 @@ export default function Me() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/deposit-policy')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
+          Deposit Rules
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/inventory')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
           Inventory Management
