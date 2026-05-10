@@ -83,6 +83,20 @@ export class InkFlowDB extends Dexie {
       leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus',
       leadRevisions: 'id, leadId, version, actor, createdAt',
     });
+    this.version(6).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+    });
   }
 }
 
@@ -196,6 +210,7 @@ export interface LeadRecord {
   paymentProofImages?: string[];
   paymentProofNote?: string;
   paymentRefundReason?: string;
+  paymentRejectReason?: string;
   paymentUpdatedAt?: number;
   bodyPart?: string;
   style?: string;
