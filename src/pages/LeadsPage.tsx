@@ -456,6 +456,23 @@ export default function LeadsPage() {
     navigator.clipboard.writeText(msg);
   };
 
+  const copyPaymentReminderMessage = (lead: LeadRecord, stage: '24h' | '48h') => {
+    const payLink = `${window.location.origin}/pay/${encodeURIComponent(lead.id)}`;
+    const statusLink = `${window.location.origin}/pay/status/${encodeURIComponent(lead.id)}`;
+    const msg = stage === '24h'
+      ? [
+          `Hi ${lead.name}, quick reminder: your deposit is still pending.`,
+          `Please complete it here: ${payLink}`,
+          `Status link: ${statusLink}`,
+        ].join('\n')
+      : [
+          `Hi ${lead.name}, final reminder: your deposit is still pending.`,
+          `Please complete payment to keep your slot priority: ${payLink}`,
+          `Status link: ${statusLink}`,
+        ].join('\n');
+    navigator.clipboard.writeText(msg);
+  };
+
   const copyDepositLink = async (lead: LeadRecord) => {
     if (!artistUser) return;
     const policyAmount = getSuggestedDepositAmount(artistId, lead);
@@ -1028,6 +1045,8 @@ export default function LeadsPage() {
                   <button onClick={() => copyClientPaymentLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>{t(lang, 'copy_client_pay_link')}</button>
                   <button onClick={() => copyClientStatusLink(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>{t(lang, 'copy_client_status_link')}</button>
                   <button onClick={() => copyPaymentTemplateMessage(lead)} style={{ ...btnStyle, color: '#86efac' }}>{t(lang, 'copy_payment_message')}</button>
+                  <button onClick={() => copyPaymentReminderMessage(lead, '24h')} style={{ ...btnStyle, color: '#fcd34d' }}>Copy 24h Reminder</button>
+                  <button onClick={() => copyPaymentReminderMessage(lead, '48h')} style={{ ...btnStyle, color: '#fca5a5' }}>Copy 48h Reminder</button>
                   <button onClick={() => void savePaymentDraft(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Save Payment Draft</button>
                   {lead.paymentStatus === 'pending_verify' && (
                     <button onClick={() => void approvePayment(lead)} style={{ ...btnStyle, color: '#86efac' }}>Approve as Paid</button>
