@@ -5,6 +5,12 @@ import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 
+type PaymentReminderItem = { lead: LeadRecord; stage: '24h' | '48h' };
+
+function payReminderKey(leadId: string, stage: '24h' | '48h') {
+  return `inkflow_pay_reminder_${leadId}_${stage}`;
+}
+
 export default function Today() {
   const navigate = useNavigate();
   const lang = detectInitialLanguage();
@@ -16,6 +22,7 @@ export default function Today() {
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string })[]>>(new Map());
   const [dueLeads, setDueLeads] = useState<LeadRecord[]>([]);
+  const [paymentReminders, setPaymentReminders] = useState<PaymentReminderItem[]>([]);
   const [conflictModal, setConflictModal] = useState<{
     open: boolean;
     appointmentId: string;
@@ -34,6 +41,7 @@ export default function Today() {
       loadAppointmentsForWeek(u, selectedDate);
       loadFutureDateCounts(u);
       loadDueLeads(u);
+      loadPaymentReminders(u);
     });
   }, [navigate, selectedDate]);
 
@@ -46,6 +54,53 @@ export default function Today() {
       .sort((a, b) => (a.nextFollowUpAt || 0) - (b.nextFollowUpAt || 0));
     setDueLeads(due);
   }
+
+  async function loadPaymentReminders(u: UserRecord) {
+    const artistId = u.artistId || u.id;
+    const now = Date.now();
+    const leads = await db.leads.where('artistId').equals(artistId).toArray();
+    const list: PaymentReminderItem[] = [];
+    for (const l of leads) {
+      if (l.status === 'won' || l.status === 'lost') continue;
+      if (l.paymentStatus !== 'unpaid' && l.paymentStatus !== 'pending_verify') continue;
+      const age = now - l.createdAt;
+      if (age >= 48 * 60 * 60 * 1000 && !localStorage.getItem(payReminderKey(l.id, '48h'))) {
+        list.push({ lead: l, stage: '48h' });
+        continue;
+      }
+      if (age >= 24 * 60 * 60 * 1000 && !localStorage.getItem(payReminderKey(l.id, '24h'))) {
+        list.push({ lead: l, stage: '24h' });
+      }
+    }
+    setPaymentReminders(list.slice(0, 5));
+  }
+
+  const copyPaymentReminderMessage = (lead: LeadRecord, stage: '24h' | '48h') => {
+    const payLink = `${window.location.origin}/pay/${encodeURIComponent(lead.id)}`;
+    const statusLink = `${window.location.origin}/pay/status/${encodeURIComponent(lead.id)}`;
+    const msg = stage === '24h'
+      ? [
+          `Hi ${lead.name}, quick reminder: your deposit is still pending.`,
+          `Please complete it here: ${payLink}`,
+          `Status link: ${statusLink}`,
+        ].join('\n')
+      : [
+          `Hi ${lead.name}, final reminder: your deposit is still pending.`,
+          `Please complete payment to keep your slot priority: ${payLink}`,
+          `Status link: ${statusLink}`,
+        ].join('\n');
+    navigator.clipboard.writeText(msg);
+  };
+
+  const markReminderDone = async (leadId: string, stage: '24h' | '48h') => {
+    const now = Date.now();
+    localStorage.setItem(payReminderKey(leadId, stage), String(now));
+    await db.leads.update(leadId, { nextFollowUpAt: now + 24 * 60 * 60 * 1000 });
+    if (user) {
+      await loadDueLeads(user);
+      await loadPaymentReminders(user);
+    }
+  };
 
   async function loadAppointmentsForDate(u: UserRecord, date: string) {
     let query = db.appointments.where('date').equals(date);
@@ -300,6 +355,32 @@ export default function Today() {
                   <button onClick={() => void postponeLeadFollowUp(lead.id, 24 * 60)} style={smallBtn}>Done +1d</button>
                   <button onClick={() => void postponeLeadFollowUp(lead.id, 3 * 24 * 60)} style={smallBtn}>Done +3d</button>
                   <button onClick={() => void postponeLeadFollowUp(lead.id, 7 * 24 * 60)} style={smallBtn}>Done +7d</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <p style={{ fontSize: 13, color: '#fcd34d', fontWeight: 700 }}>Deposit Reminders: {paymentReminders.length}</p>
+          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 8, padding: '4px 8px', fontSize: 12, cursor: 'pointer' }}>Open Leads</button>
+        </div>
+        {paymentReminders.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#94a3b8' }}>No pending 24h/48h payment reminders.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {paymentReminders.map(item => (
+              <div key={`${item.lead.id}_${item.stage}`} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700 }}>{item.lead.name}</p>
+                  <span style={{ fontSize: 11, color: item.stage === '48h' ? '#fca5a5' : '#fcd34d' }}>{item.stage} reminder</span>
+                </div>
+                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>{item.lead.paymentAmount || '-'} {item.lead.paymentCurrency || ''} | {item.lead.paymentStatus || 'unpaid'}</p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button onClick={() => copyPaymentReminderMessage(item.lead, item.stage)} style={smallBtn}>Copy Reminder</button>
+                  <button onClick={() => void markReminderDone(item.lead.id, item.stage)} style={smallBtn}>Done +1d</button>
                 </div>
               </div>
             ))}
