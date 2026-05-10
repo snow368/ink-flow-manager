@@ -6,10 +6,12 @@ export default function PaymentSettingsPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [provider, setProvider] = useState<UserRecord['paymentProvider']>('stripe_connect');
+  const [enabledMethods, setEnabledMethods] = useState<Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash'>>(['stripe_connect', 'manual_link', 'bank_transfer', 'cash']);
   const [currency, setCurrency] = useState('USD');
   const [defaultDeposit, setDefaultDeposit] = useState('');
   const [template, setTemplate] = useState('');
   const [stripeAccountId, setStripeAccountId] = useState('');
+  const [bankInstructions, setBankInstructions] = useState('');
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
@@ -19,6 +21,7 @@ export default function PaymentSettingsPage() {
       if (!u) return;
       setUser(u);
       setProvider(u.paymentProvider || 'stripe_connect');
+      setEnabledMethods(u.enabledPaymentMethods?.length ? u.enabledPaymentMethods : ['stripe_connect', 'manual_link', 'bank_transfer', 'cash']);
       setCurrency((u.paymentCurrency || 'USD').toUpperCase());
       setDefaultDeposit(u.paymentDefaultDeposit || '');
       setTemplate(
@@ -26,6 +29,7 @@ export default function PaymentSettingsPage() {
           'https://pay.example.com/checkout?amount={amount}&currency={currency}&lead={leadId}&client={client}'
       );
       setStripeAccountId(u.stripeAccountId || '');
+      setBankInstructions(u.bankTransferInstructions || '');
     });
   }, []);
 
@@ -33,10 +37,12 @@ export default function PaymentSettingsPage() {
     if (!user) return;
     await db.users.update(user.id, {
       paymentProvider: provider,
+      enabledPaymentMethods: enabledMethods,
       paymentCurrency: currency.toUpperCase(),
       paymentDefaultDeposit: defaultDeposit.trim(),
       paymentLinkTemplate: template.trim(),
       stripeAccountId: stripeAccountId.trim() || undefined,
+      bankTransferInstructions: bankInstructions.trim() || undefined,
     });
     setMsg('Payment settings saved.');
     window.setTimeout(() => setMsg(''), 1500);
@@ -74,6 +80,10 @@ export default function PaymentSettingsPage() {
 
   if (!user) return <div style={{ padding: 20, color: 'white' }}>Please log in</div>;
 
+  const toggleMethod = (method: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash') => {
+    setEnabledMethods(prev => prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method]);
+  };
+
   return (
     <div style={{ padding: 20, color: 'white', maxWidth: 820, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -88,6 +98,14 @@ export default function PaymentSettingsPage() {
           <option value="square">Square</option>
           <option value="manual">Manual Link</option>
         </select>
+      </div>
+
+      <div style={card}>
+        <p style={label}>Accepted Methods</p>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('stripe_connect')} onChange={() => toggleMethod('stripe_connect')} /> Stripe Connect</label>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('manual_link')} onChange={() => toggleMethod('manual_link')} /> Manual Link</label>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('bank_transfer')} onChange={() => toggleMethod('bank_transfer')} /> Bank Transfer</label>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('cash')} onChange={() => toggleMethod('cash')} /> Cash (In Studio)</label>
       </div>
 
       {provider === 'stripe_connect' && (
@@ -114,6 +132,17 @@ export default function PaymentSettingsPage() {
         <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>
           Supported placeholders: {'{amount}'}, {'{currency}'}, {'{leadId}'}, {'{client}'}, {'{artistId}'}.
         </p>
+      </div>
+
+      <div style={card}>
+        <p style={label}>Bank transfer instructions</p>
+        <textarea
+          value={bankInstructions}
+          onChange={e => setBankInstructions(e.target.value)}
+          rows={3}
+          style={{ ...input, resize: 'vertical' }}
+          placeholder="Bank name, account holder, account number/IBAN, transfer note format."
+        />
       </div>
 
       <button onClick={save} style={saveBtn}>Save</button>
@@ -163,4 +192,13 @@ const saveBtn: React.CSSProperties = {
   padding: '10px 14px',
   cursor: 'pointer',
   fontWeight: 700,
+};
+
+const row: React.CSSProperties = {
+  display: 'flex',
+  gap: 8,
+  alignItems: 'center',
+  marginBottom: 6,
+  fontSize: 13,
+  color: '#cbd5e1',
 };

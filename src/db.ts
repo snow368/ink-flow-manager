@@ -69,6 +69,20 @@ export class InkFlowDB extends Dexie {
       leads: 'id, artistId, status, source, createdAt, nextFollowUpAt',
       leadRevisions: 'id, leadId, version, actor, createdAt',
     });
+    this.version(5).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+    });
   }
 }
 
@@ -93,10 +107,12 @@ export interface UserRecord {
   lastBackupAt?: number;
   proDaysLeft?: number;
   paymentProvider?: 'stripe_connect' | 'square' | 'manual';
+  enabledPaymentMethods?: Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash'>;
   stripeAccountId?: string;
   paymentLinkTemplate?: string;
   paymentCurrency?: string;
   paymentDefaultDeposit?: string;
+  bankTransferInstructions?: string;
   createdAt: number;
 }
 
@@ -172,6 +188,13 @@ export interface LeadRecord {
   creativeId?: string;
   consultMode?: 'online_chat' | 'consult_booking' | 'walk_in_direct';
   status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
+  paymentMethod?: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash';
+  paymentStatus?: 'unpaid' | 'pending_verify' | 'paid' | 'refunded' | 'waived';
+  paymentAmount?: string;
+  paymentCurrency?: string;
+  paymentProofImages?: string[];
+  paymentProofNote?: string;
+  paymentUpdatedAt?: number;
   bodyPart?: string;
   style?: string;
   size?: string;

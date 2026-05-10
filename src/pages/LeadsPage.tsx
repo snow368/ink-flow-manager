@@ -69,6 +69,14 @@ function paymentSyncCursorKey(artistId: string) {
   return `inkflow_payment_sync_cursor_${artistId}`;
 }
 
+function paymentMethodLabel(method?: LeadRecord['paymentMethod']) {
+  if (method === 'stripe_connect') return 'Stripe';
+  if (method === 'manual_link') return 'Manual Link';
+  if (method === 'bank_transfer') return 'Bank Transfer';
+  if (method === 'cash') return 'Cash';
+  return 'Not set';
+}
+
 function nextStepHint(mode?: LeadRecord['consultMode']) {
   if (mode === 'consult_booking') return 'Next: offer 15-30 min consult slots and lock one.';
   if (mode === 'walk_in_direct') return 'Next: send address, arrival time, and 24h/3h reminders.';
@@ -108,6 +116,10 @@ export default function LeadsPage() {
   const [draftChangeByLead, setDraftChangeByLead] = useState<Record<string, string>>({});
   const [draftImagesByLead, setDraftImagesByLead] = useState<Record<string, string[]>>({});
   const [draftChannelByLead, setDraftChannelByLead] = useState<Record<string, LeadRevisionRecord['channel']>>({});
+  const [draftPaymentAmountByLead, setDraftPaymentAmountByLead] = useState<Record<string, string>>({});
+  const [draftPaymentMethodByLead, setDraftPaymentMethodByLead] = useState<Record<string, LeadRecord['paymentMethod']>>({});
+  const [draftPaymentNoteByLead, setDraftPaymentNoteByLead] = useState<Record<string, string>>({});
+  const [draftPaymentProofByLead, setDraftPaymentProofByLead] = useState<Record<string, string[]>>({});
   const [quickActionByLead, setQuickActionByLead] = useState<Record<string, 'contacted' | 'awaiting_confirmation' | 'booked_slot'>>({});
   const [followPresets, setFollowPresets] = useState<FollowPreset[]>(DEFAULT_PRESETS);
   const [newPresetLabel, setNewPresetLabel] = useState('');
@@ -239,10 +251,10 @@ export default function LeadsPage() {
       for (const item of items) {
         if (!item?.leadId) continue;
         if (item.type === 'deposit_paid') {
-          await db.leads.update(item.leadId, { status: 'booked' });
+          await db.leads.update(item.leadId, { status: 'booked', paymentStatus: 'paid', paymentMethod: 'stripe_connect', paymentUpdatedAt: Date.now() });
         }
         if (item.type === 'refund') {
-          await db.leads.update(item.leadId, { status: 'contacted' });
+          await db.leads.update(item.leadId, { status: 'contacted', paymentStatus: 'refunded', paymentUpdatedAt: Date.now() });
         }
         if (Number(item.createdAt) > maxTs) maxTs = Number(item.createdAt);
       }
@@ -362,9 +374,12 @@ export default function LeadsPage() {
   const copyDepositLink = async (lead: LeadRecord) => {
     if (!artistUser) return;
     const policyAmount = getSuggestedDepositAmount(artistId, lead);
+    const draftAmount = Number(draftPaymentAmountByLead[lead.id] || '0');
     const fallbackAmount = Number(artistUser.paymentDefaultDeposit || '0');
+    const method = draftPaymentMethodByLead[lead.id] || lead.paymentMethod || 'stripe_connect';
     const amount = policyAmount > 0 ? policyAmount : (Number.isFinite(fallbackAmount) ? fallbackAmount : 0);
-    if (artistUser.paymentProvider === 'stripe_connect' && artistUser.stripeAccountId) {
+    const finalAmount = draftAmount > 0 ? draftAmount : amount;
+    if (method === 'stripe_connect' && artistUser.stripeAccountId) {
       try {
         const base = window.location.origin;
         const response = await fetch('http://localhost:8787/api/stripe/checkout-session', {
@@ -372,7 +387,7 @@ export default function LeadsPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             connectedAccountId: artistUser.stripeAccountId,
-            amount,
+            amount: finalAmount,
             currency: (artistUser.paymentCurrency || 'USD').toLowerCase(),
             leadId: lead.id,
             clientName: lead.name,
@@ -391,12 +406,63 @@ export default function LeadsPage() {
         console.error(e);
       }
     }
-    const link = buildDepositLink(artistUser, lead, amount);
+    const link = buildDepositLink(artistUser, lead, finalAmount);
     if (!link) {
       alert('Set Payment Settings first (payment link template).');
       return;
     }
     navigator.clipboard.writeText(link);
+    await db.leads.update(lead.id, {
+      paymentMethod: method,
+      paymentStatus: 'pending_verify',
+      paymentAmount: String(finalAmount),
+      paymentCurrency: artistUser.paymentCurrency || 'USD',
+      paymentUpdatedAt: Date.now(),
+    });
+    await refresh();
+  };
+
+  const handlePaymentProofFiles = async (leadId: string, files: FileList | null) => {
+    if (!files) return;
+    const current = draftPaymentProofByLead[leadId] || [];
+    const max = Math.min(files.length, Math.max(0, 4 - current.length));
+    const list: string[] = [];
+    for (let i = 0; i < max; i++) {
+      const data = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.readAsDataURL(files[i]);
+      });
+      list.push(data);
+    }
+    setDraftPaymentProofByLead(prev => ({ ...prev, [leadId]: [...current, ...list] }));
+  };
+
+  const savePaymentDraft = async (lead: LeadRecord) => {
+    const method = draftPaymentMethodByLead[lead.id] || lead.paymentMethod || 'cash';
+    const amount = (draftPaymentAmountByLead[lead.id] || lead.paymentAmount || artistUser?.paymentDefaultDeposit || '').trim();
+    const note = (draftPaymentNoteByLead[lead.id] || '').trim();
+    const proof = draftPaymentProofByLead[lead.id] || [];
+    await db.leads.update(lead.id, {
+      paymentMethod: method,
+      paymentAmount: amount || undefined,
+      paymentCurrency: artistUser?.paymentCurrency || 'USD',
+      paymentProofNote: note || undefined,
+      paymentProofImages: proof.length ? proof : undefined,
+      paymentStatus: method === 'cash' ? 'paid' : 'pending_verify',
+      paymentUpdatedAt: Date.now(),
+      status: method === 'cash' ? 'booked' : lead.status,
+    });
+    await refresh();
+  };
+
+  const approvePayment = async (lead: LeadRecord) => {
+    await db.leads.update(lead.id, {
+      paymentStatus: 'paid',
+      paymentUpdatedAt: Date.now(),
+      status: 'booked',
+    });
+    await refresh();
   };
 
   const addFollowPreset = () => {
@@ -776,6 +842,9 @@ export default function LeadsPage() {
               {lead.nextFollowUpAt && <p style={{ fontSize: 11, color: isDue ? '#fca5a5' : '#93c5fd', marginBottom: 4 }}>Follow-up: {isDue ? 'Due now' : 'Scheduled'} at {new Date(lead.nextFollowUpAt).toLocaleString()}</p>}
               <p style={{ fontSize: 12,
   fontWeight: 600, color: '#94a3b8' }}>{lead.phone || 'No phone'} - {lead.source}</p>
+              <p style={{ fontSize: 11, color: '#a5b4fc', marginTop: 4 }}>
+                Payment: {lead.paymentStatus || 'unpaid'} | Method: {paymentMethodLabel(lead.paymentMethod)}{lead.paymentAmount ? ` | ${lead.paymentAmount} ${lead.paymentCurrency || ''}` : ''}
+              </p>
               <p style={{ fontSize: 11, color: '#93c5fd', marginTop: 3 }}>
                 Mode: {lead.consultMode === 'consult_booking' ? 'Book consultation' : lead.consultMode === 'walk_in_direct' ? 'Direct walk-in' : 'Online chat first'}
               </p>
@@ -791,6 +860,55 @@ export default function LeadsPage() {
                 <button onClick={() => navigator.clipboard.writeText(getReviseLink(lead.id))} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Client Update Link</button>
               </div>
 
+              <div style={{ marginTop: 8, background: '#0f172a', border: '1px solid #334155', borderRadius: 10, padding: 8 }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#e2e8f0', marginBottom: 6 }}>Payment Capture</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 6 }}>
+                  <select
+                    value={draftPaymentMethodByLead[lead.id] || lead.paymentMethod || 'stripe_connect'}
+                    onChange={e => setDraftPaymentMethodByLead(prev => ({ ...prev, [lead.id]: e.target.value as LeadRecord['paymentMethod'] }))}
+                    style={{ ...textAreaStyle, height: 36, marginBottom: 0 }}
+                  >
+                    <option value="stripe_connect">Stripe Connect</option>
+                    <option value="manual_link">Manual Link</option>
+                    <option value="bank_transfer">Bank Transfer</option>
+                    <option value="cash">Cash</option>
+                  </select>
+                  <input
+                    value={draftPaymentAmountByLead[lead.id] || lead.paymentAmount || ''}
+                    onChange={e => setDraftPaymentAmountByLead(prev => ({ ...prev, [lead.id]: e.target.value }))}
+                    placeholder={`Amount (${artistUser?.paymentCurrency || 'USD'})`}
+                    style={{ ...textAreaStyle, height: 36, marginBottom: 0 }}
+                  />
+                </div>
+                {(draftPaymentMethodByLead[lead.id] || lead.paymentMethod) === 'bank_transfer' && !!artistUser?.bankTransferInstructions && (
+                  <div style={{ fontSize: 11, color: '#cbd5e1', background: '#111827', border: '1px solid #1f2937', borderRadius: 8, padding: 8, marginBottom: 6 }}>
+                    {artistUser.bankTransferInstructions}
+                  </div>
+                )}
+                <textarea
+                  value={draftPaymentNoteByLead[lead.id] || lead.paymentProofNote || ''}
+                  onChange={e => setDraftPaymentNoteByLead(prev => ({ ...prev, [lead.id]: e.target.value }))}
+                  placeholder="Payment note / transfer ref / cash receipt note"
+                  rows={1}
+                  style={textAreaStyle}
+                />
+                <input type="file" accept="image/*" multiple onChange={e => void handlePaymentProofFiles(lead.id, e.target.files)} style={{ marginBottom: 6 }} />
+                {(draftPaymentProofByLead[lead.id] || lead.paymentProofImages || []).length > 0 && (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 6 }}>
+                    {(draftPaymentProofByLead[lead.id] || lead.paymentProofImages || []).map((img, i) => (
+                      <img key={`${lead.id}_proof_${i}`} src={img} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover', borderRadius: 6 }} />
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button onClick={() => void copyDepositLink(lead)} style={{ ...btnStyle, color: '#fcd34d' }}>Copy Deposit Link</button>
+                  <button onClick={() => void savePaymentDraft(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Save Payment Draft</button>
+                  {lead.paymentStatus === 'pending_verify' && (
+                    <button onClick={() => void approvePayment(lead)} style={{ ...btnStyle, color: '#86efac' }}>Approve as Paid</button>
+                  )}
+                </div>
+              </div>
+
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
                 {followPresets.map(p => <button key={p.id} onClick={() => void setFollowUp(lead.id, p.minutes)} style={{ ...btnStyle, padding: '5px 8px' }}>{p.label}</button>)}
                 <button onClick={() => void recommendFollowUp(lead)} style={{ ...btnStyle, padding: '5px 8px', color: '#93c5fd' }}>AI Recommend</button>
@@ -802,7 +920,6 @@ export default function LeadsPage() {
                 {suggestedSlotsByLead[lead.id]?.length ? (
                   <button onClick={() => copySuggestedMessage(lead)} style={{ ...btnStyle, color: '#93c5fd' }}>Copy Slot Message</button>
                 ) : null}
-                <button onClick={() => void copyDepositLink(lead)} style={{ ...btnStyle, color: '#fcd34d' }}>Copy Deposit Link</button>
               </div>
               {suggestedSlotsByLead[lead.id]?.length ? (
                 <div style={{ marginTop: 6, background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8, fontSize: 11, color: '#cbd5e1' }}>
