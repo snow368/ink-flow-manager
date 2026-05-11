@@ -2,6 +2,7 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { canAddStorage } from '../lib/quota';
 
 const ALLERGY_OPTIONS = [
   'Latex gloves',
@@ -54,6 +55,15 @@ export default function IntakePage() {
 
   const handleFiles = async (files: FileList | null) => {
     if (!files) return;
+    if (!artistId) return;
+    const artist = await db.users.get(artistId);
+    let incomingBytes = 0;
+    for (let i = 0; i < files.length; i++) incomingBytes += files[i].size || 0;
+    const quotaCheck = await canAddStorage(artist || null, artistId, incomingBytes);
+    if (!quotaCheck.ok) {
+      alert(`Storage quota exceeded (${quotaCheck.usedMb.toFixed(1)}MB / ${quotaCheck.quotaMb}MB). Please ask studio to upgrade plan.`);
+      return;
+    }
     const max = Math.min(6 - referenceImages.length, files.length);
     const list: string[] = [];
     for (let i = 0; i < max; i++) {

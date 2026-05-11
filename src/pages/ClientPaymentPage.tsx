@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db, type LeadRecord, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { canAddStorage } from '../lib/quota';
 
 function methodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'stripe_connect') return 'Stripe';
@@ -41,6 +42,14 @@ export default function ClientPaymentPage() {
 
   const handleFiles = async (files: FileList | null) => {
     if (!files) return;
+    if (!lead || !artist) return;
+    let incomingBytes = 0;
+    for (let i = 0; i < files.length; i++) incomingBytes += files[i].size || 0;
+    const quotaCheck = await canAddStorage(artist, lead.artistId, incomingBytes);
+    if (!quotaCheck.ok) {
+      setMsg(`Storage quota exceeded (${quotaCheck.usedMb.toFixed(1)}MB / ${quotaCheck.quotaMb}MB). Please contact studio to upgrade.`);
+      return;
+    }
     const max = Math.min(files.length, Math.max(0, 4 - proofImages.length));
     const list: string[] = [];
     for (let i = 0; i < max; i++) {
