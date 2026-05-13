@@ -10,7 +10,7 @@ const app = express();
 const port = Number(process.env.PORT || 8787);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
-const platformFeePercent = Number(process.env.STRIPE_PLATFORM_FEE_PERCENT || '5');
+const platformFeePercent = Number(process.env.STRIPE_PLATFORM_FEE_PERCENT || '0');
 const serverApiKey = process.env.SERVER_API_KEY || '';
 const requireApiKey = String(process.env.REQUIRE_API_KEY || '').toLowerCase() === 'true';
 

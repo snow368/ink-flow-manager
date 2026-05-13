@@ -127,11 +127,13 @@ export default function PaymentSettingsPage() {
       </div>
 
       <div style={card}>
-        <p style={label}>Payment link template</p>
-        <textarea value={template} onChange={e => setTemplate(e.target.value)} rows={4} style={{ ...input, resize: 'vertical' }} />
+        <p style={label}>Payment link template (manual_link)</p>
+        <textarea value={template} onChange={e => setTemplate(e.target.value)} rows={4} style={{ ...input, resize: 'vertical' }}
+          placeholder="https://paypal.me/yourstudio/{amount} or https://revolut.me/yourname/{amount}" />
         <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>
-          Supported placeholders: {'{amount}'}, {'{currency}'}, {'{leadId}'}, {'{client}'}, {'{artistId}'}.
+          Placeholders: {'{amount}'}, {'{currency}'}, {'{leadId}'}, {'{client}'}, {'{artistId}'}.
         </p>
+        <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>US artists: PayPal.me / Zelle / Venmo. EU artists: Wise / Revolut / SEPA. System generates the payment link with the lead's amount. Client pays → uploads proof → you approve in Payment History.</p>
       </div>
 
       <div style={card}>

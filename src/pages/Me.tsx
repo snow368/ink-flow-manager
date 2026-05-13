@@ -186,6 +186,30 @@ export default function Me() {
         </button>
       </div>
 
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/supply-brands')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'supply_brands')}</span>
+          <span style={{ fontSize: 11, background: '#fbbf2420', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      {user.role === 'owner' && (
+        <div style={{ marginBottom: 16 }}>
+          <button onClick={() => navigate('/supply-brands/admin')}
+            style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #fbbf2480', background: '#1e293b', color: '#fbbf24', fontSize: 14, fontWeight: 600, textAlign: 'left' }}>
+            {t(lang, 'supply_brands_admin')} <span style={{ fontSize: 10, color: '#64748b' }}>({t(lang, 'owner_only')})</span>
+          </button>
+        </div>
+      )}
+
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 14 }}>Payment Tips</p>
+        <p style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
+          For manual_link: paste your PayPal.me, Zelle, Venmo (US), Wise, Revolut, or SEPA bank link (EU). Use {'{'}amount{'}'} as placeholder. System generates a payment link with the correct amount. Client pays → uploads proof → you verify in Payment History.
+        </p>
+      </div>
+
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 8 }}>Manual Backup</p>
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>

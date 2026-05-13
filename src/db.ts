@@ -13,6 +13,7 @@ export class InkFlowDB extends Dexie {
   referrals!: Table<ReferralRecord>;
   leads!: Table<LeadRecord>;
   leadRevisions!: Table<LeadRevisionRecord>;
+  supplyBrands!: Table<SupplyBrandRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -96,6 +97,21 @@ export class InkFlowDB extends Dexie {
       referrals: 'id, inviterId, inviteeId, status, createdAt',
       leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
       leadRevisions: 'id, leadId, version, actor, createdAt',
+    });
+    this.version(7).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
     });
   }
 }
@@ -239,5 +255,35 @@ export interface LeadRevisionRecord {
   note?: string;
   changeRequest?: string;
   referenceImages?: string[];
+  createdAt: number;
+}
+
+export interface SupplyProduct {
+  id: string;
+  name: string;
+  imageUrl: string;
+  price: string;
+  affiliateLink: string;
+  note: string;
+  isNew?: boolean;
+  createdAt?: number;
+  clickCount?: number;
+}
+
+export interface SupplyBrandRecord {
+  id: string;
+  name: string;
+  category: 'ink' | 'needles' | 'machines' | 'aftercare' | 'furniture' | 'other';
+  description: string;
+  logoUrl: string;
+  affiliateLink: string;
+  commissionNote?: string;
+  products: SupplyProduct[];
+  sortOrder: number;
+  active: boolean;
+  featured?: boolean;
+  featuredTier?: 'basic' | 'premium';
+  featuredUntil?: number;
+  clickCount?: number;
   createdAt: number;
 }

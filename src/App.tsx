@@ -24,6 +24,8 @@ import PaymentSettingsPage from './pages/PaymentSettingsPage';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import ClientPaymentPage from './pages/ClientPaymentPage';
 import ClientPaymentStatusPage from './pages/ClientPaymentStatusPage';
+import SupplyBrandsPage from './pages/SupplyBrandsPage';
+import SupplyBrandsAdmin from './pages/SupplyBrandsAdmin';
 import { db } from './db';
 import { detectInitialLanguage } from './lib/i18n';
 
@@ -96,7 +98,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -142,6 +144,8 @@ export default function App() {
             <Route path="/payment-history" element={<PaymentHistoryPage />} />
             <Route path="/pay/:leadId" element={<ClientPaymentPage />} />
             <Route path="/pay/status/:leadId" element={<ClientPaymentStatusPage />} />
+            <Route path="/supply-brands" element={<SupplyBrandsPage />} />
+            <Route path="/supply-brands/admin" element={<SupplyBrandsAdmin />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>
