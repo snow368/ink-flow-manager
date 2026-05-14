@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type InventoryRecord } from '../db';
 import { getInventoryGuide, speakGuide, tryOCR, addInventoryFromPhoto, shouldShowGuide, markScanComplete } from '../lib/inventoryCamera';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 export default function InventoryPage() {
   const navigate = useNavigate();
@@ -14,7 +15,14 @@ export default function InventoryPage() {
   const [quantity, setQuantity] = useState(1);
   const [reorderLevel, setReorderLevel] = useState(5);
   const [unit, setUnit] = useState('pcs');
+  const [price, setPrice] = useState('');
+  const [sku, setSku] = useState('');
+  const [sellable, setSellable] = useState(false);
+  const [batchNumber, setBatchNumber] = useState('');
+  const [batchPhotoUrl, setBatchPhotoUrl] = useState('');
+  const [reorderUrl, setReorderUrl] = useState('');
   const [message, setMessage] = useState('');
+  const lang = detectInitialLanguage();
   const [guideStep, setGuideStep] = useState(0);
   const [photoData, setPhotoData] = useState('');
   const [ocrResult, setOcrResult] = useState('');
@@ -28,21 +36,24 @@ export default function InventoryPage() {
 
   const resetForm = () => {
     setName(''); setCategory(''); setQuantity(1); setReorderLevel(5); setUnit('pcs');
+    setPrice(''); setSku(''); setSellable(false);
+    setBatchNumber(''); setBatchPhotoUrl(''); setReorderUrl('');
     setEditId(null); setShowAdd(false); setPhotoData(''); setOcrResult(''); setGuideStep(0);
   };
 
   const handleSave = async () => {
     if (!name.trim()) return;
     const now = Date.now();
+    const priceCents = price ? Math.round(parseFloat(price) * 100) : undefined;
     if (editId) {
-      await db.inventory.update(editId, { name: name.trim(), category: category.trim() || undefined, quantity, reorderLevel, unit });
+      await db.inventory.update(editId, { name: name.trim(), category: category.trim() || undefined, quantity, reorderLevel, unit, price: priceCents, sku: sku.trim() || undefined, sellable: sellable || undefined, batchNumber: batchNumber.trim() || undefined, batchPhotoUrl: batchPhotoUrl || undefined, reorderUrl: reorderUrl.trim() || undefined });
       setMessage('Item updated.');
     } else {
       if (photoData) {
         await addInventoryFromPhoto(photoData, name.trim(), category, quantity, unit);
       } else {
         const id = 'inv_' + now + '_' + Math.random().toString(36).slice(2, 6);
-        await db.inventory.add({ id, name: name.trim(), category: category.trim() || 'General', quantity, reorderLevel, unit, createdAt: now });
+        await db.inventory.add({ id, name: name.trim(), category: category.trim() || 'General', quantity, reorderLevel, unit, price: priceCents, sku: sku.trim() || undefined, sellable: sellable || undefined, batchNumber: batchNumber.trim() || undefined, batchPhotoUrl: batchPhotoUrl || undefined, reorderUrl: reorderUrl.trim() || undefined, createdAt: now });
       }
       setMessage('Item added.');
       markScanComplete();
@@ -54,6 +65,10 @@ export default function InventoryPage() {
   const handleEdit = (item: InventoryRecord) => {
     setEditId(item.id); setName(item.name); setCategory(item.category || '');
     setQuantity(item.quantity); setReorderLevel(item.reorderLevel); setUnit(item.unit);
+    setPrice(item.price != null ? (item.price / 100).toFixed(2) : '');
+    setSku(item.sku || ''); setSellable(item.sellable || false);
+    setBatchNumber(item.batchNumber || ''); setBatchPhotoUrl(item.batchPhotoUrl || '');
+    setReorderUrl(item.reorderUrl || '');
     setShowAdd(true);
   };
 
@@ -216,6 +231,22 @@ export default function InventoryPage() {
             <input type="number" placeholder="Reorder at" value={reorderLevel} onChange={e => setReorderLevel(Number(e.target.value))} style={{ ...inputStyle, flex: 1 }} />
             <input placeholder="Unit" value={unit} onChange={e => setUnit(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
           </div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <input type="number" placeholder="Price (dollars)" value={price} onChange={e => setPrice(e.target.value)} style={{ ...inputStyle, flex: 1 }} step="0.01" min="0" />
+            <input placeholder="SKU" value={sku} onChange={e => setSku(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: 13, color: '#94a3b8' }}>
+            <input type="checkbox" checked={sellable} onChange={e => setSellable(e.target.checked)} />
+            {t(lang, 'pos_sellable')}
+          </label>
+          <input placeholder="Batch number (compliance trace)" value={batchNumber} onChange={e => setBatchNumber(e.target.value)} style={inputStyle} />
+          {batchPhotoUrl && (
+            <div style={{ borderRadius: 10, overflow: 'hidden', marginBottom: 8, maxHeight: 120 }}>
+              <img src={batchPhotoUrl} alt="batch label" style={{ width: '100%', objectFit: 'cover' }} />
+              <button onClick={() => setBatchPhotoUrl('')} style={{ position: 'absolute', background: '#ef4444', color: 'white', border: 'none', borderRadius: 4, padding: '2px 8px', fontSize: 11, cursor: 'pointer' }}>Remove</button>
+            </div>
+          )}
+          <input placeholder="Reorder / purchase URL" value={reorderUrl} onChange={e => setReorderUrl(e.target.value)} style={inputStyle} />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <button onClick={handleSave} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#22c55e', color: 'white', fontSize: 14, fontWeight: 600 }}>
               {editId ? 'Update' : 'Add to Inventory'}
@@ -235,8 +266,16 @@ export default function InventoryPage() {
         {items.map(item => (
           <div key={item.id} style={{ background: item.quantity <= item.reorderLevel ? '#3b1117' : '#1e293b', borderRadius: 12, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 15, fontWeight: 600 }}>{item.name}</p>
-              <p style={{ fontSize: 12, color: '#94a3b8' }}>{item.category} · {item.quantity} {item.unit} · Reorder at {item.reorderLevel}</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <p style={{ fontSize: 15, fontWeight: 600 }}>{item.name}</p>
+                {item.batchNumber && <span style={{ fontSize: 10, background: '#1e3a5f', color: '#93c5fd', padding: '1px 6px', borderRadius: 4 }}>Batch {item.batchNumber}</span>}
+                {item.quantity <= item.reorderLevel && <span style={{ fontSize: 10, background: '#7f1d1d', color: '#fca5a5', padding: '1px 6px', borderRadius: 4 }}>Low</span>}
+              </div>
+              <p style={{ fontSize: 12, color: '#94a3b8' }}>{item.category} · {item.quantity} {item.unit} · Reorder at {item.reorderLevel}{item.price ? ` · $${(item.price / 100).toFixed(2)}` : ''}</p>
+              {item.reorderUrl && item.quantity <= item.reorderLevel && (
+                <a href={item.reorderUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: 11, color: '#60a5fa', textDecoration: 'none', display: 'inline-block', marginTop: 4 }}>Purchase / Reorder →</a>
+              )}
+              {item.sellable && <span style={{ fontSize: 10, background: '#14532d', color: '#4ade80', padding: '1px 6px', borderRadius: 4 }}>Sellable</span>}
             </div>
             <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
               <button onClick={() => handleQuickAdd(item, -1)} style={qtyBtn}>−</button>

@@ -9,6 +9,7 @@ function methodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'manual_link') return 'Manual Link';
   if (method === 'bank_transfer') return 'Bank Transfer';
   if (method === 'cash') return 'Cash at Studio';
+  if (method === 'paypal') return 'PayPal';
   return 'Not selected';
 }
 
@@ -36,7 +37,7 @@ export default function ClientPaymentPage() {
   }, [leadId]);
 
   const enabledMethods = useMemo(
-    () => artist?.enabledPaymentMethods?.length ? artist.enabledPaymentMethods : ['stripe_connect', 'manual_link', 'bank_transfer', 'cash'],
+    () => artist?.enabledPaymentMethods?.length ? artist.enabledPaymentMethods : ['stripe_connect', 'manual_link', 'bank_transfer', 'cash', 'paypal'],
     [artist]
   );
 

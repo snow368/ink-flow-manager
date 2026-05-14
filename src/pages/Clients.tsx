@@ -1,12 +1,15 @@
 ﻿import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type ClientRecord } from '../db';
+import { getCurrentArtistIds } from '../lib/locationLogic';
 
 export default function Clients() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [search, setSearch] = useState('');
+  const [tagFilter, setTagFilter] = useState('');
+  const [sortBy, setSortBy] = useState<'createdAt' | 'name' | 'lastVisit' | 'totalSpend'>('createdAt');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -20,15 +23,32 @@ export default function Clients() {
   }, [navigate]);
 
   async function loadClients(u: UserRecord) {
-    let query = db.clients.orderBy('createdAt').reverse();
-    if (u.role === 'artist' && u.artistId) query = query.filter(c => c.artistId === u.artistId);
-    setClients(await query.toArray());
+    const artistIds = await getCurrentArtistIds(u);
+    if (u.role === 'artist' && u.artistId) {
+      setClients(await db.clients.orderBy('createdAt').reverse().filter(c => c.artistId === u.artistId).toArray());
+    } else if (u.role === 'owner' && artistIds.length > 1) {
+      setClients(await db.clients.orderBy('createdAt').reverse().filter(c => artistIds.includes(c.artistId || '')).toArray());
+    } else {
+      setClients(await db.clients.orderBy('createdAt').reverse().toArray());
+    }
   }
 
-  const filtered = clients.filter(c =>
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    (c.phone && c.phone.includes(search))
-  );
+  const filtered = clients
+    .filter(c => {
+      const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
+        (c.phone && c.phone.includes(search));
+      const matchTag = !tagFilter || (c.tags || []).includes(tagFilter);
+      return matchSearch && matchTag;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'lastVisit') return (b.lastVisitAt || 0) - (a.lastVisitAt || 0);
+      if (sortBy === 'totalSpend') return (b.totalSpend || 0) - (a.totalSpend || 0);
+      return b.createdAt - a.createdAt;
+    });
+
+  const TAG_LIST = ['vip', 'new', 'at_risk'];
+  const TAG_COLORS: Record<string, string> = { vip: '#fbbf24', new: '#4ade80', at_risk: '#f87171' };
 
   return (
     <div style={{ padding: 24, color: 'white' }}>
@@ -86,14 +106,46 @@ export default function Clients() {
         placeholder="Search clients..."
         value={search}
         onChange={e => setSearch(e.target.value)}
-        style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 14, marginBottom: 16, outline: 'none' }}
+        style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
       />
+
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <button onClick={() => setTagFilter('')}
+          style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: !tagFilter ? '#e11d48' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>All</button>
+        {TAG_LIST.map(tag => (
+          <button key={tag} onClick={() => setTagFilter(tagFilter === tag ? '' : tag)}
+            style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: tagFilter === tag ? TAG_COLORS[tag] : '#334155', color: tagFilter === tag ? '#0f172a' : TAG_COLORS[tag], fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}
+        style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, marginBottom: 12, outline: 'none', boxSizing: 'border-box' }}>
+        <option value="createdAt">Sort: Newest First</option>
+        <option value="name">Sort: Name</option>
+        <option value="lastVisit">Sort: Last Visit</option>
+        <option value="totalSpend">Sort: Total Spend</option>
+      </select>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.map(client => (
           <div key={client.id} onClick={() => navigate('/client/' + client.id)} style={{ background: '#1e293b', borderRadius: 12, padding: 14, cursor: 'pointer' }}>
-            <p style={{ fontSize: 16, fontWeight: 600 }}>{client.name}</p>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} - {client.email || 'No email'}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 16, fontWeight: 600 }}>{client.name}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} - {client.email || 'No email'}</p>
+              </div>
+            </div>
+            {(client.tags && client.tags.length > 0) && (
+              <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+                {client.tags.map(tag => (
+                  <span key={tag} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: (TAG_COLORS[tag] || '#64748b') + '33', color: TAG_COLORS[tag] || '#94a3b8', fontWeight: 600 }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
             {client.allergies && client.allergies.length > 0 && (
               <div style={{ marginTop: 6, display: 'flex', gap: 4 }}>
                 {client.allergies.map((a, i) => <span key={i} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>)}

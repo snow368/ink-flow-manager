@@ -1,9 +1,14 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db, type UserRecord, type AppointmentRecord, type LeadRecord } from '../db';
+import { db, type UserRecord, type AppointmentRecord, type LeadRecord, type ClientRecord, type ConsumableUsage } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { getArtistAvailability } from '../lib/availability';
+import { checkAppointmentReminders, markReminderSent, requestNotificationPermission, sendBrowserNotification, getReminderMessage, getWhatsAppReminderUrl, type AppointmentReminder } from '../lib/reminders';
+import { getCurrentArtistIds } from '../lib/locationLogic';
+import { getClientsWithBirthdayToday, getYearAwayClients, getUpcomingBirthdays, getWhatsAppBirthdayLink, getWhatsAppYearAwayLink, buildBirthdayMessage, buildYearAwayMessage } from '../lib/marketingLogic';
+import { getLowStockCount } from '../lib/inventoryAlerts';
 
 type PaymentReminderItem = { lead: LeadRecord; stage: '24h' | '48h' };
 
@@ -23,6 +28,16 @@ export default function Today() {
   const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string })[]>>(new Map());
   const [dueLeads, setDueLeads] = useState<LeadRecord[]>([]);
   const [paymentReminders, setPaymentReminders] = useState<PaymentReminderItem[]>([]);
+  const [appointmentReminders, setAppointmentReminders] = useState<AppointmentReminder[]>([]);
+  const [workStart, setWorkStart] = useState(10 * 60);
+  const [workEnd, setWorkEnd] = useState(22 * 60);
+  const [daysOff, setDaysOff] = useState<string[]>([]);
+  const [birthdayClients, setBirthdayClients] = useState<ClientRecord[]>([]);
+  const [upcomingBirthdays, setUpcomingBirthdays] = useState<ClientRecord[]>([]);
+  const [yearAwayClients, setYearAwayClients] = useState<{ client: ClientRecord; monthsAway: number }[]>([]);
+  const [lowStockCount, setLowStockCount] = useState(0);
+  const [lastConsumables, setLastConsumables] = useState<Map<string, string[]>>(new Map());
+  const [presetItems, setPresetItems] = useState<Map<string, string[]>>(new Map());
   const [conflictModal, setConflictModal] = useState<{
     open: boolean;
     appointmentId: string;
@@ -42,23 +57,111 @@ export default function Today() {
       loadFutureDateCounts(u);
       loadDueLeads(u);
       loadPaymentReminders(u);
+      loadAppointmentReminders(u);
+      loadAvailability(u);
+      loadMarketingCards(u);
+      loadPresets();
+      requestNotificationPermission();
     });
   }, [navigate, selectedDate]);
 
+  useEffect(() => {
+    if (!user) return;
+    getLowStockCount().then(setLowStockCount);
+    const timer = window.setInterval(() => { getLowStockCount().then(setLowStockCount); }, 5 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [user, appointments]);
+
+  useEffect(() => {
+    if (!user) return;
+    const artistId = user.artistId || user.id;
+    const timer = window.setInterval(async () => {
+      const reminders = await checkAppointmentReminders(artistId);
+      for (const r of reminders) {
+        sendBrowserNotification(
+          `Appointment Reminder — ${r.stage}`,
+          getReminderMessage(r.appointment, r.stage),
+        );
+      }
+    }, 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [user]);
+
   async function loadDueLeads(u: UserRecord) {
-    const artistId = u.artistId || u.id;
+    const artistIds = await getCurrentArtistIds(u);
     const now = Date.now();
-    const leads = await db.leads.where('artistId').equals(artistId).toArray();
+    const leads = artistIds.length > 1
+      ? await db.leads.where('artistId').anyOf(artistIds).toArray()
+      : await db.leads.where('artistId').equals(artistIds[0] || u.id).toArray();
     const due = leads
       .filter(l => !!l.nextFollowUpAt && l.nextFollowUpAt <= now && l.status !== 'won' && l.status !== 'lost')
       .sort((a, b) => (a.nextFollowUpAt || 0) - (b.nextFollowUpAt || 0));
     setDueLeads(due);
   }
 
+  function loadPresets() {
+    try {
+      const raw = localStorage.getItem('inkflow_consumable_presets');
+      if (!raw) return;
+      const presets: { type: string; items: string[] }[] = JSON.parse(raw);
+      const map = new Map<string, string[]>();
+      for (const p of presets) {
+        if (p.items.length > 0) map.set(p.type.toLowerCase(), p.items);
+      }
+      setPresetItems(map);
+    } catch { /* ignore */ }
+  }
+
+  async function loadLastConsumables(appointments: (AppointmentRecord & { clientName?: string })[]) {
+    const clientIds = [...new Set(appointments.map(a => a.clientId))];
+    if (clientIds.length === 0) return;
+
+    // Get all past appointments for these clients
+    const allPastApps = await db.appointments
+      .where('clientId').anyOf(clientIds)
+      .and(a => a.status === 'done')
+      .toArray();
+
+    if (allPastApps.length === 0) return;
+
+    const pastAppIds = allPastApps.map(a => a.id);
+    const pastSessions = await db.sessions
+      .where('appointmentId').anyOf(pastAppIds)
+      .and(s => (s.consumables || []).length > 0)
+      .reverse()
+      .sortBy('startedAt');
+
+    // Group latest session per client
+    const clientLatestSession = new Map<string, ConsumableUsage[]>();
+    for (const s of pastSessions) {
+      const app = allPastApps.find(a => a.id === s.appointmentId);
+      if (!app) continue;
+      if (clientLatestSession.has(app.clientId)) continue; // already got latest
+      if (s.consumables && s.consumables.length > 0) {
+        clientLatestSession.set(app.clientId, s.consumables);
+      }
+    }
+
+    // Resolve inventory names
+    const invItems = await db.inventory.toArray();
+    const invMap = new Map(invItems.map(i => [i.id, i.name]));
+
+    const result = new Map<string, string[]>();
+    for (const [clientId, consumables] of clientLatestSession) {
+      const names = consumables
+        .map(c => invMap.get(c.itemId) || c.itemId)
+        .slice(0, 4); // max 4 items shown
+      result.set(clientId, names);
+    }
+    setLastConsumables(result);
+  }
+
   async function loadPaymentReminders(u: UserRecord) {
-    const artistId = u.artistId || u.id;
+    const artistIds = await getCurrentArtistIds(u);
     const now = Date.now();
-    const leads = await db.leads.where('artistId').equals(artistId).toArray();
+    const leads = artistIds.length > 1
+      ? await db.leads.where('artistId').anyOf(artistIds).toArray()
+      : await db.leads.where('artistId').equals(artistIds[0] || u.id).toArray();
     const list: PaymentReminderItem[] = [];
     for (const l of leads) {
       if (l.status === 'won' || l.status === 'lost') continue;
@@ -74,6 +177,40 @@ export default function Today() {
     }
     setPaymentReminders(list.slice(0, 5));
   }
+
+  async function loadAppointmentReminders(u: UserRecord) {
+    const artistId = u.artistId || u.id;
+    const list = await checkAppointmentReminders(artistId);
+    setAppointmentReminders(list);
+  }
+
+  async function loadAvailability(u: UserRecord) {
+    const artistId = u.artistId || u.id;
+    const avail = await getArtistAvailability(artistId);
+    setWorkStart(toMinutes(avail.start));
+    setWorkEnd(toMinutes(avail.end));
+    setDaysOff(avail.daysOff);
+  }
+
+  async function loadMarketingCards(u: UserRecord) {
+    const artistId = u.artistId || u.id;
+    const [bd, upcoming, yearAway] = await Promise.all([
+      getClientsWithBirthdayToday(artistId),
+      getUpcomingBirthdays(artistId, 7),
+      getYearAwayClients(artistId),
+    ]);
+    setBirthdayClients(bd);
+    setUpcomingBirthdays(upcoming.filter(c => !bd.find(b => b.id === c.id)));
+    setYearAwayClients(yearAway);
+  }
+
+  const copyBirthdayMsg = (client: ClientRecord) => {
+    navigator.clipboard.writeText(buildBirthdayMessage(client));
+  };
+
+  const copyYearAwayMsg = (client: ClientRecord, months: number) => {
+    navigator.clipboard.writeText(buildYearAwayMessage(client, months));
+  };
 
   const copyPaymentReminderMessage = (lead: LeadRecord, stage: '24h' | '48h') => {
     const payLink = `${window.location.origin}/pay/${encodeURIComponent(lead.id)}`;
@@ -102,15 +239,48 @@ export default function Today() {
     }
   };
 
+  const handleApptReminderDone = async (appointmentId: string, stage: '24h' | '3h') => {
+    markReminderSent(appointmentId, stage);
+    if (user) await loadAppointmentReminders(user);
+  };
+
+  const copyApptReminder = (reminder: AppointmentReminder) => {
+    const msg = getReminderMessage(reminder.appointment, reminder.stage);
+    navigator.clipboard.writeText(msg);
+  };
+
+  const openWhatsAppReminder = (reminder: AppointmentReminder) => {
+    const url = getWhatsAppReminderUrl(reminder.appointment, reminder.stage, user?.whatsappPhone);
+    if (!url) {
+      const msg = getReminderMessage(reminder.appointment, reminder.stage);
+      navigator.clipboard.writeText(msg);
+      alert('No WhatsApp phone configured. Message copied to clipboard.');
+      return;
+    }
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const openIgReminder = (reminder: AppointmentReminder) => {
+    const msg = getReminderMessage(reminder.appointment, reminder.stage);
+    navigator.clipboard.writeText(msg);
+    window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener,noreferrer');
+  };
+
   async function loadAppointmentsForDate(u: UserRecord, date: string) {
     let query = db.appointments.where('date').equals(date);
     if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.role === 'owner') {
+      const locArtistIds = await getCurrentArtistIds(u);
+      if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
+    }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
       const client = await db.clients.get(a.clientId);
       return { ...a, clientName: client?.name || 'Unknown' };
     }));
-    setAppointments(enriched.sort((a, b) => a.time.localeCompare(b.time)));
+    const sorted = enriched.sort((a, b) => a.time.localeCompare(b.time));
+    setAppointments(sorted);
+    loadLastConsumables(sorted);
   }
 
   async function loadFutureDateCounts(u: UserRecord) {
@@ -119,6 +289,10 @@ export default function Today() {
     endDate.setMonth(endDate.getMonth() + 3);
     let query = db.appointments.where('date').between(today, endDate.toISOString().slice(0, 10));
     if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.role === 'owner') {
+      const locArtistIds = await getCurrentArtistIds(u);
+      if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
+    }
     const futureApps = await query.toArray();
     const counts = new Map<string, number>();
     futureApps.forEach(a => counts.set(a.date, (counts.get(a.date) || 0) + 1));
@@ -135,6 +309,10 @@ export default function Today() {
 
     let query = db.appointments.where('date').between(start.toISOString().slice(0, 10), end.toISOString().slice(0, 10));
     if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.role === 'owner') {
+      const locArtistIds = await getCurrentArtistIds(u);
+      if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
+    }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
       const client = await db.clients.get(a.clientId);
@@ -191,7 +369,7 @@ export default function Today() {
     excludeId: string
   ) => {
     let candidate = toMinutes(preferredTime);
-    const dayEnd = 22 * 60;
+    const dayEnd = workEnd;
     while (candidate + duration <= dayEnd) {
       const blocked = list.some(a => {
         if (a.id === excludeId) return false;
@@ -217,7 +395,7 @@ export default function Today() {
   ) => {
     const out: string[] = [];
     let candidate = toMinutes(preferredTime);
-    const dayEnd = 22 * 60;
+    const dayEnd = workEnd;
     while (candidate + duration <= dayEnd && out.length < limit) {
       const blocked = list.some(a => {
         if (a.id === excludeId) return false;
@@ -331,6 +509,7 @@ export default function Today() {
             <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'day')}</button>
             <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'week')}</button>
           </div>
+          <button onClick={() => navigate('/pos')} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #22c55e', background: '#14532d', color: '#4ade80', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Register</button>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
         </div>
       </div>
@@ -362,6 +541,16 @@ export default function Today() {
         )}
       </div>
 
+      {lowStockCount > 0 && (
+        <div onClick={() => navigate('/inventory')} style={{ background: '#1e293b', border: '1px solid #f59e0b44', borderRadius: 12, padding: 12, marginBottom: 14, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: 13, color: '#fbbf24', fontWeight: 700 }}>Low Stock Alert: {lowStockCount} item{lowStockCount > 1 ? 's' : ''}</p>
+            <span style={{ fontSize: 12, color: '#93c5fd' }}>Inventory →</span>
+          </div>
+          <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Tap to review low stock items and reorder. Set purchase links in inventory for quick reorder.</p>
+        </div>
+      )}
+
       <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 13, color: '#fcd34d', fontWeight: 700 }}>Deposit Reminders: {paymentReminders.length}</p>
@@ -387,6 +576,96 @@ export default function Today() {
           </div>
         )}
       </div>
+
+      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <p style={{ fontSize: 13, color: '#60a5fa', fontWeight: 700 }}>Appointment Reminders: {appointmentReminders.length}</p>
+        </div>
+        {appointmentReminders.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#94a3b8' }}>No upcoming appointment reminders.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {appointmentReminders.map(item => (
+              <div key={`${item.appointment.id}_${item.stage}`} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <p style={{ fontSize: 13, fontWeight: 700 }}>{item.appointment.clientName}</p>
+                  <span style={{ fontSize: 11, color: item.stage === '3h' ? '#fca5a5' : '#fcd34d' }}>
+                    {item.stage} — {item.appointment.date} {item.appointment.time}
+                  </span>
+                </div>
+                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>
+                  {item.appointment.duration}min · {item.appointment.type || 'appointment'} · {Math.round(item.hoursUntil * 10) / 10}h away
+                </p>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button onClick={() => openWhatsAppReminder(item)} style={smallBtn}>WhatsApp</button>
+                  <button onClick={() => openIgReminder(item)} style={smallBtn}>IG</button>
+                  <button onClick={() => copyApptReminder(item)} style={smallBtn}>Copy</button>
+                  <button onClick={() => void handleApptReminderDone(item.appointment.id, item.stage)} style={smallBtn}>Done</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Client Outreach */}
+      {(birthdayClients.length > 0 || upcomingBirthdays.length > 0 || yearAwayClients.length > 0) && (
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 14, border: '1px solid #334155' }}>
+          <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Client Outreach</p>
+
+          {/* Birthday Today */}
+          {birthdayClients.map(c => (
+            <div key={'bd_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #fbbf24', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
+                  <p style={{ fontSize: 11, color: '#fbbf24' }}>Birthday Today</p>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => copyBirthdayMsg(c)} style={outreachBtn}>Copy</button>
+                  <button onClick={() => { const link = getWhatsAppBirthdayLink(c); if (link) window.open(link, '_blank'); }} style={{ ...outreachBtn, background: '#25d366', color: 'white' }}>WA</button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Upcoming Birthdays (next 7 days, excluding today) */}
+          {upcomingBirthdays.slice(0, 3).map(c => (
+            <div key={'upbd_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #fcd34d', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
+                  <p style={{ fontSize: 11, color: '#fcd34d' }}>Birthday soon — {c.birthday?.slice(5)}</p>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => navigator.clipboard.writeText(buildBirthdayMessage(c))} style={outreachBtn}>Copy</button>
+                  <button onClick={() => { const link = getWhatsAppBirthdayLink(c); if (link) window.open(link, '_blank'); }} style={{ ...outreachBtn, background: '#25d366', color: 'white' }}>WA</button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {/* Year-away — gentle re-engage */}
+          {yearAwayClients.slice(0, 3).map(({ client: c, monthsAway: m }) => (
+            <div key={'ya_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #a78bfa', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
+                  <p style={{ fontSize: 11, color: '#a78bfa' }}>~{m} months since last visit</p>
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button onClick={() => copyYearAwayMsg(c, m)} style={outreachBtn}>Copy</button>
+                  <button onClick={() => { const link = getWhatsAppYearAwayLink(c, m); if (link) window.open(link, '_blank'); }} style={{ ...outreachBtn, background: '#25d366', color: 'white' }}>WA</button>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {birthdayClients.length === 0 && upcomingBirthdays.length === 0 && yearAwayClients.length === 0 && (
+            <p style={{ fontSize: 12, color: '#64748b' }}>No outreach needed today.</p>
+          )}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 8, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #1e293b', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {weekDays.map(day => {
@@ -591,6 +870,9 @@ function AppointmentCard({
           <button onClick={() => navigate('/session/' + appointment.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#34d399', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Start</button>
         )}
         {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
+          <button onClick={() => navigate(`/pos?appointmentId=${encodeURIComponent(appointment.id)}`)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#22c55e', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Checkout</button>
+        )}
+        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
           <button disabled={updating} onClick={() => updateStatus('cancelled')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#475569', color: '#e2e8f0', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
         )}
       </div>
@@ -598,6 +880,10 @@ function AppointmentCard({
   );
 }
 
+const outreachBtn: React.CSSProperties = {
+  border: 'none', background: '#334155', color: '#e2e8f0',
+  fontSize: 11, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+};
 const smallBtn: React.CSSProperties = {
   border: '1px solid #334155',
   background: 'transparent',

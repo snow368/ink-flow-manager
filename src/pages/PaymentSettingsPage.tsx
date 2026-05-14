@@ -6,7 +6,7 @@ export default function PaymentSettingsPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [provider, setProvider] = useState<UserRecord['paymentProvider']>('stripe_connect');
-  const [enabledMethods, setEnabledMethods] = useState<Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash'>>(['stripe_connect', 'manual_link', 'bank_transfer', 'cash']);
+  const [enabledMethods, setEnabledMethods] = useState<Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal'>>(['stripe_connect', 'manual_link', 'bank_transfer', 'cash', 'paypal']);
   const [currency, setCurrency] = useState('USD');
   const [defaultDeposit, setDefaultDeposit] = useState('');
   const [template, setTemplate] = useState('');
@@ -80,7 +80,7 @@ export default function PaymentSettingsPage() {
 
   if (!user) return <div style={{ padding: 20, color: 'white' }}>Please log in</div>;
 
-  const toggleMethod = (method: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash') => {
+  const toggleMethod = (method: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal') => {
     setEnabledMethods(prev => prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method]);
   };
 
@@ -106,6 +106,7 @@ export default function PaymentSettingsPage() {
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('manual_link')} onChange={() => toggleMethod('manual_link')} /> Manual Link</label>
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('bank_transfer')} onChange={() => toggleMethod('bank_transfer')} /> Bank Transfer</label>
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('cash')} onChange={() => toggleMethod('cash')} /> Cash (In Studio)</label>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('paypal')} onChange={() => toggleMethod('paypal')} /> PayPal</label>
       </div>
 
       {provider === 'stripe_connect' && (
@@ -113,6 +114,24 @@ export default function PaymentSettingsPage() {
           <p style={label}>Stripe connected account</p>
           <input value={stripeAccountId} onChange={e => setStripeAccountId(e.target.value)} placeholder="acct_xxx" style={input} />
           <button onClick={connectStripe} style={{ ...saveBtn, marginTop: 8 }}>Connect Stripe Express</button>
+        </div>
+      )}
+
+      {enabledMethods.includes('paypal') && (
+        <div style={{ ...card, border: '1px solid #3b82f680' }}>
+          <p style={{ ...label, fontSize: 15, fontWeight: 700, color: '#60a5fa' }}>How to get your PayPal.me link</p>
+          <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: 8 }}>Follow these steps (takes 2 min, free):</p>
+            <ol style={{ paddingLeft: 18, margin: '0 0 8px' }}>
+              <li style={{ marginBottom: 4 }}>Open <strong>paypal.com</strong> and log in (or sign up free)</li>
+              <li style={{ marginBottom: 4 }}>Go to <strong>Settings {'>'} PayPal.me</strong> (or visit <strong>paypal.me</strong>)</li>
+              <li style={{ marginBottom: 4 }}>Click <strong>"Create your PayPal.Me link"</strong></li>
+              <li style={{ marginBottom: 4 }}>Pick a username — e.g. <strong>paypal.me/YourStudioName</strong></li>
+              <li style={{ marginBottom: 4 }}>Copy that link and paste it in the <strong>Payment link template</strong> field above with {'{'}amount{'}'} at the end</li>
+            </ol>
+            <p style={{ fontSize: 12, color: '#94a3b8' }}>Example: <code style={{ background: '#0f172a', padding: '2px 6px', borderRadius: 4 }}>https://paypal.me/YourStudio/&#123;amount&#125;</code></p>
+            <p style={{ fontSize: 12, color: '#fbbf24', marginTop: 6 }}>Client clicks the link → PayPal opens with the amount pre-filled → pays → uploads screenshot → you confirm.</p>
+          </div>
         </div>
       )}
 
@@ -127,25 +146,110 @@ export default function PaymentSettingsPage() {
       </div>
 
       <div style={card}>
-        <p style={label}>Payment link template (manual_link)</p>
+        <p style={label}>Payment link template (manual_link / PayPal)</p>
         <textarea value={template} onChange={e => setTemplate(e.target.value)} rows={4} style={{ ...input, resize: 'vertical' }}
           placeholder="https://paypal.me/yourstudio/{amount} or https://revolut.me/yourname/{amount}" />
         <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>
           Placeholders: {'{amount}'}, {'{currency}'}, {'{leadId}'}, {'{client}'}, {'{artistId}'}.
         </p>
-        <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>US artists: PayPal.me / Zelle / Venmo. EU artists: Wise / Revolut / SEPA. System generates the payment link with the lead's amount. Client pays → uploads proof → you approve in Payment History.</p>
       </div>
+
+      {enabledMethods.includes('manual_link') && (
+        <div style={{ ...card, border: '1px solid #6366f180' }}>
+          <p style={{ ...label, fontSize: 15, fontWeight: 700, color: '#818cf8' }}>Manual Link — Setup Guide</p>
+          <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: 8 }}>Pick your platform, get your personal link, paste it above:</p>
+            <p style={{ fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>US / Canada:</p>
+            <ul style={{ paddingLeft: 18, margin: '0 0 10px', fontSize: 12 }}>
+              <li><strong>PayPal.me</strong> — paypal.com → Settings → PayPal.me → create username</li>
+              <li><strong>Zelle</strong> — your bank app → Zelle → use your phone/email as ID</li>
+              <li><strong>Venmo</strong> — venmo.com → profile → get @username</li>
+              <li><strong>Cash App</strong> — cash.app → profile → get $cashtag</li>
+            </ul>
+            <p style={{ fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>Europe / Global:</p>
+            <ul style={{ paddingLeft: 18, margin: '0 0 10px', fontSize: 12 }}>
+              <li><strong>Wise</strong> — wise.com → create payment link → paste above</li>
+              <li><strong>Revolut</strong> — app → Payments → create @revtag</li>
+              <li><strong>SEPA</strong> — use Bank Transfer method instead (below)</li>
+            </ul>
+            <p style={{ fontSize: 11, color: '#64748b' }}>Template example: <code style={{ background: '#0f172a', padding: '2px 6px', borderRadius: 4 }}>https://paypal.me/YourStudio/&#123;amount&#125;</code> — system replaces {'{'}amount{'}'} with the deposit amount.</p>
+          </div>
+        </div>
+      )}
+
+      {enabledMethods.includes('paypal') && (
+        <div style={{ ...card, border: '1px solid #3b82f680' }}>
+          <p style={{ ...label, fontSize: 15, fontWeight: 700, color: '#60a5fa' }}>PayPal — Setup Guide</p>
+          <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: 8 }}>Follow these steps (takes 2 min, free):</p>
+            <ol style={{ paddingLeft: 18, margin: '0 0 8px' }}>
+              <li style={{ marginBottom: 4 }}>Open <strong>paypal.com</strong> and log in (or sign up free)</li>
+              <li style={{ marginBottom: 4 }}>Go to <strong>Settings → PayPal.me</strong> (or visit <strong>paypal.me</strong>)</li>
+              <li style={{ marginBottom: 4 }}>Click <strong>"Create your PayPal.Me link"</strong></li>
+              <li style={{ marginBottom: 4 }}>Pick a username — e.g. <strong>paypal.me/YourStudioName</strong></li>
+              <li style={{ marginBottom: 4 }}>Paste that link in the <strong>Payment link template</strong> field above with {'{'}amount{'}'} at the end</li>
+            </ol>
+            <p style={{ fontSize: 12, color: '#94a3b8' }}>Example: <code style={{ background: '#0f172a', padding: '2px 6px', borderRadius: 4 }}>https://paypal.me/YourStudio/&#123;amount&#125;</code></p>
+            <p style={{ fontSize: 12, color: '#fbbf24', marginTop: 6 }}>Client clicks → PayPal opens with amount pre-filled → pays → uploads screenshot → you confirm.</p>
+          </div>
+        </div>
+      )}
 
       <div style={card}>
         <p style={label}>Bank transfer instructions</p>
         <textarea
           value={bankInstructions}
           onChange={e => setBankInstructions(e.target.value)}
-          rows={3}
+          rows={4}
           style={{ ...input, resize: 'vertical' }}
           placeholder="Bank name, account holder, account number/IBAN, transfer note format."
         />
       </div>
+
+      {enabledMethods.includes('bank_transfer') && (
+        <div style={{ ...card, border: '1px solid #22c55e80' }}>
+          <p style={{ ...label, fontSize: 15, fontWeight: 700, color: '#4ade80' }}>Bank Transfer — Setup Guide</p>
+          <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: 8 }}>Fill in the bank details above. Copy this format:</p>
+            <p style={{ fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>US (ACH):</p>
+            <ul style={{ paddingLeft: 18, margin: '0 0 10px', fontSize: 12 }}>
+              <li>Bank Name: [your bank]</li>
+              <li>Account Holder: [your name / studio name]</li>
+              <li>Routing Number: [9 digits]</li>
+              <li>Account Number: [your account]</li>
+            </ul>
+            <p style={{ fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>Europe (SEPA):</p>
+            <ul style={{ paddingLeft: 18, margin: '0 0 10px', fontSize: 12 }}>
+              <li>Bank Name: [your bank]</li>
+              <li>Account Holder: [your name / studio name]</li>
+              <li>IBAN: [your IBAN]</li>
+              <li>BIC/SWIFT: [your bank code]</li>
+            </ul>
+            <p style={{ fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>Other countries:</p>
+            <ul style={{ paddingLeft: 18, margin: '0 0 10px', fontSize: 12 }}>
+              <li>Include all local bank identifiers (sort code, BSB, IFSC, etc.)</li>
+              <li>Add a note: "Please include your name in the transfer reference so we can match it."</li>
+            </ul>
+            <p style={{ fontSize: 11, color: '#fbbf24' }}>Client transfers → uploads screenshot/receipt → you verify → mark as paid.</p>
+          </div>
+        </div>
+      )}
+
+      {enabledMethods.includes('cash') && (
+        <div style={{ ...card, border: '1px solid #f9731680' }}>
+          <p style={{ ...label, fontSize: 15, fontWeight: 700, color: '#fb923c' }}>Cash (In Studio) — Setup Guide</p>
+          <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.7 }}>
+            <p style={{ marginBottom: 8 }}>No setup needed. Process:</p>
+            <ol style={{ paddingLeft: 18, margin: '0 0 8px' }}>
+              <li style={{ marginBottom: 4 }}>Client comes to the studio for consultation or appointment</li>
+              <li style={{ marginBottom: 4 }}>Collect cash payment in person</li>
+              <li style={{ marginBottom: 4 }}>In Leads page, select <strong>Cash</strong> as payment method</li>
+              <li style={{ marginBottom: 4 }}>Enter the amount and mark as <strong>Paid</strong></li>
+            </ol>
+            <p style={{ fontSize: 11, color: '#fbbf24' }}>Tip: Give a handwritten or printed receipt. Keep a copy for your records.</p>
+          </div>
+        </div>
+      )}
 
       <button onClick={save} style={saveBtn}>Save</button>
       {msg && <p style={{ fontSize: 12, color: '#86efac', marginTop: 8 }}>{msg}</p>}

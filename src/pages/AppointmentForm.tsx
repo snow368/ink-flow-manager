@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type ClientRecord, type AppointmentRecord, type LeadRecord, type LeadRevisionRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { getArtistAvailability } from '../lib/availability';
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function AppointmentForm() {
   const [quickPhone, setQuickPhone] = useState('');
   const [creatingClient, setCreatingClient] = useState(false);
   const [initialStatus, setInitialStatus] = useState<'unconfirmed' | 'deposit_paid'>('unconfirmed');
+  const [depositAmount, setDepositAmount] = useState('');
   const [conflictWarning, setConflictWarning] = useState('');
   const [nextAvailableTime, setNextAvailableTime] = useState('');
   const [fromLead, setFromLead] = useState<LeadRecord | null>(null);
@@ -97,6 +99,8 @@ export default function AppointmentForm() {
     }
 
     const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
+    const avail = await getArtistAvailability(artistId);
+    const dayEnd = avail.end ? (parseInt(avail.end.split(':')[0]) * 60 + parseInt(avail.end.split(':')[1])) : 22 * 60;
     const sameDay = await db.appointments.where('date').equals(date).toArray();
     const sameArtist = sameDay.filter(a => a.artistId === artistId && a.status !== 'cancelled');
     const sorted = [...sameArtist].sort((a, b) => a.time.localeCompare(b.time));
@@ -117,7 +121,6 @@ export default function AppointmentForm() {
 
     setConflictWarning(`Time conflict with ${conflict.time} appointment.`);
     let candidate = newStart + 15;
-    const dayEnd = 22 * 60;
     while (candidate + finalDuration <= dayEnd) {
       const blocked = sorted.some(a => {
         const start = toMinutes(a.time);
@@ -156,7 +159,8 @@ export default function AppointmentForm() {
     try {
       const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
       const id = 'appt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, status: initialStatus, waiverCompleted: false, createdAt: Date.now() });
+      const dAmount = initialStatus === 'deposit_paid' ? Math.round(parseFloat(depositAmount || '0') * 100) : undefined;
+      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, status: initialStatus, depositAmount: dAmount, waiverCompleted: false, createdAt: Date.now() });
       navigate('/today');
     } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
     finally { setSaving(false); }
@@ -237,6 +241,13 @@ export default function AppointmentForm() {
               Deposit Paid
             </button>
           </div>
+          {initialStatus === 'deposit_paid' && (
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Deposit Amount ($)</label>
+              <input type="number" placeholder="e.g. 50" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
+                style={{ ...inputStyle, marginBottom: 0 }} step="0.01" min="0" />
+            </div>
+          )}
 
           {fromLead && (
             <div style={{ background: '#1e293b', border: '1px solid #334155', color: '#e2e8f0', borderRadius: 10, padding: 10, marginBottom: 12 }}>

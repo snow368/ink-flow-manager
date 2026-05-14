@@ -2,20 +2,25 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
 import { seedDemoData, resetDatabase } from '../lib/devTools';
+import { seedMultiLocationTest } from '../lib/seedDev';
 import { getReferralStats } from '../lib/referralLogic';
 import { detectInitialLanguage, setStoredLanguage, t, type AppLanguage } from '../lib/i18n';
+import { getSupportedCountries } from '../lib/invoiceConfig';
 
 export default function Me() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [editing, setEditing] = useState(false);
   const [studioName, setStudioName] = useState('');
+  const [editingCommission, setEditingCommission] = useState(false);
+  const [commissionRate, setCommissionRate] = useState<number | undefined>();
   const [showDevTools, setShowDevTools] = useState(false);
   const [devMessage, setDevMessage] = useState('');
   const [message, setMessage] = useState('');
   const [referralCount, setReferralCount] = useState(0);
   const [proDays, setProDays] = useState(0);
   const [lang, setLang] = useState<AppLanguage>(detectInitialLanguage());
+  const [country, setCountry] = useState('US');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -24,6 +29,8 @@ export default function Me() {
       db.users.get(stored).then(async u => {
         setUser(u || null);
         setStudioName(u?.studioName || '');
+        setCountry(u?.country || 'US');
+        setCommissionRate(u?.commissionRate);
         if (u) {
           const stats = await getReferralStats(u.id);
           setReferralCount(stats.verifiedCount);
@@ -39,6 +46,14 @@ export default function Me() {
     const updated = await db.users.get(user.id);
     setUser(updated || null);
     setEditing(false);
+  };
+
+  const handleSaveCommissionRate = async () => {
+    if (!user) return;
+    await db.users.update(user.id, { commissionRate });
+    const updated = await db.users.get(user.id);
+    setUser(updated || null);
+    setEditingCommission(false);
   };
 
   const handleLogout = () => {
@@ -111,6 +126,26 @@ export default function Me() {
       </div>
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>Country / Region</p>
+        <select
+          value={country}
+          onChange={async e => {
+            const next = e.target.value;
+            setCountry(next);
+            await db.users.update(user!.id, { country: next });
+          }}
+          style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#0f172a', color: 'white' }}>
+          {getSupportedCountries().map(c => (
+            <option key={c.code} value={c.code}>{c.name}</option>
+          ))}
+        </select>
+        <p style={{ fontSize: 11, color: '#475569', marginTop: 6 }}>Determines invoice format, currency, and tax labels</p>
+      </div>
+
+      {/* Consumable Presets */}
+      <ConsumablePresets lang={lang} />
+
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontSize: 18, fontWeight: 600 }}>{user.name}</p>
         <p style={{ fontSize: 14, color: '#94a3b8' }}>{user.email}</p>
         <p style={{ fontSize: 14, color: '#94a3b8' }}>Role: {user.role === 'artist' ? 'Artist (Free)' : user.role === 'owner' ? 'Owner' : user.role === 'pro' ? 'Pro' : user.role === 'plus' ? 'Plus' : 'Staff'}</p>
@@ -151,6 +186,52 @@ export default function Me() {
         )}
       </div>
 
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <p style={{ fontWeight: 600, marginBottom: 4 }}>Artist Commission Rate</p>
+        {editingCommission ? (
+          <div style={{ display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' }}>
+            <input type="number" value={commissionRate ?? ''} onChange={e => setCommissionRate(e.target.value ? Number(e.target.value) : undefined)}
+              placeholder="e.g. 50" min="0" max="100"
+              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 14 }} />
+            <span style={{ color: '#94a3b8', fontSize: 14 }}>%</span>
+            <button onClick={handleSaveCommissionRate} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#e11d48', color: 'white', fontSize: 14 }}>Save</button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: 14, color: commissionRate ? '#22c55e' : '#94a3b8' }}>
+              {commissionRate != null ? `${commissionRate}% — artist gets ${commissionRate}%, shop keeps ${100 - commissionRate}%` : 'Not set'}
+            </p>
+            <button onClick={() => setEditingCommission(true)} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 14 }}>Edit</button>
+          </div>
+        )}
+        <p style={{ fontSize: 11, color: '#475569', marginTop: 6 }}>Applied at session checkout. Artist gets this % of session revenue before tips.</p>
+      </div>
+
+      {user.role === 'owner' && (
+        <div style={{ marginBottom: 16 }}>
+          <button onClick={() => navigate('/locations')}
+            style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
+            {t(lang, 'locations')}
+          </button>
+        </div>
+      )}
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/pos')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #14532d 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'pos_register')}</span>
+          <span style={{ fontSize: 11, background: '#22c55e20', color: '#4ade80', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/invoices')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #7e22ce 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Invoices</span>
+          <span style={{ fontSize: 11, background: '#a855f720', color: '#c084fc', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/leads')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
@@ -169,6 +250,13 @@ export default function Me() {
         <button onClick={() => navigate('/payment-history')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
           Payment History
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/availability-settings')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
+          {t(lang, 'studio_availability')}
         </button>
       </div>
 
@@ -192,6 +280,11 @@ export default function Me() {
           <span>{t(lang, 'supply_brands')}</span>
           <span style={{ fontSize: 11, background: '#fbbf2420', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>New</span>
         </button>
+        <button onClick={() => navigate('/supply-reviews')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #ea580c80', background: 'linear-gradient(135deg, #1e293b 0%, #7c2d12 100%)', color: 'white', fontSize: 14, fontWeight: 600, textAlign: 'left', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>耗材真话墙</span>
+          <span style={{ fontSize: 10, background: '#ea580c20', color: '#fdba74', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
       </div>
 
       {user.role === 'owner' && (
@@ -199,6 +292,25 @@ export default function Me() {
           <button onClick={() => navigate('/supply-brands/admin')}
             style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #fbbf2480', background: '#1e293b', color: '#fbbf24', fontSize: 14, fontWeight: 600, textAlign: 'left' }}>
             {t(lang, 'supply_brands_admin')} <span style={{ fontSize: 10, color: '#64748b' }}>({t(lang, 'owner_only')})</span>
+          </button>
+        </div>
+      )}
+
+      {user.role === 'dev' && (
+        <div style={{ marginBottom: 16 }}>
+          <button onClick={() => navigate('/competitors')}
+            style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #14b8a680', background: 'linear-gradient(135deg, #1e293b 0%, #0f766e 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>竞争市场监控</span>
+            <span style={{ fontSize: 10, background: '#14b8a620', color: '#5eead4', padding: '2px 8px', borderRadius: 4 }}>Dev</span>
+          </button>
+          <button onClick={() => navigate('/competitors/admin')}
+            style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #14b8a680', background: '#1e293b', color: '#5eead4', fontSize: 14, fontWeight: 600, textAlign: 'left', marginTop: 8 }}>
+            管理竞争对手 <span style={{ fontSize: 10, color: '#64748b' }}>(Dev Only)</span>
+          </button>
+          <button onClick={() => navigate('/content-strategy')}
+            style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #a855f780', background: 'linear-gradient(135deg, #1e293b 0%, #4c1d95 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span>内容策略引擎</span>
+            <span style={{ fontSize: 10, background: '#a855f720', color: '#c4b5fd', padding: '2px 8px', borderRadius: 4 }}>Dev</span>
           </button>
         </div>
       )}
@@ -226,6 +338,7 @@ export default function Me() {
         {showDevTools && (
           <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <button onClick={async () => { await seedDemoData(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600 }}>Fill Demo Data</button>
+            <button onClick={async () => { await seedMultiLocationTest(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#4338ca', color: 'white', fontSize: 14, fontWeight: 600 }}>Seed Multi-Location Test</button>
             <button onClick={async () => { await resetDatabase(); }} style={{ padding: 12, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 14, fontWeight: 600 }}>Reset All Data</button>
           </div>
         )}
@@ -238,4 +351,113 @@ export default function Me() {
   );
 }
 
+const PRESETS_KEY = 'inkflow_consumable_presets';
+type Preset = { type: string; items: string[] };
+
+function ConsumablePresets({ lang }: { lang: string }) {
+  const [presets, setPresets] = useState<Preset[]>(() => {
+    try { return JSON.parse(localStorage.getItem(PRESETS_KEY) || '[]'); } catch { return []; }
+  });
+  const [newType, setNewType] = useState('');
+  const [newItem, setNewItem] = useState('');
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+
+  const save = (p: Preset[]) => {
+    setPresets(p);
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(p));
+  };
+
+  const addPreset = () => {
+    const type = newType.trim();
+    if (!type || presets.some(p => p.type === type)) return;
+    save([...presets, { type, items: [] }]);
+    setNewType('');
+  };
+
+  const addItem = (idx: number) => {
+    const item = newItem.trim();
+    if (!item) return;
+    const next = [...presets];
+    if (!next[idx].items.includes(item)) {
+      next[idx] = { ...next[idx], items: [...next[idx].items, item] };
+      save(next);
+    }
+    setNewItem('');
+  };
+
+  const removeItem = (presetIdx: number, itemIdx: number) => {
+    const next = [...presets];
+    next[presetIdx] = { ...next[presetIdx], items: next[presetIdx].items.filter((_, i) => i !== itemIdx) };
+    save(next);
+  };
+
+  const removePreset = (idx: number) => {
+    save(presets.filter((_, i) => i !== idx));
+    setEditingIdx(null);
+  };
+
+  const commonTypes = ['花臂 Sleeve', '遮盖 Cover-up', '黑灰 Black & Grey', '彩色 Color', '几何 Geometric', '字体 Lettering', '水彩 Watercolor', '写实 Realism'];
+
+  return (
+    <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+      <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Consumable Presets</p>
+      <p style={{ fontSize: 11, color: '#64748b', marginBottom: 10 }}>
+        Define what you always prepare for each tattoo type. Shows on Today appointments.
+      </p>
+
+      {presets.map((p, idx) => (
+        <div key={idx} style={{ marginBottom: 8, padding: 8, background: '#0f172a', borderRadius: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#c084fc' }}>{p.type}</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
+                style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>
+                {editingIdx === idx ? 'Close' : 'Edit'}
+              </button>
+              <button onClick={() => removePreset(idx)}
+                style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 11, cursor: 'pointer' }}>Del</button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {p.items.map((item, i) => (
+              <span key={i} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: '#312e81', color: '#c4b5fd', cursor: editingIdx === idx ? 'pointer' : 'default' }}
+                onClick={() => editingIdx === idx && removeItem(idx, i)}>
+                {item} {editingIdx === idx ? '✕' : ''}
+              </span>
+            ))}
+            {p.items.length === 0 && <span style={{ fontSize: 10, color: '#475569' }}>No items yet</span>}
+          </div>
+          {editingIdx === idx && (
+            <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+              <input placeholder="Add item..." value={newItem} onChange={e => setNewItem(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addItem(idx)}
+                style={{ flex: 1, padding: '4px 8px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12 }} />
+              <button onClick={() => addItem(idx)}
+                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#7e22ce', color: 'white', fontSize: 11, cursor: 'pointer' }}>Add</button>
+            </div>
+          )}
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', gap: 4, marginBottom: 6, flexWrap: 'wrap' }}>
+        {commonTypes.filter(t => !presets.some(p => p.type === t)).slice(0, 4).map(t => (
+          <button key={t} onClick={() => { save([...presets, { type: t, items: [] }]); }}
+            style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}>
+            + {t}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 4 }}>
+        <input placeholder="Custom type..." value={newType} onChange={e => setNewType(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && addPreset()}
+          style={{ flex: 1, padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 12 }} />
+        <button onClick={addPreset} disabled={!newType.trim()}
+          style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: newType.trim() ? '#7e22ce' : '#334155', color: 'white', fontSize: 12, cursor: 'pointer' }}>
+          Create
+        </button>
+      </div>
+    </div>
+  );
+}
 

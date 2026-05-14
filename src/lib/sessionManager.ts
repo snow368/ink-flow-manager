@@ -31,14 +31,16 @@ export function addTimelineEvent(
 export function addConsumable(
   session: SessionRecord,
   itemId: string,
-  quantity: number
+  quantity: number,
+  batchNumber?: string
 ): SessionRecord {
   const updated: ConsumableUsage[] = [...session.consumables];
   const existing = updated.find(c => c.itemId === itemId);
   if (existing) {
     existing.quantity += quantity;
+    if (batchNumber) existing.batchNumber = batchNumber;
   } else {
-    updated.push({ itemId, quantity });
+    updated.push({ itemId, quantity, batchNumber });
   }
   return { ...session, consumables: updated };
 }

@@ -28,8 +28,8 @@ export default function SessionPage() {
 
   // 鐩樼偣寮圭獥鐘舵€?
   const [showCheckout, setShowCheckout] = useState(false);
-  const [checkoutItems, setCheckoutItems] = useState<{ id: string; name: string; used: number }[]>([]);
-  const [markedConsumables, setMarkedConsumables] = useState<Map<string, number>>(new Map());
+  const [checkoutItems, setCheckoutItems] = useState<{ id: string; name: string; used: number; batchNumber?: string }[]>([]);
+  const [markedConsumables, setMarkedConsumables] = useState<Map<string, { count: number; batchNumber?: string }>>(new Map());
 
   useEffect(() => {
     if (!appointmentId) return;
@@ -129,19 +129,20 @@ export default function SessionPage() {
   // 鏍囪鑰楁潗锛堟柦宸ヤ腑鍙爣璁帮紝涓嶆墸搴撳瓨锛?
   const handleMarkItem = (item: InventoryRecord) => {
     if (!session) return;
-    const prev = markedConsumables.get(item.id) || 0;
+    const prev = markedConsumables.get(item.id);
+    const prevCount = prev?.count || 0;
     const updated = new Map(markedConsumables);
-    updated.set(item.id, prev + 1);
+    updated.set(item.id, { count: prevCount + 1, batchNumber: item.batchNumber });
     setMarkedConsumables(updated);
-    addMessage(`Marked: ${item.name} (${prev + 1})`);
+    addMessage(`Marked: ${item.name} (${prevCount + 1})${item.batchNumber ? ' batch ' + item.batchNumber : ''}`);
   };
 
   // 鐐?Finish Session 鈫?鍏堝脊鍑虹洏鐐瑰脊绐?
   const handleFinishClick = () => {
-    const items: { id: string; name: string; used: number }[] = [];
-    for (const [id, used] of markedConsumables) {
+    const items: { id: string; name: string; used: number; batchNumber?: string }[] = [];
+    for (const [id, data] of markedConsumables) {
       const item = inventoryItems.find(i => i.id === id);
-      if (item) items.push({ id, name: item.name, used });
+      if (item) items.push({ id, name: item.name, used: data.count, batchNumber: data.batchNumber || item.batchNumber });
     }
     setCheckoutItems(items);
     setShowCheckout(true);
@@ -154,15 +155,17 @@ export default function SessionPage() {
     stopCamera();
 
     // 鎵归噺鎵ｅ簱瀛?
+    let updatedSession = session;
     for (const item of checkoutItems) {
       if (item.used <= 0) continue;
       const invItem = await db.inventory.get(item.id);
       if (invItem) {
         await db.inventory.update(item.id, { quantity: Math.max(0, invItem.quantity - item.used) });
       }
+      updatedSession = addConsumable(updatedSession, item.id, item.used, item.batchNumber);
     }
 
-    const finished = await finishSession(session);
+    const finished = await finishSession(updatedSession);
     setSession(finished);
     addMessage(`Session finished! ${finished.photos.length} photos. ${checkoutItems.reduce((s, i) => s + i.used, 0)} items consumed.`);
     setShowCheckout(false);
@@ -200,7 +203,10 @@ export default function SessionPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
                 {checkoutItems.map(item => (
                   <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0f172a', borderRadius: 8, padding: '8px 12px' }}>
-                    <span style={{ fontSize: 14 }}>{item.name}</span>
+                    <div>
+                      <span style={{ fontSize: 14 }}>{item.name}</span>
+                      {item.batchNumber && <span style={{ fontSize: 10, color: '#64748b', marginLeft: 6 }}>Batch {item.batchNumber}</span>}
+                    </div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                       <button onClick={() => setCheckoutItems(prev => prev.map(i => i.id === item.id ? { ...i, used: Math.max(0, i.used - 1) } : i))} style={qtySmallBtn}>-</button>
                       <span style={{ fontSize: 14, fontWeight: 600, minWidth: 24, textAlign: 'center' }}>{item.used}</span>

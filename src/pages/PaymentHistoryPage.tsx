@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { db, type LeadRecord } from '../db';
 
 type StatusFilter = 'all' | 'paid' | 'pending_verify' | 'refunded' | 'unpaid' | 'waived';
-type MethodFilter = 'all' | 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash';
+type MethodFilter = 'all' | 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal';
 
 function paymentMethodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'stripe_connect') return 'Stripe';
   if (method === 'manual_link') return 'Manual Link';
   if (method === 'bank_transfer') return 'Bank Transfer';
   if (method === 'cash') return 'Cash';
+  if (method === 'paypal') return 'PayPal';
   return 'Unknown';
 }
 

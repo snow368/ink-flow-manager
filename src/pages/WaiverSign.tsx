@@ -2,22 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, type AppointmentRecord, type ClientRecord } from '../db';
 import { generateWaiverContent, getWaiverType, getArtistShopInfo } from '../lib/waiverLogic';
-
-const HEALTH_QUESTIONS = [
-  'Are you pregnant or nursing?',
-  'Do you have any blood-borne diseases?',
-  'Do you have any skin conditions?',
-  'Are you diabetic or have heart conditions?',
-  'Taking blood-thinning medications?',
-  'Consumed alcohol or drugs in last 12h?',
-  'Allergies to latex, inks, or antiseptics?',
-];
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 interface DrawPoint { x: number; y: number; time: number; }
 
 export default function WaiverSign() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const navigate = useNavigate();
+  const lang = detectInitialLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [drawing, setDrawing] = useState(false);
   const [hasSignature, setHasSignature] = useState(false);
@@ -26,7 +18,8 @@ export default function WaiverSign() {
   const [waiverText, setWaiverText] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [healthAnswers, setHealthAnswers] = useState<boolean[]>(new Array(HEALTH_QUESTIONS.length).fill(false));
+  const healthQuestions = ['health_q1', 'health_q2', 'health_q3', 'health_q4', 'health_q5', 'health_q6', 'health_q7'];
+  const [healthAnswers, setHealthAnswers] = useState<boolean[]>(new Array(healthQuestions.length).fill(false));
 
   const pointsRef = useRef<DrawPoint[]>([]);
 
@@ -35,7 +28,7 @@ export default function WaiverSign() {
     async function loadData() {
       try {
         const a = await db.appointments.get(appointmentId);
-        if (!a) { setError('Appointment not found'); return; }
+        if (!a) { setError(t(lang, 'appointment_not_found')); return; }
         setAppointment(a);
         const c = await db.clients.get(a.clientId);
         setClient(c || null);
@@ -170,9 +163,9 @@ export default function WaiverSign() {
     if (!appointmentId || !appointment) return;
     const allNo = healthAnswers.every(a => !a);
     if (!allNo) {
-      const yesItems = HEALTH_QUESTIONS.map((q, i) => healthAnswers[i] ? q : null).filter(Boolean);
+      const yesItems = healthQuestions.map((q, i) => healthAnswers[i] ? t(lang, q) : null).filter(Boolean);
       if (yesItems.length > 0) {
-        const confirmed = confirm('Client answered YES to:\n\n' + yesItems.join('\n') + '\n\nProceed anyway?');
+        const confirmed = confirm(t(lang, 'health_yes_items') + '\n\n' + yesItems.join('\n') + '\n\n' + t(lang, 'proceed_anyway'));
         if (!confirmed) return;
       }
     }
@@ -184,7 +177,7 @@ export default function WaiverSign() {
       const waiverId = 'waiver_' + now + '_' + Math.random().toString(36).slice(2, 6);
       const knownAllergies = client?.allergies?.length ? `\nKnown allergies: ${client.allergies.join(', ')}` : '';
       const healthSection = '\n\nHEALTH DECLARATION:\n' +
-        HEALTH_QUESTIONS.map((q, i) => `${q}  [${healthAnswers[i] ? 'YES' : 'No'}]`).join('\n') +
+        healthQuestions.map((q, i) => `${t(lang, q)}  [${healthAnswers[i] ? 'YES' : 'No'}]`).join('\n') +
         knownAllergies;
       const fullContent = waiverText + healthSection;
       await db.waivers.add({
@@ -195,7 +188,7 @@ export default function WaiverSign() {
       });
       await db.appointments.update(appointmentId, { waiverCompleted: true, status: 'ready' });
       navigate('/today');
-    } catch (e: any) { setError('Sign failed: ' + (e?.message || 'unknown')); }
+    } catch (e: any) { setError(t(lang, 'sign_failed') + ' ' + (e?.message || 'unknown')); }
     finally { setSaving(false); }
   };
 
@@ -203,7 +196,7 @@ export default function WaiverSign() {
     return (
       <div style={{ padding: 24, color: 'white' }}>
         <p>{error}</p>
-        <button onClick={() => navigate(-1)} style={{ color: '#60a5fa' }}>Go back</button>
+        <button onClick={() => navigate(-1)} style={{ color: '#60a5fa' }}>{t(lang, 'go_back')}</button>
       </div>
     );
   }
@@ -211,10 +204,10 @@ export default function WaiverSign() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
       <div style={{ padding: '12px 20px 0' }}>
-        <h2 style={{ fontSize: 19, fontWeight: 'bold', marginBottom: 4 }}>Waiver</h2>
+        <h2 style={{ fontSize: 19, fontWeight: 'bold', marginBottom: 4 }}>{t(lang, 'waiver')}</h2>
         {client && (
           <div style={{ background: '#1e293b', borderRadius: 10, padding: '8px 12px', display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#94a3b8', fontSize: 13 }}>Client</span>
+            <span style={{ color: '#94a3b8', fontSize: 13 }}>{t(lang, 'client')}</span>
             <span style={{ fontWeight: 600, fontSize: 13 }}>{client.name}</span>
           </div>
         )}
@@ -229,15 +222,15 @@ export default function WaiverSign() {
 
         <div style={{ background: '#1e293b', borderRadius: 10, padding: 14, margin: '8px 0' }}>
           <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12, color: '#cbd5e1', fontFamily: 'monospace' }}>
-            {waiverText || 'Loading...'}
+            {waiverText || t(lang, 'loading')}
           </pre>
         </div>
 
-        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 12 }}>Health Check</p>
+        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 12 }}>{t(lang, 'health_check')}</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
-          {HEALTH_QUESTIONS.map((question, i) => (
+          {healthQuestions.map((qKey, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: healthAnswers[i] ? '#3b1117' : '#1e293b', borderRadius: 8, padding: '10px 12px', border: healthAnswers[i] ? '1px solid #e11d4844' : '1px solid transparent' }}>
-              <span style={{ fontSize: 12, flex: 1, marginRight: 10, color: healthAnswers[i] ? '#fca5a5' : '#e2e8f0' }}>{question}</span>
+              <span style={{ fontSize: 12, flex: 1, marginRight: 10, color: healthAnswers[i] ? '#fca5a5' : '#e2e8f0' }}>{t(lang, qKey)}</span>
               <div style={{ display: 'flex', gap: 4 }}>
                 <button onClick={() => toggleHealthAnswer(i)} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: healthAnswers[i] ? '#e11d48' : '#334155', color: healthAnswers[i] ? 'white' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>Yes</button>
                 <button onClick={() => { if (healthAnswers[i]) toggleHealthAnswer(i); }} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: !healthAnswers[i] ? '#166534' : '#334155', color: !healthAnswers[i] ? '#86efac' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>No</button>
@@ -248,16 +241,16 @@ export default function WaiverSign() {
       </div>
 
       <div style={{ borderTop: '1px solid #334155', padding: '10px 20px 0', background: '#0f172a' }}>
-        <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>Client Signature</p>
+        <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'client_signature')}</p>
         <div style={{ border: '2px solid #475569', borderRadius: 10, overflow: 'hidden', marginBottom: 8, touchAction: 'none', background: '#f1f5f9' }}>
           <canvas ref={canvasRef} width={700} height={200} style={{ width: '100%', height: '100px', display: 'block', cursor: 'crosshair' }}
             onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing}
             onTouchStart={startDrawing} onTouchMove={draw} onTouchEnd={stopDrawing} />
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={clearSignature} style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 12 }}>Clear</button>
+          <button onClick={clearSignature} style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 12 }}>{t(lang, 'clear_signature')}</button>
           <button onClick={handleSign} disabled={saving || !hasSignature} style={{ flex: 2, padding: 8, borderRadius: 8, border: 'none', background: saving || !hasSignature ? '#4b5563' : '#22c55e', color: 'white', fontSize: 13, fontWeight: 600 }}>
-            {saving ? 'Saving...' : 'Sign & Confirm'}
+            {saving ? t(lang, 'saving') : t(lang, 'sign_confirm')}
           </button>
         </div>
         <div style={{ height: 'env(safe-area-inset-bottom, 8px)' }} />

@@ -26,13 +26,29 @@ import ClientPaymentPage from './pages/ClientPaymentPage';
 import ClientPaymentStatusPage from './pages/ClientPaymentStatusPage';
 import SupplyBrandsPage from './pages/SupplyBrandsPage';
 import SupplyBrandsAdmin from './pages/SupplyBrandsAdmin';
+import CompetitorsPage from './pages/CompetitorsPage';
+import CompetitorsAdmin from './pages/CompetitorsAdmin';
+import ContentStrategyPage from './pages/ContentStrategyPage';
+import SupplyReviewsPage from './pages/SupplyReviewsPage';
+import AvailabilitySettingsPage from './pages/AvailabilitySettingsPage';
+import ClientBookingPage from './pages/ClientBookingPage';
+import PosPage from './pages/PosPage';
+import PosSettingsPage from './pages/PosSettingsPage';
+import LocationsPage from './pages/LocationsPage';
+import Invoices from './pages/Invoices';
+import InvoiceDetail from './pages/InvoiceDetail';
+import LocationSelector from './components/LocationSelector';
 import { db } from './db';
 import { detectInitialLanguage } from './lib/i18n';
+import { rebuildConsumableProfiles } from './lib/consumableRecommend';
+import { getDaysSinceLastMarketCheck } from './lib/competitorData';
 
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dueFollowUpCount, setDueFollowUpCount] = useState(0);
+  const [marketCheckDue, setMarketCheckDue] = useState(false);
+  const [isDev, setIsDev] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,7 +66,11 @@ export default function App() {
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
-    if (stored) setIsLoggedIn(true);
+    if (stored) {
+      setIsLoggedIn(true);
+      rebuildConsumableProfiles();
+      db.users.get(stored).then(u => { if (u?.role === 'dev') setIsDev(true); });
+    }
     if (location.pathname === '/') {
       navigate(stored ? '/today' : '/register', { replace: true });
     }
@@ -91,6 +111,14 @@ export default function App() {
     };
   }, [isLoggedIn, location.pathname]);
 
+  useEffect(() => {
+    if (!isDev) { setMarketCheckDue(false); return; }
+    const check = () => setMarketCheckDue(getDaysSinceLastMarketCheck() >= 30);
+    check();
+    const timer = window.setInterval(check, 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [isDev, location.pathname]);
+
   const tabs = [
     { path: '/today', label: 'Today', icon: Calendar },
     { path: '/clients', label: 'Clients', icon: Users },
@@ -98,7 +126,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -120,6 +148,25 @@ export default function App() {
             }}
           >
             {dueFollowUpCount} follow-up{dueFollowUpCount > 1 ? 's' : ''} due now. Tap to open Leads.
+          </div>
+        )}
+        {isDev && marketCheckDue && !location.pathname.startsWith('/competitors') && (
+          <div
+            onClick={() => navigate('/competitors')}
+            style={{
+              background: 'linear-gradient(135deg, #0f766e, #115e59)',
+              color: '#ccfbf1',
+              padding: '10px 14px',
+              fontSize: 13,
+              borderBottom: '1px solid #0d9488',
+              cursor: 'pointer',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span>距离上次市场检查已超过30天 - 点击查看竞品动态</span>
+            <span style={{ fontSize: 11, background: '#14b8a620', padding: '2px 8px', borderRadius: 4 }}>查看</span>
           </div>
         )}
         <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -146,10 +193,26 @@ export default function App() {
             <Route path="/pay/status/:leadId" element={<ClientPaymentStatusPage />} />
             <Route path="/supply-brands" element={<SupplyBrandsPage />} />
             <Route path="/supply-brands/admin" element={<SupplyBrandsAdmin />} />
+            <Route path="/competitors" element={<CompetitorsPage />} />
+            <Route path="/competitors/admin" element={<CompetitorsAdmin />} />
+            <Route path="/content-strategy" element={<ContentStrategyPage />} />
+            <Route path="/supply-reviews" element={<SupplyReviewsPage />} />
+            <Route path="/availability-settings" element={<AvailabilitySettingsPage />} />
+            <Route path="/book/:artistId" element={<ClientBookingPage />} />
+            <Route path="/pos" element={<PosPage />} />
+            <Route path="/pos-settings" element={<PosSettingsPage />} />
+            <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoice/:id" element={<InvoiceDetail />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>
-        {isLoggedIn && <TabBar tabs={tabs} activeTab={activeTab} />}
+        {isLoggedIn && (
+        <div style={{ borderTop: '1px solid #1e293b' }}>
+          <LocationSelectorWrapper />
+        </div>
+      )}
+      {isLoggedIn && <TabBar tabs={tabs} activeTab={activeTab} />}
       </div>
     </ErrorBoundary>
   );
@@ -256,6 +319,15 @@ function NewClientForm() {
       </button>
     </div>
   );
+}
+
+function LocationSelectorWrapper() {
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    const stored = localStorage.getItem('inkflow_current_user');
+    if (stored) { db.users.get(stored).then(u => setUser(u)); }
+  }, []);
+  return <LocationSelector user={user} />;
 }
 
 const inputStyle: React.CSSProperties = {

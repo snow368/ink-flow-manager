@@ -14,6 +14,11 @@ export class InkFlowDB extends Dexie {
   leads!: Table<LeadRecord>;
   leadRevisions!: Table<LeadRevisionRecord>;
   supplyBrands!: Table<SupplyBrandRecord>;
+  posTransactions!: Table<PosTransactionRecord>;
+  studioLocations!: Table<StudioLocationRecord>;
+  invoices!: Table<InvoiceRecord>;
+  competitors!: Table<CompetitorRecord>;
+  supplyReviews!: Table<SupplyReviewRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -113,6 +118,130 @@ export class InkFlowDB extends Dexie {
       leadRevisions: 'id, leadId, version, actor, createdAt',
       supplyBrands: 'id, category, active, sortOrder',
     });
+    this.version(8).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+    });
+    this.version(9).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+    });
+    this.version(10).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+    });
+    this.version(11).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+    });
+    this.version(12).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+    });
+    this.version(13).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+    });
+    this.version(14).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+    });
   }
 }
 
@@ -122,7 +251,7 @@ export interface UserRecord {
   id: string;
   email: string;
   name: string;
-  role: 'artist' | 'owner' | 'staff' | 'pro' | 'plus';
+  role: 'artist' | 'owner' | 'staff' | 'pro' | 'plus' | 'dev';
   artistId?: string;
   deviceId?: string;
   verified: boolean;
@@ -137,25 +266,46 @@ export interface UserRecord {
   lastBackupAt?: number;
   proDaysLeft?: number;
   paymentProvider?: 'stripe_connect' | 'square' | 'manual';
-  enabledPaymentMethods?: Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash'>;
+  enabledPaymentMethods?: Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal'>;
   stripeAccountId?: string;
   paymentLinkTemplate?: string;
+  country?: string;
   paymentCurrency?: string;
   paymentDefaultDeposit?: string;
+  commissionRate?: number;
   bankTransferInstructions?: string;
+  workingHoursStart?: string;
+  workingHoursEnd?: string;
+  daysOff?: string[];
+  instagramHandle?: string;
+  whatsappPhone?: string;
+  appointmentRemindersEnabled?: boolean;
+  assignedLocationIds?: string[];
+  createdAt: number;
+}
+
+export interface StudioLocationRecord {
+  id: string;
+  ownerId: string;
+  managerId?: string;
+  name: string;
+  address?: string;
+  phone?: string;
   createdAt: number;
 }
 
 export interface ClientRecord {
   id: string; name: string; artistId?: string; phone?: string; email?: string;
-  allergies?: string[]; notes?: string; createdAt: number;
+  allergies?: string[]; notes?: string; birthday?: string;
+  tags?: string[]; lastVisitAt?: number; totalSpend?: number; leadSource?: string;
+  createdAt: number;
 }
 
 export interface AppointmentRecord {
   id: string; clientId: string; projectId?: string; artistId: string; date: string;
   time: string; duration: number; type?: string;
   status: 'unconfirmed'|'deposit_paid'|'ready'|'attention'|'blocked'|'done'|'cancelled';
-  waiverCompleted: boolean; createdAt: number;
+  waiverCompleted: boolean; depositAmount?: number; createdAt: number;
 }
 
 export interface ProjectRecord {
@@ -183,11 +333,42 @@ export interface TimelineEvent {
   payload?: string;
 }
 
-export interface ConsumableUsage { itemId: string; quantity: number; }
+export interface ConsumableUsage { itemId: string; quantity: number; batchNumber?: string; }
 
 export interface InventoryRecord {
   id: string; name: string; category: string; quantity: number;
-  reorderLevel: number; unit: string; createdAt: number;
+  reorderLevel: number; unit: string; price?: number; sku?: string; sellable?: boolean;
+  batchNumber?: string; batchPhotoUrl?: string; reorderUrl?: string;
+  createdAt: number;
+}
+
+export interface PosLineItem {
+  type: 'product' | 'service';
+  inventoryId?: string;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+}
+
+export interface PosTransactionRecord {
+  id: string;
+  artistId: string;
+  clientId?: string;
+  walkInName?: string;
+  appointmentId?: string;
+  items: PosLineItem[];
+  subtotal: number;
+  depositApplied?: number;
+  tip?: number;
+  tax?: number;
+  total: number;
+  locationId?: string;
+  paymentMethod: 'cash' | 'card' | 'other';
+  paymentStatus: 'completed' | 'refunded';
+  refundReason?: string;
+  receiptNumber: string;
+  createdAt: number;
 }
 
 export interface PortfolioRecord {
@@ -218,7 +399,7 @@ export interface LeadRecord {
   creativeId?: string;
   consultMode?: 'online_chat' | 'consult_booking' | 'walk_in_direct';
   status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
-  paymentMethod?: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash';
+  paymentMethod?: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal';
   paymentStatus?: 'unpaid' | 'pending_verify' | 'paid' | 'refunded' | 'waived';
   paymentAmount?: string;
   paymentCurrency?: string;
@@ -286,4 +467,80 @@ export interface SupplyBrandRecord {
   featuredUntil?: number;
   clickCount?: number;
   createdAt: number;
+}
+
+export interface CompetitorFeature {
+  name: string;
+  notes: string;
+  rating: 'best' | 'good' | 'basic' | 'missing';
+}
+
+export interface CompetitorRecord {
+  id: string;
+  name: string;
+  website: string;
+  category: 'studio_mgmt' | 'booking' | 'pos' | 'marketing' | 'crm' | 'other';
+  description: string;
+  logoUrl?: string;
+  features: CompetitorFeature[];
+  pricing?: string;
+  strengths?: string;
+  weaknesses?: string;
+  status: 'active' | 'tracking' | 'archived';
+  lastCheckedAt: number;
+  nextCheckAt: number;
+  createdAt: number;
+}
+
+export interface SupplyReviewRecord {
+  id: string;
+  productName: string;
+  productId?: string;
+  category: 'ink' | 'needles' | 'machines' | 'aftercare' | 'furniture' | 'other';
+  body: string;
+  pros?: string;
+  cons?: string;
+  tags: string[];
+  buyAgain?: boolean;
+  photos: string[];
+  artistId: string;
+  isAnonymous: boolean;
+  helpfulCount: number;
+  createdAt: number;
+}
+
+export interface InvoiceLineItem {
+  type: 'product' | 'service';
+  inventoryId?: string;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+}
+
+export interface InvoiceRecord {
+  id: string;
+  invoiceNumber: string;
+  artistId: string;
+  clientId?: string;
+  walkInName?: string;
+  items: InvoiceLineItem[];
+  subtotal: number;
+  tax?: number;
+  taxRate?: number;
+  depositApplied?: number;
+  tip?: number;
+  total: number;
+  currency: string;
+  country: string;
+  paymentMethod: 'cash' | 'card' | 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'paypal' | 'other';
+  paymentStatus: 'pending' | 'paid' | 'cancelled' | 'refunded';
+  posTransactionId?: string;
+  appointmentId?: string;
+  notes?: string;
+  locationId?: string;
+  sentAt?: number;
+  sentVia?: 'whatsapp' | 'email' | 'share' | 'copy';
+  createdAt: number;
+  paidAt?: number;
 }

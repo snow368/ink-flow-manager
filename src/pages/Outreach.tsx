@@ -2,14 +2,17 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type ClientRecord, type AppointmentRecord } from '../db';
 import { THEME } from '../lib/theme';
+import { buildBirthdayMessage, getDormantClients } from '../lib/marketingLogic';
 
 type Channel = 'whatsapp' | 'sms' | 'instagram' | 'facebook' | 'tiktok';
-type TemplateKey = 'booking_confirm' | 'booking_reminder' | 'reschedule';
+type TemplateKey = 'booking_confirm' | 'booking_reminder' | 'reschedule' | 'birthday_greeting' | 're_engagement';
 
 const TEMPLATES: Record<TemplateKey, string> = {
   booking_confirm: 'Hi {clientName}, your appointment is booked for {date} at {time}. Reply to confirm or request changes.',
   booking_reminder: 'Reminder: your appointment is on {date} at {time}. Please arrive 10 minutes early.',
   reschedule: 'Hi {clientName}, your appointment has been updated to {date} at {time}. Reply if you need another time.',
+  birthday_greeting: 'Happy birthday, {clientName}! Wishing you a wonderful day. From the studio.',
+  re_engagement: 'Hey {clientName}! Long time no see — we miss you at the studio. Book your next session when ready.',
 };
 
 const CHANNEL_META: Record<Channel, { label: string; accent: string }> = {

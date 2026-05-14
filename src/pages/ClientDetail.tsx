@@ -1,37 +1,304 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, type ClientRecord, type AppointmentRecord } from '../db';
+import { db, type ClientRecord, type AppointmentRecord, type InvoiceRecord, type SessionRecord, type PortfolioRecord, type ProjectRecord } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
+import { detectInitialLanguage, t } from '../lib/i18n';
+import { formatInvoiceCurrency, getCountryConfig } from '../lib/invoiceConfig';
+
+interface ImageEntry {
+  type: 'design' | 'progress' | 'finished';
+  imageUrl: string;
+  date: number;
+  note?: string;
+  projectTitle?: string;
+}
+
+const IMAGE_TYPE_LABELS: Record<ImageEntry['type'], { label: string; color: string }> = {
+  design: { label: 'Design', color: '#93c5fd' },
+  progress: { label: 'In Progress', color: '#fbbf24' },
+  finished: { label: 'Finished', color: '#4ade80' },
+};
+
+const TAG_COLORS: Record<string, string> = {
+  vip: '#fbbf24', at_risk: '#f87171', new: '#4ade80',
+};
 
 export default function ClientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const lang = detectInitialLanguage();
   const [client, setClient] = useState<ClientRecord | null>(null);
   const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
+  const [images, setImages] = useState<ImageEntry[]>([]);
+  const [fullImage, setFullImage] = useState<string | null>(null);
+  const [editingBirthday, setEditingBirthday] = useState(false);
+  const [birthday, setBirthday] = useState('');
+  const [editingTags, setEditingTags] = useState(false);
+  const [tagInput, setTagInput] = useState('');
 
   useEffect(() => {
     if (!id) return;
-    db.clients.get(id).then(c => setClient(c || null));
-    db.appointments.where('clientId').equals(id).reverse().sortBy('date').then(apps => setAppointments(apps));
+    loadClient();
+    db.appointments.where('clientId').equals(id).reverse().sortBy('date').then(setAppointments);
+    db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
+    loadImages(id);
   }, [id]);
+
+  const loadImages = async (clientId: string) => {
+    const entries: ImageEntry[] = [];
+
+    // Sessions — progress photos
+    const apps = await db.appointments.where('clientId').equals(clientId).toArray();
+    const appIds = apps.map(a => a.id);
+    if (appIds.length > 0) {
+      const sessions = await db.sessions.where('appointmentId').anyOf(appIds).toArray();
+      for (const s of sessions) {
+        // Collect notes from timeline
+        const timelineNotes = s.timeline?.filter(t => t.type === 'note').map(t => t.payload || '') || [];
+        for (let i = 0; i < (s.photos || []).length; i++) {
+          entries.push({
+            type: 'progress',
+            imageUrl: s.photos[i],
+            date: s.startedAt,
+            note: timelineNotes[i] || s.notes?.[i] || undefined,
+          });
+        }
+      }
+    }
+
+    // Projects & Portfolio — design + finished
+    const projects = await db.projects.where('clientId').equals(clientId).toArray();
+    const projectMap = new Map(projects.map(p => [p.id, p]));
+    const projectIds = projects.map(p => p.id);
+    if (projectIds.length > 0) {
+      const portfolios = await db.portfolio.where('projectId').anyOf(projectIds).toArray();
+      for (const p of portfolios) {
+        const proj = projectMap.get(p.projectId || '');
+        entries.push({
+          type: 'finished',
+          imageUrl: p.imageUrl,
+          date: p.createdAt,
+          note: proj?.style || undefined,
+          projectTitle: proj?.title,
+        });
+      }
+    }
+
+    // Design drafts from projects that have status consultation/in_progress
+    for (const proj of projects) {
+      if (proj.status === 'consultation' || proj.status === 'in_progress') {
+        // Use project itself as design reference
+        entries.push({
+          type: 'design',
+          imageUrl: '', // no image — show as placeholder card
+          date: proj.createdAt,
+          note: proj.bodyPart ? `${proj.style || ''} · ${proj.bodyPart}` : proj.style,
+          projectTitle: proj.title,
+        });
+      }
+    }
+
+    entries.sort((a, b) => b.date - a.date);
+    setImages(entries);
+  };
+
+  const loadClient = () => {
+    if (!id) return;
+    db.clients.get(id).then(c => {
+      setClient(c || null);
+      setBirthday(c?.birthday || '');
+    });
+  };
+
+  const saveBirthday = async () => {
+    if (!client) return;
+    await db.clients.update(client.id, { birthday: birthday || undefined });
+    setEditingBirthday(false);
+    loadClient();
+  };
+
+  const toggleTag = async (tag: string) => {
+    if (!client) return;
+    const tags = client.tags || [];
+    const next = tags.includes(tag) ? tags.filter(t => t !== tag) : [...tags, tag];
+    await db.clients.update(client.id, { tags: next });
+    loadClient();
+  };
+
+  const addCustomTag = async () => {
+    const trimmed = tagInput.trim();
+    if (!trimmed || !client) return;
+    const tags = client.tags || [];
+    if (tags.includes(trimmed)) { setTagInput(''); return; }
+    await db.clients.update(client.id, { tags: [...tags, trimmed] });
+    setTagInput('');
+    loadClient();
+  };
 
   if (!client) return <div style={{ padding: 24, color: 'white' }}>Loading...</div>;
 
+  const formatDate = (ts?: number) => ts ? new Date(ts).toLocaleDateString() : 'Never';
+  const formatCents = (c?: number) => c != null ? '$' + (c / 100).toFixed(0) : '$0';
+
   return (
-    <div style={{ padding: 24, color: 'white' }}>
+    <div style={{ padding: 24, color: 'white', paddingBottom: 100 }}>
       <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, marginBottom: 16 }}>
-        Back
+        ← {t(lang, 'back')}
       </button>
 
-      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 20, fontWeight: 'bold' }}>{client.name}</p>
-        <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} - {client.email || 'No email'}</p>
+        <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} — {client.email || 'No email'}</p>
       </div>
 
+      {/* Birthday */}
+      <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 14, color: '#94a3b8' }}>{t(lang, 'client_birthday')}</span>
+          {editingBirthday ? (
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input type="date" value={birthday} onChange={e => setBirthday(e.target.value)}
+                style={{ padding: '4px 8px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, colorScheme: 'dark' }} />
+              <button onClick={saveBirthday} style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#22c55e', color: 'white', fontSize: 12 }}>Save</button>
+              <button onClick={() => setEditingBirthday(false)} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 12 }}>Cancel</button>
+            </div>
+          ) : (
+            <button onClick={() => setEditingBirthday(true)}
+              style={{ fontSize: 14, color: client.birthday ? '#e2e8f0' : '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>
+              {client.birthday || t(lang, 'not_set')}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <span style={{ fontSize: 14, color: '#94a3b8' }}>{t(lang, 'client_tags')}</span>
+          <button onClick={() => setEditingTags(!editingTags)}
+            style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 12 }}>{editingTags ? 'Done' : 'Edit'}</button>
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {(client.tags || []).map(tag => (
+            <span key={tag} onClick={() => editingTags && toggleTag(tag)}
+              style={{
+                padding: '3px 10px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+                background: (TAG_COLORS[tag] || '#64748b') + '33',
+                color: TAG_COLORS[tag] || '#94a3b8',
+                cursor: editingTags ? 'pointer' : 'default',
+              }}>
+              {tag} {editingTags ? '✕' : ''}
+            </span>
+          ))}
+          {(!client.tags || client.tags.length === 0) && (
+            <span style={{ fontSize: 12, color: '#64748b' }}>{t(lang, 'no_tags')}</span>
+          )}
+        </div>
+        {editingTags && (
+          <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+            <input placeholder="Add tag" value={tagInput} onChange={e => setTagInput(e.target.value)}
+              style={{ flex: 1, padding: '6px 10px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13 }} />
+            <button onClick={addCustomTag}
+              style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: '#334155', color: 'white', fontSize: 12 }}>Add</button>
+            <button onClick={() => toggleTag('vip')}
+              style={tagBtn(TAG_COLORS.vip)}>VIP</button>
+            <button onClick={() => toggleTag('new')}
+              style={tagBtn(TAG_COLORS.new)}>New</button>
+            <button onClick={() => toggleTag('at_risk')}
+              style={tagBtn(TAG_COLORS.at_risk)}>At Risk</button>
+          </div>
+        )}
+      </div>
+
+      {/* Stats */}
+      <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 13, color: '#94a3b8' }}>{t(lang, 'client_total_spend')}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#22c55e' }}>{formatCents(client.totalSpend)}</span>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 13, color: '#94a3b8' }}>{t(lang, 'client_last_visit')}</span>
+          <span style={{ fontSize: 14 }}>{formatDate(client.lastVisitAt)}</span>
+        </div>
+        {client.leadSource && (
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 13, color: '#94a3b8' }}>{t(lang, 'client_lead_source')}</span>
+            <span style={{ fontSize: 14, color: '#93c5fd' }}>{client.leadSource}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Allergies */}
       {client.allergies && client.allergies.length > 0 && (
-        <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}>
+        <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 12 }}>
           <p style={{ fontWeight: 600, color: '#fca5a5', marginBottom: 4 }}>Allergy Notes</p>
           {client.allergies.map((a, i) => <p key={i} style={{ fontSize: 14, color: '#fca5a5' }}>- {a}</p>)}
+        </div>
+      )}
+
+      {/* Tattoo Image Gallery */}
+      {images.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Tattoos ({images.length})</h3>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {(['design', 'progress', 'finished'] as const).map(t => {
+                const info = IMAGE_TYPE_LABELS[t];
+                const count = images.filter(i => i.type === t).length;
+                if (count === 0) return null;
+                return (
+                  <span key={t} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 3, background: info.color + '22', color: info.color }}>
+                    {info.label} {count}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, scrollSnapType: 'x mandatory' }}>
+            {images.map((img, idx) => (
+              <div key={idx} onClick={() => img.imageUrl && setFullImage(img.imageUrl)}
+                style={{ minWidth: 160, maxWidth: 160, background: '#1e293b', borderRadius: 10, overflow: 'hidden', cursor: img.imageUrl ? 'pointer' : 'default', scrollSnapAlign: 'start', flexShrink: 0 }}>
+                {img.imageUrl ? (
+                  <div style={{ height: 120, background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <img src={img.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                  </div>
+                ) : (
+                  <div style={{ height: 80, background: '#312e81', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ fontSize: 24 }}>📐</span>
+                  </div>
+                )}
+                <div style={{ padding: 8 }}>
+                  <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginBottom: 4 }}>
+                    <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: IMAGE_TYPE_LABELS[img.type].color + '22', color: IMAGE_TYPE_LABELS[img.type].color, fontWeight: 600 }}>
+                      {IMAGE_TYPE_LABELS[img.type].label}
+                    </span>
+                    <span style={{ fontSize: 10, color: '#64748b' }}>
+                      {new Date(img.date).toLocaleDateString().slice(5)}
+                    </span>
+                  </div>
+                  {img.projectTitle && (
+                    <p style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>{img.projectTitle}</p>
+                  )}
+                  {img.note && (
+                    <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.3 }}>{img.note}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Full-screen image viewer */}
+      {fullImage && (
+        <div onClick={() => setFullImage(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <img src={fullImage} alt="" style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: 8 }} />
+          <button onClick={() => setFullImage(null)}
+            style={{ position: 'absolute', top: 20, right: 20, width: 40, height: 40, borderRadius: 20, border: 'none', background: '#ffffff22', color: 'white', fontSize: 20, cursor: 'pointer' }}>
+            ✕
+          </button>
         </div>
       )}
 
@@ -53,6 +320,49 @@ export default function ClientDetail() {
           ))}
         </div>
       )}
+
+      {/* Invoice History */}
+      {invoices.length > 0 && (
+        <>
+          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 10, marginTop: 20 }}>
+            Invoice History ({invoices.length})
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {invoices.map(inv => {
+              const cfg = getCountryConfig(inv.country);
+              return (
+                <div key={inv.id} onClick={() => navigate(`/invoice/${inv.id}`)}
+                  style={{ background: '#1e293b', borderRadius: 10, padding: 10, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 600 }}>#{inv.invoiceNumber}</p>
+                    <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+                      {new Date(inv.createdAt).toLocaleDateString(cfg.locale, { dateStyle: 'medium' })}
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p style={{ fontSize: 14, fontWeight: 700 }}>{formatInvoiceCurrency(inv.total, inv.country)}</p>
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'center', justifyContent: 'flex-end', marginTop: 2 }}>
+                      {inv.sentAt ? (
+                        <span style={{ fontSize: 10, color: '#60a5fa' }}>Sent via {inv.sentVia}</span>
+                      ) : (
+                        <span style={{ fontSize: 10, color: '#fbbf24' }}>Not sent</span>
+                      )}
+                      <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: inv.paymentStatus === 'paid' ? '#22c55e20' : '#fbbf2420', color: inv.paymentStatus === 'paid' ? '#4ade80' : '#fbbf24' }}>
+                        {inv.paymentStatus}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
+const tagBtn = (color: string): React.CSSProperties => ({
+  padding: '4px 8px', borderRadius: 6, border: `1px solid ${color}44`,
+  background: 'transparent', color, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+});

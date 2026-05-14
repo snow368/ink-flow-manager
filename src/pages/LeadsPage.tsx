@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { db, type LeadRecord, type LeadRevisionRecord, type PortfolioRecord, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { buildDepositLink, getSuggestedDepositAmount } from '../lib/payments';
+import { getCurrentArtistIds } from '../lib/locationLogic';
+import { getArtistAvailability } from '../lib/availability';
 import { canConsumeMessage, consumeMessage } from '../lib/quota';
 
 type FollowPreset = {
@@ -75,6 +77,7 @@ function paymentMethodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'manual_link') return 'Manual Link';
   if (method === 'bank_transfer') return 'Bank Transfer';
   if (method === 'cash') return 'Cash';
+  if (method === 'paypal') return 'PayPal';
   return 'Not set';
 }
 
@@ -145,7 +148,14 @@ export default function LeadsPage() {
     setArtistId(current);
     db.users.get(current).then(u => setArtistUser(u || null));
     setFollowPresets(loadPresets(current));
-    db.leads.where('artistId').equals(current).reverse().sortBy('createdAt').then(setLeads);
+    db.users.get(current).then(async u => {
+      if (!u) return;
+      const artistIds = await getCurrentArtistIds(u);
+      const leads = artistIds.length > 1
+        ? await db.leads.where('artistId').anyOf(artistIds).reverse().sortBy('createdAt')
+        : await db.leads.where('artistId').equals(current).reverse().sortBy('createdAt');
+      setLeads(leads);
+    });
     db.portfolio.where('artistId').equals(current).toArray().then(items => {
       const approved = items
         .filter(p => p.consentForPromotion)
@@ -241,7 +251,12 @@ export default function LeadsPage() {
 
   const refresh = async () => {
     if (!artistId) return;
-    const list = await db.leads.where('artistId').equals(artistId).reverse().sortBy('createdAt');
+    const u = await db.users.get(artistId);
+    if (!u) return;
+    const artistIds = await getCurrentArtistIds(u);
+    const list = artistIds.length > 1
+      ? await db.leads.where('artistId').anyOf(artistIds).reverse().sortBy('createdAt')
+      : await db.leads.where('artistId').equals(artistId).reverse().sortBy('createdAt');
     setLeads(list);
   };
 
@@ -304,6 +319,7 @@ export default function LeadsPage() {
       allergies: lead.allergies,
       notes: [lead.note, lead.changeRequest, lead.allergyNote, revisionNotes].filter(Boolean).join('\n'),
       artistId: lead.artistId,
+      leadSource: lead.source,
       createdAt: now,
     });
     await db.leads.update(lead.id, { status: 'won' });
@@ -351,6 +367,9 @@ export default function LeadsPage() {
     const duration = 120;
     const artistAppointments = (await db.appointments.where('artistId').equals(lead.artistId).toArray())
       .filter(a => a.status !== 'cancelled');
+    const avail = await getArtistAvailability(lead.artistId);
+    const dayStartMin = toMinutes(avail.start);
+    const dayEndMin = toMinutes(avail.end);
     const preferredDate = lead.preferredDate || new Date().toISOString().slice(0, 10);
     const preferredTime = lead.preferredTime || '14:00';
     const startDate = new Date(preferredDate + 'T00:00:00');
@@ -363,9 +382,9 @@ export default function LeadsPage() {
       const dayApps = artistAppointments.filter(a => a.date === date);
       const preferredMin = toMinutes(preferredTime);
 
-      for (let mins = 10 * 60; mins <= 20 * 60; mins += 30) {
+      for (let mins = dayStartMin; mins <= dayEndMin - duration; mins += 30) {
         const end = mins + duration;
-        if (end > 22 * 60) continue;
+        if (end > dayEndMin) continue;
         const conflict = dayApps.some(a => {
           const s = toMinutes(a.time);
           const e = s + a.duration;
@@ -1055,6 +1074,7 @@ export default function LeadsPage() {
                     <option value="manual_link">Manual Link</option>
                     <option value="bank_transfer">Bank Transfer</option>
                     <option value="cash">Cash</option>
+                    <option value="paypal">PayPal</option>
                   </select>
                   <input
                     value={draftPaymentAmountByLead[lead.id] || lead.paymentAmount || ''}
