@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type ClientRecord } from '../db';
 import { getCurrentArtistIds } from '../lib/locationLogic';
+import { findDuplicates, mergeClients, type DuplicateGroup } from '../lib/clientMerge';
 
 export default function Clients() {
   const navigate = useNavigate();
@@ -10,6 +11,9 @@ export default function Clients() {
   const [search, setSearch] = useState('');
   const [tagFilter, setTagFilter] = useState('');
   const [sortBy, setSortBy] = useState<'createdAt' | 'name' | 'lastVisit' | 'totalSpend'>('createdAt');
+  const [duplicateGroups, setDuplicateGroups] = useState<DuplicateGroup[]>([]);
+  const [showMerge, setShowMerge] = useState(false);
+  const [merging, setMerging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -32,6 +36,25 @@ export default function Clients() {
       setClients(await db.clients.orderBy('createdAt').reverse().toArray());
     }
   }
+
+  const handleFindDuplicates = async () => {
+    if (!user) return;
+    const artistId = user.artistId || user.id;
+    const groups = await findDuplicates(artistId);
+    setDuplicateGroups(groups);
+    setShowMerge(true);
+  };
+
+  const handleMerge = async (keepId: string, mergeIds: string[]) => {
+    setMerging(true);
+    await mergeClients(keepId, mergeIds);
+    if (user) await loadClients(user);
+    const artistId = user?.artistId || user?.id || '';
+    const groups = await findDuplicates(artistId);
+    setDuplicateGroups(groups);
+    if (groups.length === 0) setShowMerge(false);
+    setMerging(false);
+  };
 
   const filtered = clients
     .filter(c => {
@@ -96,6 +119,9 @@ export default function Clients() {
           <button onClick={() => fileInputRef.current?.click()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: '#334155', color: 'white', fontSize: 13 }}>
             Import
           </button>
+          <button onClick={handleFindDuplicates} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: '#7c3aed', color: 'white', fontSize: 13, fontWeight: 600 }}>
+            Find Duplicates
+          </button>
           <button onClick={() => navigate('/client/new')} style={{ width: 36, height: 36, borderRadius: 18, border: 'none', background: '#e11d48', color: 'white', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             +
           </button>
@@ -127,6 +153,49 @@ export default function Clients() {
         <option value="lastVisit">Sort: Last Visit</option>
         <option value="totalSpend">Sort: Total Spend</option>
       </select>
+
+      {showMerge && (
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: '#c084fc' }}>
+              Duplicate Groups: {duplicateGroups.length}
+            </p>
+            <button onClick={() => setShowMerge(false)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 16, cursor: 'pointer' }}>x</button>
+          </div>
+          {duplicateGroups.length === 0 ? (
+            <p style={{ fontSize: 12, color: '#4ade80' }}>No duplicates found.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {duplicateGroups.map((group, gi) => (
+                <div key={gi} style={{ background: '#1e293b', border: '1px solid #4338ca44', borderRadius: 10, padding: 12 }}>
+                  <p style={{ fontSize: 11, color: '#a5b4fc', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Match: {group.matchType.replace('_', ' + ')}
+                  </p>
+                  {group.clients.map(c => (
+                    <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #1e293b' }}>
+                      <div style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
+                        <p style={{ fontSize: 11, color: '#64748b' }}>
+                          {c.phone || 'No phone'} · {c.email || 'No email'} · Created {new Date(c.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <button onClick={() => navigate('/client/' + c.id)} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+                        View
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => handleMerge(group.clients[0].id, group.clients.slice(1).map(c => c.id))}
+                    disabled={merging}
+                    style={{ width: '100%', marginTop: 8, padding: '10px 0', borderRadius: 8, border: 'none', background: merging ? '#4b5563' : '#7c3aed', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    {merging ? 'Merging...' : `Keep "${group.clients[0].name}" — Merge ${group.clients.length - 1} into it`}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.length === 0 ? (

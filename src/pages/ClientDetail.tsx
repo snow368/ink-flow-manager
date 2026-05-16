@@ -4,6 +4,7 @@ import { db, type ClientRecord, type AppointmentRecord, type InvoiceRecord, type
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { formatInvoiceCurrency, getCountryConfig } from '../lib/invoiceConfig';
+import { checkAndSuggestMerge, mergeClients } from '../lib/clientMerge';
 
 interface ImageEntry {
   type: 'design' | 'progress' | 'finished';
@@ -40,10 +41,14 @@ export default function ClientDetail() {
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editNotes, setEditNotes] = useState('');
+  const [message, setMessage] = useState('');
+  const [potentialDuplicates, setPotentialDuplicates] = useState<ClientRecord[]>([]);
+  const [showMergeSuggestion, setShowMergeSuggestion] = useState(false);
 
   useEffect(() => {
     if (!id) return;
     loadClient();
+    loadDuplicates(id);
     db.appointments.where('clientId').equals(id).reverse().sortBy('date').then(setAppointments);
     db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
     loadImages(id);
@@ -115,6 +120,25 @@ export default function ClientDetail() {
     });
   };
 
+  const loadDuplicates = (clientId: string) => {
+    db.clients.get(clientId).then(c => {
+      if (!c) return;
+      checkAndSuggestMerge(c.name, c.phone, c.email, c.artistId).then(dupes => {
+        setPotentialDuplicates(dupes.filter(d => d.id !== clientId));
+        setShowMergeSuggestion(dupes.filter(d => d.id !== clientId).length > 0);
+      });
+    });
+  };
+
+  const handleMergeIntoCurrent = async (mergeId: string) => {
+    if (!id || !client) return;
+    await mergeClients(id, [mergeId]);
+    setPotentialDuplicates(prev => prev.filter(d => d.id !== mergeId));
+    if (potentialDuplicates.length <= 1) setShowMergeSuggestion(false);
+    loadClient();
+    setMessage('Clients merged successfully.');
+  };
+
   const saveBirthday = async () => {
     if (!client) return;
     await db.clients.update(client.id, { birthday: birthday || undefined });
@@ -161,6 +185,40 @@ export default function ClientDetail() {
       <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 14, marginBottom: 16 }}>
         ← {t(lang, 'back')}
       </button>
+
+      {message && (
+        <div style={{ background: '#14532d', padding: 8, borderRadius: 8, marginBottom: 12 }}>
+          <p style={{ fontSize: 13, color: '#86efac' }}>{message}</p>
+        </div>
+      )}
+
+      {showMergeSuggestion && potentialDuplicates.length > 0 && (
+        <div style={{ background: '#1e293b', border: '1px solid #c084fc44', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+          <p style={{ fontSize: 13, color: '#c084fc', fontWeight: 700, marginBottom: 4 }}>
+            Possible Duplicate{potentialDuplicates.length > 1 ? 's' : ''} Found
+          </p>
+          <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>
+            These clients share the same phone or email. Merge to combine their history.
+          </p>
+          {potentialDuplicates.map(d => (
+            <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderTop: '1px solid #334155' }}>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600 }}>{d.name}</p>
+                <p style={{ fontSize: 11, color: '#64748b' }}>{d.phone || 'No phone'} · {d.email || 'No email'}</p>
+              </div>
+              <button onClick={async () => {
+                await handleMergeIntoCurrent(d.id);
+              }} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#7c3aed', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                Merge →
+              </button>
+            </div>
+          ))}
+          <button onClick={() => setShowMergeSuggestion(false)}
+            style={{ width: '100%', marginTop: 8, padding: 8, borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#64748b', fontSize: 11, cursor: 'pointer' }}>
+            Dismiss
+          </button>
+        </div>
+      )}
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 20, fontWeight: 'bold' }}>{client.name}</p>

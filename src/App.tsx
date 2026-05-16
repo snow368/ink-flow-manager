@@ -39,6 +39,7 @@ import Invoices from './pages/Invoices';
 import InvoiceDetail from './pages/InvoiceDetail';
 import InvoiceSettingsPage from './pages/InvoiceSettingsPage';
 import HealthChecklistPage from './pages/HealthChecklistPage';
+import CheckinPage from './pages/CheckinPage';
 import ClientPortalPage from './pages/ClientPortalPage';
 import AppointmentRespondPage from './pages/AppointmentRespondPage';
 import EmbedBookingPage from './pages/EmbedBookingPage';
@@ -212,6 +213,7 @@ export default function App() {
             <Route path="/invoice/:id" element={<InvoiceDetail />} />
             <Route path="/invoice-settings" element={<InvoiceSettingsPage />} />
             <Route path="/health-checklist" element={<HealthChecklistPage />} />
+            <Route path="/checkin/:appointmentId" element={<CheckinPage />} />
             <Route path="/portal/:clientId" element={<ClientPortalPage />} />
             <Route path="/respond/:id" element={<AppointmentRespondPage />} />
             <Route path="/embed/:artistId" element={<EmbedBookingPage />} />

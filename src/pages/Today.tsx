@@ -9,6 +9,8 @@ import { checkAppointmentReminders, checkDepositReminders, markReminderSent, get
 import { getCurrentArtistIds } from '../lib/locationLogic';
 import { getClientsWithBirthdayToday, getYearAwayClients, getUpcomingBirthdays, getWhatsAppBirthdayLink, getWhatsAppYearAwayLink, buildBirthdayMessage, buildYearAwayMessage } from '../lib/marketingLogic';
 import { getLowStockCount } from '../lib/inventoryAlerts';
+import { getAftercareWhatsAppUrl } from '../lib/aftercareLogic';
+import { getReviewRequestWhatsAppUrl } from '../lib/reviewRequest';
 
 type PaymentReminderItem = { lead: LeadRecord; stage: '24h' | '48h' };
 
@@ -70,6 +72,7 @@ export default function Today() {
   }, [user, appointments]);
 
   const [reminders, setReminders] = useState<AppointmentReminder[]>([]);
+  const [recentlyCompleted, setRecentlyCompleted] = useState<(AppointmentRecord & { clientName?: string; clientPhone?: string }) | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -381,6 +384,10 @@ export default function Today() {
   const handleStatusUpdate = async (id: string, status: AppointmentRecord['status']) => {
     await db.appointments.update(id, { status });
     updateAppointmentInState(id, { status });
+    if (status === 'done') {
+      const done = appointments.find(a => a.id === id);
+      if (done) setRecentlyCompleted(done);
+    }
     if (user) {
       loadFutureDateCounts(user);
       loadAppointmentsForWeek(user, selectedDate);
@@ -562,6 +569,39 @@ export default function Today() {
             <span style={{ fontSize: 12, color: '#93c5fd' }}>Inventory →</span>
           </div>
           <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Tap to review low stock items and reorder. Set purchase links in inventory for quick reorder.</p>
+        </div>
+      )}
+
+      {recentlyCompleted && (
+        <div style={{ background: '#1e293b', border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <p style={{ fontSize: 13, color: '#4ade80', fontWeight: 700 }}>{recentlyCompleted.clientName}'s appointment completed</p>
+            <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 14, cursor: 'pointer' }}>x</button>
+          </div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
+              const aftercareUrl = getAftercareWhatsAppUrl(recentlyCompleted.clientName || '', recentlyCompleted.type, user.whatsappPhone);
+              return aftercareUrl ? (
+                <button onClick={() => window.open(aftercareUrl, '_blank', 'noopener,noreferrer')}
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#0f766e', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 140 }}>
+                  Send Aftercare
+                </button>
+              ) : null;
+            })()}
+            {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
+              const reviewUrl = getReviewRequestWhatsAppUrl(recentlyCompleted.clientName || '', user.whatsappPhone, 'google');
+              return reviewUrl ? (
+                <button onClick={() => window.open(reviewUrl, '_blank', 'noopener,noreferrer')}
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 140 }}>
+                  Request Google Review
+                </button>
+              ) : null;
+            })()}
+            <button onClick={() => setRecentlyCompleted(null)}
+              style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
 
@@ -870,6 +910,9 @@ function AppointmentCard({
         )}
         {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
           <button onClick={() => navigate(`/pos?appointmentId=${encodeURIComponent(appointment.id)}`)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#22c55e', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Checkout</button>
+        )}
+        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
+          <button disabled={updating} onClick={() => updateStatus('done')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#7c3aed', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Done</button>
         )}
         {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
           <button disabled={updating} onClick={() => updateStatus('cancelled')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#475569', color: '#e2e8f0', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
