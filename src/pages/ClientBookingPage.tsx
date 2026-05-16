@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability, isDayOff, toMinutes, toTimeString, findMultipleAvailableTimes } from '../lib/availability';
 
-type Step = 'date' | 'info' | 'confirmed';
+type Step = 'date' | 'info' | 'payment' | 'confirmed';
+
+function getBookingDeposit(): number {
+  try { return parseFloat(localStorage.getItem('inkflow_booking_deposit') || '0') || 0; } catch { return 0; }
+}
 
 export default function ClientBookingPage() {
   const { artistId } = useParams<{ artistId: string }>();
+  const [searchParams] = useSearchParams();
   const lang = detectInitialLanguage();
   const [artist, setArtist] = useState<UserRecord | null>(null);
   const [step, setStep] = useState<Step>('date');
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
@@ -33,6 +39,29 @@ export default function ClientBookingPage() {
 
   // confirmed state
   const [createdLeadId, setCreatedLeadId] = useState('');
+  const [createdAppointmentId, setCreatedAppointmentId] = useState('');
+  const [paying, setPaying] = useState(false);
+  const bookingDeposit = getBookingDeposit();
+
+  useEffect(() => {
+    const paid = searchParams.get('paid');
+    const apptId = searchParams.get('appointment');
+    const leadId = searchParams.get('lead');
+    if (paid === '1' && apptId && leadId) {
+      db.appointments.update(apptId, { status: 'deposit_paid', depositAmount: Math.round(bookingDeposit * 100) });
+      setCreatedLeadId(leadId);
+      setCreatedAppointmentId(apptId);
+      setStep('confirmed');
+      // Clean URL
+      navigate(`/book/${artistId}`, { replace: true });
+      return;
+    }
+    if (searchParams.get('canceled') === '1') {
+      setStep('info');
+      navigate(`/book/${artistId}`, { replace: true });
+      return;
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!artistId) return;
@@ -150,11 +179,51 @@ export default function ClientBookingPage() {
       });
 
       setCreatedLeadId(leadId);
-      setStep('confirmed');
+      setCreatedAppointmentId(apptId);
+      if (bookingDeposit > 0) {
+        setStep('payment');
+      } else {
+        setStep('confirmed');
+      }
     } catch (e: any) {
       setError(e?.message || 'Submit failed');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handlePayDeposit = async () => {
+    if (!createdLeadId || !createdAppointmentId || !artistId) return;
+    setPaying(true);
+    setError('');
+    try {
+      const origin = window.location.origin;
+      const successUrl = `${origin}/book/${artistId}?paid=1&appointment=${createdAppointmentId}&lead=${createdLeadId}`;
+      const cancelUrl = `${origin}/book/${artistId}?canceled=1`;
+      const res = await fetch('/api/stripe/client-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          artistId,
+          amount: bookingDeposit,
+          currency: (artist?.country || 'US').toLowerCase() === 'jp' ? 'jpy' : 'usd',
+          clientName: name.trim(),
+          leadId: createdLeadId,
+          appointmentId: createdAppointmentId,
+          successUrl,
+          cancelUrl,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError(data.error || 'Payment failed');
+      }
+    } catch (e: any) {
+      setError(e?.message || 'Payment service unavailable');
+    } finally {
+      setPaying(false);
     }
   };
 
@@ -298,17 +367,70 @@ export default function ClientBookingPage() {
         </>
       )}
 
+      {step === 'payment' && (
+        <div style={{ textAlign: 'center', paddingTop: 20 }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>💳</div>
+          <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}>Secure Deposit</h2>
+          <p style={{ color: '#94a3b8', marginBottom: 20, fontSize: 14 }}>
+            A ${bookingDeposit.toFixed(2)} deposit is required to confirm your appointment.
+          </p>
+
+          <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 16, marginBottom: 16, textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ color: '#94a3b8', fontSize: 13 }}>Appointment</span>
+              <span style={{ fontSize: 13 }}>{dateDisplay} at {selectedTime}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ color: '#94a3b8', fontSize: 13 }}>Client</span>
+              <span style={{ fontSize: 13 }}>{name}</span>
+            </div>
+            <div style={{ borderTop: '1px solid #334155', margin: '8px 0' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#94a3b8', fontSize: 13 }}>Deposit</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#fbbf24' }}>${bookingDeposit.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {error && <p style={{ color: '#fca5a5', fontSize: 13, marginBottom: 12 }}>{error}</p>}
+
+          <p style={{ fontSize: 11, color: '#64748b', marginBottom: 16 }}>Secured by Stripe. Your card details are never stored on our servers.</p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button onClick={handlePayDeposit} disabled={paying}
+              style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none',
+                background: paying ? '#4b5563' : '#635bff',
+                color: 'white', fontSize: 16, fontWeight: 700, cursor: paying ? 'not-allowed' : 'pointer' }}>
+              {paying ? 'Redirecting to Stripe...' : `Pay $${bookingDeposit.toFixed(2)} Deposit`}
+            </button>
+            <button onClick={() => setStep('confirmed')}
+              style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155',
+                background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
+              Skip Payment for Now
+            </button>
+          </div>
+        </div>
+      )}
+
       {step === 'confirmed' && (
         <div style={{ textAlign: 'center', paddingTop: 40 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
           <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>{t(lang, 'booking_confirmed')}</h2>
-          <p style={{ color: '#94a3b8', marginBottom: 24, fontSize: 14 }}>{t(lang, 'booking_confirmed_desc')}</p>
+          <p style={{ color: '#94a3b8', marginBottom: 24, fontSize: 14 }}>
+            {bookingDeposit > 0
+              ? 'Your deposit has been received. The artist will confirm your appointment shortly.'
+              : 'The artist will review your request and confirm.'}
+          </p>
 
           <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 14, marginBottom: 20, textAlign: 'left' }}>
             <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>{t(lang, 'appointment_summary')}</p>
             <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{dateDisplay} at {selectedTime}</p>
             <p style={{ fontSize: 13, color: '#cbd5e1' }}>{name} — {bodyPart || 'Tattoo consultation'}</p>
             {style && <p style={{ fontSize: 13, color: '#94a3b8' }}>Style: {style}</p>}
+            {bookingDeposit > 0 && (
+              <p style={{ fontSize: 13, color: '#4ade80', marginTop: 4 }}>
+                Deposit paid: ${bookingDeposit.toFixed(2)}
+              </p>
+            )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

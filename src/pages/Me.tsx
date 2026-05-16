@@ -15,6 +15,7 @@ export default function Me() {
   const [editingCommission, setEditingCommission] = useState(false);
   const [commissionRate, setCommissionRate] = useState<number | undefined>();
   const [showDevTools, setShowDevTools] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const [devMessage, setDevMessage] = useState('');
   const [message, setMessage] = useState('');
   const [referralCount, setReferralCount] = useState(0);
@@ -148,8 +149,50 @@ export default function Me() {
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontSize: 18, fontWeight: 600 }}>{user.name}</p>
         <p style={{ fontSize: 14, color: '#94a3b8' }}>{user.email}</p>
-        <p style={{ fontSize: 14, color: '#94a3b8' }}>Role: {user.role === 'artist' ? 'Artist (Free)' : user.role === 'owner' ? 'Owner' : user.role === 'pro' ? 'Pro' : user.role === 'plus' ? 'Plus' : 'Staff'}</p>
+        <p style={{ fontSize: 14, color: '#94a3b8' }}>
+          {user.roles?.map(r => r === 'artist' ? 'Artist' : r === 'owner' ? 'Owner' : r === 'staff' ? 'Staff' : 'Dev').join(' + ') || 'Artist'}
+          {user.plan === 'pro' ? ' · Pro' : user.plan === 'plus' ? ' · Plus' : ' · Free'}
+        </p>
+        {(!user.plan || user.plan === 'free') && (
+          <button onClick={() => setShowUpgrade(true)}
+            style={{ marginTop: 8, padding: '6px 14px', borderRadius: 8, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 12, cursor: 'pointer' }}>
+            Upgrade to Pro / Plus →
+          </button>
+        )}
       </div>
+
+      {/* Upgrade modal */}
+      {showUpgrade && (
+        <div onClick={() => setShowUpgrade(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 16, padding: 24, width: '100%', maxWidth: 420, border: '1px solid #334155' }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Upgrade Plan</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+              {([
+                { plan: 'pro' as const, name: 'Pro', price: '$9.99/mo', msgs: '200', storage: '50 GB', color: '#4338ca' },
+                { plan: 'plus' as const, name: 'Plus', price: '$19.99/mo', msgs: '1500', storage: '200 GB', color: '#7e22ce' },
+              ]).map(p => (
+                <button key={p.plan} onClick={async () => {
+                  await db.users.update(user!.id, { plan: p.plan });
+                  const updated = await db.users.get(user!.id);
+                  setUser(updated || null);
+                  setShowUpgrade(false);
+                  setMessage(`Upgraded to ${p.name}!`);
+                }}
+                style={{ padding: 14, borderRadius: 12, border: `2px solid ${user.plan === p.plan ? p.color : '#334155'}`, background: '#0f172a', color: 'white', cursor: 'pointer', textAlign: 'center' }}>
+                  <p style={{ fontSize: 16, fontWeight: 700, color: p.color }}>{p.name}</p>
+                  <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>{p.price}</p>
+                  <p style={{ fontSize: 11, color: '#64748b', marginTop: 6 }}>{p.msgs} msgs/mo</p>
+                  <p style={{ fontSize: 11, color: '#64748b' }}>{p.storage} storage</p>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setShowUpgrade(false)}
+              style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Referral Entry */}
       {user.verified && (
@@ -169,6 +212,9 @@ export default function Me() {
           <span style={{ fontSize: 18 }}>{'>'}</span>
         </button>
       )}
+
+      {/* ── Studio ── */}
+      <SectionHeader label="Studio" />
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 4 }}>Studio Name</p>
@@ -207,7 +253,7 @@ export default function Me() {
         <p style={{ fontSize: 11, color: '#475569', marginTop: 6 }}>Applied at session checkout. Artist gets this % of session revenue before tips.</p>
       </div>
 
-      {user.role === 'owner' && (
+      {user.roles?.includes('owner') && (
         <div style={{ marginBottom: 16 }}>
           <button onClick={() => navigate('/locations')}
             style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
@@ -216,11 +262,26 @@ export default function Me() {
         </div>
       )}
 
+      {/* ── Operations ── */}
+      <SectionHeader label="Operations" />
+
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/pos')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #14532d 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>{t(lang, 'pos_register')}</span>
           <span style={{ fontSize: 11, background: '#22c55e20', color: '#4ade80', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <BookingLinkShare artistId={user?.id || localStorage.getItem('inkflow_current_user') || ''} />
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/portfolio')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Portfolio</span>
+          <span style={{ fontSize: 11, background: '#fbbf2420', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>New</span>
         </button>
       </div>
 
@@ -233,11 +294,29 @@ export default function Me() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/invoice-settings')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
+          Invoice Studio Settings
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/health-checklist')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #0f766e 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Health & Safety Checklist</span>
+          <span style={{ fontSize: 11, background: '#14b8a620', color: '#5eead4', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/leads')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
           {t(lang, 'lead_capture')}
         </button>
       </div>
+
+      {/* ── Financial ── */}
+      <SectionHeader label="Financial" />
 
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/payment-settings')}
@@ -267,6 +346,9 @@ export default function Me() {
         </button>
       </div>
 
+      {/* ── Supplies ── */}
+      <SectionHeader label="Supplies" />
+
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/inventory')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left' }}>
@@ -287,7 +369,7 @@ export default function Me() {
         </button>
       </div>
 
-      {user.role === 'owner' && (
+      {user.roles?.includes('owner') && (
         <div style={{ marginBottom: 16 }}>
           <button onClick={() => navigate('/supply-brands/admin')}
             style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #fbbf2480', background: '#1e293b', color: '#fbbf24', fontSize: 14, fontWeight: 600, textAlign: 'left' }}>
@@ -296,7 +378,7 @@ export default function Me() {
         </div>
       )}
 
-      {user.role === 'dev' && (
+      {user.roles?.includes('dev') && (
         <div style={{ marginBottom: 16 }}>
           <button onClick={() => navigate('/competitors')}
             style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #14b8a680', background: 'linear-gradient(135deg, #1e293b 0%, #0f766e 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -314,6 +396,9 @@ export default function Me() {
           </button>
         </div>
       )}
+
+      {/* ── Data ── */}
+      <SectionHeader label="Data & Backup" />
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 14 }}>Payment Tips</p>
@@ -347,6 +432,68 @@ export default function Me() {
       <button onClick={handleLogout} style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14 }}>
         {t(lang, 'log_out')}
       </button>
+    </div>
+  );
+}
+
+function BookingLinkShare({ artistId }: { artistId: string }) {
+  const [copied, setCopied] = useState(false);
+  const [deposit, setDeposit] = useState(() => {
+    try { return localStorage.getItem('inkflow_booking_deposit') || ''; } catch { return ''; }
+  });
+  const bookingUrl = `${window.location.origin}/book/${artistId}`;
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(bookingUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = async () => {
+    const text = `Book a tattoo appointment: ${bookingUrl}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Book an Appointment', text, url: bookingUrl }); return; } catch {}
+    }
+    handleCopy();
+  };
+
+  const handleDepositChange = (val: string) => {
+    setDeposit(val);
+    localStorage.setItem('inkflow_booking_deposit', val);
+  };
+
+  return (
+    <div style={{ background: 'linear-gradient(135deg, #312e81 0%, #1e293b 100%)', border: '1px solid #4338ca', borderRadius: 12, padding: 14 }}>
+      <p style={{ fontSize: 13, fontWeight: 700, color: '#c084fc', marginBottom: 4 }}>Client Booking Link</p>
+      <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>Share this link so clients can book directly.</p>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+        <input value={bookingUrl} readOnly
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #4338ca', background: '#0f172a', color: '#a5b4fc', fontSize: 12, outline: 'none' }}
+          onFocus={e => e.target.select()} />
+        <button onClick={handleCopy}
+          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: copied ? '#166534' : '#7e22ce', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+        <button onClick={handleShare}
+          style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #4338ca', background: 'transparent', color: '#c084fc', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          Share
+        </button>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>Deposit ($):</span>
+        <input type="number" placeholder="0 = no deposit" value={deposit} onChange={e => handleDepositChange(e.target.value)}
+          style={{ width: 100, padding: '6px 10px', borderRadius: 8, border: '1px solid #4338ca', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }} step="0.01" min="0" />
+        <span style={{ fontSize: 10, color: '#64748b' }}>0 = skip payment step</span>
+      </div>
+    </div>
+  );
+}
+
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 4 }}>
+      <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+      <div style={{ flex: 1, height: 1, background: '#1e293b' }} />
     </div>
   );
 }

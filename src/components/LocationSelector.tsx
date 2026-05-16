@@ -16,7 +16,7 @@ export default function LocationSelector({
 
   useEffect(() => {
     if (!user) return;
-    if (user.role === 'owner') {
+    if (user.roles?.includes('owner')) {
       db.studioLocations.where('ownerId').equals(user.id).toArray().then(setLocations);
     } else if (user.assignedLocationIds?.length) {
       db.studioLocations.where('id').anyOf(user.assignedLocationIds).toArray().then(setLocations);
@@ -42,7 +42,7 @@ export default function LocationSelector({
         color: THEME.text.primary, fontSize: 13, fontWeight: 500,
         marginBottom: 2,
       }}>
-      {user.role === 'owner' && <option value="all">All Locations</option>}
+      {user.roles?.includes('owner') && <option value="all">All Locations</option>}
       {locations.map(loc => (
         <option key={loc.id} value={loc.id}>{loc.name}</option>
       ))}

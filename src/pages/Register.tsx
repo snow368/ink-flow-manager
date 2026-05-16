@@ -14,7 +14,7 @@ export default function Register() {
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'artist' | 'owner' | 'staff' | 'pro' | 'plus'>('artist');
+  const [roles, setRoles] = useState<Array<'artist' | 'owner' | 'staff'>>(['artist']);
   const [submitting, setSubmitting] = useState(false);
   const lang = detectInitialLanguage();
 
@@ -68,7 +68,7 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
-    if (!email || !name) return;
+    if (!email || !name || roles.length === 0) return;
     setSubmitting(true);
     try {
       const now = Date.now();
@@ -77,7 +77,7 @@ export default function Register() {
         id: userId,
         email,
         name,
-        role,
+        roles,
         deviceId,
         verified: false,
         createdAt: now,
@@ -128,24 +128,54 @@ export default function Register() {
       <input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
 
       {mode === 'register' && (
-        <select value={role} onChange={e => setRole(e.target.value as any)} style={{ ...inputStyle, marginBottom: 16 }}>
-          <option value="artist">Artist (Free)</option>
-          <option value="pro">Pro - $9.99/mo</option>
-          <option value="plus">Plus - $19.99/mo</option>
-          <option value="owner">Owner</option>
-          <option value="staff">Staff</option>
-        </select>
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>What's your role? (select all that apply)</p>
+          {([
+            { value: 'artist' as const, title: 'I\'m a Tattoo Artist', desc: 'I tattoo clients — manage my appointments, sessions, portfolio, and invoices.', color: '#e11d48' },
+            { value: 'owner' as const, title: 'I Own a Studio', desc: 'I run the business — manage locations, artists, finances, and see all bookings.', color: '#7e22ce' },
+            { value: 'staff' as const, title: 'I\'m Staff / Front Desk', desc: 'I support the studio — check-ins, inventory, POS, and scheduling.', color: '#2563eb' },
+          ]).map(item => {
+            const checked = roles.includes(item.value);
+            return (
+              <button
+                key={item.value}
+                onClick={() => setRoles(prev => checked ? prev.filter(r => r !== item.value) : [...prev, item.value])}
+                style={{
+                  width: '100%', padding: '14px 16px', marginBottom: 8, borderRadius: 12,
+                  border: checked ? `2px solid ${item.color}` : '2px solid #334155',
+                  background: checked ? `${item.color}15` : '#1e293b',
+                  color: 'white', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'flex-start', gap: 12,
+                }}>
+                <div style={{
+                  width: 20, height: 20, borderRadius: 4, flexShrink: 0, marginTop: 1,
+                  border: checked ? `2px solid ${item.color}` : '2px solid #475569',
+                  background: checked ? item.color : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
+                }}>
+                  {checked ? '✓' : ''}
+                </div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{item.title}</p>
+                  <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>{item.desc}</p>
+                </div>
+              </button>
+            );
+          })}
+          {roles.length === 0 && (
+            <p style={{ fontSize: 11, color: '#fca5a5' }}>Select at least one role.</p>
+          )}
+        </div>
       )}
 
       <button
         onClick={mode === 'register' ? handleRegister : handleLogin}
-        disabled={submitting || !email || (mode === 'register' && !name)}
+        disabled={submitting || !email || (mode === 'register' && (!name || roles.length === 0))}
         style={{
           width: '100%',
           padding: 14,
           borderRadius: 12,
           border: 'none',
-          background: (!email || (mode === 'register' && !name)) ? '#4b5563' : '#e11d48',
+          background: (!email || (mode === 'register' && (!name || roles.length === 0))) ? '#4b5563' : '#e11d48',
           color: 'white',
           fontSize: 16,
           fontWeight: 600,

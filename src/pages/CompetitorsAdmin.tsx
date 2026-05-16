@@ -46,7 +46,7 @@ export default function CompetitorsAdmin() {
     const stored = localStorage.getItem('inkflow_current_user');
     if (!stored) { navigate('/register'); return; }
     db.users.get(stored).then(u => {
-      if (!u || u.role !== 'dev') { navigate('/me'); return; }
+      if (!u || !u.roles?.includes('dev')) { navigate('/me'); return; }
       setUser(u);
       loadAll();
     });

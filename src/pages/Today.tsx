@@ -5,7 +5,7 @@ import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability } from '../lib/availability';
-import { checkAppointmentReminders, markReminderSent, requestNotificationPermission, sendBrowserNotification, getReminderMessage, getWhatsAppReminderUrl, type AppointmentReminder } from '../lib/reminders';
+import { checkAppointmentReminders, checkDepositReminders, markReminderSent, getReminderMessage, getWhatsAppReminderUrl, type AppointmentReminder } from '../lib/reminders';
 import { getCurrentArtistIds } from '../lib/locationLogic';
 import { getClientsWithBirthdayToday, getYearAwayClients, getUpcomingBirthdays, getWhatsAppBirthdayLink, getWhatsAppYearAwayLink, buildBirthdayMessage, buildYearAwayMessage } from '../lib/marketingLogic';
 import { getLowStockCount } from '../lib/inventoryAlerts';
@@ -20,15 +20,14 @@ export default function Today() {
   const navigate = useNavigate();
   const lang = detectInitialLanguage();
   const [user, setUser] = useState<UserRecord | null>(null);
-  const [appointments, setAppointments] = useState<(AppointmentRecord & { clientName?: string })[]>([]);
+  const [appointments, setAppointments] = useState<(AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [dateAppointmentCounts, setDateAppointmentCounts] = useState<Map<string, number>>(new Map());
   const [dragOverDate, setDragOverDate] = useState('');
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
-  const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string })[]>>(new Map());
+  const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>>(new Map());
   const [dueLeads, setDueLeads] = useState<LeadRecord[]>([]);
   const [paymentReminders, setPaymentReminders] = useState<PaymentReminderItem[]>([]);
-  const [appointmentReminders, setAppointmentReminders] = useState<AppointmentReminder[]>([]);
   const [workStart, setWorkStart] = useState(10 * 60);
   const [workEnd, setWorkEnd] = useState(22 * 60);
   const [daysOff, setDaysOff] = useState<string[]>([]);
@@ -57,11 +56,9 @@ export default function Today() {
       loadFutureDateCounts(u);
       loadDueLeads(u);
       loadPaymentReminders(u);
-      loadAppointmentReminders(u);
       loadAvailability(u);
       loadMarketingCards(u);
       loadPresets();
-      requestNotificationPermission();
     });
   }, [navigate, selectedDate]);
 
@@ -72,18 +69,18 @@ export default function Today() {
     return () => window.clearInterval(timer);
   }, [user, appointments]);
 
+  const [reminders, setReminders] = useState<AppointmentReminder[]>([]);
+
   useEffect(() => {
     if (!user) return;
     const artistId = user.artistId || user.id;
-    const timer = window.setInterval(async () => {
-      const reminders = await checkAppointmentReminders(artistId);
-      for (const r of reminders) {
-        sendBrowserNotification(
-          `Appointment Reminder — ${r.stage}`,
-          getReminderMessage(r.appointment, r.stage),
-        );
-      }
-    }, 60 * 1000);
+    const check = async () => {
+      const apptReminders = await checkAppointmentReminders(artistId);
+      const depositReminders = await checkDepositReminders(artistId);
+      setReminders([...depositReminders, ...apptReminders]);
+    };
+    check();
+    const timer = window.setInterval(check, 60 * 1000);
     return () => window.clearInterval(timer);
   }, [user]);
 
@@ -178,12 +175,6 @@ export default function Today() {
     setPaymentReminders(list.slice(0, 5));
   }
 
-  async function loadAppointmentReminders(u: UserRecord) {
-    const artistId = u.artistId || u.id;
-    const list = await checkAppointmentReminders(artistId);
-    setAppointmentReminders(list);
-  }
-
   async function loadAvailability(u: UserRecord) {
     const artistId = u.artistId || u.id;
     const avail = await getArtistAvailability(artistId);
@@ -239,44 +230,17 @@ export default function Today() {
     }
   };
 
-  const handleApptReminderDone = async (appointmentId: string, stage: '24h' | '3h') => {
-    markReminderSent(appointmentId, stage);
-    if (user) await loadAppointmentReminders(user);
-  };
-
-  const copyApptReminder = (reminder: AppointmentReminder) => {
-    const msg = getReminderMessage(reminder.appointment, reminder.stage);
-    navigator.clipboard.writeText(msg);
-  };
-
-  const openWhatsAppReminder = (reminder: AppointmentReminder) => {
-    const url = getWhatsAppReminderUrl(reminder.appointment, reminder.stage, user?.whatsappPhone);
-    if (!url) {
-      const msg = getReminderMessage(reminder.appointment, reminder.stage);
-      navigator.clipboard.writeText(msg);
-      alert('No WhatsApp phone configured. Message copied to clipboard.');
-      return;
-    }
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  const openIgReminder = (reminder: AppointmentReminder) => {
-    const msg = getReminderMessage(reminder.appointment, reminder.stage);
-    navigator.clipboard.writeText(msg);
-    window.open('https://www.instagram.com/direct/inbox/', '_blank', 'noopener,noreferrer');
-  };
-
   async function loadAppointmentsForDate(u: UserRecord, date: string) {
     let query = db.appointments.where('date').equals(date);
-    if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
-    else if (u.role === 'owner') {
+    if (u.roles?.includes('artist') && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.roles?.includes('owner')) {
       const locArtistIds = await getCurrentArtistIds(u);
       if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
     }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
       const client = await db.clients.get(a.clientId);
-      return { ...a, clientName: client?.name || 'Unknown' };
+      return { ...a, clientName: client?.name || 'Unknown', clientPhone: client?.phone, clientAllergies: client?.allergies };
     }));
     const sorted = enriched.sort((a, b) => a.time.localeCompare(b.time));
     setAppointments(sorted);
@@ -288,8 +252,8 @@ export default function Today() {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 3);
     let query = db.appointments.where('date').between(today, endDate.toISOString().slice(0, 10));
-    if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
-    else if (u.role === 'owner') {
+    if (u.roles?.includes('artist') && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.roles?.includes('owner')) {
       const locArtistIds = await getCurrentArtistIds(u);
       if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
     }
@@ -308,18 +272,18 @@ export default function Today() {
     end.setDate(start.getDate() + 6);
 
     let query = db.appointments.where('date').between(start.toISOString().slice(0, 10), end.toISOString().slice(0, 10));
-    if (u.role === 'artist' && u.artistId) query = query.and(a => a.artistId === u.artistId);
-    else if (u.role === 'owner') {
+    if (u.roles?.includes('artist') && u.artistId) query = query.and(a => a.artistId === u.artistId);
+    else if (u.roles?.includes('owner')) {
       const locArtistIds = await getCurrentArtistIds(u);
       if (locArtistIds.length > 1) query = query.and(a => locArtistIds.includes(a.artistId));
     }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
       const client = await db.clients.get(a.clientId);
-      return { ...a, clientName: client?.name || 'Unknown' };
+      return { ...a, clientName: client?.name || 'Unknown', clientPhone: client?.phone, clientAllergies: client?.allergies };
     }));
 
-    const grouped = new Map<string, (AppointmentRecord & { clientName?: string })[]>();
+    const grouped = new Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>();
     for (const a of enriched.sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time))) {
       const list = grouped.get(a.date) || [];
       list.push(a);
@@ -541,6 +505,56 @@ export default function Today() {
         )}
       </div>
 
+      {reminders.length > 0 && (
+        <div style={{ background: '#1e293b', border: '1px solid #4338ca', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+          <p style={{ fontSize: 13, color: '#c084fc', fontWeight: 700, marginBottom: 8 }}>Reminders ({reminders.length})</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {reminders.map(r => {
+              const stageLabel = {
+                '3h': 'In 3 hours',
+                '24h': 'Tomorrow',
+                'deposit_24h': 'Deposit unpaid 24h',
+                'deposit_48h': 'Deposit unpaid 48h',
+              }[r.stage] || r.stage;
+              const isDeposit = r.stage === 'deposit_24h' || r.stage === 'deposit_48h';
+              const waUrl = getWhatsAppReminderUrl(r.appointment, r.stage, user?.whatsappPhone);
+              const msg = getReminderMessage(r.appointment, r.stage);
+              return (
+                <div key={r.appointment.id + r.stage} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 2 }}>
+                      <span style={{ fontSize: 13, fontWeight: 700 }}>{r.appointment.clientName}</span>
+                      <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: isDeposit ? '#7f1d1d' : '#312e81', color: isDeposit ? '#fca5a5' : '#a5b4fc' }}>{stageLabel}</span>
+                    </div>
+                    <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 2 }}>
+                      {r.appointment.date} at {r.appointment.time}
+                    </p>
+                    <p style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg}</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                    <button onClick={() => {
+                      const phone = user?.whatsappPhone?.replace(/[^\d+]/g, '') || '';
+                      if (phone) window.open(waUrl!, '_blank', 'noopener,noreferrer');
+                      else navigator.clipboard.writeText(msg);
+                      markReminderSent(r.appointment.id, r.stage);
+                      setReminders(prev => prev.filter(x => !(x.appointment.id === r.appointment.id && x.stage === r.stage)));
+                    }} style={{ padding: '6px 10px', borderRadius: 8, border: 'none', background: user?.whatsappPhone ? '#075e54' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                      {user?.whatsappPhone ? 'WhatsApp' : 'Copy'}
+                    </button>
+                    <button onClick={() => {
+                      markReminderSent(r.appointment.id, r.stage);
+                      setReminders(prev => prev.filter(x => !(x.appointment.id === r.appointment.id && x.stage === r.stage)));
+                    }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {lowStockCount > 0 && (
         <div onClick={() => navigate('/inventory')} style={{ background: '#1e293b', border: '1px solid #f59e0b44', borderRadius: 12, padding: 12, marginBottom: 14, cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -570,37 +584,6 @@ export default function Today() {
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <button onClick={() => copyPaymentReminderMessage(item.lead, item.stage)} style={smallBtn}>Copy Reminder</button>
                   <button onClick={() => void markReminderDone(item.lead.id, item.stage)} style={smallBtn}>Done +1d</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <p style={{ fontSize: 13, color: '#60a5fa', fontWeight: 700 }}>Appointment Reminders: {appointmentReminders.length}</p>
-        </div>
-        {appointmentReminders.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#94a3b8' }}>No upcoming appointment reminders.</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {appointmentReminders.map(item => (
-              <div key={`${item.appointment.id}_${item.stage}`} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700 }}>{item.appointment.clientName}</p>
-                  <span style={{ fontSize: 11, color: item.stage === '3h' ? '#fca5a5' : '#fcd34d' }}>
-                    {item.stage} — {item.appointment.date} {item.appointment.time}
-                  </span>
-                </div>
-                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>
-                  {item.appointment.duration}min · {item.appointment.type || 'appointment'} · {Math.round(item.hoursUntil * 10) / 10}h away
-                </p>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button onClick={() => openWhatsAppReminder(item)} style={smallBtn}>WhatsApp</button>
-                  <button onClick={() => openIgReminder(item)} style={smallBtn}>IG</button>
-                  <button onClick={() => copyApptReminder(item)} style={smallBtn}>Copy</button>
-                  <button onClick={() => void handleApptReminderDone(item.appointment.id, item.stage)} style={smallBtn}>Done</button>
                 </div>
               </div>
             ))}
@@ -775,6 +758,9 @@ export default function Today() {
                         <span style={{ width: 7, height: 7, borderRadius: 99, background: STATUS_COLORS[item.status] || '#9ca3af' }} />
                       </div>
                       <div style={{ fontSize: 12, color: '#cbd5e1' }}>{item.clientName}</div>
+                      {(item.clientAllergies && item.clientAllergies.length > 0) && (
+                        <div style={{ fontSize: 9, color: '#fca5a5', marginTop: 1 }}>Allergies: {item.clientAllergies.join(', ')}</div>
+                      )}
                       <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{STATUS_LABELS[item.status] || item.status}</div>
                     </div>
                   ))}
@@ -826,7 +812,7 @@ function AppointmentCard({
   appointment,
   onStatusUpdate,
 }: {
-  appointment: AppointmentRecord & { clientName?: string };
+  appointment: AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] };
   onStatusUpdate: (id: string, status: AppointmentRecord['status']) => Promise<void>;
 }) {
   const navigate = useNavigate();
@@ -854,6 +840,19 @@ function AppointmentCard({
       <div style={{ flex: 1 }}>
         <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}><span style={{ color: '#64748b', marginRight: 6 }}>{appointment.time}</span>{appointment.clientName}</p>
         <p style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.duration}min{appointment.type && ' - ' + appointment.type.replace('_', ' ')}</p>
+        {appointment.clientPhone && <p style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{appointment.clientPhone}</p>}
+        {appointment.bodyPart && <p style={{ fontSize: 11, color: '#93c5fd', marginTop: 2 }}>Body: {appointment.bodyPart}</p>}
+        {appointment.designNotes && <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, fontStyle: 'italic' }}>"{appointment.designNotes.slice(0, 60)}{appointment.designNotes.length > 60 ? '...' : ''}"</p>}
+        {appointment.depositAmount != null && appointment.depositAmount > 0 && (
+          <p style={{ fontSize: 11, color: '#fbbf24', marginTop: 2 }}>Deposit: ${(appointment.depositAmount / 100).toFixed(0)}</p>
+        )}
+        {(appointment.clientAllergies && appointment.clientAllergies.length > 0) && (
+          <div style={{ marginTop: 4, display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+            {appointment.clientAllergies.map((a, i) => (
+              <span key={i} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>
+            ))}
+          </div>
+        )}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
         <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: color + '33', color: color, fontWeight: 600 }}>{STATUS_LABELS[appointment.status] || appointment.status}</span>

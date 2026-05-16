@@ -63,7 +63,18 @@ export function addNote(session: SessionRecord, note: string, isAllergy = false)
 
 export async function finishSession(session: SessionRecord): Promise<SessionRecord> {
   const now = Date.now();
-  const actualDuration = Math.round((now - session.startedAt - (session.timeline.filter(t => t.type === 'pause').length * 0)) / 60000);
+  let pauseTotal = 0;
+  const tl = session.timeline;
+  for (let i = 0; i < tl.length; i++) {
+    if (tl[i].type === 'pause') {
+      const resumeIdx = tl.findIndex((e, j) => j > i && e.type === 'resume');
+      if (resumeIdx > i) {
+        pauseTotal += tl[resumeIdx].timestamp - tl[i].timestamp;
+        i = resumeIdx;
+      }
+    }
+  }
+  const actualDuration = Math.round((now - session.startedAt - pauseTotal) / 60000);
 
   const finished: SessionRecord = {
     ...session,
@@ -89,7 +100,18 @@ export async function finishSession(session: SessionRecord): Promise<SessionReco
 }
 
 export function getElapsedMinutes(session: SessionRecord): number {
-  return Math.round((Date.now() - session.startedAt) / 60000);
+  let pauseTotal = 0;
+  const tl = session.timeline;
+  for (let i = 0; i < tl.length; i++) {
+    if (tl[i].type === 'pause') {
+      const resumeIdx = tl.findIndex((e, j) => j > i && e.type === 'resume');
+      if (resumeIdx > i) {
+        pauseTotal += tl[resumeIdx].timestamp - tl[i].timestamp;
+        i = resumeIdx;
+      }
+    }
+  }
+  return Math.round((Date.now() - session.startedAt - pauseTotal) / 60000);
 }
 
 export function generateSummary(session: SessionRecord): string {

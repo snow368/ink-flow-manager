@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db, type InvoiceRecord, type UserRecord, type ClientRecord } from '../db';
-import { getCountryConfig, formatInvoiceCurrency, formatInvoiceDate } from '../lib/invoiceConfig';
+import { getCountryConfig, formatInvoiceCurrency, formatInvoiceDate, DEFAULT_TERMS_TEXT } from '../lib/invoiceConfig';
+import { loadInvoiceSettings, getEffectiveTerms, isInvoiceSetupComplete, type InvoiceStudioSettings } from '../lib/invoiceSettings';
 import { THEME } from '../lib/theme';
 
 export default function InvoiceDetail() {
@@ -12,6 +13,9 @@ export default function InvoiceDetail() {
   const [client, setClient] = useState<ClientRecord | null>(null);
   const [message, setMessage] = useState('');
   const [copied, setCopied] = useState(false);
+  const [studioSettings, setStudioSettings] = useState<InvoiceStudioSettings>(loadInvoiceSettings());
+  const termsText = getEffectiveTerms(studioSettings);
+  const showStudioInfo = isInvoiceSetupComplete(studioSettings);
 
   useEffect(() => {
     if (!id) return;
@@ -37,8 +41,8 @@ export default function InvoiceDetail() {
   const cfg = getCountryConfig(invoice.country);
 
   const handleMarkPaid = async () => {
-    await db.invoices.update(invoice.id, { paymentStatus: 'paid', paidAt: Date.now() });
-    setInvoice({ ...invoice, paymentStatus: 'paid', paidAt: Date.now() });
+    await db.invoices.update(invoice.id, { paymentStatus: 'paid', paidAt: Date.now(), amountPaid: invoice.total });
+    setInvoice({ ...invoice, paymentStatus: 'paid', paidAt: Date.now(), amountPaid: invoice.total });
     setMessage('Invoice marked as paid.');
   };
 
@@ -153,6 +157,20 @@ export default function InvoiceDetail() {
         </div>
       )}
 
+      {/* Setup prompt */}
+      {!showStudioInfo && (
+        <div className="no-print" style={{ background: '#312e81', padding: 12, borderRadius: 10, marginBottom: 12, border: '1px solid #4338ca', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#c084fc' }}>Set up your studio info</p>
+            <p style={{ fontSize: 11, color: '#a5b4fc', marginTop: 2 }}>Add your studio name, address, and terms to appear on every invoice.</p>
+          </div>
+          <button onClick={() => navigate('/invoice-settings')}
+            style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            Setup
+          </button>
+        </div>
+      )}
+
       {/* Action buttons */}
       <div className="no-print" style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         {invoice.paymentStatus === 'pending' && (
@@ -234,10 +252,29 @@ export default function InvoiceDetail() {
         {/* Studio & Client info */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28, gap: 24 }}>
           <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>From</p>
-            <p style={{ fontSize: 15, fontWeight: 700 }}>{user.studioName || 'InkFlow Studio'}</p>
-            <p style={{ fontSize: 13, color: '#94a3b8' }}>{user.name}</p>
-            <p style={{ fontSize: 13, color: '#94a3b8' }}>{user.email}</p>
+            <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+              {cfg.studioLabel || 'Studio'}
+            </p>
+            {showStudioInfo ? (
+              <>
+                <p style={{ fontSize: 15, fontWeight: 700 }}>{studioSettings.studioName}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8' }}>{studioSettings.studioAddress}</p>
+                {studioSettings.studioPhone && <p style={{ fontSize: 13, color: '#94a3b8' }}>{studioSettings.studioPhone}</p>}
+                {studioSettings.licenseNumber && <p style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>License: {studioSettings.licenseNumber}</p>}
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 15, fontWeight: 700 }}>{user.studioName || 'InkFlow Studio'}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8' }}>{user.name}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8' }}>{user.email}</p>
+              </>
+            )}
+            {showStudioInfo && (
+              <>
+                <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>{user.name}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8' }}>{user.email}</p>
+              </>
+            )}
           </div>
           <div style={{ flex: 1, textAlign: 'right' }}>
             <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>{cfg.clientLabel}</p>
@@ -254,11 +291,19 @@ export default function InvoiceDetail() {
         </div>
 
         {/* Meta */}
-        <div style={{ display: 'flex', gap: 32, marginBottom: 24, fontSize: 13 }}>
+        <div style={{ display: 'flex', gap: 32, marginBottom: 24, fontSize: 13, flexWrap: 'wrap' }}>
           <div>
             <span style={{ color: '#64748b' }}>{cfg.dateLabel}: </span>
             <span style={{ fontWeight: 500 }}>{formatInvoiceDate(invoice.createdAt, invoice.country)}</span>
           </div>
+          {invoice.dueDate && (
+            <div>
+              <span style={{ color: '#64748b' }}>{cfg.dueDateLabel || 'Due Date'}: </span>
+              <span style={{ fontWeight: 500 }}>
+                {formatInvoiceDate(invoice.dueDate, invoice.country)}
+              </span>
+            </div>
+          )}
           <div>
             <span style={{ color: '#64748b' }}>{cfg.paymentLabel}: </span>
             <span style={{ fontWeight: 500, textTransform: 'capitalize' }}>{invoice.paymentMethod.replace('_', ' ')}</span>
@@ -323,6 +368,18 @@ export default function InvoiceDetail() {
               <span>{cfg.totalLabel}</span>
               <span>{formatInvoiceCurrency(invoice.total, invoice.country)}</span>
             </div>
+            {invoice.amountPaid != null && invoice.amountPaid > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: 14 }}>
+                <span style={{ color: '#4ade80' }}>Amount Paid</span>
+                <span style={{ color: '#4ade80' }}>-{formatInvoiceCurrency(invoice.amountPaid, invoice.country)}</span>
+              </div>
+            )}
+            {invoice.amountPaid != null && invoice.amountPaid > 0 && invoice.total - invoice.amountPaid > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 6px', borderTop: '2px solid #fbbf2440', marginTop: 4, fontSize: 16, fontWeight: 700 }}>
+                <span style={{ color: '#fbbf24' }}>{cfg.balanceDueLabel || 'Balance Due'}</span>
+                <span style={{ color: '#fbbf24' }}>{formatInvoiceCurrency(invoice.total - invoice.amountPaid, invoice.country)}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -334,13 +391,43 @@ export default function InvoiceDetail() {
           </div>
         )}
 
-        {/* Footer */}
+        {/* Terms & Conditions */}
+        <div style={{ borderTop: '1px solid #1a2332', paddingTop: 16, marginBottom: 20 }}>
+          <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+            {cfg.termsLabel || 'Terms & Conditions'}
+          </p>
+          <p style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+            {termsText}
+          </p>
+        </div>
+
+        {/* Signature area — print only */}
+        <div className="signature-area" style={{ borderTop: '1px solid #1a2332', paddingTop: 20, marginBottom: 24 }}>
+          <div style={{ display: 'flex', gap: 32 }}>
+            <div style={{ flex: 1, borderBottom: '1px solid #334155', paddingBottom: 4 }}>
+              <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', marginBottom: 28 }}>
+                {cfg.signatureClientLabel || 'Client Signature'}
+              </p>
+            </div>
+            <div style={{ flex: 1, borderBottom: '1px solid #334155', paddingBottom: 4 }}>
+              <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', marginBottom: 28 }}>
+                {cfg.signatureArtistLabel || 'Artist Signature'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Thank you footer */}
         <div style={{ borderTop: '1px solid #1a2332', paddingTop: 16, textAlign: 'center' }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>
+            {cfg.thankYouText || 'Thank you for your business!'}
+          </p>
           <p style={{ fontSize: 12, color: '#475569' }}>
             {cfg.invoiceTitle} #{invoice.invoiceNumber} | {cfg.dateLabel}: {formatInvoiceDate(invoice.createdAt, invoice.country)}
           </p>
           <p style={{ fontSize: 11, color: '#334155', marginTop: 4 }}>
-            {user.studioName || 'InkFlow Studio'} | {user.email}
+            {showStudioInfo ? studioSettings.studioName : user.studioName || 'InkFlow Studio'}
+            {showStudioInfo && studioSettings.studioPhone ? ` | ${studioSettings.studioPhone}` : ` | ${user.email}`}
           </p>
         </div>
       </div>

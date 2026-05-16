@@ -24,8 +24,8 @@ function messageCounterKey(artistId: string) {
 
 function resolvePlan(user?: UserRecord | null): PlanKey {
   if (!user) return 'free';
-  if (user.role === 'plus') return 'plus';
-  if (user.role === 'pro') return 'pro';
+  if (user.plan === 'plus') return 'plus';
+  if (user.plan === 'pro') return 'pro';
   return 'free';
 }
 

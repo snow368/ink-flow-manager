@@ -158,10 +158,6 @@ export default function SessionPage() {
     let updatedSession = session;
     for (const item of checkoutItems) {
       if (item.used <= 0) continue;
-      const invItem = await db.inventory.get(item.id);
-      if (invItem) {
-        await db.inventory.update(item.id, { quantity: Math.max(0, invItem.quantity - item.used) });
-      }
       updatedSession = addConsumable(updatedSession, item.id, item.used, item.batchNumber);
     }
 
@@ -169,7 +165,8 @@ export default function SessionPage() {
     setSession(finished);
     addMessage(`Session finished! ${finished.photos.length} photos. ${checkoutItems.reduce((s, i) => s + i.used, 0)} items consumed.`);
     setShowCheckout(false);
-    setTimeout(() => navigate('/today'), 2000);
+    addMessage('Session saved! Redirecting to checkout...');
+    setTimeout(() => navigate(`/pos?appointmentId=${appointment.id}`), 1500);
   };
 
   const handleSkipCheckout = async () => {
@@ -180,7 +177,8 @@ export default function SessionPage() {
     setSession(finished);
     addMessage(`Session finished! ${finished.photos.length} photos. No inventory deducted.`);
     setShowCheckout(false);
-    setTimeout(() => navigate('/today'), 2000);
+    addMessage('Session saved! Redirecting to checkout...');
+    setTimeout(() => navigate(`/pos?appointmentId=${appointment.id}`), 1500);
   };
 
   if (error) return <div style={{ padding: 24, color: 'white' }}><p>{error}</p><button onClick={() => navigate(-1)} style={{ color: '#60a5fa' }}>Go back</button></div>;
@@ -240,7 +238,20 @@ export default function SessionPage() {
         </div>
         <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>X</button>
       </div>
-      {client && <p style={{ color: '#94a3b8', fontSize: 13, padding: '0 16px' }}>{client.name} - {appointment?.type?.replace('_', ' ')}</p>}
+      {client && (
+        <div style={{ padding: '0 16px' }}>
+          <p style={{ color: '#94a3b8', fontSize: 13 }}>{client.name} - {appointment?.type?.replace('_', ' ')}</p>
+          {appointment?.bodyPart && <p style={{ color: '#93c5fd', fontSize: 12, marginTop: 2 }}>Body: {appointment.bodyPart}</p>}
+          {appointment?.designNotes && <p style={{ color: '#94a3b8', fontSize: 11, marginTop: 2, fontStyle: 'italic' }}>"{appointment.designNotes.slice(0, 80)}{(appointment.designNotes?.length || 0) > 80 ? '...' : ''}"</p>}
+          {client.allergies && client.allergies.length > 0 && (
+            <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginTop: 4 }}>
+              {client.allergies.map((a, i) => (
+                <span key={i} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 璁℃椂鍣?*/}
       <div style={{ textAlign: 'center', padding: '12px 0' }}>
@@ -264,7 +275,7 @@ export default function SessionPage() {
           {inventoryItems.filter(i => i.quantity > 0).map(item => (
             <button key={item.id} onClick={() => handleMarkItem(item)}
               style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: THEME.bg.panel, color: '#cbd5e1', fontSize: 12, cursor: 'pointer' }}>
-              {item.name} {markedConsumables.has(item.id) ? `(${markedConsumables.get(item.id)})` : ''}
+              {item.name} {markedConsumables.has(item.id) ? `(${markedConsumables.get(item.id)?.count})` : ''}
             </button>
           ))}
         </div>

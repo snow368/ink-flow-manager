@@ -36,6 +36,10 @@ export default function ClientDetail() {
   const [birthday, setBirthday] = useState('');
   const [editingTags, setEditingTags] = useState(false);
   const [tagInput, setTagInput] = useState('');
+  const [editingContact, setEditingContact] = useState(false);
+  const [editPhone, setEditPhone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editNotes, setEditNotes] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -136,6 +140,17 @@ export default function ClientDetail() {
     loadClient();
   };
 
+  const handleSaveContact = async () => {
+    if (!client) return;
+    await db.clients.update(client.id, {
+      phone: editPhone || undefined,
+      email: editEmail || undefined,
+      notes: editNotes || undefined,
+    });
+    setEditingContact(false);
+    loadClient();
+  };
+
   if (!client) return <div style={{ padding: 24, color: 'white' }}>Loading...</div>;
 
   const formatDate = (ts?: number) => ts ? new Date(ts).toLocaleDateString() : 'Never';
@@ -149,7 +164,38 @@ export default function ClientDetail() {
 
       <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 20, fontWeight: 'bold' }}>{client.name}</p>
-        <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} — {client.email || 'No email'}</p>
+        <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 4 }}>
+          {client.phone || 'No phone'} — {client.email || 'No email'}
+          <button onClick={() => {
+            if (!editingContact) {
+              setEditPhone(client.phone || '');
+              setEditEmail(client.email || '');
+              setEditNotes(client.notes || '');
+            }
+            setEditingContact(!editingContact);
+          }}
+            style={{ ...editIcon, marginLeft: 6 }}>{editingContact ? 'Cancel' : 'Edit'}</button>
+        </p>
+        {editingContact && (
+          <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+            <input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone" style={miniInput} />
+            <input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" style={miniInput} />
+            <input value={editNotes} onChange={e => setEditNotes(e.target.value)} placeholder="Notes" style={{ ...miniInput, flex: 2 }} />
+            <button onClick={handleSaveContact} style={qaBtn('#22c55e')}>Save</button>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+          <button onClick={() => navigate(`/appointment/new?clientId=${client.id}`)}
+            style={qaBtn('#e11d48')}>Book</button>
+          {client.phone && (
+            <button onClick={() => window.open(`https://wa.me/${client.phone!.replace(/\D/g, '')}`, '_blank')}
+              style={qaBtn('#075e54')}>WhatsApp</button>
+          )}
+          <button onClick={() => navigate(`/invoices?clientId=${client.id}`)}
+            style={qaBtn('#7e22ce')}>Invoice</button>
+        </div>
       </div>
 
       {/* Birthday */}
@@ -366,3 +412,17 @@ const tagBtn = (color: string): React.CSSProperties => ({
   padding: '4px 8px', borderRadius: 6, border: `1px solid ${color}44`,
   background: 'transparent', color, fontSize: 11, fontWeight: 600, cursor: 'pointer',
 });
+
+const qaBtn = (bg: string): React.CSSProperties => ({
+  padding: '6px 14px', borderRadius: 8, border: 'none', background: bg,
+  color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', flex: 1,
+});
+
+const editIcon: React.CSSProperties = {
+  background: 'none', border: 'none', color: '#60a5fa', fontSize: 12, cursor: 'pointer', padding: 0,
+};
+
+const miniInput: React.CSSProperties = {
+  padding: '4px 8px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a',
+  color: 'white', fontSize: 13, flex: 1, minWidth: 0,
+};

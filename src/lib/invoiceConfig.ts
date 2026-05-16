@@ -1,11 +1,11 @@
 export interface CountryInvoiceConfig {
-  code: string;          // ISO 3166-1 alpha-2
-  name: string;          // Display name
-  currency: string;      // ISO 4217
-  locale: string;        // Intl locale
-  taxLabel: string;      // Local tax name
-  defaultTaxRate: number; // Default tax % (can override in settings)
-  invoiceTitle: string;  // "Invoice" in local language
+  code: string;
+  name: string;
+  currency: string;
+  locale: string;
+  taxLabel: string;
+  defaultTaxRate: number;
+  invoiceTitle: string;
   dateLabel: string;
   subtotalLabel: string;
   taxLabelFull: string;
@@ -18,7 +18,119 @@ export interface CountryInvoiceConfig {
   amountLabel: string;
   depositLabel: string;
   tipLabel: string;
+  // Optional extended labels — fall back to locale-aware defaults
+  dueDateLabel?: string;
+  serviceDateLabel?: string;
+  balanceDueLabel?: string;
+  studioLabel?: string;
+  artistLabel?: string;
+  termsLabel?: string;
+  thankYouText?: string;
+  signatureClientLabel?: string;
+  signatureArtistLabel?: string;
 }
+
+// Locale-grouped defaults for extended fields
+const EXTENDED_DEFAULTS: Record<string, Partial<CountryInvoiceConfig>> = {
+  en: {
+    dueDateLabel: 'Due Date', serviceDateLabel: 'Session Date', balanceDueLabel: 'Balance Due',
+    studioLabel: 'Studio', artistLabel: 'Artist',
+    termsLabel: 'Terms & Conditions',
+    thankYouText: 'Thank you for your business! Please follow aftercare instructions for best results.',
+    signatureClientLabel: 'Client Signature', signatureArtistLabel: 'Artist Signature',
+  },
+  es: {
+    dueDateLabel: 'Fecha de Vencimiento', serviceDateLabel: 'Fecha de Sesión', balanceDueLabel: 'Saldo Pendiente',
+    studioLabel: 'Estudio', artistLabel: 'Artista',
+    termsLabel: 'Términos y Condiciones',
+    thankYouText: '¡Gracias por su visita! Siga las instrucciones de cuidado posterior.',
+    signatureClientLabel: 'Firma del Cliente', signatureArtistLabel: 'Firma del Artista',
+  },
+  pt: {
+    dueDateLabel: 'Data de Vencimento', serviceDateLabel: 'Data da Sessão', balanceDueLabel: 'Saldo Devedor',
+    studioLabel: 'Estúdio', artistLabel: 'Artista',
+    termsLabel: 'Termos e Condições',
+    thankYouText: 'Obrigado! Siga as instruções de cuidados posteriores.',
+    signatureClientLabel: 'Assinatura do Cliente', signatureArtistLabel: 'Assinatura do Artista',
+  },
+  fr: {
+    dueDateLabel: 'Date d\'Échéance', serviceDateLabel: 'Date de Séance', balanceDueLabel: 'Solde Dû',
+    studioLabel: 'Studio', artistLabel: 'Artiste',
+    termsLabel: 'Conditions Générales',
+    thankYouText: 'Merci ! Suivez les instructions de soins post-tatouage.',
+    signatureClientLabel: 'Signature du Client', signatureArtistLabel: 'Signature de l\'Artiste',
+  },
+  de: {
+    dueDateLabel: 'Fälligkeitsdatum', serviceDateLabel: 'Sitzungsdatum', balanceDueLabel: 'Restbetrag',
+    studioLabel: 'Studio', artistLabel: 'Künstler',
+    termsLabel: 'Allgemeine Geschäftsbedingungen',
+    thankYouText: 'Vielen Dank! Bitte befolgen Sie die Nachsorgehinweise.',
+    signatureClientLabel: 'Unterschrift Kunde', signatureArtistLabel: 'Unterschrift Künstler',
+  },
+  ja: {
+    dueDateLabel: '支払期限', serviceDateLabel: '施術日', balanceDueLabel: '残高',
+    studioLabel: 'スタジオ', artistLabel: 'アーティスト',
+    termsLabel: '利用規約',
+    thankYouText: 'ご来店ありがとうございます。アフターケアの指示に従ってください。',
+    signatureClientLabel: 'お客様署名', signatureArtistLabel: 'アーティスト署名',
+  },
+  ko: {
+    dueDateLabel: '지급 기한', serviceDateLabel: '시술 날짜', balanceDueLabel: '잔액',
+    studioLabel: '스튜디오', artistLabel: '아티스트',
+    termsLabel: '이용 약관',
+    thankYouText: '방문해 주셔서 감사합니다. 애프터케어 지침을 따라 주세요.',
+    signatureClientLabel: '고객 서명', signatureArtistLabel: '아티스트 서명',
+  },
+  th: {
+    dueDateLabel: 'วันครบกำหนด', serviceDateLabel: 'วันที่ให้บริการ', balanceDueLabel: 'ยอดคงเหลือ',
+    studioLabel: 'สตูดิโอ', artistLabel: 'ศิลปิน',
+    termsLabel: 'ข้อกำหนดและเงื่อนไข',
+    thankYouText: 'ขอบคุณที่ใช้บริการ! กรุณาปฏิบัติตามคำแนะนำการดูแลหลังการสัก',
+    signatureClientLabel: 'ลายเซ็นลูกค้า', signatureArtistLabel: 'ลายเซ็นศิลปิน',
+  },
+  fi: {
+    dueDateLabel: 'Eräpäivä', serviceDateLabel: 'Istuntopäivä', balanceDueLabel: 'Maksettavaa',
+    studioLabel: 'Studio', artistLabel: 'Artisti',
+    termsLabel: 'Ehdot', thankYouText: 'Kiitos! Noudata jälkihoito-ohjeita.',
+    signatureClientLabel: 'Asiakkaan Allekirjoitus', signatureArtistLabel: 'Artistin Allekirjoitus',
+  },
+  nl: {
+    dueDateLabel: 'Vervaldatum', serviceDateLabel: 'Sessiedatum', balanceDueLabel: 'Openstaand Bedrag',
+    studioLabel: 'Studio', artistLabel: 'Artiest',
+    termsLabel: 'Voorwaarden', thankYouText: 'Bedankt! Volg de nazorginstructies.',
+    signatureClientLabel: 'Handtekening Klant', signatureArtistLabel: 'Handtekening Artiest',
+  },
+  sv: {
+    dueDateLabel: 'Förfallodatum', serviceDateLabel: 'Sessionsdatum', balanceDueLabel: 'Återstår',
+    studioLabel: 'Studio', artistLabel: 'Konstnär',
+    termsLabel: 'Villkor', thankYouText: 'Tack! Följ eftervårdsinstruktionerna.',
+    signatureClientLabel: 'Kundens Signatur', signatureArtistLabel: 'Konstnärens Signatur',
+  },
+  nb: {
+    dueDateLabel: 'Forfallsdato', serviceDateLabel: 'Øktdato', balanceDueLabel: 'Gjenstående',
+    studioLabel: 'Studio', artistLabel: 'Artist',
+    termsLabel: 'Vilkår', thankYouText: 'Takk! Følg instruksjonene for etterbehandling.',
+    signatureClientLabel: 'Kundens Signatur', signatureArtistLabel: 'Kunstnerens Signatur',
+  },
+  da: {
+    dueDateLabel: 'Forfaldsdato', serviceDateLabel: 'Sessionsdato', balanceDueLabel: 'Restbeløb',
+    studioLabel: 'Studio', artistLabel: 'Kunstner',
+    termsLabel: 'Vilkår', thankYouText: 'Tak! Følg efterbehandlingsinstruktionerne.',
+    signatureClientLabel: 'Kundes Signatur', signatureArtistLabel: 'Kunstners Signatur',
+  },
+  pl: {
+    dueDateLabel: 'Termin Płatności', serviceDateLabel: 'Data Sesji', balanceDueLabel: 'Pozostało do Zapłaty',
+    studioLabel: 'Studio', artistLabel: 'Artysta',
+    termsLabel: 'Warunki', thankYouText: 'Dziękujemy! Prosimy przestrzegać instrukcji pielęgnacji.',
+    signatureClientLabel: 'Podpis Klienta', signatureArtistLabel: 'Podpis Artysty',
+  },
+  it: {
+    dueDateLabel: 'Data Scadenza', serviceDateLabel: 'Data Sessione', balanceDueLabel: 'Saldo Dovuto',
+    studioLabel: 'Studio', artistLabel: 'Artista',
+    termsLabel: 'Termini e Condizioni', thankYouText: 'Grazie! Segui le istruzioni per la cura post-tatuaggio.',
+    signatureClientLabel: 'Firma Cliente', signatureArtistLabel: 'Firma Artista',
+  },
+};
 
 // Country configs mapped by ISO code
 export const COUNTRIES: Record<string, CountryInvoiceConfig> = {
@@ -265,8 +377,42 @@ export const COUNTRIES: Record<string, CountryInvoiceConfig> = {
   },
 };
 
+// Standard tattoo studio terms — crafted from competitor research across US/UK/AU/JP studios
+export const DEFAULT_TERMS_TEXT = `DEPOSIT
+A non-refundable deposit is required to secure your appointment. The deposit will be applied to the final cost of your tattoo. For multi-session work, the deposit carries forward and is deducted from the final session balance.
+
+CANCELLATION & RESCHEDULING
+Your appointment time is reserved exclusively for you. If you need to cancel or reschedule, you must notify the studio at least 48 hours in advance. Cancellations made with less than 48 hours notice will result in forfeiture of the deposit. A new deposit will be required to rebook.
+
+NO-SHOW
+Failure to arrive for your scheduled appointment without prior communication will result in automatic forfeiture of your deposit. Repeat no-shows may result in refusal of future bookings.
+
+LATE ARRIVAL
+Please arrive on time. Clients arriving more than 15 minutes late may have their appointment shortened or forfeited at the artist's discretion, without refund of deposit.
+
+REFUND POLICY
+All tattoo services are non-refundable once performed. Aftercare products and retail items are non-returnable once opened. If you have concerns about your tattoo, please contact the studio within 7 days.
+
+TOUCH-UP POLICY
+One complimentary touch-up session is offered within 90 days of the original appointment, subject to artist assessment. Touch-ups requested after 90 days will be charged at the artist's standard rate. Touch-ups do not cover fading caused by improper aftercare, sun exposure, or natural skin changes.
+
+PAYMENT
+Balance is due at the time of service. Accepted payment methods are listed on the invoice. Tips are optional and go 100% to the artist.
+
+ARTIST CANCELLATION
+In the rare event the studio must cancel your appointment, we will reschedule you at no additional charge and your deposit will transfer to the new date.
+
+By receiving this invoice and paying your deposit, you acknowledge that you have read and agree to these terms.`;
+
+function getExtendedDefaults(locale: string): Partial<CountryInvoiceConfig> {
+  const lang = locale.split('-')[0];
+  return EXTENDED_DEFAULTS[lang] || EXTENDED_DEFAULTS.en;
+}
+
 export function getCountryConfig(code: string): CountryInvoiceConfig {
-  return COUNTRIES[code] || COUNTRIES.US;
+  const base = COUNTRIES[code] || COUNTRIES.US;
+  const defaults = getExtendedDefaults(base.locale);
+  return { ...defaults, ...base } as CountryInvoiceConfig;
 }
 
 export function getSupportedCountries(): { code: string; name: string }[] {

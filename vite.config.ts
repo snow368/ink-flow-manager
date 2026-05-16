@@ -45,7 +45,13 @@ export default defineConfig({
   },
   server: {
     port: 5000,
-    strictPort: true,  // 端口被占用时直接报错，不自动换端口
-    host: true
+    strictPort: true,
+    host: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8787',
+        changeOrigin: true,
+      },
+    },
   }
 });

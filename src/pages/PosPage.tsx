@@ -6,6 +6,7 @@ import { detectInitialLanguage, t } from '../lib/i18n';
 import { generateReceiptNumber, printReceipt, deductInventory, restoreInventory, loadPosSettings } from '../lib/posLogic';
 import { getCurrentArtistIds } from '../lib/locationLogic';
 import { getCountryConfig } from '../lib/invoiceConfig';
+import { loadInvoiceSettings } from '../lib/invoiceSettings';
 import { isTippingCountry } from '../lib/tipConfig';
 import { getArtistCommissionRate, calculateCommission } from '../lib/commissionLogic';
 
@@ -58,6 +59,11 @@ export default function PosPage() {
   const [refundReason, setRefundReason] = useState('');
   const [selectedTxForRefund, setSelectedTxForRefund] = useState('');
   const [recentTxs, setRecentTxs] = useState<{ id: string; receiptNumber: string; total: number; walkInName?: string }[]>([]);
+
+  // Invoice preview state
+  const [invoiceCountry, setInvoiceCountry] = useState('US');
+  const [invoicePaymentMethod, setInvoicePaymentMethod] = useState<InvoiceRecord['paymentMethod']>('cash');
+  const [invoiceNotes, setInvoiceNotes] = useState('');
 
   // Deposit from appointment
   const depositAmount = appointment?.depositAmount || 0;
@@ -267,6 +273,9 @@ export default function PosPage() {
         clientId: linkedClientId || undefined, walkInName: walkInName.trim() || undefined,
         paymentMethod,
       });
+      setInvoiceCountry(user?.country || 'US');
+      setInvoicePaymentMethod((paymentMethod === 'other' ? 'cash' : paymentMethod) as InvoiceRecord['paymentMethod']);
+      setInvoiceNotes('');
       feedbackSuccess();
       printReceipt(tx, clientName);
       clearCart();
@@ -295,23 +304,33 @@ export default function PosPage() {
     } catch (e: any) { setMessage('Refund failed: ' + (e?.message || 'unknown')); }
   };
 
-  const handleGenerateInvoice = async () => {
+  const handleGenerateInvoice = async (navigateAfter: boolean) => {
     if (!lastCompletedTx || !user) return;
     try {
-      const cfg = getCountryConfig(user.country || 'US');
+      const existing = await db.invoices.where('posTransactionId').equals(lastCompletedTx.id).count();
+      if (existing > 0) {
+        setMessage('Invoice already exists for this transaction');
+        return;
+      }
+      const cfg = getCountryConfig(invoiceCountry);
       const taxRate = cfg.defaultTaxRate;
       const tax = Math.round(lastCompletedTx.subtotal * taxRate) / 100;
-      const total = lastCompletedTx.subtotal + tax + (lastCompletedTx.tip || 0);
+      const depositApplied = lastCompletedTx.depositApplied || 0;
+      const total = lastCompletedTx.subtotal + tax + (lastCompletedTx.tip || 0) - depositApplied;
 
-      // Generate invoice number
+      const settings = loadInvoiceSettings();
       const invs = await db.invoices.where('artistId').equals(user.id).toArray();
       const yy = String(new Date().getFullYear()).slice(2);
       const mm = String(new Date().getMonth() + 1).padStart(2, '0');
       const seq = String(invs.length + 1).padStart(4, '0');
 
+      const prefix = cfg.invoiceTitle.replace(/\s/g, '-').toUpperCase().slice(0, 3);
+      const dueDate = settings.defaultDueDays
+        ? Date.now() + settings.defaultDueDays * 24 * 60 * 60 * 1000
+        : Date.now() + 30 * 24 * 60 * 60 * 1000;
       const invoice: InvoiceRecord = {
         id: 'inv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-        invoiceNumber: `INV-${yy}${mm}-${seq}`,
+        invoiceNumber: `${prefix}-${yy}${mm}-${seq}`,
         artistId: user.id,
         clientId: lastCompletedTx.clientId,
         walkInName: lastCompletedTx.walkInName,
@@ -319,22 +338,29 @@ export default function PosPage() {
         subtotal: lastCompletedTx.subtotal,
         tax,
         taxRate,
-        depositApplied: lastCompletedTx.depositApplied,
-        tip: lastCompletedTx.tip,
+        depositApplied: lastCompletedTx.depositApplied || undefined,
+        tip: lastCompletedTx.tip || undefined,
         total,
         currency: cfg.currency,
-        country: user.country || 'US',
-        paymentMethod: lastCompletedTx.paymentMethod as InvoiceRecord['paymentMethod'],
+        country: invoiceCountry,
+        paymentMethod: invoicePaymentMethod,
         paymentStatus: 'paid',
         posTransactionId: lastCompletedTx.id,
-        notes: `Generated from POS receipt #${lastCompletedTx.receiptNumber}`,
+        notes: invoiceNotes.trim() || undefined,
         createdAt: Date.now(),
         paidAt: Date.now(),
+        dueDate,
+        amountPaid: total,
       };
 
       await db.invoices.add(invoice);
+      setMessage(`Invoice #${invoice.invoiceNumber} created!`);
       setLastCompletedTx(null);
-      navigate(`/invoice/${invoice.id}`);
+      if (navigateAfter) {
+        navigate(`/invoice/${invoice.id}`);
+      } else {
+        loadRecentTransactions(artistIds);
+      }
     } catch (e: any) {
       setMessage('Invoice failed: ' + (e?.message || 'unknown'));
     }
@@ -373,27 +399,134 @@ export default function PosPage() {
         </div>
       )}
 
-      {/* Generate Invoice Button — after successful sale */}
-      {lastCompletedTx && (
-        <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', padding: 14, borderRadius: 12, marginBottom: 10, border: '1px solid #7e22ce', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#c084fc' }}>Generate Invoice</p>
-            <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-              For receipt #{lastCompletedTx.receiptNumber}
-            </p>
+      {/* Invoice Preview — after successful sale */}
+      {lastCompletedTx && (() => {
+        const invCfg = getCountryConfig(invoiceCountry);
+        const invTax = Math.round(lastCompletedTx.subtotal * invCfg.defaultTaxRate) / 100;
+        const invDeposit = lastCompletedTx.depositApplied || 0;
+        const invTip = lastCompletedTx.tip || 0;
+        const invTotal = lastCompletedTx.subtotal + invTax + invTip - invDeposit;
+        const clientName = lastCompletedTx.walkInName || linkedClient?.name || '';
+        const supported = [
+          { code: 'US', flag: '🇺🇸' }, { code: 'CA', flag: '🇨🇦' }, { code: 'MX', flag: '🇲🇽' },
+          { code: 'BR', flag: '🇧🇷' }, { code: 'AR', flag: '🇦🇷' }, { code: 'CL', flag: '🇨🇱' },
+          { code: 'CO', flag: '🇨🇴' }, { code: 'PE', flag: '🇵🇪' },
+          { code: 'AU', flag: '🇦🇺' }, { code: 'NZ', flag: '🇳🇿' },
+          { code: 'GB', flag: '🇬🇧' }, { code: 'DE', flag: '🇩🇪' }, { code: 'FR', flag: '🇫🇷' },
+          { code: 'ES', flag: '🇪🇸' }, { code: 'PT', flag: '🇵🇹' }, { code: 'IT', flag: '🇮🇹' },
+          { code: 'NL', flag: '🇳🇱' }, { code: 'BE', flag: '🇧🇪' }, { code: 'AT', flag: '🇦🇹' },
+          { code: 'CH', flag: '🇨🇭' }, { code: 'SE', flag: '🇸🇪' }, { code: 'NO', flag: '🇳🇴' },
+          { code: 'DK', flag: '🇩🇰' }, { code: 'FI', flag: '🇫🇮' }, { code: 'IE', flag: '🇮🇪' },
+          { code: 'PL', flag: '🇵🇱' },
+          { code: 'JP', flag: '🇯🇵' }, { code: 'TH', flag: '🇹🇭' }, { code: 'KR', flag: '🇰🇷' },
+        ];
+        return (
+        <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 10, border: '1px solid #334155' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#c084fc' }}>{invCfg.invoiceTitle}</p>
+              <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>
+                From receipt #{lastCompletedTx.receiptNumber}
+              </p>
+            </div>
+            <select
+              value={invoiceCountry}
+              onChange={e => setInvoiceCountry(e.target.value)}
+              style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #475569', background: '#0f172a', color: 'white', fontSize: 12, maxWidth: 200 }}>
+              {supported.map(c => (
+                <option key={c.code} value={c.code}>{c.flag} {getCountryConfig(c.code).name}</option>
+              ))}
+            </select>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button onClick={() => setLastCompletedTx(null)}
-              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #475569', background: 'transparent', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
-              Dismiss
+
+          {/* Preview card */}
+          <div style={{ background: '#0f172a', borderRadius: 10, padding: 14, marginBottom: 10, border: '1px solid #1a2332' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: '#64748b' }}>{invCfg.dateLabel}</span>
+              <span style={{ fontSize: 11 }}>{new Date().toLocaleDateString(invCfg.locale, { dateStyle: 'medium' })}</span>
+            </div>
+            {clientName && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: '#64748b' }}>{invCfg.clientLabel}</span>
+              <span style={{ fontSize: 11 }}>{clientName}</span>
+            </div>
+            )}
+            <div style={{ borderTop: '1px solid #1a2332', margin: '6px 0' }} />
+            {lastCompletedTx.items.map((item, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                <span style={{ color: '#94a3b8' }}>
+                  {item.name}  x{item.quantity}  @{formatCents(item.price)}  = {formatCents(item.total)}
+                </span>
+              </div>
+            ))}
+            <div style={{ borderTop: '1px solid #1a2332', margin: '6px 0' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+              <span style={{ color: '#94a3b8' }}>{invCfg.subtotalLabel}</span>
+              <span>{formatCents(lastCompletedTx.subtotal)}</span>
+            </div>
+            {invDeposit > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+              <span style={{ color: '#4ade80' }}>{invCfg.depositLabel}</span>
+              <span style={{ color: '#4ade80' }}>-{formatCents(invDeposit)}</span>
+            </div>
+            )}
+            {invTax > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+              <span style={{ color: '#94a3b8' }}>{invCfg.taxLabelFull}</span>
+              <span>{formatCents(invTax)}</span>
+            </div>
+            )}
+            {invTip > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+              <span style={{ color: '#94a3b8' }}>{invCfg.tipLabel}</span>
+              <span>{formatCents(invTip)}</span>
+            </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700, borderTop: '1px solid #334155', paddingTop: 6, marginTop: 4 }}>
+              <span>{invCfg.totalLabel}</span>
+              <span style={{ color: '#22c55e' }}>{invCfg.currency === 'JPY' || invCfg.currency === 'KRW' || invCfg.currency === 'CLP' || invCfg.currency === 'COP'
+                ? new Intl.NumberFormat(invCfg.locale, { style: 'currency', currency: invCfg.currency, maximumFractionDigits: 0 }).format(invTotal / 100)
+                : formatCents(invTotal)}</span>
+            </div>
+          </div>
+
+          {/* Payment method + Notes */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <select value={invoicePaymentMethod}
+              onChange={e => setInvoicePaymentMethod(e.target.value as InvoiceRecord['paymentMethod'])}
+              style={{ flex: 1, padding: '8px 10px', borderRadius: 8, border: '1px solid #475569', background: '#0f172a', color: 'white', fontSize: 12 }}>
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="stripe_connect">Stripe</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="paypal">PayPal</option>
+              <option value="other">Other</option>
+            </select>
+            <input
+              placeholder="Notes"
+              value={invoiceNotes}
+              onChange={e => setInvoiceNotes(e.target.value)}
+              style={{ flex: 2, padding: '8px 10px', borderRadius: 8, border: '1px solid #475569', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }} />
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => { setLastCompletedTx(null); setMessage(''); }}
+              style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #475569', background: 'transparent', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
+              Skip
             </button>
-            <button onClick={handleGenerateInvoice}
-              style={{ padding: '8px 18px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-              Create Invoice
+            <button onClick={() => handleGenerateInvoice(false)}
+              style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+              Create & Stay
+            </button>
+            <button onClick={() => handleGenerateInvoice(true)}
+              style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #a855f7', background: '#7e22ce20', color: '#c084fc', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              Create & View
             </button>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* Refund Mode */}
       {showRefundMode && (
@@ -453,6 +586,8 @@ export default function PosPage() {
                   {depositPaid ? ` · ${t(lang, 'pos_deposit_paid_label')}: $${formatCents(depositAmount)} ${t(lang, 'pos_applied')}` : ` · ${t(lang, 'pos_no_deposit')}`}
                 </p>
               )}
+              {/* Quick-add session work price */}
+              <SessionWorkQuickAdd onAdd={addServiceToCart} />
             </div>
           )}
         </div>
@@ -629,6 +764,43 @@ export default function PosPage() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function SessionWorkQuickAdd({ onAdd }: { onAdd: (svc: { name: string; price: number }) => void }) {
+  const [workPrice, setWorkPrice] = useState('');
+  const [workLabel, setWorkLabel] = useState('Session Work');
+
+  const handleAdd = () => {
+    const price = Math.round(parseFloat(workPrice || '0') * 100);
+    if (price <= 0) return;
+    onAdd({ name: workLabel || 'Session Work', price });
+    setWorkPrice('');
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: 6, marginTop: 8, alignItems: 'center' }}>
+      <input
+        placeholder="Label"
+        value={workLabel}
+        onChange={e => setWorkLabel(e.target.value)}
+        style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: '1px solid #22c55e', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }}
+      />
+      <span style={{ color: '#4ade80', fontSize: 12 }}>$</span>
+      <input
+        type="number"
+        placeholder="0"
+        value={workPrice}
+        onChange={e => setWorkPrice(e.target.value)}
+        step="0.01"
+        min="0"
+        style={{ width: 80, padding: '6px 8px', borderRadius: 6, border: '1px solid #22c55e', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }}
+      />
+      <button onClick={handleAdd} disabled={!workPrice || parseFloat(workPrice) <= 0}
+        style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: (workPrice && parseFloat(workPrice) > 0) ? '#22c55e' : '#1e293b', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        + Add
+      </button>
     </div>
   );
 }

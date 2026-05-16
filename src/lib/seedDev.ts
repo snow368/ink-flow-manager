@@ -12,7 +12,7 @@ export async function seedMultiLocationTest() {
   // 1. Owner
   await db.users.put({
     id: ownerId, email: 'owner@test.local', name: 'Studio Owner',
-    role: 'owner', verified: true, createdAt: now,
+    roles: ['owner'], verified: true, createdAt: now,
   });
 
   // 2. Two locations
@@ -23,9 +23,9 @@ export async function seedMultiLocationTest() {
 
   // 3. Three artists
   await db.users.bulkPut([
-    { id: artist1Id, email: 'anna@test.local', name: 'Anna', role: 'artist', deviceId: 'dev-a1', assignedLocationIds: [loc1Id], verified: true, createdAt: now },
-    { id: artist2Id, email: 'ben@test.local', name: 'Ben', role: 'artist', deviceId: 'dev-b1', assignedLocationIds: [loc1Id, loc2Id], verified: true, createdAt: now },
-    { id: artist3Id, email: 'cara@test.local', name: 'Cara', role: 'artist', deviceId: 'dev-c1', assignedLocationIds: [loc2Id], verified: true, createdAt: now },
+    { id: artist1Id, email: 'anna@test.local', name: 'Anna', roles: ['artist'], deviceId: 'dev-a1', assignedLocationIds: [loc1Id], verified: true, createdAt: now },
+    { id: artist2Id, email: 'ben@test.local', name: 'Ben', roles: ['artist'], deviceId: 'dev-b1', assignedLocationIds: [loc1Id, loc2Id], verified: true, createdAt: now },
+    { id: artist3Id, email: 'cara@test.local', name: 'Cara', roles: ['artist'], deviceId: 'dev-c1', assignedLocationIds: [loc2Id], verified: true, createdAt: now },
   ]);
 
   // 4. Test clients

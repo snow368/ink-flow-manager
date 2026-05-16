@@ -24,9 +24,9 @@ export default function Clients() {
 
   async function loadClients(u: UserRecord) {
     const artistIds = await getCurrentArtistIds(u);
-    if (u.role === 'artist' && u.artistId) {
+    if (u.roles?.includes('artist') && u.artistId) {
       setClients(await db.clients.orderBy('createdAt').reverse().filter(c => c.artistId === u.artistId).toArray());
-    } else if (u.role === 'owner' && artistIds.length > 1) {
+    } else if (u.roles?.includes('owner') && artistIds.length > 1) {
       setClients(await db.clients.orderBy('createdAt').reverse().filter(c => artistIds.includes(c.artistId || '')).toArray());
     } else {
       setClients(await db.clients.orderBy('createdAt').reverse().toArray());
@@ -129,13 +129,37 @@ export default function Clients() {
       </select>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {filtered.map(client => (
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <p style={{ fontSize: 48, marginBottom: 12 }}>👤</p>
+            <p style={{ fontSize: 16, color: '#94a3b8', marginBottom: 4 }}>{clients.length === 0 ? 'No clients yet' : 'No matches'}</p>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+              {clients.length === 0 ? 'Add your first client to get started' : 'Try a different search or tag filter'}
+            </p>
+            {clients.length === 0 && (
+              <button onClick={() => navigate('/client/new')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#e11d48', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                + Add Client
+              </button>
+            )}
+          </div>
+        ) : (
+          filtered.map(client => (
           <div key={client.id} onClick={() => navigate('/client/' + client.id)} style={{ background: '#1e293b', borderRadius: 12, padding: 14, cursor: 'pointer' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: 16, fontWeight: 600 }}>{client.name}</p>
-                <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} - {client.email || 'No email'}</p>
+                <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 4 }}>{client.phone || 'No phone'} · {client.email || 'No email'}</p>
               </div>
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 8 }}>
+              <span style={{ fontSize: 11, color: '#64748b' }}>
+                Last visit: {client.lastVisitAt ? new Date(client.lastVisitAt).toLocaleDateString() : 'Never'}
+              </span>
+              {client.totalSpend != null && client.totalSpend > 0 && (
+                <span style={{ fontSize: 11, color: '#22c55e' }}>
+                  Total: ${(client.totalSpend / 100).toFixed(0)}
+                </span>
+              )}
             </div>
             {(client.tags && client.tags.length > 0) && (
               <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
@@ -151,8 +175,19 @@ export default function Clients() {
                 {client.allergies.map((a, i) => <span key={i} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>)}
               </div>
             )}
+            <div style={{ display: 'flex', gap: 6, marginTop: 10 }} onClick={e => e.stopPropagation()}>
+              <button onClick={() => navigate(`/appointment/new?clientId=${client.id}`)}
+                style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#e11d48', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Book</button>
+              {client.phone && (
+                <button onClick={() => window.open(`https://wa.me/${client.phone!.replace(/\D/g, '')}`, '_blank')}
+                  style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#075e54', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>WhatsApp</button>
+              )}
+              <button onClick={() => navigate(`/invoices?clientId=${client.id}`)}
+                style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#7e22ce', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Invoice</button>
+            </div>
           </div>
-        ))}
+        ))
+        )}
       </div>
     </div>
   );

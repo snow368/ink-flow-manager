@@ -410,7 +410,7 @@ export default function LeadsPage() {
     const time = first ? first.slice(11, 16) : (lead.preferredTime || '14:00');
     await db.appointments.add({
       id: `app_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      clientId: `lead_${lead.id}`,
+      clientId: '',
       projectId: lead.id,
       artistId: lead.artistId,
       date,
@@ -911,6 +911,9 @@ export default function LeadsPage() {
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#cbd5e1', marginBottom: 8 }}>Channel ROI (manual ad spend)</p>
+        {stats.roiRows.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#64748b' }}>Add leads and enter ad spend to see channel ROI.</p>
+        ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(220px, 1fr))', gap: 8, marginBottom: 10 }}>
           {stats.roiRows.map(row => (
             <div key={row.source} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 8 }}>
@@ -932,6 +935,7 @@ export default function LeadsPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
 
       <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 12 }}>

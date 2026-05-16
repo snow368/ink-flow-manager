@@ -248,6 +248,72 @@ app.post('/api/stripe/checkout-session', requireAuth, requireRole('owner', 'staf
   }
 });
 
+// Public endpoint — client self-booking deposit payment (no auth required)
+app.post('/api/stripe/client-deposit', async (req, res) => {
+  try {
+    const { artistId, amount, currency = 'usd', clientName, leadId, appointmentId, successUrl, cancelUrl } = req.body || {};
+    if (!artistId || !amount || !successUrl || !cancelUrl) {
+      return res.status(400).json({ error: 'artistId, amount, successUrl, cancelUrl are required' });
+    }
+    const connectedAccountId = getConnectedAccount(artistId);
+    if (!connectedAccountId) {
+      return res.status(400).json({ error: 'Artist has not connected Stripe yet' });
+    }
+    const amountCents = Math.round(Number(amount) * 100);
+    if (!Number.isFinite(amountCents) || amountCents <= 0) {
+      return res.status(400).json({ error: 'amount must be > 0' });
+    }
+    const feeAmount = Math.floor(amountCents * (platformFeePercent / 100));
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      line_items: [{
+        price_data: {
+          currency: String(currency).toLowerCase(),
+          product_data: { name: `Tattoo Deposit${clientName ? ` - ${clientName}` : ''}` },
+          unit_amount: amountCents,
+        },
+        quantity: 1,
+      }],
+      payment_intent_data: {
+        application_fee_amount: feeAmount,
+        transfer_data: { destination: connectedAccountId },
+        metadata: {
+          leadId: String(leadId || ''),
+          artistId: String(artistId),
+          appointmentId: String(appointmentId || ''),
+          connectedAccountId: String(connectedAccountId),
+          source: 'client_booking',
+        },
+      },
+      metadata: {
+        leadId: String(leadId || ''),
+        artistId: String(artistId),
+        appointmentId: String(appointmentId || ''),
+        connectedAccountId: String(connectedAccountId),
+        source: 'client_booking',
+      },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    });
+    upsertLedgerByPaymentIntent({
+      artistId: String(artistId),
+      leadId: String(leadId || ''),
+      paymentIntentId: String(session.payment_intent || ''),
+      sessionId: session.id,
+      status: 'checkout_created',
+      amount: amountCents,
+      currency: String(currency).toLowerCase(),
+      channel: 'stripe_connect',
+      appointmentId: String(appointmentId || ''),
+    });
+    audit('stripe_client_deposit_created', { artistId, leadId, appointmentId, sessionId: session.id });
+    return res.json({ id: session.id, url: session.url });
+  } catch (error) {
+    console.error('[client-deposit]', error);
+    return res.status(500).json({ error: 'Failed to create deposit session' });
+  }
+});
+
 app.post('/api/stripe/refund', requireAuth, requireRole('owner'), async (req, res) => {
   try {
     const { paymentIntentId, amount, reason, actor, leadId, artistId } = req.body || {};

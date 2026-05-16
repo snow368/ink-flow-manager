@@ -22,6 +22,8 @@ export default function InventoryPage() {
   const [batchPhotoUrl, setBatchPhotoUrl] = useState('');
   const [reorderUrl, setReorderUrl] = useState('');
   const [message, setMessage] = useState('');
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const lang = detectInitialLanguage();
   const [guideStep, setGuideStep] = useState(0);
   const [photoData, setPhotoData] = useState('');
@@ -262,8 +264,63 @@ export default function InventoryPage() {
         </div>
       )}
 
+      <input
+        placeholder="Search inventory..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
+      />
+
+      {/* Category filter chips */}
+      {(() => {
+        const cats = [...new Set(items.map(i => i.category || 'General'))].sort();
+        if (cats.length <= 1) return null;
+        return (
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
+            <button onClick={() => setCategoryFilter('')}
+              style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: !categoryFilter ? '#e11d48' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>All</button>
+            {cats.map(cat => (
+              <button key={cat} onClick={() => setCategoryFilter(categoryFilter === cat ? '' : cat)}
+                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: categoryFilter === cat ? '#e11d48' : '#334155', color: categoryFilter === cat ? 'white' : '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                {cat}
+              </button>
+            ))}
+          </div>
+        );
+      })()}
+
+      {/* Low stock count */}
+      {(() => {
+        const low = items.filter(i => i.quantity <= i.reorderLevel).length;
+        if (low === 0) return null;
+        return (
+          <div style={{ background: '#3b1117', padding: '6px 12px', borderRadius: 8, marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 12, color: '#fca5a5', fontWeight: 600 }}>{low} item{low > 1 ? 's' : ''} low on stock</span>
+            <button onClick={() => setCategoryFilter('__low__')}
+              style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>Filter low stock</button>
+          </div>
+        );
+      })()}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {items.map(item => (
+        {items.filter(item => {
+          const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || (item.sku && item.sku.toLowerCase().includes(search.toLowerCase()));
+          const matchCat = !categoryFilter || (categoryFilter === '__low__' ? item.quantity <= item.reorderLevel : (item.category || 'General') === categoryFilter);
+          return matchSearch && matchCat;
+        }).length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <p style={{ fontSize: 48, marginBottom: 12 }}>📦</p>
+            <p style={{ fontSize: 16, color: '#94a3b8', marginBottom: 4 }}>{items.length === 0 ? 'No inventory items yet' : 'No matches'}</p>
+            <p style={{ fontSize: 13, color: '#64748b' }}>
+              {items.length === 0 ? 'Tap + to add your first item or use Scan to capture a product label' : 'Try a different search or category filter'}
+            </p>
+          </div>
+        ) : (
+          items.filter(item => {
+            const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || (item.sku && item.sku.toLowerCase().includes(search.toLowerCase()));
+            const matchCat = !categoryFilter || (categoryFilter === '__low__' ? item.quantity <= item.reorderLevel : (item.category || 'General') === categoryFilter);
+            return matchSearch && matchCat;
+          }).map(item => (
           <div key={item.id} style={{ background: item.quantity <= item.reorderLevel ? '#3b1117' : '#1e293b', borderRadius: 12, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
@@ -285,7 +342,7 @@ export default function InventoryPage() {
               <button onClick={() => handleDelete(item.id)} style={actionBtn}>✕</button>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       <button onClick={() => navigate('/me')} style={{ marginTop: 16, width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8' }}>

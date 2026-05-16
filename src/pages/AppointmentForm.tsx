@@ -15,6 +15,9 @@ export default function AppointmentForm() {
   const [duration, setDuration] = useState(60);
   const [customDuration, setCustomDuration] = useState('');
   const [type, setType] = useState('new_tattoo');
+  const [bodyPart, setBodyPart] = useState('');
+  const [designNotes, setDesignNotes] = useState('');
+  const [clientAllergies, setClientAllergies] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [loadingClients, setLoadingClients] = useState(true);
@@ -23,6 +26,8 @@ export default function AppointmentForm() {
   const [creatingClient, setCreatingClient] = useState(false);
   const [initialStatus, setInitialStatus] = useState<'unconfirmed' | 'deposit_paid'>('unconfirmed');
   const [depositAmount, setDepositAmount] = useState('');
+  const [estimatedPrice, setEstimatedPrice] = useState('');
+  const [depositPercent, setDepositPercent] = useState('');
   const [conflictWarning, setConflictWarning] = useState('');
   const [nextAvailableTime, setNextAvailableTime] = useState('');
   const [fromLead, setFromLead] = useState<LeadRecord | null>(null);
@@ -56,6 +61,13 @@ export default function AppointmentForm() {
 
   useEffect(() => { loadClients(); }, []);
   useEffect(() => {
+    const price = parseFloat(estimatedPrice);
+    const pct = parseFloat(depositPercent);
+    if (price > 0 && pct > 0 && pct <= 100) {
+      setDepositAmount((price * pct / 100).toFixed(2));
+    }
+  }, [estimatedPrice, depositPercent]);
+  useEffect(() => {
     const clientId = searchParams.get('clientId');
     const leadId = searchParams.get('leadId');
     if (clientId) setSelectedClient(clientId);
@@ -76,6 +88,11 @@ export default function AppointmentForm() {
   useEffect(() => {
     checkConflicts();
   }, [date, time, duration, customDuration, selectedClient]);
+
+  useEffect(() => {
+    if (!selectedClient) { setClientAllergies([]); return; }
+    db.clients.get(selectedClient).then(c => setClientAllergies(c?.allergies || []));
+  }, [selectedClient]);
 
   const toMinutes = (t: string) => {
     const [h, m] = t.split(':').map(Number);
@@ -160,7 +177,7 @@ export default function AppointmentForm() {
       const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
       const id = 'appt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
       const dAmount = initialStatus === 'deposit_paid' ? Math.round(parseFloat(depositAmount || '0') * 100) : undefined;
-      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, status: initialStatus, depositAmount: dAmount, waiverCompleted: false, createdAt: Date.now() });
+      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, bodyPart: bodyPart || undefined, designNotes: designNotes || undefined, status: initialStatus, depositAmount: dAmount, waiverCompleted: false, createdAt: Date.now() });
       navigate('/today');
     } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
     finally { setSaving(false); }
@@ -232,6 +249,30 @@ export default function AppointmentForm() {
           {/* 棰勭害绫诲瀷 */}
           <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>{appointmentTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
 
+          {/* Body Part */}
+          <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Body Part</p>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
+            {['Arm', 'Leg', 'Back', 'Chest', 'Sleeve', 'Hand', 'Neck', 'Rib', 'Thigh', 'Calf', 'Forearm', 'Shoulder', 'Foot', 'Head'].map(bp => (
+              <button key={bp} onClick={() => setBodyPart(bodyPart === bp ? '' : bp)}
+                style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid', borderColor: bodyPart === bp ? '#e11d48' : '#334155', background: bodyPart === bp ? '#e11d4820' : '#1e293b', color: bodyPart === bp ? '#f87171' : '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
+                {bp}
+              </button>
+            ))}
+          </div>
+
+          {/* Design Notes */}
+          <textarea placeholder="Design notes, reference ideas, size, color..." value={designNotes}
+            onChange={e => setDesignNotes(e.target.value)}
+            style={{ ...inputStyle, marginBottom: 12, minHeight: 60, resize: 'vertical' }} />
+
+          {/* Client Allergy Alert */}
+          {clientAllergies.length > 0 && (
+            <div style={{ background: '#7f1d1d', padding: 10, borderRadius: 10, marginBottom: 12 }}>
+              <p style={{ fontWeight: 600, color: '#fca5a5', marginBottom: 4, fontSize: 13 }}>Allergy Alert</p>
+              {clientAllergies.map((a, i) => <p key={i} style={{ fontSize: 13, color: '#fca5a5' }}>- {a}</p>)}
+            </div>
+          )}
+
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Deposit Status</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <button onClick={() => setInitialStatus('unconfirmed')} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: initialStatus === 'unconfirmed' ? '#e11d48' : '#334155', color: THEME.text.primary, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -243,9 +284,35 @@ export default function AppointmentForm() {
           </div>
           {initialStatus === 'deposit_paid' && (
             <div style={{ marginBottom: 12 }}>
+              <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Estimated Price ($)</label>
+              <input type="number" placeholder="e.g. 500" value={estimatedPrice} onChange={e => { setEstimatedPrice(e.target.value); }}
+                style={{ ...inputStyle, marginBottom: 8 }} step="0.01" min="0" />
+
+              <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Deposit %</label>
+              <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+                {[25, 30, 50].map(pct => (
+                  <button key={pct} onClick={() => setDepositPercent(String(pct))}
+                    style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: '1px solid', borderColor: depositPercent === String(pct) ? '#e11d48' : '#334155', background: depositPercent === String(pct) ? '#e11d4820' : 'transparent', color: depositPercent === String(pct) ? '#f87171' : '#94a3b8', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    {pct}%
+                  </button>
+                ))}
+                <input type="number" placeholder="Custom" value={depositPercent} onChange={e => setDepositPercent(e.target.value)}
+                  style={{ width: 80, padding: '8px 8px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, textAlign: 'center', outline: 'none' }}
+                  step="1" min="1" max="100" />
+              </div>
+
               <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Deposit Amount ($)</label>
-              <input type="number" placeholder="e.g. 50" value={depositAmount} onChange={e => setDepositAmount(e.target.value)}
-                style={{ ...inputStyle, marginBottom: 0 }} step="0.01" min="0" />
+              <input type="number" placeholder="e.g. 125" value={depositAmount} onChange={e => { setDepositAmount(e.target.value); setDepositPercent(''); setEstimatedPrice(''); }}
+                style={{ ...inputStyle, marginBottom: 0, fontWeight: 600, color: '#fbbf24' }} step="0.01" min="0" />
+
+              {parseFloat(estimatedPrice) > 0 && parseFloat(depositAmount) > 0 && (
+                <div style={{ marginTop: 8, padding: '10px 12px', borderRadius: 8, background: '#1e293b', border: '1px solid #334155', display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 13, color: '#94a3b8' }}>Remaining after deposit</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#4ade80' }}>
+                    ${(parseFloat(estimatedPrice) - parseFloat(depositAmount)).toFixed(2)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

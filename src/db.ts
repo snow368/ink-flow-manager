@@ -19,6 +19,9 @@ export class InkFlowDB extends Dexie {
   invoices!: Table<InvoiceRecord>;
   competitors!: Table<CompetitorRecord>;
   supplyReviews!: Table<SupplyReviewRecord>;
+  waitingList!: Table<WaitingListRecord>;
+  healthChecklists!: Table<HealthChecklistRecord>;
+  communicationLog!: Table<CommunicationLogRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -242,6 +245,29 @@ export class InkFlowDB extends Dexie {
       competitors: 'id, category, status, nextCheckAt',
       supplyReviews: 'id, artistId, category, createdAt',
     });
+    this.version(15).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+    });
   }
 }
 
@@ -251,7 +277,8 @@ export interface UserRecord {
   id: string;
   email: string;
   name: string;
-  role: 'artist' | 'owner' | 'staff' | 'pro' | 'plus' | 'dev';
+  roles: Array<'artist' | 'owner' | 'staff' | 'dev'>;
+  plan?: 'free' | 'pro' | 'plus';
   artistId?: string;
   deviceId?: string;
   verified: boolean;
@@ -298,6 +325,7 @@ export interface ClientRecord {
   id: string; name: string; artistId?: string; phone?: string; email?: string;
   allergies?: string[]; notes?: string; birthday?: string;
   tags?: string[]; lastVisitAt?: number; totalSpend?: number; leadSource?: string;
+  noShowCount?: number;
   createdAt: number;
 }
 
@@ -305,7 +333,9 @@ export interface AppointmentRecord {
   id: string; clientId: string; projectId?: string; artistId: string; date: string;
   time: string; duration: number; type?: string;
   status: 'unconfirmed'|'deposit_paid'|'ready'|'attention'|'blocked'|'done'|'cancelled';
-  waiverCompleted: boolean; depositAmount?: number; createdAt: number;
+  waiverCompleted: boolean; depositAmount?: number; bodyPart?: string; designNotes?: string;
+  station?: string; seriesId?: string;
+  createdAt: number;
 }
 
 export interface ProjectRecord {
@@ -541,6 +571,62 @@ export interface InvoiceRecord {
   locationId?: string;
   sentAt?: number;
   sentVia?: 'whatsapp' | 'email' | 'share' | 'copy';
+  dueDate?: number;
+  amountPaid?: number;
   createdAt: number;
   paidAt?: number;
+}
+
+export interface WaitingListRecord {
+  id: string;
+  artistId: string;
+  clientId?: string;
+  name: string;
+  phone?: string;
+  email?: string;
+  bodyPart?: string;
+  style?: string;
+  preferredDate?: string;
+  preferredTime?: string;
+  preferredContact?: 'whatsapp' | 'instagram' | 'phone' | 'email';
+  status: 'waiting' | 'offered' | 'accepted' | 'declined' | 'expired';
+  offeredDate?: string;
+  offeredTime?: string;
+  note?: string;
+  createdAt: number;
+}
+
+export interface HealthChecklistRecord {
+  id: string;
+  artistId: string;
+  locationId?: string;
+  country?: string;
+  name: string;
+  items: HealthCheckItem[];
+  lastInspectionAt?: number;
+  nextInspectionDue?: number;
+  inspectorName?: string;
+  notes?: string;
+  passedAll?: boolean;
+  createdAt: number;
+}
+
+export interface HealthCheckItem {
+  key: string;
+  label: string;
+  passed?: boolean;
+  notes?: string;
+  required: boolean;
+}
+
+export interface CommunicationLogRecord {
+  id: string;
+  artistId: string;
+  clientId?: string;
+  appointmentId?: string;
+  channel: 'whatsapp' | 'instagram' | 'phone' | 'email' | 'sms' | 'app_note' | 'reminder_sent';
+  direction: 'outbound' | 'inbound' | 'auto';
+  message?: string;
+  templateType?: string;
+  createdAt: number;
 }

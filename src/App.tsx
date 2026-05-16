@@ -37,6 +37,12 @@ import PosSettingsPage from './pages/PosSettingsPage';
 import LocationsPage from './pages/LocationsPage';
 import Invoices from './pages/Invoices';
 import InvoiceDetail from './pages/InvoiceDetail';
+import InvoiceSettingsPage from './pages/InvoiceSettingsPage';
+import HealthChecklistPage from './pages/HealthChecklistPage';
+import ClientPortalPage from './pages/ClientPortalPage';
+import AppointmentRespondPage from './pages/AppointmentRespondPage';
+import EmbedBookingPage from './pages/EmbedBookingPage';
+import Portfolio from './pages/Portfolio';
 import LocationSelector from './components/LocationSelector';
 import { db } from './db';
 import { detectInitialLanguage } from './lib/i18n';
@@ -69,7 +75,7 @@ export default function App() {
     if (stored) {
       setIsLoggedIn(true);
       rebuildConsumableProfiles();
-      db.users.get(stored).then(u => { if (u?.role === 'dev') setIsDev(true); });
+      db.users.get(stored).then(u => { if (u?.roles?.includes('dev')) setIsDev(true); });
     }
     if (location.pathname === '/') {
       navigate(stored ? '/today' : '/register', { replace: true });
@@ -204,6 +210,12 @@ export default function App() {
             <Route path="/locations" element={<LocationsPage />} />
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/invoice/:id" element={<InvoiceDetail />} />
+            <Route path="/invoice-settings" element={<InvoiceSettingsPage />} />
+            <Route path="/health-checklist" element={<HealthChecklistPage />} />
+            <Route path="/portal/:clientId" element={<ClientPortalPage />} />
+            <Route path="/respond/:id" element={<AppointmentRespondPage />} />
+            <Route path="/embed/:artistId" element={<EmbedBookingPage />} />
+            <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/me" element={<Me />} />
           </Routes>
         </div>

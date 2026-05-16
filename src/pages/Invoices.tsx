@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type InvoiceRecord, type UserRecord, type PosTransactionRecord, type ClientRecord } from '../db';
 import { getCountryConfig, formatInvoiceCurrency } from '../lib/invoiceConfig';
+import { loadInvoiceSettings, isInvoiceSetupComplete, type InvoiceStudioSettings } from '../lib/invoiceSettings';
 import { THEME } from '../lib/theme';
 
 type FilterStatus = 'all' | 'pending' | 'paid' | 'cancelled';
@@ -18,16 +19,26 @@ export default function Invoices() {
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [message, setMessage] = useState('');
 
+  const [studioSettings] = useState<InvoiceStudioSettings>(loadInvoiceSettings());
+  const setupComplete = isInvoiceSetupComplete(studioSettings);
+
   // New invoice form state
   const [clientId, setClientId] = useState('');
   const [walkInName, setWalkInName] = useState('');
+  const [sessionDate, setSessionDate] = useState(new Date().toISOString().slice(0, 10));
+  const [dueDate, setDueDate] = useState(new Date(Date.now() + (loadInvoiceSettings().defaultDueDays || 30) * 86400000).toISOString().slice(0, 10));
   const [items, setItems] = useState<{ name: string; price: number; quantity: number; type: 'product' | 'service' }[]>([]);
   const [itemName, setItemName] = useState('');
   const [itemPrice, setItemPrice] = useState('');
   const [itemQty, setItemQty] = useState('1');
   const [itemType, setItemType] = useState<'product' | 'service'>('service');
-  const [notes, setNotes] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<InvoiceRecord['paymentMethod']>('cash');
+  const [notes, setNotes] = useState(studioSettings.defaultNotes || '');
+  const [paymentMethod, setPaymentMethod] = useState<InvoiceRecord['paymentMethod']>(
+    (studioSettings.defaultPaymentMethod as InvoiceRecord['paymentMethod']) || 'cash'
+  );
+  const [splitPayment, setSplitPayment] = useState(false);
+  const [secondPaymentMethod, setSecondPaymentMethod] = useState<string>('cash');
+  const [secondPaymentAmount, setSecondPaymentAmount] = useState('');
   const [tip, setTip] = useState('');
 
   useEffect(() => {
@@ -95,7 +106,19 @@ export default function Invoices() {
       country: user?.country || 'US',
       paymentMethod,
       paymentStatus: 'pending',
-      notes: notes.trim() || undefined,
+      dueDate: new Date(dueDate).getTime() || undefined,
+      notes: (() => {
+        const parts: string[] = [];
+        if (sessionDate) parts.push(`Session: ${sessionDate}`);
+        if (splitPayment && secondPaymentAmount) {
+          const amt2 = parseFloat(secondPaymentAmount);
+          if (!isNaN(amt2) && amt2 > 0) {
+            parts.push(`Paid: ${(total - amt2 * 100).toFixed(0)} via ${paymentMethod} + ${(amt2 * 100).toFixed(0)} via ${secondPaymentMethod}`);
+          }
+        }
+        if (notes.trim()) parts.push(notes.trim());
+        return parts.join('\n') || undefined;
+      })(),
       createdAt: Date.now(),
     };
 
@@ -107,6 +130,12 @@ export default function Invoices() {
   };
 
   const handleCreateFromPos = async (tx: PosTransactionRecord) => {
+    const existing = await db.invoices.where('posTransactionId').equals(tx.id).count();
+    if (existing > 0) {
+      setMessage('An invoice already exists for this POS transaction.');
+      setShowNewMenu(false);
+      return;
+    }
     const cfg = getCountryConfig(user?.country || 'US');
     const taxRate = cfg.defaultTaxRate;
     const tax = Math.round(tx.subtotal * taxRate) / 100;
@@ -129,6 +158,7 @@ export default function Invoices() {
       country: user?.country || 'US',
       paymentMethod: tx.paymentMethod as InvoiceRecord['paymentMethod'],
       paymentStatus: 'pending',
+      dueDate: new Date(Date.now() + (loadInvoiceSettings().defaultDueDays || 30) * 86400000).getTime(),
       posTransactionId: tx.id,
       notes: `Generated from POS receipt #${tx.receiptNumber}`,
       createdAt: Date.now(),
@@ -147,8 +177,12 @@ export default function Invoices() {
     setItemName('');
     setItemPrice('');
     setItemQty('1');
-    setNotes('');
+    setNotes(studioSettings.defaultNotes || '');
     setTip('');
+    setSplitPayment(false);
+    setSecondPaymentMethod('cash');
+    setSecondPaymentAmount('');
+    setDueDate(new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10));
   };
 
   const addItem = () => {
@@ -242,12 +276,40 @@ export default function Invoices() {
         </div>
       )}
 
+      {/* Setup prompt */}
+      {!setupComplete && (
+        <div style={{ background: '#312e81', padding: 12, borderRadius: 10, marginBottom: 12, border: '1px solid #4338ca', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#c084fc' }}>Set up your studio info first</p>
+            <p style={{ fontSize: 11, color: '#a5b4fc', marginTop: 2 }}>Your name, address, and terms will auto-fill every invoice.</p>
+          </div>
+          <button onClick={() => navigate('/invoice-settings')}
+            style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            Setup
+          </button>
+        </div>
+      )}
+
       {/* New Invoice Form */}
       {showNewForm && (
         <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
           <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 14 }}>
             {countryConfig.invoiceTitle} - {countryConfig.name}
           </p>
+
+          {/* Session date */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{countryConfig.serviceDateLabel || 'Session Date'}</p>
+              <input type="date" value={sessionDate} onChange={e => setSessionDate(e.target.value)}
+                style={inputStyle} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{countryConfig.dueDateLabel || 'Due Date'}</p>
+              <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)}
+                style={inputStyle} />
+            </div>
+          </div>
 
           {/* Client selection */}
           <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{countryConfig.clientLabel}</p>
@@ -265,6 +327,27 @@ export default function Invoices() {
 
           {/* Items */}
           <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{countryConfig.itemLabel}</p>
+
+          {/* Preset quick-add buttons */}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
+            {studioSettings.servicePresets.map((p, i) => (
+              <button key={'svc-' + i} onClick={() => {
+                setItems([...items, { name: p.name, price: p.price, quantity: 1, type: 'service' }]);
+              }}
+              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                {p.name} ${p.price}
+              </button>
+            ))}
+            {studioSettings.productPresets.map((p, i) => (
+              <button key={'prd-' + i} onClick={() => {
+                setItems([...items, { name: p.name, price: p.price, quantity: 1, type: 'product' }]);
+              }}
+              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #166534', background: '#14532d20', color: '#86efac', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                {p.name} ${p.price}
+              </button>
+            ))}
+          </div>
+
           {items.map((item, idx) => (
             <div key={idx} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 6, padding: '6px 10px', background: '#0f172a', borderRadius: 8 }}>
               <span style={{ flex: 1, fontSize: 13 }}>{item.name}</span>
@@ -331,6 +414,30 @@ export default function Invoices() {
             </select>
             <input placeholder={countryConfig.tipLabel} value={tip} onChange={e => setTip(e.target.value)}
               type="number" style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+          </div>
+
+          {/* Split payment toggle */}
+          <div style={{ marginTop: 8 }}>
+            <button onClick={() => setSplitPayment(!splitPayment)}
+              style={{ background: 'none', border: 'none', color: splitPayment ? '#a5b4fc' : '#64748b', fontSize: 12, cursor: 'pointer', padding: 0 }}>
+              {splitPayment ? '- Split Payment' : '+ Split Payment (e.g. cash + card)'}
+            </button>
+            {splitPayment && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                <select value={secondPaymentMethod} onChange={e => setSecondPaymentMethod(e.target.value)}
+                  style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }}>
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="stripe_connect">Stripe</option>
+                  <option value="bank_transfer">Bank Transfer</option>
+                  <option value="paypal">PayPal</option>
+                  <option value="other">Other</option>
+                </select>
+                <input type="number" placeholder="Amount" value={secondPaymentAmount}
+                  onChange={e => setSecondPaymentAmount(e.target.value)}
+                  style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }} />
+              </div>
+            )}
           </div>
 
           <input placeholder="Notes" value={notes} onChange={e => setNotes(e.target.value)}

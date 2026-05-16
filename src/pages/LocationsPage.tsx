@@ -25,12 +25,12 @@ export default function LocationsPage() {
       if (!u) { navigate('/register'); return; }
       setUser(u);
       loadLocations(u);
-      db.users.where('role').anyOf(['artist', 'pro', 'plus', 'staff']).toArray().then(setArtists);
+      db.users.toArray().then(users => setArtists(users.filter(u => u.roles?.some(r => ['artist', 'staff'].includes(r)))));
     });
   }, []);
 
   const loadLocations = async (u: UserRecord) => {
-    const locs = u.role === 'owner'
+    const locs = u.roles?.includes('owner')
       ? await db.studioLocations.where('ownerId').equals(u.id).toArray()
       : u.assignedLocationIds?.length
         ? await db.studioLocations.where('id').anyOf(u.assignedLocationIds).toArray()
@@ -138,7 +138,7 @@ export default function LocationsPage() {
         <select value={managerId} onChange={e => setManagerId(e.target.value)} style={selectStyle}>
           <option value="">{t(lang, 'select_manager')}</option>
           {artists.map(a => (
-            <option key={a.id} value={a.id}>{a.name} ({a.role})</option>
+            <option key={a.id} value={a.id}>{a.name} ({a.roles?.join(', ')})</option>
           ))}
         </select>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -156,7 +156,7 @@ export default function LocationsPage() {
       </div>
 
       {/* Artist Assignment */}
-      {locations.length > 0 && user?.role === 'owner' && (
+      {locations.length > 0 && user?.roles?.includes('owner') && (
         <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginTop: 12 }}>
           <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t(lang, 'assign_artists')}</p>
           {artists.map(artist => (
