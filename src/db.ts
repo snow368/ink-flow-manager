@@ -335,6 +335,7 @@ export interface AppointmentRecord {
   status: 'unconfirmed'|'deposit_paid'|'ready'|'attention'|'blocked'|'done'|'cancelled';
   waiverCompleted: boolean; depositAmount?: number; bodyPart?: string; designNotes?: string;
   station?: string; seriesId?: string;
+  rescheduleRequest?: { proposedDate: string; proposedTime: string; requestedAt: number };
   createdAt: number;
 }
 
@@ -348,6 +349,13 @@ export interface WaiverRecord {
   id: string; appointmentId: string; clientId: string; type: string;
   content: string; signature?: string; status: 'missing'|'signed';
   signedAt?: number; createdAt: number;
+  auditDevice?: string;
+  auditPlatform?: string;
+  auditScreen?: string;
+  auditStrokeCount?: number;
+  auditDurationMs?: number;
+  idPhoto?: string;
+  clientDob?: string;
 }
 
 export interface SessionRecord {

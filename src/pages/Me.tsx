@@ -116,7 +116,6 @@ export default function Me() {
           style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#0f172a', color: 'white' }}
         >
           <option value="en">English</option>
-          <option value="zh">中文</option>
           <option value="es">Español</option>
           <option value="pt">Português</option>
           <option value="fr">Français</option>
@@ -305,6 +304,14 @@ export default function Me() {
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #0f766e 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>Health & Safety Checklist</span>
           <span style={{ fontSize: 11, background: '#14b8a620', color: '#5eead4', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/analytics')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #1e3a5f 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Analytics</span>
+          <span style={{ fontSize: 11, background: '#3b82f620', color: '#60a5fa', padding: '2px 8px', borderRadius: 4 }}>New</span>
         </button>
       </div>
 

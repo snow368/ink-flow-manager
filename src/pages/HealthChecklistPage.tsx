@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type HealthChecklistRecord, type HealthCheckItem } from '../db';
 import { createChecklist, getChecklists, updateChecklistItem, completeChecklist, getChecklistItems, COUNTRY_REGULATORY_LABELS, daysUntilNextInspection } from '../lib/healthChecklist';
-import { THEME } from '../lib/theme';
+import { detectInitialLanguage, t } from '../lib/i18n';
 
 export default function HealthChecklistPage() {
   const navigate = useNavigate();
+  const lang = detectInitialLanguage();
   const [checklists, setChecklists] = useState<HealthChecklistRecord[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [userCountry, setUserCountry] = useState<string | undefined>();
@@ -63,11 +64,11 @@ export default function HealthChecklistPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 20, cursor: 'pointer' }}>←</button>
           <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700 }}>Health & Safety Checklist</h1>
+            <h1 style={{ fontSize: 20, fontWeight: 700 }}>{t(lang, 'health_checklist_title')}</h1>
             <p style={{ fontSize: 12, color: '#64748b' }}>
               {userCountry && supportedCountries.includes(userCountry.toUpperCase())
-                ? `${userCountry.toUpperCase()} regulatory labels applied`
-                : 'Universal checklist'}
+                ? t(lang, 'regulatory_labels_applied').replace('{country}', userCountry.toUpperCase())
+                : t(lang, 'universal_checklist')}
             </p>
           </div>
         </div>
@@ -75,7 +76,7 @@ export default function HealthChecklistPage() {
         {userCountry && !supportedCountries.includes(userCountry.toUpperCase()) && (
           <div style={{ background: '#1e293b', border: '1px solid #f59e0b44', borderRadius: 10, padding: 10, marginBottom: 16 }}>
             <p style={{ fontSize: 12, color: '#fbbf24' }}>
-              Country-specific regulatory labels are available for: {supportedCountries.join(', ')}. Using universal checklist items.
+              {t(lang, 'country_hint').replace('{countries}', supportedCountries.join(', '))}
             </p>
           </div>
         )}
@@ -86,7 +87,7 @@ export default function HealthChecklistPage() {
             disabled={creating}
             style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: '#22c55e', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
           >
-            {creating ? 'Creating...' : '+ New Inspection'}
+            {creating ? t(lang, 'creating') : t(lang, 'new_inspection')}
           </button>
           {checklists.length > 0 && (
             <select
@@ -94,12 +95,12 @@ export default function HealthChecklistPage() {
               onChange={e => setSelectedId(e.target.value || null)}
               style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 14 }}
             >
-              <option value="">Select a checklist...</option>
+              <option value="">{t(lang, 'select_checklist')}</option>
               {checklists.map(c => {
                 const daysLeft = daysUntilNextInspection(c);
                 return (
                   <option key={c.id} value={c.id}>
-                    {c.name} {c.passedAll ? '✅' : '⏳'} {daysLeft !== null ? `(${daysLeft}d left)` : ''}
+                    {c.name} {c.passedAll ? '✅' : '⏳'} {daysLeft !== null ? `(${t(lang, 'days_suffix').replace('{n}', String(daysLeft))})` : ''}
                   </option>
                 );
               })}
@@ -113,12 +114,12 @@ export default function HealthChecklistPage() {
               <div>
                 <h2 style={{ fontSize: 16, fontWeight: 600 }}>{selected.name}</h2>
                 <p style={{ fontSize: 12, color: '#64748b' }}>
-                  {selected.passedAll ? 'All items passed' : 'Some items need attention'} | {selected.items.filter(i => i.passed === true).length}/{selected.items.length} passed
+                  {selected.passedAll ? t(lang, 'all_items_passed') : t(lang, 'some_items_need_attention')} | {t(lang, 'x_of_y_passed').replace('{x}', String(selected.items.filter(i => i.passed === true).length)).replace('{y}', String(selected.items.length))}
                 </p>
               </div>
               {!selected.lastInspectionAt && (
                 <button onClick={handleComplete} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#3b82f6', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                  Complete
+                  {t(lang, 'complete')}
                 </button>
               )}
             </div>
@@ -141,7 +142,7 @@ export default function HealthChecklistPage() {
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 14, color: item.passed === false ? '#fca5a5' : '#e2e8f0' }}>{item.label}</span>
-                      {item.required && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, background: '#ef444433', color: '#ef4444' }}>REQUIRED</span>}
+                      {item.required && <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, background: '#ef444433', color: '#ef4444' }}>{t(lang, 'required_badge')}</span>}
                     </div>
                     {item.notes && <p style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>{item.notes}</p>}
                   </div>
@@ -150,13 +151,13 @@ export default function HealthChecklistPage() {
                       onClick={() => handleToggleItem(item.key, true)}
                       style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: item.passed === true ? '#22c55e' : '#334155', color: item.passed === true ? 'white' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
                     >
-                      Pass
+                      {t(lang, 'pass')}
                     </button>
                     <button
                       onClick={() => handleToggleItem(item.key, false)}
                       style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: item.passed === false ? '#ef4444' : '#334155', color: item.passed === false ? 'white' : '#64748b', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
                     >
-                      Fail
+                      {t(lang, 'fail')}
                     </button>
                   </div>
                 </div>
@@ -165,11 +166,11 @@ export default function HealthChecklistPage() {
 
             {selected.lastInspectionAt && (
               <div style={{ marginTop: 20, background: '#1e293b', borderRadius: 10, padding: 14 }}>
-                <p style={{ fontSize: 13, color: '#22c55e', fontWeight: 600 }}>Last Inspection: {new Date(selected.lastInspectionAt).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                <p style={{ fontSize: 13, color: '#22c55e', fontWeight: 600 }}>{t(lang, 'last_inspection').replace('{date}', new Date(selected.lastInspectionAt).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' }))}</p>
                 {selected.nextInspectionDue && (
                   <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 4 }}>
-                    Next due: {new Date(selected.nextInspectionDue).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    {daysUntilNextInspection(selected)! > 0 ? ` (${daysUntilNextInspection(selected)} days)` : ' — Overdue!'}
+                    {t(lang, 'next_due').replace('{date}', new Date(selected.nextInspectionDue).toLocaleDateString('en', { month: 'long', day: 'numeric', year: 'numeric' }))}
+                    {daysUntilNextInspection(selected)! > 0 ? ` (${t(lang, 'days_suffix').replace('{n}', String(daysUntilNextInspection(selected)))})` : ` — ${t(lang, 'overdue')}`}
                   </p>
                 )}
               </div>
@@ -180,8 +181,8 @@ export default function HealthChecklistPage() {
         {!selected && checklists.length === 0 && (
           <div style={{ textAlign: 'center', padding: 60, color: '#64748b' }}>
             <p style={{ fontSize: 48, marginBottom: 16 }}>🏥</p>
-            <p style={{ fontSize: 16, color: '#e2e8f0', fontWeight: 600, marginBottom: 4 }}>No inspections yet</p>
-            <p style={{ fontSize: 13 }}>Create your first health & safety inspection checklist. Items adapt based on your country setting.</p>
+            <p style={{ fontSize: 16, color: '#e2e8f0', fontWeight: 600, marginBottom: 4 }}>{t(lang, 'no_inspections_yet')}</p>
+            <p style={{ fontSize: 13 }}>{t(lang, 'no_inspections_desc')}</p>
           </div>
         )}
       </div>

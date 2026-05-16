@@ -19,9 +19,15 @@ export default function WaiverSign() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const healthQuestions = ['health_q1', 'health_q2', 'health_q3', 'health_q4', 'health_q5', 'health_q6', 'health_q7'];
+  const healthFollowUpKeys = ['health_fup1', 'health_fup2', 'health_fup3', 'health_fup4', 'health_fup5', 'health_fup6', 'health_fup7'];
   const [healthAnswers, setHealthAnswers] = useState<boolean[]>(new Array(healthQuestions.length).fill(false));
+  const [healthFollowUps, setHealthFollowUps] = useState<string[]>(new Array(healthQuestions.length).fill(''));
+  const [idPhoto, setIdPhoto] = useState<string>('');
+  const [clientDob, setClientDob] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const pointsRef = useRef<DrawPoint[]>([]);
+  const sigStartRef = useRef<number>(0);
 
   useEffect(() => {
     if (!appointmentId) return;
@@ -33,9 +39,17 @@ export default function WaiverSign() {
         const c = await db.clients.get(a.clientId);
         setClient(c || null);
         const { shopName, artistName } = await getArtistShopInfo();
+        let country: string | undefined;
+        try {
+          const stored = localStorage.getItem('inkflow_current_user');
+          if (stored) {
+            const u = await db.users.get(stored);
+            country = u?.country;
+          }
+        } catch { /* ignore */ }
         const text = await generateWaiverContent(
           a.type || 'new_tattoo', c?.name || 'the Client',
-          artistName, shopName
+          artistName, shopName, country,
         );
         setWaiverText(text);
       } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
@@ -102,6 +116,7 @@ export default function WaiverSign() {
 
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    if (pointsRef.current.length === 0) sigStartRef.current = Date.now();
     const point = getCanvasCoords(e);
     pointsRef.current = [point];
     setDrawing(true);
@@ -157,6 +172,38 @@ export default function WaiverSign() {
     const updated = [...healthAnswers];
     updated[index] = !updated[index];
     setHealthAnswers(updated);
+    if (!updated[index]) {
+      const fups = [...healthFollowUps];
+      fups[index] = '';
+      setHealthFollowUps(fups);
+    }
+  };
+
+  const updateFollowUp = (index: number, value: string) => {
+    const fups = [...healthFollowUps];
+    fups[index] = value;
+    setHealthFollowUps(fups);
+  };
+
+  const handleIdCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setIdPhoto(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const getAge = (dob: string): number | null => {
+    if (!dob) return null;
+    const birth = new Date(dob);
+    if (isNaN(birth.getTime())) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
   };
 
   const handleSign = async () => {
@@ -177,14 +224,28 @@ export default function WaiverSign() {
       const waiverId = 'waiver_' + now + '_' + Math.random().toString(36).slice(2, 6);
       const knownAllergies = client?.allergies?.length ? `\nKnown allergies: ${client.allergies.join(', ')}` : '';
       const healthSection = '\n\nHEALTH DECLARATION:\n' +
-        healthQuestions.map((q, i) => `${t(lang, q)}  [${healthAnswers[i] ? 'YES' : 'No'}]`).join('\n') +
+        healthQuestions.map((q, i) => {
+          let line = `${t(lang, q)}  [${healthAnswers[i] ? 'YES' : 'No'}]`;
+          if (healthAnswers[i] && healthFollowUps[i].trim()) {
+            line += `  Details: ${healthFollowUps[i].trim()}`;
+          }
+          return line;
+        }).join('\n') +
         knownAllergies;
       const fullContent = waiverText + healthSection;
+      const durationMs = sigStartRef.current ? now - sigStartRef.current : 0;
       await db.waivers.add({
         id: waiverId, appointmentId, clientId: appointment.clientId,
         type: getWaiverType(appointment.type || 'new_tattoo'),
         content: fullContent, signature: signatureData,
         status: 'signed', signedAt: now, createdAt: now,
+        auditDevice: navigator.userAgent?.slice(0, 200),
+        auditPlatform: navigator.platform || undefined,
+        auditScreen: `${window.screen.width}x${window.screen.height}`,
+        auditStrokeCount: pointsRef.current.length,
+        auditDurationMs: durationMs > 0 ? durationMs : undefined,
+        idPhoto: idPhoto || undefined,
+        clientDob: clientDob || undefined,
       });
       await db.appointments.update(appointmentId, { waiverCompleted: true, status: 'ready' });
       navigate('/today');
@@ -229,15 +290,117 @@ export default function WaiverSign() {
         <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 12 }}>{t(lang, 'health_check')}</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
           {healthQuestions.map((qKey, i) => (
-            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: healthAnswers[i] ? '#3b1117' : '#1e293b', borderRadius: 8, padding: '10px 12px', border: healthAnswers[i] ? '1px solid #e11d4844' : '1px solid transparent' }}>
-              <span style={{ fontSize: 12, flex: 1, marginRight: 10, color: healthAnswers[i] ? '#fca5a5' : '#e2e8f0' }}>{t(lang, qKey)}</span>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <button onClick={() => toggleHealthAnswer(i)} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: healthAnswers[i] ? '#e11d48' : '#334155', color: healthAnswers[i] ? 'white' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>Yes</button>
-                <button onClick={() => { if (healthAnswers[i]) toggleHealthAnswer(i); }} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: !healthAnswers[i] ? '#166534' : '#334155', color: !healthAnswers[i] ? '#86efac' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>No</button>
+            <div key={i} style={{ background: healthAnswers[i] ? '#3b1117' : '#1e293b', borderRadius: 8, padding: '10px 12px', border: healthAnswers[i] ? '1px solid #e11d4844' : '1px solid transparent' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 12, flex: 1, marginRight: 10, color: healthAnswers[i] ? '#fca5a5' : '#e2e8f0' }}>{t(lang, qKey)}</span>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <button onClick={() => toggleHealthAnswer(i)} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: healthAnswers[i] ? '#e11d48' : '#334155', color: healthAnswers[i] ? 'white' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>Yes</button>
+                  <button onClick={() => { if (healthAnswers[i]) toggleHealthAnswer(i); }} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: !healthAnswers[i] ? '#166534' : '#334155', color: !healthAnswers[i] ? '#86efac' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', minWidth: 44 }}>No</button>
+                </div>
               </div>
+              {healthAnswers[i] && (
+                <input
+                  placeholder={t(lang, healthFollowUpKeys[i])}
+                  value={healthFollowUps[i]}
+                  onChange={e => updateFollowUp(i, e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: 6,
+                    border: '1px solid #e11d4844',
+                    background: '#0f172a',
+                    color: '#fca5a5',
+                    fontSize: 12,
+                    marginTop: 8,
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>
+
+        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 16 }}>Age Verification</p>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <input
+            type="date"
+            value={clientDob}
+            onChange={e => setClientDob(e.target.value)}
+            max={new Date().toISOString().slice(0, 10)}
+            style={{
+              flex: 1,
+              padding: '10px 12px',
+              borderRadius: 8,
+              border: '1px solid #334155',
+              background: '#1e293b',
+              color: 'white',
+              fontSize: 14,
+              outline: 'none',
+            }}
+          />
+          {clientDob && getAge(clientDob) !== null && (
+            <span style={{
+              padding: '10px 14px',
+              borderRadius: 8,
+              background: (getAge(clientDob) || 0) < 18 ? '#7f1d1d' : '#064e3b',
+              color: (getAge(clientDob) || 0) < 18 ? '#fca5a5' : '#6ee7b7',
+              fontSize: 14,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}>
+              Age: {getAge(clientDob)}
+            </span>
+          )}
+        </div>
+
+        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 6, marginTop: 12 }}>ID Verification</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleIdCapture}
+          style={{ display: 'none' }}
+        />
+        {!idPhoto ? (
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              width: '100%',
+              padding: '14px',
+              borderRadius: 10,
+              border: '2px dashed #475569',
+              background: '#1e293b',
+              color: '#94a3b8',
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
+          >
+            Capture or upload ID photo
+          </button>
+        ) : (
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <img src={idPhoto} alt="ID" style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, border: '1px solid #334155' }} />
+            <button
+              onClick={() => { setIdPhoto(''); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+              style={{
+                position: 'absolute',
+                top: 4,
+                right: 4,
+                padding: '4px 10px',
+                borderRadius: 6,
+                border: 'none',
+                background: '#e11d48',
+                color: 'white',
+                fontSize: 12,
+                cursor: 'pointer',
+              }}
+            >
+              Remove
+            </button>
+          </div>
+        )}
       </div>
 
       <div style={{ borderTop: '1px solid #334155', padding: '10px 20px 0', background: '#0f172a' }}>

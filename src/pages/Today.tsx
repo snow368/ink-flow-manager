@@ -394,6 +394,23 @@ export default function Today() {
     }
   };
 
+  const handleApproveReschedule = async (id: string) => {
+    const appt = appointments.find(a => a.id === id);
+    if (!appt?.rescheduleRequest) return;
+    const { proposedDate, proposedTime } = appt.rescheduleRequest;
+    await db.appointments.update(id, { date: proposedDate, time: proposedTime, rescheduleRequest: undefined as any });
+    updateAppointmentInState(id, { date: proposedDate, time: proposedTime, rescheduleRequest: undefined as any });
+    if (user) {
+      loadFutureDateCounts(user);
+      loadAppointmentsForWeek(user, selectedDate);
+    }
+  };
+
+  const handleRejectReschedule = async (id: string) => {
+    await db.appointments.update(id, { rescheduleRequest: undefined as any });
+    updateAppointmentInState(id, { rescheduleRequest: undefined as any });
+  };
+
   const postponeLeadFollowUp = async (leadId: string, minutes: number) => {
     const target = Date.now() + minutes * 60 * 1000;
     await db.leads.update(leadId, { nextFollowUpAt: target });
@@ -741,6 +758,8 @@ export default function Today() {
               key={app.id}
               appointment={app}
               onStatusUpdate={handleStatusUpdate}
+              onApproveReschedule={handleApproveReschedule}
+              onRejectReschedule={handleRejectReschedule}
             />
           ))}
         </div>
@@ -802,6 +821,11 @@ export default function Today() {
                         <div style={{ fontSize: 9, color: '#fca5a5', marginTop: 1 }}>Allergies: {item.clientAllergies.join(', ')}</div>
                       )}
                       <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{STATUS_LABELS[item.status] || item.status}</div>
+                      {item.rescheduleRequest && (
+                        <div style={{ fontSize: 10, color: '#fbbf24', marginTop: 2, fontStyle: 'italic' }}>
+                          Reschedule requested
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -851,9 +875,13 @@ export default function Today() {
 function AppointmentCard({
   appointment,
   onStatusUpdate,
+  onApproveReschedule,
+  onRejectReschedule,
 }: {
   appointment: AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] };
   onStatusUpdate: (id: string, status: AppointmentRecord['status']) => Promise<void>;
+  onApproveReschedule: (id: string) => Promise<void>;
+  onRejectReschedule: (id: string) => Promise<void>;
 }) {
   const navigate = useNavigate();
   const color = STATUS_COLORS[appointment.status] || '#9ca3af';
@@ -870,13 +898,44 @@ function AppointmentCard({
     }
   };
 
+  const rr = appointment.rescheduleRequest;
+  const [rrResponding, setRrResponding] = useState(false);
+
   return (
     <div
-      draggable
+      draggable={!rr}
       onDragStart={(e) => e.dataTransfer.setData('text/plain', appointment.id)}
-      style={{ background: THEME.bg.panel, borderRadius: 14, padding: 14, borderLeft: '4px solid ' + color, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-      title="Drag to another date to reschedule"
+      style={{ background: THEME.bg.panel, borderRadius: 14, padding: 14, borderLeft: '4px solid ' + (rr ? '#f59e0b' : color), display: 'flex', flexDirection: 'column', gap: rr ? 10 : 0 }}
+      title={rr ? '' : 'Drag to another date to reschedule'}
     >
+      {rr && (
+        <div style={{ background: '#422006', borderRadius: 10, padding: '10px 12px', border: '1px solid #d9770644' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#fbbf24', marginBottom: 4 }}>Reschedule Request</p>
+          <p style={{ fontSize: 12, color: '#fcd34d', marginBottom: 2 }}>
+            Move to <strong>{rr.proposedDate}</strong> at <strong>{rr.proposedTime}</strong>
+          </p>
+          <p style={{ fontSize: 10, color: '#d97706', marginBottom: 8 }}>
+            Requested {new Date(rr.requestedAt).toLocaleString()}
+          </p>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              disabled={rrResponding}
+              onClick={async () => { setRrResponding(true); await onApproveReschedule(appointment.id); setRrResponding(false); }}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: 'none', background: '#16a34a', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Approve
+            </button>
+            <button
+              disabled={rrResponding}
+              onClick={async () => { setRrResponding(true); await onRejectReschedule(appointment.id); setRrResponding(false); }}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #475569', background: 'transparent', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Reject
+            </button>
+          </div>
+        </div>
+      )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ flex: 1 }}>
         <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}><span style={{ color: '#64748b', marginRight: 6 }}>{appointment.time}</span>{appointment.clientName}</p>
         <p style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.duration}min{appointment.type && ' - ' + appointment.type.replace('_', ' ')}</p>
@@ -917,6 +976,7 @@ function AppointmentCard({
         {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
           <button disabled={updating} onClick={() => updateStatus('cancelled')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#475569', color: '#e2e8f0', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
         )}
+      </div>
       </div>
     </div>
   );
