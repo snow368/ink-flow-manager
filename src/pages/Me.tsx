@@ -6,6 +6,8 @@ import { seedMultiLocationTest } from '../lib/seedDev';
 import { getReferralStats } from '../lib/referralLogic';
 import { detectInitialLanguage, setStoredLanguage, t, type AppLanguage } from '../lib/i18n';
 import { getSupportedCountries } from '../lib/invoiceConfig';
+import { getClickStats } from '../lib/affiliateTracking';
+import { getAppointmentsNeedingReviewInvite, getAppointmentsNeedingFollowUp } from '../lib/reviewInvite';
 
 export default function Me() {
   const navigate = useNavigate();
@@ -22,7 +24,16 @@ export default function Me() {
   const [proDays, setProDays] = useState(0);
   const [lang, setLang] = useState<AppLanguage>(detectInitialLanguage());
   const [country, setCountry] = useState('US');
+  const [affiliateStats, setAffiliateStats] = useState({ total: 0, today: 0 });
+  const [reviewLinks, setReviewLinks] = useState<{ google?: string; platform2Name?: string; platform2Url?: string; platform3Name?: string; platform3Url?: string }>({});
+  const [editingReview, setEditingReview] = useState(false);
+  const [reviewInviteCount, setReviewInviteCount] = useState(0);
+  const [reviewFollowUpCount, setReviewFollowUpCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    getClickStats().then(s => setAffiliateStats({ total: s.total, today: s.today }));
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
@@ -32,10 +43,13 @@ export default function Me() {
         setStudioName(u?.studioName || '');
         setCountry(u?.country || 'US');
         setCommissionRate(u?.commissionRate);
+        setReviewLinks(u?.reviewLinks || {});
         if (u) {
           const stats = await getReferralStats(u.id);
           setReferralCount(stats.verifiedCount);
           setProDays(stats.proDaysEarned);
+          getAppointmentsNeedingReviewInvite(u.id).then(apps => setReviewInviteCount(apps.length));
+          getAppointmentsNeedingFollowUp(u.id).then(apps => setReviewFollowUpCount(apps.length));
         }
       });
     }
@@ -55,6 +69,14 @@ export default function Me() {
     const updated = await db.users.get(user.id);
     setUser(updated || null);
     setEditingCommission(false);
+  };
+
+  const handleSaveReviewLinks = async () => {
+    if (!user) return;
+    await db.users.update(user.id, { reviewLinks });
+    const updated = await db.users.get(user.id);
+    setUser(updated || null);
+    setEditingReview(false);
   };
 
   const handleLogout = () => {
@@ -252,6 +274,80 @@ export default function Me() {
         <p style={{ fontSize: 11, color: '#475569', marginTop: 6 }}>Applied at session checkout. Artist gets this % of session revenue before tips.</p>
       </div>
 
+      {/* Station Management */}
+      <StationsSection lang={lang} user={user} onUserUpdate={setUser} />
+
+      {/* Review Invites */}
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/review-invites')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #f59e0b80', background: 'linear-gradient(135deg, #1e293b 0%, #78350f 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Review Invites</span>
+          <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {reviewInviteCount > 0 && <span style={{ fontSize: 11, background: '#f59e0b20', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>{reviewInviteCount} to invite</span>}
+            {reviewFollowUpCount > 0 && <span style={{ fontSize: 11, background: '#3b82f620', color: '#60a5fa', padding: '2px 8px', borderRadius: 4 }}>{reviewFollowUpCount} follow up</span>}
+            {reviewInviteCount === 0 && reviewFollowUpCount === 0 && <span style={{ fontSize: 11, color: '#64748b' }}>View All</span>}
+          </span>
+        </button>
+      </div>
+
+      {/* Review Links */}
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <p style={{ fontWeight: 600, marginBottom: 4 }}>{t(lang, 'review_links')}</p>
+        <p style={{ fontSize: 11, color: '#64748b', marginBottom: 10 }}>{t(lang, 'review_links_desc')}</p>
+        {editingReview ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <input
+              value={reviewLinks.google || ''}
+              onChange={e => setReviewLinks(prev => ({ ...prev, google: e.target.value }))}
+              placeholder="Google Review link (g.page/...)"
+              style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+            />
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                value={reviewLinks.platform2Name || ''}
+                onChange={e => setReviewLinks(prev => ({ ...prev, platform2Name: e.target.value }))}
+                placeholder="Platform name (e.g. Yelp)"
+                style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+              />
+              <input
+                value={reviewLinks.platform2Url || ''}
+                onChange={e => setReviewLinks(prev => ({ ...prev, platform2Url: e.target.value }))}
+                placeholder="URL"
+                style={{ flex: 2, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                value={reviewLinks.platform3Name || ''}
+                onChange={e => setReviewLinks(prev => ({ ...prev, platform3Name: e.target.value }))}
+                placeholder="Platform name (e.g. Facebook)"
+                style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+              />
+              <input
+                value={reviewLinks.platform3Url || ''}
+                onChange={e => setReviewLinks(prev => ({ ...prev, platform3Url: e.target.value }))}
+                placeholder="URL"
+                style={{ flex: 2, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+              />
+            </div>
+            <button onClick={handleSaveReviewLinks} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#e11d48', color: 'white', fontSize: 14, cursor: 'pointer', alignSelf: 'flex-start' }}>Save</button>
+          </div>
+        ) : (
+          <div>
+            {(reviewLinks.google || reviewLinks.platform2Url || reviewLinks.platform3Url) ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {reviewLinks.google && <p style={{ fontSize: 13, color: '#4ade80' }}>Google: {reviewLinks.google}</p>}
+                {reviewLinks.platform2Name && reviewLinks.platform2Url && <p style={{ fontSize: 13, color: '#f87171' }}>{reviewLinks.platform2Name}: {reviewLinks.platform2Url}</p>}
+                {reviewLinks.platform3Name && reviewLinks.platform3Url && <p style={{ fontSize: 13, color: '#60a5fa' }}>{reviewLinks.platform3Name}: {reviewLinks.platform3Url}</p>}
+              </div>
+            ) : (
+              <p style={{ fontSize: 13, color: '#94a3b8' }}>Not set</p>
+            )}
+            <button onClick={() => setEditingReview(true)} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 13, cursor: 'pointer', marginTop: 4 }}>Edit</button>
+          </div>
+        )}
+      </div>
+
       {user.roles?.includes('owner') && (
         <div style={{ marginBottom: 16 }}>
           <button onClick={() => navigate('/locations')}
@@ -265,6 +361,14 @@ export default function Me() {
       <SectionHeader label="Operations" />
 
       <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/notification-settings')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'notification_settings')}</span>
+          <span style={{ fontSize: 11, color: '#64748b' }}>SMS / Email</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/pos')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #14532d 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>{t(lang, 'pos_register')}</span>
@@ -273,7 +377,23 @@ export default function Me() {
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <BookingLinkShare artistId={user?.id || localStorage.getItem('inkflow_current_user') || ''} />
+        <button onClick={() => navigate('/artist-profile')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Profile Page</span>
+          <span style={{ fontSize: 11, background: '#818cf820', color: '#a5b4fc', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/events')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #7c2d12 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>Events & Guest Spots</span>
+          <span style={{ fontSize: 11, background: '#f9731620', color: '#fdba74', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <BookingLinkShare artistId={user?.id || localStorage.getItem('inkflow_current_user') || ''} user={user} />
       </div>
 
       <div style={{ marginBottom: 16 }}>
@@ -367,11 +487,21 @@ export default function Me() {
         <button onClick={() => navigate('/supply-brands')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>{t(lang, 'supply_brands')}</span>
-          <span style={{ fontSize: 11, background: '#fbbf2420', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>New</span>
+          <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {affiliateStats.total > 0 && (
+              <>
+                <span style={{ fontSize: 11, color: '#fbbf24', fontWeight: 700 }}>{affiliateStats.today} today</span>
+                <span style={{ fontSize: 11, background: '#22c55e20', color: '#4ade80', padding: '2px 8px', borderRadius: 4 }}>{affiliateStats.total} clicks</span>
+              </>
+            )}
+            {affiliateStats.total === 0 && (
+              <span style={{ fontSize: 11, background: '#fbbf2420', color: '#fbbf24', padding: '2px 8px', borderRadius: 4 }}>New</span>
+            )}
+          </span>
         </button>
         <button onClick={() => navigate('/supply-reviews')}
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #ea580c80', background: 'linear-gradient(135deg, #1e293b 0%, #7c2d12 100%)', color: 'white', fontSize: 14, fontWeight: 600, textAlign: 'left', marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span>耗材真话墙</span>
+          <span>{t(lang, 'supply_reviews')}</span>
           <span style={{ fontSize: 10, background: '#ea580c20', color: '#fdba74', padding: '2px 8px', borderRadius: 4 }}>New</span>
         </button>
       </div>
@@ -443,23 +573,25 @@ export default function Me() {
   );
 }
 
-function BookingLinkShare({ artistId }: { artistId: string }) {
+function BookingLinkShare({ artistId, user }: { artistId: string; user: UserRecord | null }) {
   const [copied, setCopied] = useState(false);
   const [deposit, setDeposit] = useState(() => {
     try { return localStorage.getItem('inkflow_booking_deposit') || ''; } catch { return ''; }
   });
-  const bookingUrl = `${window.location.origin}/book/${artistId}`;
+  const slug = (user as any)?.bioProfile?.slug || user?.instagramHandle?.replace(/^@/, '') || '';
+  const shortUrl = slug ? `${window.location.origin}/${slug}` : `${window.location.origin}/bio/${artistId}`;
+  const displayUrl = slug ? `${window.location.origin.replace(/^https?:\/\//, '')}/${slug}` : `book/${artistId}`;
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(bookingUrl);
+    await navigator.clipboard.writeText(shortUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = async () => {
-    const text = `Book a tattoo appointment: ${bookingUrl}`;
+    const text = `Book a tattoo with me: ${shortUrl}`;
     if (navigator.share) {
-      try { await navigator.share({ title: 'Book an Appointment', text, url: bookingUrl }); return; } catch {}
+      try { await navigator.share({ title: 'Book an Appointment', text, url: shortUrl }); return; } catch {}
     }
     handleCopy();
   };
@@ -471,10 +603,10 @@ function BookingLinkShare({ artistId }: { artistId: string }) {
 
   return (
     <div style={{ background: 'linear-gradient(135deg, #312e81 0%, #1e293b 100%)', border: '1px solid #4338ca', borderRadius: 12, padding: 14 }}>
-      <p style={{ fontSize: 13, fontWeight: 700, color: '#c084fc', marginBottom: 4 }}>Client Booking Link</p>
-      <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>Share this link so clients can book directly.</p>
+      <p style={{ fontSize: 13, fontWeight: 700, color: '#c084fc', marginBottom: 4 }}>Your Link</p>
+      <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 10 }}>Share your page — clients see your work, links, and can book.</p>
       <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        <input value={bookingUrl} readOnly
+        <input value={displayUrl} readOnly
           style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #4338ca', background: '#0f172a', color: '#a5b4fc', fontSize: 12, outline: 'none' }}
           onFocus={e => e.target.select()} />
         <button onClick={handleCopy}
@@ -496,6 +628,107 @@ function BookingLinkShare({ artistId }: { artistId: string }) {
   );
 }
 
+const STATION_COLORS = [
+  '#e11d48', '#f97316', '#eab308', '#22c55e', '#14b8a6',
+  '#3b82f6', '#6366f1', '#a855f7', '#ec4899', '#78716c',
+];
+
+function StationsSection({ lang, user, onUserUpdate }: { lang: AppLanguage; user: UserRecord | null; onUserUpdate: (u: UserRecord) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [stations, setStations] = useState<{ name: string; color: string }[]>([]);
+  const [newName, setNewName] = useState('');
+
+  useEffect(() => {
+    setStations(user?.stations || []);
+  }, [user?.stations]);
+
+  const save = async (updated: { name: string; color: string }[]) => {
+    if (!user) return;
+    await db.users.update(user.id, { stations: updated.length > 0 ? updated : undefined });
+    const fresh = await db.users.get(user.id);
+    if (fresh) onUserUpdate(fresh);
+  };
+
+  const addStation = () => {
+    const name = newName.trim();
+    if (!name || stations.some(s => s.name.toLowerCase() === name.toLowerCase())) return;
+    const color = STATION_COLORS[stations.length % STATION_COLORS.length];
+    const updated = [...stations, { name, color }];
+    setStations(updated);
+    setNewName('');
+    save(updated);
+  };
+
+  const removeStation = (idx: number) => {
+    const updated = stations.filter((_, i) => i !== idx);
+    setStations(updated);
+    save(updated);
+  };
+
+  const changeColor = (idx: number, color: string) => {
+    const updated = stations.map((s, i) => i === idx ? { ...s, color } : s);
+    setStations(updated);
+    save(updated);
+  };
+
+  return (
+    <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+        <p style={{ fontWeight: 600 }}>{t(lang, 'stations')}</p>
+        <button onClick={() => setEditing(!editing)} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 13, cursor: 'pointer' }}>
+          {editing ? t(lang, 'close') : t(lang, 'edit')}
+        </button>
+      </div>
+      <p style={{ fontSize: 11, color: '#64748b', marginBottom: 10 }}>{t(lang, 'stations_desc')}</p>
+
+      {stations.length === 0 && !editing && (
+        <p style={{ fontSize: 13, color: '#94a3b8' }}>No stations added yet. Tap Edit to set up your rooms.</p>
+      )}
+
+      {stations.map((s, idx) => (
+        <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, padding: '6px 10px', background: '#0f172a', borderRadius: 8 }}>
+          <div style={{ width: 14, height: 14, borderRadius: 4, background: s.color, flexShrink: 0 }} />
+          <span style={{ fontSize: 13, flex: 1 }}>{s.name}</span>
+          {editing && (
+            <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+              {STATION_COLORS.map(c => (
+                <div
+                  key={c}
+                  onClick={() => changeColor(idx, c)}
+                  style={{
+                    width: 18, height: 18, borderRadius: 4, background: c, cursor: 'pointer',
+                    border: s.color === c ? '2px solid white' : '2px solid transparent',
+                  }}
+                />
+              ))}
+              <button onClick={() => removeStation(idx)}
+                style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 16, cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>
+                ×
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+
+      {editing && (
+        <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+          <input
+            placeholder={t(lang, 'station_name')}
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addStation()}
+            style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none' }}
+          />
+          <button onClick={addStation} disabled={!newName.trim()}
+            style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: newName.trim() ? '#e11d48' : '#334155', color: 'white', fontSize: 13, cursor: 'pointer' }}>
+            Add
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function SectionHeader({ label }: { label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 4 }}>
@@ -508,7 +741,7 @@ function SectionHeader({ label }: { label: string }) {
 const PRESETS_KEY = 'inkflow_consumable_presets';
 type Preset = { type: string; items: string[] };
 
-function ConsumablePresets({ lang }: { lang: string }) {
+function ConsumablePresets({ lang }: { lang: AppLanguage }) {
   const [presets, setPresets] = useState<Preset[]>(() => {
     try { return JSON.parse(localStorage.getItem(PRESETS_KEY) || '[]'); } catch { return []; }
   });
@@ -550,13 +783,13 @@ function ConsumablePresets({ lang }: { lang: string }) {
     setEditingIdx(null);
   };
 
-  const commonTypes = ['花臂 Sleeve', '遮盖 Cover-up', '黑灰 Black & Grey', '彩色 Color', '几何 Geometric', '字体 Lettering', '水彩 Watercolor', '写实 Realism'];
+  const commonTypes = ['Sleeve', 'Cover-up', 'Black & Grey', 'Color', 'Geometric', 'Lettering', 'Watercolor', 'Realism'];
 
   return (
     <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
-      <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Consumable Presets</p>
+      <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{t(lang, 'consumable_presets')}</p>
       <p style={{ fontSize: 11, color: '#64748b', marginBottom: 10 }}>
-        Define what you always prepare for each tattoo type. Shows on Today appointments.
+        {t(lang, 'consumable_presets_desc')}
       </p>
 
       {presets.map((p, idx) => (
@@ -566,10 +799,10 @@ function ConsumablePresets({ lang }: { lang: string }) {
             <div style={{ display: 'flex', gap: 4 }}>
               <button onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
                 style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>
-                {editingIdx === idx ? 'Close' : 'Edit'}
+                {editingIdx === idx ? t(lang, 'close') : t(lang, 'edit')}
               </button>
               <button onClick={() => removePreset(idx)}
-                style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 11, cursor: 'pointer' }}>Del</button>
+                style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 11, cursor: 'pointer' }}>{t(lang, 'del')}</button>
             </div>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -579,15 +812,15 @@ function ConsumablePresets({ lang }: { lang: string }) {
                 {item} {editingIdx === idx ? '✕' : ''}
               </span>
             ))}
-            {p.items.length === 0 && <span style={{ fontSize: 10, color: '#475569' }}>No items yet</span>}
+            {p.items.length === 0 && <span style={{ fontSize: 10, color: '#475569' }}>{t(lang, 'no_items_yet')}</span>}
           </div>
           {editingIdx === idx && (
             <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
-              <input placeholder="Add item..." value={newItem} onChange={e => setNewItem(e.target.value)}
+              <input placeholder={t(lang, 'add_item')} value={newItem} onChange={e => setNewItem(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addItem(idx)}
                 style={{ flex: 1, padding: '4px 8px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12 }} />
               <button onClick={() => addItem(idx)}
-                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#7e22ce', color: 'white', fontSize: 11, cursor: 'pointer' }}>Add</button>
+                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: '#7e22ce', color: 'white', fontSize: 11, cursor: 'pointer' }}>{t(lang, 'add')}</button>
             </div>
           )}
         </div>
@@ -603,12 +836,12 @@ function ConsumablePresets({ lang }: { lang: string }) {
       </div>
 
       <div style={{ display: 'flex', gap: 4 }}>
-        <input placeholder="Custom type..." value={newType} onChange={e => setNewType(e.target.value)}
+        <input placeholder={t(lang, 'custom_type')} value={newType} onChange={e => setNewType(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addPreset()}
           style={{ flex: 1, padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 12 }} />
         <button onClick={addPreset} disabled={!newType.trim()}
           style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: newType.trim() ? '#7e22ce' : '#334155', color: 'white', fontSize: 12, cursor: 'pointer' }}>
-          Create
+          {t(lang, 'create')}
         </button>
       </div>
     </div>

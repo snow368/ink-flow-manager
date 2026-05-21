@@ -1,6 +1,7 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { db, type LeadRecord } from '../db';
+import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 
 export default function LeadRevisePage() {
   const { leadId } = useParams<{ leadId: string }>();
@@ -10,13 +11,16 @@ export default function LeadRevisePage() {
   const [images, setImages] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [doneVersion, setDoneVersion] = useState<number | null>(null);
+  const lang: AppLanguage = detectInitialLanguage();
 
   useEffect(() => {
     if (!leadId) return;
     db.leads.get(leadId).then((l) => setLead(l || null));
   }, [leadId]);
 
-  const title = useMemo(() => lead ? `Update Request for ${lead.name}` : 'Update Request', [lead]);
+  const title = useMemo(() => lead
+    ? t(lang, 'lead_revise_title').replace('{name}', lead.name)
+    : t(lang, 'lead_revise_title_default'), [lead, lang]);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files) return;
@@ -62,24 +66,22 @@ export default function LeadRevisePage() {
   };
 
   if (!leadId || !lead) {
-    return <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24 }}>Invalid or expired update link.</div>;
+    return <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24 }}>{t(lang, 'lead_revise_invalid')}</div>;
   }
 
   return (
     <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 24 }}>
       <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>{title}</h2>
-      <p style={{ color: '#94a3b8', marginBottom: 14 }}>
-        Add your latest changes below. This creates a new version in your ongoing thread and does not overwrite earlier versions.
-      </p>
+      <p style={{ color: '#94a3b8', marginBottom: 14 }}>{t(lang, 'lead_revise_desc')}</p>
 
       {doneVersion && (
         <div style={{ background: '#14532d', border: '1px solid #166534', borderRadius: 10, padding: 10, marginBottom: 12 }}>
-          <p style={{ color: '#86efac', fontSize: 14 }}>Received. Your update was saved as version v{doneVersion}.</p>
+          <p style={{ color: '#86efac', fontSize: 14 }}>{t(lang, 'lead_revise_success').replace('{version}', String(doneVersion))}</p>
         </div>
       )}
 
       <textarea
-        placeholder="Quick update (optional)"
+        placeholder={t(lang, 'lead_revise_note_placeholder')}
         value={note}
         onChange={e => setNote(e.target.value)}
         rows={2}
@@ -87,14 +89,14 @@ export default function LeadRevisePage() {
       />
 
       <textarea
-        placeholder="What exactly should be changed? (optional)"
+        placeholder={t(lang, 'lead_revise_change_placeholder')}
         value={changeRequest}
         onChange={e => setChangeRequest(e.target.value)}
         rows={3}
         style={textAreaStyle}
       />
 
-      <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Upload new reference images (optional, max 6)</p>
+      <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>{t(lang, 'lead_revise_upload_label')}</p>
       <input type="file" accept="image/*" multiple onChange={e => void handleFiles(e.target.files)} style={{ marginBottom: 8 }} />
       {images.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 10 }}>
@@ -107,7 +109,7 @@ export default function LeadRevisePage() {
         disabled={submitting || (!note.trim() && !changeRequest.trim() && images.length === 0)}
         style={{ width: '100%', border: 'none', borderRadius: 12, padding: 13, background: submitting ? '#475569' : '#e11d48', color: 'white', fontSize: 15, fontWeight: 800, cursor: submitting ? 'not-allowed' : 'pointer' }}
       >
-        {submitting ? 'Submitting...' : 'Submit Update'}
+        {submitting ? t(lang, 'lead_revise_submitting') : t(lang, 'lead_revise_submit')}
       </button>
     </div>
   );

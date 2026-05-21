@@ -1,8 +1,9 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type ClientRecord, type AppointmentRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { buildBirthdayMessage, getDormantClients } from '../lib/marketingLogic';
+import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 
 type Channel = 'whatsapp' | 'sms' | 'instagram' | 'facebook' | 'tiktok';
 type TemplateKey = 'booking_confirm' | 'booking_reminder' | 'reschedule' | 'birthday_greeting' | 're_engagement';
@@ -44,6 +45,7 @@ export default function Outreach() {
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [customMessage, setCustomMessage] = useState('');
   const [copied, setCopied] = useState(false);
+  const lang: AppLanguage = detectInitialLanguage();
 
   useEffect(() => {
     db.clients.orderBy('createdAt').reverse().toArray().then((list) => {
@@ -57,7 +59,6 @@ export default function Outreach() {
       setNextAppointment(null);
       return;
     }
-
     db.appointments.where('clientId').equals(selectedClientId).toArray().then((apps) => {
       const upcoming = apps
         .filter(a => a.status !== 'cancelled' && a.status !== 'done')
@@ -98,7 +99,7 @@ export default function Outreach() {
 
     const target = map[channel];
     if (!target) {
-      alert('This client has no phone number. Add a phone for WhatsApp/SMS.');
+      alert(t(lang, 'outreach_no_phone'));
       return;
     }
     window.open(target, '_blank', 'noopener,noreferrer');
@@ -107,17 +108,17 @@ export default function Outreach() {
   return (
     <div style={{ minHeight: '100dvh', background: `radial-gradient(1200px 600px at 10% -20%, #1d4ed8 0%, ${THEME.bg.app} 45%)`, color: THEME.text.primary, padding: 24 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2 }}>Client Messaging</h2>
-        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
+        <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2 }}>{t(lang, 'outreach_title')}</h2>
+        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'outreach_back')}</button>
       </div>
 
       <div style={{ background: 'rgba(30,41,59,0.85)', border: `1px solid ${THEME.border.default}`, borderRadius: 16, padding: 16, backdropFilter: 'blur(6px)', marginBottom: 12 }}>
-        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>Client</p>
+        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>{t(lang, 'outreach_client')}</p>
         <select value={selectedClientId} onChange={(e) => setSelectedClientId(e.target.value)} style={{ width: '100%', borderRadius: 10, border: `1px solid ${THEME.border.default}`, background: THEME.bg.panelAlt, color: THEME.text.primary, padding: '10px 12px', fontSize: 14, marginBottom: 12 }}>
-          {clients.length === 0 ? <option value="">No clients yet</option> : clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {clients.length === 0 ? <option value="">{t(lang, 'outreach_no_clients')}</option> : clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
 
-        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>Template</p>
+        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>{t(lang, 'outreach_template')}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 8, marginBottom: 12 }}>
           {Object.entries(TEMPLATES).map(([key]) => (
             <button key={key} onClick={() => { setTemplateKey(key as TemplateKey); setCustomMessage(''); }} style={{ borderRadius: 10, border: 'none', padding: '10px 8px', background: templateKey === key ? THEME.brand.primary : THEME.bg.panelAlt, color: THEME.text.primary, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
@@ -128,7 +129,7 @@ export default function Outreach() {
 
         <textarea value={message} onChange={(e) => setCustomMessage(e.target.value)} rows={5} style={{ width: '100%', borderRadius: 12, border: `1px solid ${THEME.border.default}`, background: THEME.bg.panelAlt, color: THEME.text.primary, padding: 12, fontSize: 14, boxSizing: 'border-box', resize: 'vertical', marginBottom: 12 }} />
 
-        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>Channel</p>
+        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>{t(lang, 'outreach_channel')}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0,1fr))', gap: 8, marginBottom: 14 }}>
           {(Object.keys(CHANNEL_META) as Channel[]).map(ch => (
             <button key={ch} onClick={() => setChannel(ch)} style={{ borderRadius: 10, border: channel === ch ? `1px solid ${CHANNEL_META[ch].accent}` : `1px solid ${THEME.border.default}`, background: channel === ch ? `${CHANNEL_META[ch].accent}22` : THEME.bg.panelAlt, color: channel === ch ? THEME.text.primary : THEME.text.muted, padding: '9px 6px', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
@@ -138,12 +139,12 @@ export default function Outreach() {
         </div>
 
         <button onClick={openChannel} disabled={!selectedClient} style={{ width: '100%', border: 'none', borderRadius: 12, padding: 13, background: 'linear-gradient(90deg, #e11d48 0%, #fb7185 100%)', color: 'white', fontSize: 15, fontWeight: 800, cursor: selectedClient ? 'pointer' : 'not-allowed', opacity: selectedClient ? 1 : 0.6 }}>
-          {copied ? 'Message Copied - Opening Channel' : 'Send via Selected Channel'}
+          {copied ? t(lang, 'outreach_copied_channel') : t(lang, 'outreach_send')}
         </button>
       </div>
 
       <p style={{ fontSize: 12, color: THEME.text.subtle }}>
-        Tip: Instagram/Facebook/TikTok open inbox first; message is copied so your artist can paste and send fast.
+        {t(lang, 'outreach_tip')}
       </p>
     </div>
   );

@@ -22,6 +22,7 @@ export class InkFlowDB extends Dexie {
   waitingList!: Table<WaitingListRecord>;
   healthChecklists!: Table<HealthChecklistRecord>;
   communicationLog!: Table<CommunicationLogRecord>;
+  affiliateClicks!: Table<AffiliateClickRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -268,6 +269,104 @@ export class InkFlowDB extends Dexie {
       healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
       communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
     });
+    this.version(16).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+    });
+    this.version(18).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+    });
+
+    this.version(19).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+    });
+
+    this.version(17).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+    });
   }
 }
 
@@ -307,7 +406,19 @@ export interface UserRecord {
   instagramHandle?: string;
   whatsappPhone?: string;
   appointmentRemindersEnabled?: boolean;
+  smsEnabled?: boolean;
+  smsCredits?: number;
+  smsFreeUntil?: number;
+  smsUsedToday?: number;
+  smsLastDate?: string;
+  smsFreeUsed?: number;
+  emailEnabled?: boolean;
+  emailAddress?: string;
   assignedLocationIds?: string[];
+  stations?: { name: string; color: string }[];
+  reviewLinks?: { google?: string; platform2Name?: string; platform2Url?: string; platform3Name?: string; platform3Url?: string };
+  bioProfile?: { slug?: string; avatarUrl?: string; displayName: string; shopName?: string; address?: string; bookingEnabled: boolean; links: Array<{ id: string; label: string; url: string; icon?: string }>; portfolioImages?: string[] };
+  bioEvents?: Array<{ id: string; type: 'convention' | 'guest_spot'; city: string; country?: string; venue: string; startDate: string; endDate: string; active: boolean }>;
   createdAt: number;
 }
 
@@ -336,6 +447,9 @@ export interface AppointmentRecord {
   waiverCompleted: boolean; depositAmount?: number; bodyPart?: string; designNotes?: string;
   station?: string; seriesId?: string;
   rescheduleRequest?: { proposedDate: string; proposedTime: string; requestedAt: number };
+  reviewInvitedAt?: number;
+  reviewFollowedUpAt?: number;
+  reviewFollowUpCount?: number;
   createdAt: number;
 }
 
@@ -487,6 +601,7 @@ export interface SupplyProduct {
   isNew?: boolean;
   createdAt?: number;
   clickCount?: number;
+  shipsTo?: string[];
 }
 
 export interface SupplyBrandRecord {
@@ -504,6 +619,7 @@ export interface SupplyBrandRecord {
   featuredTier?: 'basic' | 'premium';
   featuredUntil?: number;
   clickCount?: number;
+  shipsTo?: string[];
   createdAt: number;
 }
 
@@ -556,6 +672,12 @@ export interface InvoiceLineItem {
   total: number;
 }
 
+export interface InvoicePayment {
+  method: string;
+  amount: number;
+  paidAt?: number;
+}
+
 export interface InvoiceRecord {
   id: string;
   invoiceNumber: string;
@@ -572,6 +694,7 @@ export interface InvoiceRecord {
   currency: string;
   country: string;
   paymentMethod: 'cash' | 'card' | 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'paypal' | 'other';
+  payments?: InvoicePayment[];
   paymentStatus: 'pending' | 'paid' | 'cancelled' | 'refunded';
   posTransactionId?: string;
   appointmentId?: string;
@@ -636,5 +759,18 @@ export interface CommunicationLogRecord {
   direction: 'outbound' | 'inbound' | 'auto';
   message?: string;
   templateType?: string;
+  cost?: number;
   createdAt: number;
+}
+
+export interface AffiliateClickRecord {
+  id: string;
+  userId: string;
+  brandId: string;
+  brandName: string;
+  productId?: string;
+  productName?: string;
+  affiliateLink: string;
+  sourcePage: 'supply_brands' | 'supply_new' | 'competitors' | 'other';
+  clickedAt: number;
 }

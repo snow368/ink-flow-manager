@@ -16,6 +16,9 @@ export default function InvoiceDetail() {
   const [studioSettings, setStudioSettings] = useState<InvoiceStudioSettings>(loadInvoiceSettings());
   const termsText = getEffectiveTerms(studioSettings);
   const showStudioInfo = isInvoiceSetupComplete(studioSettings);
+  const [showAddPayment, setShowAddPayment] = useState(false);
+  const [newPaymentMethod, setNewPaymentMethod] = useState('cash');
+  const [newPaymentAmount, setNewPaymentAmount] = useState('');
 
   useEffect(() => {
     if (!id) return;
@@ -44,6 +47,29 @@ export default function InvoiceDetail() {
     await db.invoices.update(invoice.id, { paymentStatus: 'paid', paidAt: Date.now(), amountPaid: invoice.total });
     setInvoice({ ...invoice, paymentStatus: 'paid', paidAt: Date.now(), amountPaid: invoice.total });
     setMessage('Invoice marked as paid.');
+  };
+
+  const handleRecordPayment = async () => {
+    if (!newPaymentAmount || parseFloat(newPaymentAmount) <= 0) return;
+    const amt = Math.round(parseFloat(newPaymentAmount) * 100);
+    const entry = { method: newPaymentMethod, amount: amt, paidAt: Date.now() };
+    const existing = invoice.payments || [];
+    const updatedPayments = [...existing, entry];
+    const totalPaid = updatedPayments.reduce((s, p) => s + p.amount, 0);
+    const remaining = invoice.total - totalPaid;
+    const update: any = {
+      payments: updatedPayments,
+      amountPaid: totalPaid,
+    };
+    if (remaining <= 0) {
+      update.paymentStatus = 'paid';
+      update.paidAt = Date.now();
+    }
+    await db.invoices.update(invoice.id, update);
+    setInvoice({ ...invoice, ...update });
+    setNewPaymentAmount('');
+    setShowAddPayment(false);
+    setMessage(totalPaid >= invoice.total ? 'Fully paid!' : `Payment recorded. Balance: ${formatInvoiceCurrency(remaining, invoice.country)}`);
   };
 
   const handleCancel = async () => {
@@ -179,11 +205,34 @@ export default function InvoiceDetail() {
               style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: '#22c55e', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Mark as Paid
             </button>
+            <button onClick={() => setShowAddPayment(!showAddPayment)}
+              style={{ flex: 1, padding: 12, borderRadius: 10, border: '1.5px solid #a855f7', background: showAddPayment ? '#a855f720' : 'transparent', color: '#c084fc', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              + Record Payment
+            </button>
             <button onClick={handleCancel}
               style={{ flex: 1, padding: 12, borderRadius: 10, border: '1px solid #ef4444', background: 'transparent', color: '#f87171', fontSize: 14, cursor: 'pointer' }}>
               Cancel
             </button>
           </>
+        )}
+        {showAddPayment && (
+          <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <select value={newPaymentMethod} onChange={e => setNewPaymentMethod(e.target.value)}
+              style={{ ...inputStyle, flex: 1, marginBottom: 0 }}>
+              <option value="cash">Cash</option>
+              <option value="card">Card</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="paypal">PayPal</option>
+              <option value="other">Other</option>
+            </select>
+            <input type="number" placeholder="Amount" value={newPaymentAmount}
+              onChange={e => setNewPaymentAmount(e.target.value)}
+              style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
+            <button onClick={handleRecordPayment}
+              style={{ padding: '10px 16px', borderRadius: 8, border: 'none', background: '#a855f7', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              Record
+            </button>
+          </div>
         )}
         <button onClick={handlePrint}
           style={{ flex: 1, padding: 12, borderRadius: 10, border: '1px solid #334155', background: '#334155', color: 'white', fontSize: 14, cursor: 'pointer' }}>
@@ -308,6 +357,28 @@ export default function InvoiceDetail() {
             <span style={{ color: '#64748b' }}>{cfg.paymentLabel}: </span>
             <span style={{ fontWeight: 500, textTransform: 'capitalize' }}>{invoice.paymentMethod.replace('_', ' ')}</span>
           </div>
+          {invoice.payments && invoice.payments.length > 0 && (
+            <div style={{ marginTop: 16, padding: 12, background: '#0f172a', borderRadius: 10 }}>
+              <p style={{ fontSize: 11, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Payment Breakdown
+              </p>
+              {invoice.payments.map((p, i) => (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, padding: '6px 0', borderBottom: i < invoice.payments!.length - 1 ? '1px solid #1a2332' : 'none' }}>
+                  <div>
+                    <span style={{ color: '#e4e4e7', textTransform: 'capitalize', fontWeight: 500 }}>{p.method.replace('_', ' ')}</span>
+                    {p.paidAt && <span style={{ fontSize: 10, color: '#4ade80', marginLeft: 8 }}>✓ Paid</span>}
+                  </div>
+                  <span style={{ fontWeight: 600 }}>{formatInvoiceCurrency(p.amount, invoice.country)}</span>
+                </div>
+              ))}
+              {invoice.amountPaid != null && invoice.total - invoice.amountPaid > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '8px 0 0', borderTop: '1px solid #fbbf2440', marginTop: 4 }}>
+                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>Remaining</span>
+                  <span style={{ color: '#fbbf24', fontWeight: 700 }}>{formatInvoiceCurrency(invoice.total - invoice.amountPaid, invoice.country)}</span>
+                </div>
+              )}
+            </div>
+          )}
           <div>
             <span style={{ color: '#64748b' }}>{cfg.taxLabel}: </span>
             <span style={{ fontWeight: 500 }}>{cfg.taxLabelFull}</span>
@@ -479,4 +550,10 @@ const tdStyle: React.CSSProperties = {
   padding: '12px 8px',
   fontSize: 14,
   verticalAlign: 'top',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '10px 14px',
+  borderRadius: 10, border: '1px solid #334155', background: '#0f172a',
+  color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
 };

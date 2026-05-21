@@ -5,6 +5,8 @@ import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { formatInvoiceCurrency, getCountryConfig } from '../lib/invoiceConfig';
 import { checkAndSuggestMerge, mergeClients } from '../lib/clientMerge';
+import { getClientTimeline, getChannelIcon, getDirectionBadge } from '../lib/communicationLog';
+import type { CommunicationLogRecord } from '../db';
 
 interface ImageEntry {
   type: 'design' | 'progress' | 'finished';
@@ -44,6 +46,7 @@ export default function ClientDetail() {
   const [message, setMessage] = useState('');
   const [potentialDuplicates, setPotentialDuplicates] = useState<ClientRecord[]>([]);
   const [showMergeSuggestion, setShowMergeSuggestion] = useState(false);
+  const [commLogs, setCommLogs] = useState<CommunicationLogRecord[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -52,6 +55,7 @@ export default function ClientDetail() {
     db.appointments.where('clientId').equals(id).reverse().sortBy('date').then(setAppointments);
     db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
     loadImages(id);
+    getClientTimeline(id).then(logs => setCommLogs(logs.slice(0, 30)));
   }, [id]);
 
   const loadImages = async (clientId: string) => {
@@ -404,6 +408,47 @@ export default function ClientDetail() {
             ✕
           </button>
         </div>
+      )}
+
+      {/* Communication Timeline */}
+      {commLogs.length > 0 && (
+        <>
+          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 10, marginTop: 4 }}>Communication Timeline</h3>
+          <div style={{ marginBottom: 16 }}>
+            {commLogs.map(log => {
+              const badge = getDirectionBadge(log.direction);
+              return (
+                <div key={log.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderLeft: '2px solid #334155', paddingLeft: 12, position: 'relative', marginLeft: 6 }}>
+                  <div style={{
+                    position: 'absolute', left: -5, top: 12, width: 8, height: 8, borderRadius: 4,
+                    background: badge.color,
+                  }} />
+                  <div style={{ width: 28, flexShrink: 0 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: badge.color, background: badge.color + '22', padding: '1px 4px', borderRadius: 3 }}>
+                      {getChannelIcon(log.channel)}
+                    </span>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
+                      <span style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>{badge.label}</span>
+                      {log.templateType && (
+                        <span style={{ fontSize: 9, color: '#64748b' }}>{log.templateType.replace(/_/g, ' ')}</span>
+                      )}
+                      <span style={{ fontSize: 9, color: '#475569', marginLeft: 'auto' }}>
+                        {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    {log.message && (
+                      <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>
+                        {log.message.length > 120 ? log.message.slice(0, 120) + '...' : log.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
       )}
 
       <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>Appointment History</h3>

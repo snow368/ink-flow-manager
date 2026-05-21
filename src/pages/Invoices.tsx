@@ -37,8 +37,10 @@ export default function Invoices() {
     (studioSettings.defaultPaymentMethod as InvoiceRecord['paymentMethod']) || 'cash'
   );
   const [splitPayment, setSplitPayment] = useState(false);
-  const [secondPaymentMethod, setSecondPaymentMethod] = useState<string>('cash');
-  const [secondPaymentAmount, setSecondPaymentAmount] = useState('');
+  const [payments, setPayments] = useState<{ method: string; amount: string }[]>([
+    { method: 'cash', amount: '' },
+    { method: 'card', amount: '' },
+  ]);
   const [tip, setTip] = useState('');
 
   useEffect(() => {
@@ -105,16 +107,15 @@ export default function Invoices() {
       currency: countryConfig.currency,
       country: user?.country || 'US',
       paymentMethod,
+      payments: splitPayment ? payments.filter(p => p.amount && parseFloat(p.amount) > 0).map(p => ({ method: p.method, amount: Math.round(parseFloat(p.amount) * 100) })) : undefined,
       paymentStatus: 'pending',
       dueDate: new Date(dueDate).getTime() || undefined,
       notes: (() => {
         const parts: string[] = [];
         if (sessionDate) parts.push(`Session: ${sessionDate}`);
-        if (splitPayment && secondPaymentAmount) {
-          const amt2 = parseFloat(secondPaymentAmount);
-          if (!isNaN(amt2) && amt2 > 0) {
-            parts.push(`Paid: ${(total - amt2 * 100).toFixed(0)} via ${paymentMethod} + ${(amt2 * 100).toFixed(0)} via ${secondPaymentMethod}`);
-          }
+        const validPayments = splitPayment ? payments.filter(p => p.amount && parseFloat(p.amount) > 0) : [];
+        if (validPayments.length > 0) {
+          parts.push('Payments: ' + validPayments.map(p => `$${parseFloat(p.amount).toFixed(2)} ${p.method}`).join(' + '));
         }
         if (notes.trim()) parts.push(notes.trim());
         return parts.join('\n') || undefined;
@@ -180,8 +181,7 @@ export default function Invoices() {
     setNotes(studioSettings.defaultNotes || '');
     setTip('');
     setSplitPayment(false);
-    setSecondPaymentMethod('cash');
-    setSecondPaymentAmount('');
+    setPayments([{ method: 'cash', amount: '' }, { method: 'card', amount: '' }]);
     setDueDate(new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10));
   };
 
@@ -364,7 +364,7 @@ export default function Invoices() {
               type="number" style={{ ...inputStyle, flex: 1, marginBottom: 0 }} />
             <input placeholder={countryConfig.qtyLabel} value={itemQty} onChange={e => setItemQty(e.target.value)}
               type="number" style={{ ...inputStyle, width: 60, marginBottom: 0 }} />
-            <select value={itemType} onChange={e => setItemType(e.target.value as any)}
+            <select value={itemType} onChange={e => setItemType(e.target.value as typeof itemType)}
               style={{ ...inputStyle, width: 100, marginBottom: 0 }}>
               <option value="service">Service</option>
               <option value="product">Product</option>
@@ -402,7 +402,7 @@ export default function Invoices() {
 
           {/* Payment method & tip */}
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as any)}
+            <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as typeof paymentMethod)}
               style={{ ...inputStyle, flex: 1, marginBottom: 0 }}>
               <option value="cash">Cash</option>
               <option value="card">Card</option>
@@ -420,22 +420,41 @@ export default function Invoices() {
           <div style={{ marginTop: 8 }}>
             <button onClick={() => setSplitPayment(!splitPayment)}
               style={{ background: 'none', border: 'none', color: splitPayment ? '#a5b4fc' : '#64748b', fontSize: 12, cursor: 'pointer', padding: 0 }}>
-              {splitPayment ? '- Split Payment' : '+ Split Payment (e.g. cash + card)'}
+              {splitPayment ? '- Multiple Payments' : '+ Multiple Payments (installments / split methods)'}
             </button>
             {splitPayment && (
-              <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                <select value={secondPaymentMethod} onChange={e => setSecondPaymentMethod(e.target.value)}
-                  style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }}>
-                  <option value="cash">Cash</option>
-                  <option value="card">Card</option>
-                  <option value="stripe_connect">Stripe</option>
-                  <option value="bank_transfer">Bank Transfer</option>
-                  <option value="paypal">PayPal</option>
-                  <option value="other">Other</option>
-                </select>
-                <input type="number" placeholder="Amount" value={secondPaymentAmount}
-                  onChange={e => setSecondPaymentAmount(e.target.value)}
-                  style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }} />
+              <div style={{ marginTop: 6 }}>
+                {payments.map((p, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
+                    <select value={p.method} onChange={e => {
+                      const next = [...payments];
+                      next[i] = { ...next[i], method: e.target.value };
+                      setPayments(next);
+                    }} style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }}>
+                      <option value="cash">Cash</option>
+                      <option value="card">Card</option>
+                      <option value="stripe_connect">Stripe</option>
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="paypal">PayPal</option>
+                      <option value="other">Other</option>
+                    </select>
+                    <input type="number" placeholder="Amount" value={p.amount}
+                      onChange={e => {
+                        const next = [...payments];
+                        next[i] = { ...next[i], amount: e.target.value };
+                        setPayments(next);
+                      }}
+                      style={{ ...inputStyle, flex: 1, marginBottom: 0, fontSize: 12 }} />
+                    {payments.length > 1 && (
+                      <button onClick={() => setPayments(payments.filter((_, j) => j !== i))}
+                        style={{ background: 'none', border: 'none', color: '#f87171', fontSize: 16, cursor: 'pointer', padding: '0 6px' }}>✕</button>
+                    )}
+                  </div>
+                ))}
+                <button onClick={() => setPayments([...payments, { method: 'cash', amount: '' }])}
+                  style={{ background: 'none', border: 'none', color: '#22c55e', fontSize: 12, cursor: 'pointer', padding: '4px 0' }}>
+                  + Add Payment
+                </button>
               </div>
             )}
           </div>

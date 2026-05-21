@@ -93,7 +93,27 @@ export default function Portfolio() {
     setMessage(`${count} photo(s) added`);
     setTimeout(() => setMessage(''), 2500);
     loadItems(user.id);
+    syncPortfolio(user.id);
     e.target.value = '';
+  };
+
+  const syncPortfolio = async (uid: string) => {
+    const all = await db.portfolio.where('artistId').equals(uid).toArray();
+    const publ = all.filter(i => i.isPublic).map(i => ({
+      id: i.id,
+      thumbnailUrl: i.thumbnailUrl || i.imageUrl,
+      tags: i.tags,
+      createdAt: i.createdAt,
+    }));
+    const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
+    const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+    try {
+      await fetch(`${backendUrl}/api/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
+        body: JSON.stringify({ artistId: uid, portfolio: publ }),
+      });
+    } catch { /* silent */ }
   };
 
   const toggleTag = async (item: PortfolioRecord, tag: string) => {
@@ -103,12 +123,14 @@ export default function Portfolio() {
     await db.portfolio.update(item.id, { tags });
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, tags } : i));
     if (selected?.id === item.id) setSelected({ ...selected, tags });
+    if (user) syncPortfolio(user.id);
   };
 
   const togglePublic = async (item: PortfolioRecord) => {
     await db.portfolio.update(item.id, { isPublic: !item.isPublic });
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, isPublic: !item.isPublic } : i));
     if (selected?.id === item.id) setSelected({ ...selected, isPublic: !item.isPublic });
+    if (user) syncPortfolio(user.id);
   };
 
   const toggleConsent = async (item: PortfolioRecord, field: 'consentForSocial' | 'consentForPromotion') => {
@@ -126,6 +148,7 @@ export default function Portfolio() {
     await db.portfolio.delete(item.id);
     setItems(prev => prev.filter(i => i.id !== item.id));
     if (selected?.id === item.id) setSelected(null);
+    if (user) syncPortfolio(user.id);
   };
 
   const handleBulkDelete = async () => {
@@ -139,6 +162,7 @@ export default function Portfolio() {
     setSelectMode(false);
     setMessage(`${selectedIds.size} photo(s) deleted`);
     setTimeout(() => setMessage(''), 2500);
+    if (user) syncPortfolio(user.id);
   };
 
   const toggleSelectItem = (id: string) => {

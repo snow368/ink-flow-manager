@@ -3,6 +3,8 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability, isDayOff, toMinutes, toTimeString, findMultipleAvailableTimes } from '../lib/availability';
+import { createWaitingListEntry } from '../lib/waitingList';
+import { getGoogleCalendarUrl, downloadIcsFile } from '../lib/calendarSync';
 
 type Step = 'date' | 'info' | 'payment' | 'confirmed';
 
@@ -41,6 +43,8 @@ export default function ClientBookingPage() {
   const [createdLeadId, setCreatedLeadId] = useState('');
   const [createdAppointmentId, setCreatedAppointmentId] = useState('');
   const [paying, setPaying] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
+  const [wlSubmitted, setWlSubmitted] = useState(false);
   const bookingDeposit = getBookingDeposit();
 
   useEffect(() => {
@@ -272,7 +276,52 @@ export default function ClientBookingPage() {
 
           <p style={{ fontSize: 14, color: '#cbd5e1', marginBottom: 8 }}>{dateDisplay} — {t(lang, 'available_slots')}</p>
           {availableSlots.length === 0 ? (
-            <p style={{ color: '#94a3b8', fontSize: 14, padding: 20 }}>{t(lang, 'no_slots_available')}</p>
+            <>
+              <p style={{ color: '#94a3b8', fontSize: 14, padding: '20px 0 8px' }}>{t(lang, 'no_slots_available')}</p>
+              {!showWaitlist && !wlSubmitted && (
+                <button onClick={() => setShowWaitlist(true)}
+                  style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #a855f7', background: '#a855f722', color: '#c084fc', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 16 }}>
+                  Join Waiting List
+                </button>
+              )}
+              {wlSubmitted && (
+                <div style={{ background: '#1e293b', border: '1px solid #22c55e44', borderRadius: 10, padding: 14, marginBottom: 16, textAlign: 'center' }}>
+                  <p style={{ fontSize: 14, color: '#4ade80', fontWeight: 600, marginBottom: 4 }}>Added to Waiting List</p>
+                  <p style={{ fontSize: 12, color: '#94a3b8' }}>The artist will contact you when a slot opens up.</p>
+                </div>
+              )}
+              {showWaitlist && (
+                <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 10, padding: 14, marginBottom: 16 }}>
+                  <p style={{ fontSize: 13, color: '#c084fc', fontWeight: 600, marginBottom: 10 }}>Join Waiting List</p>
+                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Name *" style={{ ...inputStyle, marginBottom: 8 }} />
+                  <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" style={{ ...inputStyle, marginBottom: 8 }} />
+                  <input value={bodyPart} onChange={e => setBodyPart(e.target.value)} placeholder="Body part" style={{ ...inputStyle, marginBottom: 8 }} />
+                  <input value={style} onChange={e => setStyle(e.target.value)} placeholder="Style" style={{ ...inputStyle, marginBottom: 8 }} />
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => setShowWaitlist(false)}
+                      style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+                      Cancel
+                    </button>
+                    <button onClick={async () => {
+                      if (!name.trim() || !artistId) return;
+                      await createWaitingListEntry({
+                        artistId,
+                        name: name.trim(),
+                        phone: phone.trim() || undefined,
+                        bodyPart: bodyPart.trim() || undefined,
+                        style: style.trim() || undefined,
+                        preferredDate: selectedDate || undefined,
+                      });
+                      setShowWaitlist(false);
+                      setWlSubmitted(true);
+                    }} disabled={!name.trim()}
+                      style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: name.trim() ? '#a855f7' : '#4b5563', color: 'white', fontSize: 13, fontWeight: 600, cursor: name.trim() ? 'pointer' : 'not-allowed' }}>
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
               {availableSlots.map(slot => (
@@ -434,6 +483,33 @@ export default function ClientBookingPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <button onClick={() => {
+              const calUrl = getGoogleCalendarUrl({
+                id: createdAppointmentId || '',
+                clientId: '', artistId: artistId || '', date: selectedDate, time: selectedTime,
+                duration: 60, status: 'deposit_paid', waiverCompleted: false, createdAt: Date.now(),
+                clientName: name,
+              });
+              window.open(calUrl, '_blank', 'noopener,noreferrer');
+            }} style={{
+              width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155',
+              background: 'transparent', color: '#cbd5e1', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+            }}>
+              📅 Add to Calendar
+            </button>
+            <button onClick={() => {
+              downloadIcsFile({
+                id: createdAppointmentId || '',
+                clientId: '', artistId: artistId || '', date: selectedDate, time: selectedTime,
+                duration: 60, status: 'deposit_paid', waiverCompleted: false, createdAt: Date.now(),
+                clientName: name,
+              });
+            }} style={{
+              width: '100%', padding: 10, borderRadius: 12, border: '1px solid #334155',
+              background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer',
+            }}>
+              Download .ics file
+            </button>
             {artist?.whatsappPhone && (
               <button onClick={() => {
                 const phone = artist.whatsappPhone?.replace(/[^\d+]/g, '') || '';

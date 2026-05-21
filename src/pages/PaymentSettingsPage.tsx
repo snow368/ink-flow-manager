@@ -13,6 +13,7 @@ export default function PaymentSettingsPage() {
   const [stripeAccountId, setStripeAccountId] = useState('');
   const [bankInstructions, setBankInstructions] = useState('');
   const [msg, setMsg] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const current = localStorage.getItem('inkflow_current_user');
@@ -35,6 +36,7 @@ export default function PaymentSettingsPage() {
 
   const save = async () => {
     if (!user) return;
+    setSaving(true);
     await db.users.update(user.id, {
       paymentProvider: provider,
       enabledPaymentMethods: enabledMethods,
@@ -44,8 +46,29 @@ export default function PaymentSettingsPage() {
       stripeAccountId: stripeAccountId.trim() || undefined,
       bankTransferInstructions: bankInstructions.trim() || undefined,
     });
-    setMsg('Payment settings saved.');
-    window.setTimeout(() => setMsg(''), 1500);
+
+    // Sync to Worker so booking page can read depositAmount + currency
+    const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
+    const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+    try {
+      await fetch(`${backendUrl}/api/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
+        body: JSON.stringify({
+          artistId: user.id,
+          settings: {
+            paymentLinkTemplate: template.trim(),
+            depositAmount: defaultDeposit.trim(),
+            paymentCurrency: currency.toUpperCase(),
+          },
+        }),
+      });
+      setMsg('Payment settings saved & synced.');
+    } catch {
+      setMsg('Saved locally (sync failed)');
+    }
+    setSaving(false);
+    window.setTimeout(() => setMsg(''), 2000);
   };
 
   const connectStripe = async () => {

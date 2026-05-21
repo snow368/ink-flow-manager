@@ -228,7 +228,7 @@ export default function CompetitorsAdmin() {
             <input placeholder="定价" value={formPricing} onChange={e => setFormPricing(e.target.value)} style={inputS} />
             <textarea placeholder="优势" value={formStrengths} onChange={e => setFormStrengths(e.target.value)} style={{ ...inputS, minHeight: 50 }} />
             <textarea placeholder="弱点" value={formWeaknesses} onChange={e => setFormWeaknesses(e.target.value)} style={{ ...inputS, minHeight: 50 }} />
-            <select value={formStatus} onChange={e => setFormStatus(e.target.value as any)} style={inputS}>
+            <select value={formStatus} onChange={e => setFormStatus(e.target.value as typeof formStatus)} style={inputS}>
               <option value="active">活跃</option>
               <option value="tracking">跟踪中</option>
               <option value="archived">已归档</option>

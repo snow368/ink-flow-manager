@@ -38,6 +38,23 @@ export function getCurrentLocation(): string | null {
   return localStorage.getItem(CURRENT_LOCATION_KEY) || null;
 }
 
+export async function getUserCountry(): Promise<string | null> {
+  const userId = localStorage.getItem('inkflow_current_user');
+  if (!userId) return null;
+  const user = await db.users.get(userId);
+  return user?.country || null;
+}
+
+export function getUserCountrySync(): string | null {
+  // Returns cached country if previously resolved, otherwise null
+  const cached = localStorage.getItem('inkflow_user_country');
+  return cached || null;
+}
+
+export function cacheUserCountry(country: string): void {
+  localStorage.setItem('inkflow_user_country', country);
+}
+
 export async function getArtistIdsForLocation(locationId: string, ownerId: string): Promise<string[]> {
   const loc = await db.studioLocations.get(locationId);
   if (!loc || loc.ownerId !== ownerId) return [];

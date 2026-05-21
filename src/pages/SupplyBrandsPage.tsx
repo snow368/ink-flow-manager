@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type SupplyBrandRecord, type SupplyProduct } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { trackAffiliateClick, getClickStats } from '../lib/affiliateTracking';
+import { getUserCountry } from '../lib/locationLogic';
+import { SHIPS_TO_MAP } from '../lib/supplyShipsTo';
 
 type CategoryKey = 'all' | SupplyBrandRecord['category'];
 type TabKey = 'brands' | 'new';
@@ -37,6 +40,7 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_ei_1', name: 'Eternal Ink Black Liner 8oz', imageUrl: '', price: '$29.99', affiliateLink: 'https://eternaltattooink.com/black-liner', note: 'Best seller' },
       { id: 'prod_ei_2', name: 'Eternal Ink Color Set (12x1oz)', imageUrl: '', price: '$89.99', affiliateLink: 'https://eternaltattooink.com/color-set', note: 'New color range', isNew: true, createdAt: NOW - 5 * DAY },
     ],
+    shipsTo: ['US', 'CA', 'MX', 'CO', 'PE', 'GB', 'IE', 'DE', 'FR', 'NL', 'AT', 'BE', 'IT', 'ES', 'DK', 'SE', 'NO', 'PL', 'GR', 'AU', 'NZ'],
     sortOrder: 1, active: true, featured: true, createdAt: NOW,
   },
   {
@@ -51,6 +55,7 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_iz_1', name: 'Intenze Zuper Black 12oz', imageUrl: '', price: '$34.99', affiliateLink: 'https://intenzetattooink.com/zuper-black', note: 'Industry staple' },
       { id: 'prod_iz_2', name: 'Intenze Color Set (14x1oz)', imageUrl: '', price: '$99.99', affiliateLink: 'https://intenzetattooink.com/color-set', note: 'Pro palette', isNew: true, createdAt: NOW - 10 * DAY },
     ],
+    shipsTo: ['US', 'CA', 'GB', 'DE', 'FR', 'NL', 'AT', 'BE', 'IT', 'DK', 'SE', 'NO', 'PL', 'IE', 'IN', 'JP', 'BR', 'AU', 'NZ'],
     sortOrder: 2, active: true, featured: true, createdAt: NOW,
   },
   {
@@ -65,6 +70,7 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_di_1', name: 'Dynamic Black 8oz', imageUrl: '', price: '$24.99', affiliateLink: 'https://dynamiccolor.com/black', note: '#1 black ink' },
       { id: 'prod_di_2', name: 'Dynamic Triple Black 8oz', imageUrl: '', price: '$27.99', affiliateLink: 'https://dynamiccolor.com/triple-black', note: 'Extra dark' },
     ],
+    shipsTo: ['US', 'CA', 'GB', 'IE', 'DE', 'FR', 'NL', 'AT', 'BE', 'IT', 'DK', 'SE', 'NO', 'PL', 'LT', 'AU', 'NZ', 'ZA', 'PE', 'EC', 'SG', 'SA', 'PH', 'MX'],
     sortOrder: 3, active: true, featured: true, createdAt: NOW,
   },
   {
@@ -79,6 +85,7 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_ks_1', name: 'Kuro Sumi Outlining Black 6oz', imageUrl: '', price: '$22.99', affiliateLink: 'https://kurosumi.com/outlining', note: 'Tribal/japanese' },
       { id: 'prod_ks_2', name: 'Kuro Sumi Grey Wash Set (6 bottles)', imageUrl: '', price: '$49.99', affiliateLink: 'https://kurosumi.com/grey-wash', note: 'Smooth gradients' },
     ],
+    shipsTo: ['US', 'CA', 'GB', 'IE', 'DE', 'NL', 'AE', 'IN', 'AU', 'NZ'],
     sortOrder: 4, active: true, createdAt: NOW,
   },
   {
@@ -133,6 +140,20 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_pb_1', name: 'Panthera XXX Black 8oz', imageUrl: '', price: '$28.99', affiliateLink: 'https://pantherablack.com/xxx', note: 'Ultra concentrated' },
     ],
     sortOrder: 8, active: true, createdAt: NOW,
+  },
+  {
+    id: 'brand_solid_ink',
+    name: 'Solid Ink',
+    category: 'ink',
+    description: 'Bold, vibrant colors trusted worldwide. Known for consistent quality across their 100+ color range.',
+    logoUrl: '',
+    affiliateLink: 'https://solidink.com',
+    commissionNote: 'Up to 6% commission',
+    products: [
+      { id: 'prod_si_1', name: 'Solid Ink Lining Black 12oz', imageUrl: '', price: '$27.99', affiliateLink: 'https://solidink.com/black', note: 'Popular choice' },
+    ],
+    shipsTo: ['US', 'CA', 'GB', 'DE', 'FR', 'IT', 'ES', 'AU', 'NZ'],
+    sortOrder: 9, active: true, createdAt: NOW,
   },
   // ── Needles (针) ──
   {
@@ -281,6 +302,35 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
       { id: 'prod_pn_1', name: 'Peak Cartridges (Box 50)', imageUrl: '', price: '$31.99', affiliateLink: 'https://peaktattoomachines.com/cartridges', note: 'Pro choice' },
     ],
     sortOrder: 20, active: true, createdAt: NOW,
+  },
+  {
+    id: 'brand_peach',
+    name: 'Peach Tattoo Supply',
+    category: 'needles',
+    description: 'Major OEM needle manufacturer (Suzhou, est. 2001). 316L surgical steel, ISO 13485 certified. OEM for many global brands.',
+    logoUrl: '',
+    affiliateLink: 'https://peachtattoosupply.com',
+    commissionNote: 'Up to 10% commission',
+    products: [
+      { id: 'prod_pe_1', name: 'Peach Cog Series Cartridges (Box 50)', imageUrl: '', price: '$19.99', affiliateLink: 'https://peachtattoosupply.com/cog-series', note: 'Vibration-reducing' },
+      { id: 'prod_pe_2', name: 'Peach Pro EN Cartridges (Box 50)', imageUrl: '', price: '$22.99', affiliateLink: 'https://peachtattoosupply.com/pro-en', note: 'Professional grade', isNew: true, createdAt: NOW - 6 * DAY },
+    ],
+    shipsTo: ['US', 'CA', 'GB', 'DE', 'FR', 'NL', 'IT', 'ES', 'AU', 'JP', 'KR', 'BR', 'MX'],
+    sortOrder: 21, active: true, createdAt: NOW,
+  },
+  {
+    id: 'brand_da_vinci',
+    name: 'Da Vinci',
+    category: 'needles',
+    description: 'Premium cartridges known for medical-grade precision. Trusted by top realism and portrait artists.',
+    logoUrl: '',
+    affiliateLink: 'https://davincitattoo.com',
+    commissionNote: 'Up to 6% commission',
+    products: [
+      { id: 'prod_dv_1', name: 'Da Vinci V2 Cartridges (Box 50)', imageUrl: '', price: '$42.99', affiliateLink: 'https://davincitattoo.com/cartridges', note: 'Medical-grade' },
+    ],
+    shipsTo: ['US', 'CA', 'GB', 'DE', 'FR', 'NL', 'IT', 'ES', 'DK', 'SE', 'NO', 'AU', 'JP', 'KR'],
+    sortOrder: 22, active: true, createdAt: NOW,
   },
   // ── Machines (机器) ──
   {
@@ -580,6 +630,20 @@ const SEED_BRANDS: SupplyBrandRecord[] = [
     ],
     sortOrder: 35, active: true, createdAt: NOW,
   },
+  {
+    id: 'brand_oras',
+    name: "Ora's Amazing Herbal",
+    category: 'aftercare',
+    description: 'All-natural, organic tattoo aftercare. Handmade in small batches. Cult favorite for sensitive skin.',
+    logoUrl: '',
+    affiliateLink: 'https://orasamazingherbal.com',
+    commissionNote: 'Up to 5% commission',
+    products: [
+      { id: 'prod_oa_1', name: "Ora's Tattoo Salve 2oz", imageUrl: '', price: '$17.99', affiliateLink: 'https://orasamazingherbal.com/salve', note: 'All-natural' },
+    ],
+    shipsTo: ['US', 'CA', 'GB', 'AU', 'NZ'],
+    sortOrder: 36, active: true, createdAt: NOW,
+  },
 ];
 
 function daysAgo(ts: number): string {
@@ -601,6 +665,20 @@ export default function SupplyBrandsPage() {
   const [brands, setBrands] = useState<SupplyBrandRecord[]>([]);
   const [category, setCategory] = useState<CategoryKey>('all');
   const [expandedBrand, setExpandedBrand] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [clickStats, setClickStats] = useState({ total: 0, today: 0 });
+  const [userCountry, setUserCountry] = useState<string | null>(null);
+  const [shipsHereOnly, setShipsHereOnly] = useState(false);
+
+  const refreshClickStats = async () => {
+    const stats = await getClickStats();
+    setClickStats({ total: stats.total, today: stats.today });
+  };
+
+  useEffect(() => {
+    refreshClickStats();
+    getUserCountry().then(setUserCountry);
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -608,30 +686,42 @@ export default function SupplyBrandsPage() {
       if (all.length === 0) {
         await db.supplyBrands.bulkAdd(SEED_BRANDS);
         all = SEED_BRANDS;
+      } else {
+        const existingIds = new Set(all.map(b => b.id));
+        const missing = SEED_BRANDS.filter(b => !existingIds.has(b.id));
+        if (missing.length > 0) {
+          await db.supplyBrands.bulkAdd(missing);
+          all.push(...missing);
+        }
       }
+      all = all.map(b => ({ ...b, shipsTo: b.shipsTo || SHIPS_TO_MAP[b.id] }));
       all.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
       setBrands(all.filter(b => b.active));
     };
     load();
   }, []);
 
+  const q = search.trim().toLowerCase();
   const filtered = useMemo(() => {
-    if (category === 'all') return brands;
-    return brands.filter(b => b.category === category);
-  }, [brands, category]);
+    let result = category === 'all' ? brands : brands.filter(b => b.category === category);
+    if (q) result = result.filter(b => b.name.toLowerCase().includes(q) || b.description.toLowerCase().includes(q) || b.products.some(p => p.name.toLowerCase().includes(q)));
+    if (shipsHereOnly && userCountry) result = result.filter(b => b.shipsTo?.includes(userCountry));
+    return result;
+  }, [brands, category, q, shipsHereOnly, userCountry]);
 
   const newProducts = useMemo(() => {
     const items: (SupplyProduct & { brandName: string; brandCategory: SupplyBrandRecord['category'] })[] = [];
     for (const b of brands) {
+      if (shipsHereOnly && userCountry && !b.shipsTo?.includes(userCountry)) continue;
       for (const p of b.products) {
         if (!p.isNew) continue;
         if (category !== 'all' && b.category !== category) continue;
-        items.push({ ...p, brandName: b.name, brandCategory: b.category });
+        if (q && !p.name.toLowerCase().includes(q) && !b.name.toLowerCase().includes(q)) continue;
       }
     }
     items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     return items;
-  }, [brands, category]);
+  }, [brands, category, q]);
 
   const activeTab = TABS.find(t => t.key === tab) || TABS[0];
 
@@ -644,6 +734,16 @@ export default function SupplyBrandsPage() {
           <p style={{ fontSize: 12, color: '#94a3b8', margin: '2px 0 0' }}>{t(lang, activeTab.descKey)}</p>
         </div>
       </div>
+
+      {/* Click stats bar */}
+      {clickStats.total > 0 && (
+        <div style={{ margin: '4px 20px 0', padding: '8px 14px', borderRadius: 10, background: '#1e293b', display: 'flex', alignItems: 'center', gap: 10, fontSize: 12 }}>
+          <span style={{ color: '#64748b' }}>Clicks:</span>
+          <span style={{ color: '#fbbf24', fontWeight: 700 }}>{clickStats.today} today</span>
+          <span style={{ color: '#475569' }}>·</span>
+          <span style={{ color: '#94a3b8' }}>{clickStats.total} total</span>
+        </div>
+      )}
 
       {/* Tab switcher */}
       <div style={{ padding: '12px 20px 0', display: 'flex', gap: 0, borderBottom: '1px solid #1e293b' }}>
@@ -694,6 +794,45 @@ export default function SupplyBrandsPage() {
         ))}
       </div>
 
+      {/* Search + filter */}
+      <div style={{ padding: '8px 20px', borderBottom: '1px solid #1e293b', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <input
+          type="text"
+          placeholder="Search brands or products..."
+          value={search}
+          onChange={e => { setSearch(e.target.value); setExpandedBrand(null); }}
+          style={{
+            flex: 1,
+            padding: '10px 14px',
+            borderRadius: 10,
+            border: '1px solid #334155',
+            background: '#1e293b',
+            color: 'white',
+            fontSize: 13,
+            outline: 'none',
+          }}
+        />
+        {userCountry && (
+          <button
+            onClick={() => setShipsHereOnly(!shipsHereOnly)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 10,
+              border: shipsHereOnly ? '2px solid #22c55e' : '2px solid #334155',
+              background: shipsHereOnly ? '#22c55e20' : 'transparent',
+              color: shipsHereOnly ? '#4ade80' : '#64748b',
+              fontSize: 11,
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+              flexShrink: 0,
+            }}
+          >
+            {shipsHereOnly ? 'Ships here' : 'All countries'}
+          </button>
+        )}
+      </div>
+
       {/* Brands view */}
       {tab === 'brands' && (
         <div style={{ padding: '12px 20px 40px', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -728,12 +867,18 @@ export default function SupplyBrandsPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <p style={{ fontSize: 16, fontWeight: 700 }}>{brand.name}</p>
+                      {userCountry && brand.shipsTo?.includes(userCountry) && (
+                        <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, fontWeight: 600, background: '#22c55e20', color: '#4ade80' }}>Ships here</span>
+                      )}
+                      {userCountry && brand.shipsTo && !brand.shipsTo.includes(userCountry) && (
+                        <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, fontWeight: 600, background: '#ef444420', color: '#f87171' }}>Not verified</span>
+                      )}
+                      {userCountry && !brand.shipsTo && (
+                        <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 4, fontWeight: 600, background: '#47556920', color: '#64748b' }}>?</span>
+                      )}
                       {brand.featured && <span style={{ fontSize: 10, background: '#fbbf2420', color: '#fbbf24', padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>Featured</span>}
                     </div>
                     <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{brand.description}</p>
-                    {brand.commissionNote && (
-                      <p style={{ fontSize: 11, color: '#22c55e', marginTop: 2 }}>{t(lang, 'brand_commission')}: {brand.commissionNote}</p>
-                    )}
                   </div>
                   <span style={{ color: '#64748b', fontSize: 14, flexShrink: 0 }}>{isExpanded ? 'v' : '>'}</span>
                 </div>
@@ -768,7 +913,7 @@ export default function SupplyBrandsPage() {
                               {p.note && <span style={{ fontSize: 11, color: '#64748b' }}>{p.note}</span>}
                             </div>
                           </div>
-                          <a href={p.affiliateLink} target="_blank" rel="noopener noreferrer" onClick={async e => { e.stopPropagation(); const prods = brand.products.map(x => x.id === p.id ? { ...x, clickCount: (x.clickCount || 0) + 1 } : x); await db.supplyBrands.update(brand.id, { products: prods }); brand.products = prods; }} style={{ padding: '8px 16px', borderRadius: 10, background: '#e11d48', color: 'white', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0 }}>
+                          <a href={p.affiliateLink} rel="noopener noreferrer" onClick={async e => { e.preventDefault(); e.stopPropagation(); await trackAffiliateClick({ brandId: brand.id, brandName: brand.name, productId: p.id, productName: p.name, affiliateLink: p.affiliateLink }); refreshClickStats(); const prods = brand.products.map(x => x.id === p.id ? { ...x, clickCount: (x.clickCount || 0) + 1 } : x); await db.supplyBrands.update(brand.id, { products: prods }); brand.products = prods; window.open(p.affiliateLink, '_blank', 'noopener,noreferrer'); }} style={{ padding: '8px 16px', borderRadius: 10, background: '#e11d48', color: 'white', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, cursor: 'pointer' }}>
                             {t(lang, 'buy')}
                           </a>
                         </div>
@@ -804,14 +949,18 @@ export default function SupplyBrandsPage() {
                   {p.note && <span style={{ fontSize: 11, color: '#64748b' }}>{p.note}</span>}
                 </div>
               </div>
-              <a href={p.affiliateLink} target="_blank" rel="noopener noreferrer" onClick={async () => {
+              <a href={p.affiliateLink} rel="noopener noreferrer" onClick={async e => {
+                e.preventDefault();
                 const brand = brands.find(b => b.id.startsWith('brand_') && b.products.some(x => x.id === p.id));
                 if (brand) {
+                  await trackAffiliateClick({ brandId: brand.id, brandName: brand.name, productId: p.id, productName: p.name, affiliateLink: p.affiliateLink });
+                  refreshClickStats();
                   const prods = brand.products.map(x => x.id === p.id ? { ...x, clickCount: (x.clickCount || 0) + 1 } : x);
                   await db.supplyBrands.update(brand.id, { products: prods });
                   p.clickCount = (p.clickCount || 0) + 1;
                 }
-              }} style={{ padding: '8px 16px', borderRadius: 10, background: '#e11d48', color: 'white', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0 }}>
+                window.open(p.affiliateLink, '_blank', 'noopener,noreferrer');
+              }} style={{ padding: '8px 16px', borderRadius: 10, background: '#e11d48', color: 'white', fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0, cursor: 'pointer' }}>
                 {t(lang, 'buy')}
               </a>
             </div>

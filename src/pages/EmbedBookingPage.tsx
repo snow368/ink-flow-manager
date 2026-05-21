@@ -4,11 +4,13 @@ import { db } from '../db';
 import { findMultipleAvailableTimes, getArtistAvailability, isDayOff, toMinutes } from '../lib/availability';
 import { createWaitingListEntry } from '../lib/waitingList';
 import { THEME } from '../lib/theme';
+import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 
 type Step = 'date' | 'info' | 'waiting_list_form' | 'success';
 
 export default function EmbedBookingPage() {
   const { artistId } = useParams<{ artistId: string }>();
+  const [lang] = useState<AppLanguage>(detectInitialLanguage);
   const [step, setStep] = useState<Step>('date');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
@@ -62,7 +64,7 @@ export default function EmbedBookingPage() {
       });
       setStep('success');
     } catch (e) {
-      setError('Something went wrong. Please try again.');
+      setError(t(lang, 'embed_error'));
     } finally {
       setLoading(false);
     }
@@ -70,7 +72,7 @@ export default function EmbedBookingPage() {
 
   const renderDateStep = () => (
     <div style={{ padding: 12 }}>
-      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'white' }}>Select Date</h2>
+      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: 'white' }}>{t(lang, 'embed_select_date')}</h2>
       <div style={{ display: 'flex', gap: 6, overflowX: 'auto', marginBottom: 16, paddingBottom: 8 }}>
         {dates.map(d => {
           const dateObj = new Date(d + 'T00:00:00');
@@ -85,7 +87,7 @@ export default function EmbedBookingPage() {
                 fontSize: 12, cursor: 'pointer', minWidth: 52, textAlign: 'center', flexShrink: 0,
               }}
             >
-              <div style={{ fontSize: 9, opacity: 0.6 }}>{dateObj.toLocaleDateString('en', { weekday: 'short' })}</div>
+              <div style={{ fontSize: 9, opacity: 0.6 }}>{dateObj.toLocaleDateString(lang === 'jp' ? 'ja' : lang, { weekday: 'short' })}</div>
               <div style={{ fontSize: 15, fontWeight: 600 }}>{dateObj.getDate()}</div>
             </button>
           );
@@ -94,15 +96,15 @@ export default function EmbedBookingPage() {
 
       {selectedDate && (
         <div>
-          <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: 'white' }}>Available Times</h3>
+          <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: 'white' }}>{t(lang, 'embed_available_times')}</h3>
           {slots.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 20 }}>
-              <p style={{ color: '#94a3b8', fontSize: 13 }}>No slots available on this date.</p>
+              <p style={{ color: '#94a3b8', fontSize: 13 }}>{t(lang, 'embed_no_slots')}</p>
               <button
                 onClick={() => setStep('waiting_list_form')}
                 style={{ marginTop: 10, padding: '10px 20px', borderRadius: 10, border: 'none', background: '#f59e0b', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
-                Join Waiting List
+                {t(lang, 'embed_join_waiting_list')}
               </button>
             </div>
           ) : (
@@ -125,42 +127,42 @@ export default function EmbedBookingPage() {
 
   const renderInfoStep = () => (
     <div style={{ padding: 12 }}>
-      <button onClick={() => setStep('date')} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 13, cursor: 'pointer', marginBottom: 12 }}>← Back</button>
-      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: 'white' }}>Your Info</h2>
+      <button onClick={() => setStep('date')} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 13, cursor: 'pointer', marginBottom: 12 }}>← {t(lang, 'back')}</button>
+      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: 'white' }}>{t(lang, 'embed_your_info')}</h2>
       <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{selectedDate} at {selectedTime}</p>
-      <input placeholder="Name *" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-      <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-      <input placeholder="Body Part" value={bodyPart} onChange={e => setBodyPart(e.target.value)} style={inputStyle} />
-      <input placeholder="Style" value={style} onChange={e => setStyle(e.target.value)} style={inputStyle} />
-      <textarea placeholder="Notes for artist..." value={note} onChange={e => setNote(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} />
+      <input placeholder={t(lang, 'embed_name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_phone')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_email')} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_body_part')} value={bodyPart} onChange={e => setBodyPart(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_style')} value={style} onChange={e => setStyle(e.target.value)} style={inputStyle} />
+      <textarea placeholder={t(lang, 'embed_notes')} value={note} onChange={e => setNote(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} />
       <button
         onClick={handleJoinWaitingList}
         disabled={loading || !name.trim()}
         style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: loading || !name.trim() ? '#4b5563' : '#e11d48', color: 'white', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}
       >
-        {loading ? 'Submitting...' : 'Request Booking'}
+        {loading ? t(lang, 'embed_submitting') : t(lang, 'embed_request_booking')}
       </button>
     </div>
   );
 
   const renderWaitingListForm = () => (
     <div style={{ padding: 12 }}>
-      <button onClick={() => setStep('date')} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 13, cursor: 'pointer', marginBottom: 12 }}>← Back</button>
-      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: 'white' }}>Join Waiting List</h2>
-      <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>We'll notify you when a slot opens up.</p>
-      <input placeholder="Name *" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
-      <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-      <input placeholder="Body Part" value={bodyPart} onChange={e => setBodyPart(e.target.value)} style={inputStyle} />
-      <input placeholder="Preferred Style" value={style} onChange={e => setStyle(e.target.value)} style={inputStyle} />
+      <button onClick={() => setStep('date')} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: 13, cursor: 'pointer', marginBottom: 12 }}>← {t(lang, 'back')}</button>
+      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: 'white' }}>{t(lang, 'embed_join_waiting_list')}</h2>
+      <p style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{t(lang, 'embed_notify_message')}</p>
+      <input placeholder={t(lang, 'embed_name')} value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_phone')} value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_email')} value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_body_part')} value={bodyPart} onChange={e => setBodyPart(e.target.value)} style={inputStyle} />
+      <input placeholder={t(lang, 'embed_preferred_style')} value={style} onChange={e => setStyle(e.target.value)} style={inputStyle} />
       {error && <p style={{ color: '#ef4444', fontSize: 12, marginBottom: 10 }}>{error}</p>}
       <button
         onClick={handleJoinWaitingList}
         disabled={loading || !name.trim()}
         style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: loading || !name.trim() ? '#4b5563' : '#f59e0b', color: '#0f172a', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}
       >
-        {loading ? 'Joining...' : 'Join Waiting List'}
+        {loading ? t(lang, 'embed_joining') : t(lang, 'embed_join_waiting_list')}
       </button>
     </div>
   );
@@ -168,8 +170,8 @@ export default function EmbedBookingPage() {
   const renderSuccess = () => (
     <div style={{ padding: 24, textAlign: 'center' }}>
       <p style={{ fontSize: 40, marginBottom: 16 }}>✅</p>
-      <h2 style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>Added to Waiting List</h2>
-      <p style={{ color: '#94a3b8', fontSize: 14 }}>The artist will contact you when a slot opens up.</p>
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 4 }}>{t(lang, 'embed_added_waiting_list')}</h2>
+      <p style={{ color: '#94a3b8', fontSize: 14 }}>{t(lang, 'embed_contact_message')}</p>
     </div>
   );
 

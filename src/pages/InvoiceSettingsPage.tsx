@@ -128,12 +128,12 @@ export default function InvoiceSettingsPage() {
             <input value={p.name} onChange={e => {
               const next = [...settings.servicePresets];
               next[i] = { ...next[i], name: e.target.value };
-              update('servicePresets', next as any);
+              update('servicePresets', next);
             }} placeholder="Service name" style={{ ...inputS, flex: 2, marginBottom: 0 }} />
             <input type="number" value={p.price} onChange={e => {
               const next = [...settings.servicePresets];
               next[i] = { ...next[i], price: parseFloat(e.target.value) || 0 };
-              update('servicePresets', next as any);
+              update('servicePresets', next);
             }} placeholder="Price" style={{ ...inputS, width: 100, marginBottom: 0 }} />
             <button onClick={() => update('servicePresets', settings.servicePresets.filter((_, j) => j !== i))}
               style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 16, padding: '0 8px' }}>x</button>
@@ -151,12 +151,12 @@ export default function InvoiceSettingsPage() {
             <input value={p.name} onChange={e => {
               const next = [...settings.productPresets];
               next[i] = { ...next[i], name: e.target.value };
-              update('productPresets', next as any);
+              update('productPresets', next);
             }} placeholder="Product name" style={{ ...inputS, flex: 2, marginBottom: 0 }} />
             <input type="number" value={p.price} onChange={e => {
               const next = [...settings.productPresets];
               next[i] = { ...next[i], price: parseFloat(e.target.value) || 0 };
-              update('productPresets', next as any);
+              update('productPresets', next);
             }} placeholder="Price" style={{ ...inputS, width: 100, marginBottom: 0 }} />
             <button onClick={() => update('productPresets', settings.productPresets.filter((_, j) => j !== i))}
               style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: 16, padding: '0 8px' }}>x</button>

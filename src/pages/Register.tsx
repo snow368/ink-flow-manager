@@ -89,6 +89,26 @@ export default function Register() {
         await processReferralOnRegister(userId, refCode);
       }
 
+      // Auto-sync basic artist info to Worker
+      const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
+      const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+      if (roles.includes('artist')) {
+        try {
+          await fetch(`${backendUrl}/api/sync`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
+            body: JSON.stringify({
+              artistId: userId,
+              settings: {
+                name,
+                email,
+                createdAt: now,
+              },
+            }),
+          });
+        } catch { /* silent */ }
+      }
+
       navigate('/today?welcome=1', { replace: true });
     } catch {
       setError('Registration failed.');

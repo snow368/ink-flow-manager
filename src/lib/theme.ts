@@ -6,7 +6,7 @@ export const THEME = {
   },
   text: {
     primary: '#ffffff',
-    muted: '#94a3b8',
+    muted: '#cbd5e1',
     subtle: '#64748b',
   },
   brand: {

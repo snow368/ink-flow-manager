@@ -135,7 +135,7 @@ export default function IntakePage() {
         <input placeholder="Name (required)" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
         <input placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} style={inputStyle} />
         <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
-        <select value={preferredContact} onChange={e => setPreferredContact(e.target.value as any)} style={inputStyle}>
+        <select value={preferredContact} onChange={e => setPreferredContact(e.target.value as typeof preferredContact)} style={inputStyle}>
           <option value="whatsapp">Preferred contact: WhatsApp</option>
           <option value="instagram">Preferred contact: Instagram</option>
           <option value="phone">Preferred contact: Phone</option>
@@ -158,11 +158,11 @@ export default function IntakePage() {
           <input placeholder="Approx size (e.g. 8x5cm)" value={size} onChange={e => setSize(e.target.value)} style={inputStyle} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <select value={coverUp} onChange={e => setCoverUp(e.target.value as any)} style={inputStyle}>
+          <select value={coverUp} onChange={e => setCoverUp(e.target.value as typeof coverUp)} style={inputStyle}>
             <option value="no">Cover-up needed: No</option>
             <option value="yes">Cover-up needed: Yes</option>
           </select>
-          <select value={scarArea} onChange={e => setScarArea(e.target.value as any)} style={inputStyle}>
+          <select value={scarArea} onChange={e => setScarArea(e.target.value as typeof scarArea)} style={inputStyle}>
             <option value="no">Scar/stretch area: No</option>
             <option value="yes">Scar/stretch area: Yes</option>
           </select>
@@ -170,7 +170,7 @@ export default function IntakePage() {
       </Section>
 
       <Section title="4) Budget & Schedule">
-        <select value={consultMode} onChange={e => setConsultMode(e.target.value as any)} style={inputStyle}>
+        <select value={consultMode} onChange={e => setConsultMode(e.target.value as typeof consultMode)} style={inputStyle}>
           <option value="online_chat">Next step: Online chat first</option>
           <option value="consult_booking">Next step: Book consultation</option>
           <option value="walk_in_direct">Next step: Direct walk-in</option>
@@ -186,7 +186,7 @@ export default function IntakePage() {
           <input type="date" value={preferredDate} onChange={e => setPreferredDate(e.target.value)} style={inputStyle} />
           <input type="time" value={preferredTime} onChange={e => setPreferredTime(e.target.value)} style={inputStyle} />
         </div>
-        <select value={decisionMaker} onChange={e => setDecisionMaker(e.target.value as any)} style={inputStyle}>
+        <select value={decisionMaker} onChange={e => setDecisionMaker(e.target.value as typeof decisionMaker)} style={inputStyle}>
           <option value="self">Decision maker: Myself</option>
           <option value="shared">Decision maker: Shared with partner/friend</option>
         </select>
@@ -201,7 +201,7 @@ export default function IntakePage() {
         </div>
         {allergies.length > 0 && (
           <>
-            <select value={allergySeverity} onChange={e => setAllergySeverity(e.target.value as any)} style={inputStyle}>
+            <select value={allergySeverity} onChange={e => setAllergySeverity(e.target.value as typeof allergySeverity)} style={inputStyle}>
               <option value="low">Low concern</option>
               <option value="medium">Medium concern</option>
               <option value="high">High concern</option>
@@ -221,7 +221,7 @@ export default function IntakePage() {
         )}
       </Section>
 
-      <select value={source} onChange={e => setSource(e.target.value as any)} style={inputStyle}>
+      <select value={source} onChange={e => setSource(e.target.value as typeof source)} style={inputStyle}>
         <option value="instagram">Source: Instagram</option>
         <option value="facebook">Source: Facebook</option>
         <option value="tiktok">Source: TikTok</option>

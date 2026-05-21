@@ -47,8 +47,28 @@ export default function AvailabilitySettingsPage() {
       whatsappPhone: whatsappPhone.trim() || undefined,
       appointmentRemindersEnabled: remindersEnabled,
     });
-    setMsg('Saved.');
-    setTimeout(() => setMsg(''), 1500);
+
+    // Sync availability to Worker so booking page uses real hours
+    const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
+    const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+    try {
+      await fetch(`${backendUrl}/api/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
+        body: JSON.stringify({
+          artistId: user.id,
+          settings: {
+            workingHoursStart: startTime,
+            workingHoursEnd: endTime,
+            daysOff: daysOff.length ? daysOff : undefined,
+          },
+        }),
+      });
+      setMsg('Saved & synced.');
+    } catch {
+      setMsg('Saved locally (sync failed)');
+    }
+    setTimeout(() => setMsg(''), 2000);
   };
 
   if (!user) return <div style={{ padding: 20, color: 'white' }}>Please log in</div>;

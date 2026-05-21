@@ -3,21 +3,82 @@ import { useNavigate } from 'react-router-dom';
 import { db, type SupplyReviewRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { searchSupplyProducts, buildReviewExtractionPrompt, extractLocalKeywords, REVIEW_CATEGORIES } from '../lib/reviewLogic';
+import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 
-const GUIDED_PLACEHOLDER = [
-  '聊聊你的真实体验，帮同行少踩坑：',
-  '',
-  '• 这个产品你用了多久？用在什么风格上？',
-  '• 和什么品牌对比过？差别在哪？',
-  '• 有没有导致客户过敏或不适？',
-  '• 最大的槽点是什么？（褪色？漏墨？噪音？）',
-  '• 还会再买吗？为什么？',
-].join('\n');
+function getGuidedPlaceholder(lang: AppLanguage): string {
+  const prompts: Record<string, string[]> = {
+    en: [
+      'Share your real experience, help fellow artists avoid pitfalls:',
+      '',
+      '• How long have you used this product? On what styles?',
+      '• What brands did you compare it with? What are the differences?',
+      '• Did it cause any client allergies or discomfort?',
+      '• What\'s the biggest complaint? (Fading? Leaking? Noise?)',
+      '• Would you buy it again? Why?',
+    ],
+    es: [
+      'Comparte tu experiencia real, ayuda a otros artistas a evitar problemas:',
+      '',
+      '• ¿Cuánto tiempo has usado este producto? ¿En qué estilos?',
+      '• ¿Con qué marcas lo comparaste? ¿Cuáles son las diferencias?',
+      '• ¿Causó alergias o molestias a algún cliente?',
+      '• ¿Cuál es la mayor queja? (¿Decoloración? ¿Fugas? ¿Ruido?)',
+      '• ¿Lo comprarías de nuevo? ¿Por qué?',
+    ],
+    pt: [
+      'Compartilhe sua experiência real, ajude outros artistas a evitar problemas:',
+      '',
+      '• Há quanto tempo você usa este produto? Em quais estilos?',
+      '• Com quais marcas você comparou? Quais são as diferenças?',
+      '• Causou alguma alergia ou desconforto nos clientes?',
+      '• Qual é a maior reclamação? (Desbotamento? Vazamento? Ruído?)',
+      '• Você compraria de novo? Por quê?',
+    ],
+    fr: [
+      'Partagez votre expérience réelle, aidez les autres artistes à éviter les pièges :',
+      '',
+      '• Depuis combien de temps utilisez-vous ce produit ? Pour quels styles ?',
+      '• Avec quelles marques l\'avez-vous comparé ? Quelles sont les différences ?',
+      '• A-t-il causé des allergies ou de l\'inconfort chez les clients ?',
+      '• Quel est le plus gros reproche ? (Délavage ? Fuite ? Bruit ?)',
+      '• Le rachèteriez-vous ? Pourquoi ?',
+    ],
+    de: [
+      'Teile deine echte Erfahrung und hilf anderen Künstlern, Fehler zu vermeiden:',
+      '',
+      '• Wie lange hast du dieses Produkt verwendet? Für welche Stile?',
+      '• Mit welchen Marken hast du es verglichen? Was sind die Unterschiede?',
+      '• Hat es bei Kunden Allergien oder Beschwerden verursacht?',
+      '• Was ist die größte Beschwerde? (Verblassen? Auslaufen? Lärm?)',
+      '• Würdest du es wieder kaufen? Warum?',
+    ],
+    th: [
+      'แชร์ประสบการณ์จริงของคุณ ช่วยเพื่อนช่างสักหลีกเลี่ยงปัญหา:',
+      '',
+      '• คุณใช้ผลิตภัณฑ์นี้มานานแค่ไหน? ใช้กับสไตล์ไหน?',
+      '• เปรียบเทียบกับแบรนด์อะไร? แตกต่างกันอย่างไร?',
+      '• ทำให้ลูกค้าแพ้หรือไม่สบายหรือไม่?',
+      '• ข้อเสียที่ใหญ่ที่สุดคืออะไร? (ซีด? รั่ว? เสียงดัง?)',
+      '• คุณจะซื้ออีกไหม? ทำไม?',
+    ],
+    jp: [
+      '実際の体験を共有して、仲間のアーティストが失敗を避けるのを助けましょう：',
+      '',
+      '• この製品をどのくらい使っていますか？どんなスタイルに？',
+      '• どのブランドと比較しましたか？違いは何ですか？',
+      '• クライアントにアレルギーや不快感を引き起こしましたか？',
+      '• 一番の不満点は何ですか？（色あせ？漏れ？騒音？）',
+      '• また買いますか？その理由は？',
+    ],
+  };
+  return (prompts[lang] || prompts.en).join('\n');
+}
 
 type CategoryFilter = 'all' | SupplyReviewRecord['category'];
 
 export default function SupplyReviewsPage() {
   const navigate = useNavigate();
+  const [lang] = useState<AppLanguage>(detectInitialLanguage);
   const [reviews, setReviews] = useState<SupplyReviewRecord[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all');
   const [showSheet, setShowSheet] = useState(false);
@@ -126,10 +187,10 @@ export default function SupplyReviewsPage() {
 
   const formatDate = (ts: number) => {
     const d = Math.floor((Date.now() - ts) / 86400000);
-    if (d === 0) return 'Today';
-    if (d === 1) return 'Yesterday';
-    if (d < 30) return `${d}d ago`;
-    return new Date(ts).toLocaleDateString('en', { month: 'short', day: 'numeric' });
+    if (d === 0) return t(lang, 'supply_reviews_today');
+    if (d === 1) return t(lang, 'supply_reviews_yesterday');
+    if (d < 30) return t(lang, 'supply_reviews_days_ago').replace('{n}', String(d));
+    return new Date(ts).toLocaleDateString(lang === 'jp' ? 'ja' : lang, { month: 'short', day: 'numeric' });
   };
 
   const catBgColor = (cat: string): string => {
@@ -143,15 +204,13 @@ export default function SupplyReviewsPage() {
     <div style={{ minHeight: '100dvh', background: `radial-gradient(1200px 600px at 10% -20%, #ea580c 0%, ${THEME.bg.app} 45%)`, color: THEME.text.primary, padding: 24, paddingBottom: 100 }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2, margin: 0 }}>耗材真话墙</h2>
-        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
+        <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2, margin: 0 }}>{t(lang, 'supply_reviews')}</h2>
+        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'back')}</button>
       </div>
 
       {/* Guidance Banner */}
       <div style={{ background: 'rgba(234,88,12,0.12)', border: '1px solid #ea580c33', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-        <p style={{ fontSize: 12, color: '#fdba74', lineHeight: 1.5, margin: 0 }}>
-          真实的耗材体验，帮同行少踩坑。可以吐槽，但要具体——<strong>什么产品、用了多久、出了什么问题、跟什么对比过</strong>。越具体，对别人越有用。
-        </p>
+        <p style={{ fontSize: 12, color: '#fdba74', lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={{ __html: t(lang, 'supply_reviews_guidance') }} />
       </div>
 
       {/* Category Tabs */}
@@ -172,8 +231,8 @@ export default function SupplyReviewsPage() {
       {/* Review Cards */}
       {filteredReviews.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 40 }}>
-          <p style={{ fontSize: 14, color: THEME.text.muted, marginBottom: 8 }}>还没有评价，来当第一个帮同行的人吧</p>
-          <button onClick={() => setShowSheet(true)} style={emptyBtn}>写第一条评价</button>
+          <p style={{ fontSize: 14, color: THEME.text.muted, marginBottom: 8 }}>{t(lang, 'supply_reviews_empty')}</p>
+          <button onClick={() => setShowSheet(true)} style={emptyBtn}>{t(lang, 'supply_reviews_write_first')}</button>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -185,7 +244,7 @@ export default function SupplyReviewsPage() {
                 <span style={{ fontSize: 14, fontWeight: 700 }}>{r.productName}</span>
                 {r.buyAgain !== undefined && (
                   <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: r.buyAgain ? '#14532d' : '#7f1d1d', color: r.buyAgain ? '#4ade80' : '#fca5a5' }}>
-                    {r.buyAgain ? '还会回购' : '不再回购'}
+                    {r.buyAgain ? t(lang, 'supply_reviews_buy_again') : t(lang, 'supply_reviews_not_buy_again')}
                   </span>
                 )}
               </div>
@@ -198,13 +257,13 @@ export default function SupplyReviewsPage() {
                 <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
                   {r.pros && (
                     <div style={{ flex: 1, background: 'rgba(34,197,94,0.08)', borderRadius: 8, padding: 8 }}>
-                      <span style={{ fontSize: 10, color: '#4ade80', fontWeight: 700 }}>Pros</span>
+                      <span style={{ fontSize: 10, color: '#4ade80', fontWeight: 700 }}>{t(lang, 'supply_reviews_pros_label')}</span>
                       <p style={{ fontSize: 11, color: '#86efac', marginTop: 2 }}>{r.pros}</p>
                     </div>
                   )}
                   {r.cons && (
                     <div style={{ flex: 1, background: 'rgba(239,68,68,0.08)', borderRadius: 8, padding: 8 }}>
-                      <span style={{ fontSize: 10, color: '#f87171', fontWeight: 700 }}>Cons</span>
+                      <span style={{ fontSize: 10, color: '#f87171', fontWeight: 700 }}>{t(lang, 'supply_reviews_cons_label')}</span>
                       <p style={{ fontSize: 11, color: '#fca5a5', marginTop: 2 }}>{r.cons}</p>
                     </div>
                   )}
@@ -232,7 +291,7 @@ export default function SupplyReviewsPage() {
               {/* Footer */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 11, color: THEME.text.subtle }}>
-                  {r.isAnonymous ? '某工作室纹身师' : currentUser?.name || 'Anonymous'} · {formatDate(r.createdAt)}
+                  {r.isAnonymous ? t(lang, 'supply_reviews_anonymous_name') : currentUser?.name || 'Anonymous'} · {formatDate(r.createdAt)}
                 </span>
                 <button onClick={() => handleHelpful(r.id)}
                   style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -254,7 +313,7 @@ export default function SupplyReviewsPage() {
           boxShadow: '0 8px 24px rgba(234,88,12,0.35)',
           cursor: 'pointer', zIndex: 40,
         }}>
-        帮同行避坑
+        {t(lang, 'supply_reviews_write_first')}
       </button>
 
       {/* Post Sheet Overlay */}
@@ -262,11 +321,11 @@ export default function SupplyReviewsPage() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
           <div onClick={() => setShowSheet(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.6)' }} />
           <div style={{ position: 'relative', background: '#1e293b', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 20, maxHeight: '85dvh', overflowY: 'auto', zIndex: 1 }}>
-            <p style={{ fontSize: 16, fontWeight: 800, marginBottom: 14 }}>分享耗材体验</p>
+            <p style={{ fontSize: 16, fontWeight: 800, marginBottom: 14 }}>{t(lang, 'supply_reviews_share')}</p>
 
             {/* Product Search */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>产品名</p>
-            <input placeholder="搜索品牌库或手动输入..." value={productSearch || productName}
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'supply_reviews_product_name')}</p>
+            <input placeholder={t(lang, 'supply_reviews_search_placeholder')} value={productSearch || productName}
               onChange={e => { setProductSearch(e.target.value); if (!e.target.value) setProductName(''); }}
               style={inputStyle} />
             {searchResults.length > 0 && (
@@ -282,7 +341,7 @@ export default function SupplyReviewsPage() {
             )}
 
             {/* Category */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4, marginTop: 10 }}>品类</p>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4, marginTop: 10 }}>{t(lang, 'supply_reviews_category_label')}</p>
             <div style={{ display: 'flex', gap: 4, marginBottom: 12, flexWrap: 'wrap' }}>
               {REVIEW_CATEGORIES.filter(c => c.key !== 'all').map(c => (
                 <button key={c.key} onClick={() => setCategory(c.key as SupplyReviewRecord['category'])}
@@ -296,9 +355,9 @@ export default function SupplyReviewsPage() {
             </div>
 
             {/* Body */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>体验详情</p>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'supply_reviews_detail')}</p>
             <textarea value={body} onChange={e => setBody(e.target.value)}
-              placeholder={GUIDED_PLACEHOLDER}
+              placeholder={getGuidedPlaceholder(lang)}
               rows={8}
               style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.5, fontFamily: 'inherit' }} />
 
@@ -309,7 +368,7 @@ export default function SupplyReviewsPage() {
                 border: '1px solid #7e22ce80', background: copied === 'ai' ? '#22c55e' : '#312e81',
                 color: copied === 'ai' ? 'white' : '#c4b5fd', fontSize: 13, fontWeight: 700, cursor: body.trim() ? 'pointer' : 'not-allowed', opacity: body.trim() ? 1 : 0.5,
               }}>
-              {copied === 'ai' ? 'Prompt Copied — Paste to Claude/GPT' : 'AI 提炼 (复制prompt到AI分析)'}
+              {copied === 'ai' ? t(lang, 'supply_reviews_ai_copied') : t(lang, 'supply_reviews_ai_extract')}
             </button>
 
             {/* Auto-extracted tags */}
@@ -318,22 +377,22 @@ export default function SupplyReviewsPage() {
                 {tags.map((t, i) => (
                   <span key={i} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: '#7e22ce33', color: '#c4b5fd' }}>{t}</span>
                 ))}
-                <button onClick={() => setTags([])} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 10, cursor: 'pointer' }}>Clear</button>
+                <button onClick={() => setTags([])} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 10, cursor: 'pointer' }}>{t(lang, 'supply_reviews_clear')}</button>
               </div>
             )}
 
             {/* Pros */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>优点 (Pros)</p>
-            <input value={pros} onChange={e => setPros(e.target.value)} placeholder="颜色饱和、流动性好..." style={inputStyle} />
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'supply_reviews_pros_label')}</p>
+            <input value={pros} onChange={e => setPros(e.target.value)} placeholder={t(lang, 'supply_reviews_pros_placeholder')} style={inputStyle} />
 
             {/* Cons */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>缺点 (Cons)</p>
-            <input value={cons} onChange={e => setCons(e.target.value)} placeholder="第3周开始褪色..." style={inputStyle} />
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'supply_reviews_cons_label')}</p>
+            <input value={cons} onChange={e => setCons(e.target.value)} placeholder={t(lang, 'supply_reviews_cons_placeholder')} style={inputStyle} />
 
             {/* Buy Again */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6, marginTop: 10 }}>还会回购吗？</p>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6, marginTop: 10 }}>{t(lang, 'supply_reviews_buy_again_q')}</p>
             <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-              {[{ v: true, l: '会回购' }, { v: false, l: '不再回购' }].map(opt => (
+              {[{ v: true, l: t(lang, 'supply_reviews_would_buy') }, { v: false, l: t(lang, 'supply_reviews_would_not_buy') }].map(opt => (
                 <button key={String(opt.v)} onClick={() => setBuyAgain(buyAgain === opt.v ? undefined : opt.v)}
                   style={{
                     flex: 1, padding: '10px 0', borderRadius: 10, border: buyAgain === opt.v ? `1px solid ${opt.v ? '#22c55e' : '#ef4444'}` : '1px solid #334155',
@@ -345,7 +404,7 @@ export default function SupplyReviewsPage() {
             </div>
 
             {/* Photos */}
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>照片 (可选)</p>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 4 }}>{t(lang, 'supply_reviews_photos_optional')}</p>
             <input type="file" accept="image/*" multiple onChange={e => {
               const files = e.target.files;
               if (!files) return;
@@ -370,8 +429,8 @@ export default function SupplyReviewsPage() {
             {/* Anonymous */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, padding: '10px 12px', background: '#0f172a', borderRadius: 10 }}>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600 }}>匿名发布</p>
-                <p style={{ fontSize: 11, color: '#64748b' }}>显示为「某工作室纹身师」</p>
+                <p style={{ fontSize: 13, fontWeight: 600 }}>{t(lang, 'supply_reviews_anonymous_label')}</p>
+                <p style={{ fontSize: 11, color: '#64748b' }}>{t(lang, 'supply_reviews_anonymous_desc')}</p>
               </div>
               <button onClick={() => setIsAnonymous(!isAnonymous)}
                 style={{
@@ -390,7 +449,7 @@ export default function SupplyReviewsPage() {
                 background: body.trim() && productName.trim() ? 'linear-gradient(135deg, #ea580c 0%, #dc2626 100%)' : '#334155',
                 color: 'white', fontSize: 16, fontWeight: 800, cursor: body.trim() && productName.trim() ? 'pointer' : 'not-allowed', opacity: body.trim() && productName.trim() ? 1 : 0.5,
               }}>
-              发布体验
+              {t(lang, 'supply_reviews_submit')}
             </button>
           </div>
         </div>

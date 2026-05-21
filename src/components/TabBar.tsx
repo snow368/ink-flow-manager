@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { THEME } from '../lib/theme';
 
 interface Tab {
   path: string;
@@ -19,8 +20,8 @@ export default function TabBar({ tabs, activeTab }: TabBarProps) {
       display: 'flex',
       justifyContent: 'space-around',
       alignItems: 'center',
-      backgroundColor: '#1e293b',
-      borderTop: '1px solid #334155',
+      backgroundColor: THEME.bg.panel,
+      borderTop: `1px solid ${THEME.border.default}`,
       paddingBottom: 'env(safe-area-inset-bottom)',
       minHeight: '64px',
       fontSize: '16px',
@@ -37,7 +38,7 @@ export default function TabBar({ tabs, activeTab }: TabBarProps) {
               padding: '12px 0',
               background: 'none',
               border: 'none',
-              color: isActive ? '#ffffff' : '#94a3b8',
+              color: isActive ? THEME.text.primary : THEME.text.muted,
               cursor: 'pointer',
               textAlign: 'center',
               fontSize: '14px',

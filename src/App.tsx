@@ -1,60 +1,80 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Users, User } from 'lucide-react';
 import TabBar from './components/TabBar';
 import ErrorBoundary from './components/ErrorBoundary';
 import OfflineBanner from './components/OfflineBanner';
-import Today from './pages/Today';
-import Clients from './pages/Clients';
-import Me from './pages/Me';
-import Register from './pages/Register';
-import Verification from './pages/Verification';
-import ClientDetail from './pages/ClientDetail';
-import AppointmentForm from './pages/AppointmentForm';
-import WaiverSign from './pages/WaiverSign';
-import SessionPage from './pages/SessionPage';
-import InventoryPage from './pages/InventoryPage';
-import Referral from './pages/Referral';
-import Outreach from './pages/Outreach';
-import IntakePage from './pages/IntakePage';
-import LeadsPage from './pages/LeadsPage';
-import LeadRevisePage from './pages/LeadRevisePage';
-import DepositPolicyPage from './pages/DepositPolicyPage';
-import PaymentSettingsPage from './pages/PaymentSettingsPage';
-import PaymentHistoryPage from './pages/PaymentHistoryPage';
-import ClientPaymentPage from './pages/ClientPaymentPage';
-import ClientPaymentStatusPage from './pages/ClientPaymentStatusPage';
-import SupplyBrandsPage from './pages/SupplyBrandsPage';
-import SupplyBrandsAdmin from './pages/SupplyBrandsAdmin';
-import CompetitorsPage from './pages/CompetitorsPage';
-import CompetitorsAdmin from './pages/CompetitorsAdmin';
-import ContentStrategyPage from './pages/ContentStrategyPage';
-import SupplyReviewsPage from './pages/SupplyReviewsPage';
-import AvailabilitySettingsPage from './pages/AvailabilitySettingsPage';
-import ClientBookingPage from './pages/ClientBookingPage';
-import PosPage from './pages/PosPage';
-import PosSettingsPage from './pages/PosSettingsPage';
-import LocationsPage from './pages/LocationsPage';
-import Invoices from './pages/Invoices';
-import InvoiceDetail from './pages/InvoiceDetail';
-import InvoiceSettingsPage from './pages/InvoiceSettingsPage';
-import HealthChecklistPage from './pages/HealthChecklistPage';
-import CheckinPage from './pages/CheckinPage';
-import AnalyticsPage from './pages/AnalyticsPage';
-import ClientPortalPage from './pages/ClientPortalPage';
-import AppointmentRespondPage from './pages/AppointmentRespondPage';
-import EmbedBookingPage from './pages/EmbedBookingPage';
-import Portfolio from './pages/Portfolio';
+const Today = lazy(() => import('./pages/Today'));
+const Clients = lazy(() => import('./pages/Clients'));
+const Me = lazy(() => import('./pages/Me'));
+const Register = lazy(() => import('./pages/Register'));
+const Verification = lazy(() => import('./pages/Verification'));
+const ClientDetail = lazy(() => import('./pages/ClientDetail'));
+const AppointmentForm = lazy(() => import('./pages/AppointmentForm'));
+const WaiverSign = lazy(() => import('./pages/WaiverSign'));
+const SessionPage = lazy(() => import('./pages/SessionPage'));
+const InventoryPage = lazy(() => import('./pages/InventoryPage'));
+const Referral = lazy(() => import('./pages/Referral'));
+const Outreach = lazy(() => import('./pages/Outreach'));
+const IntakePage = lazy(() => import('./pages/IntakePage'));
+const LeadsPage = lazy(() => import('./pages/LeadsPage'));
+const LeadRevisePage = lazy(() => import('./pages/LeadRevisePage'));
+const DepositPolicyPage = lazy(() => import('./pages/DepositPolicyPage'));
+const PaymentSettingsPage = lazy(() => import('./pages/PaymentSettingsPage'));
+const PaymentHistoryPage = lazy(() => import('./pages/PaymentHistoryPage'));
+const ClientPaymentPage = lazy(() => import('./pages/ClientPaymentPage'));
+const ClientPaymentStatusPage = lazy(() => import('./pages/ClientPaymentStatusPage'));
+const SupplyBrandsPage = lazy(() => import('./pages/SupplyBrandsPage'));
+const SupplyBrandsAdmin = lazy(() => import('./pages/SupplyBrandsAdmin'));
+const CompetitorsPage = lazy(() => import('./pages/CompetitorsPage'));
+const CompetitorsAdmin = lazy(() => import('./pages/CompetitorsAdmin'));
+const ContentStrategyPage = lazy(() => import('./pages/ContentStrategyPage'));
+const SupplyReviewsPage = lazy(() => import('./pages/SupplyReviewsPage'));
+const AvailabilitySettingsPage = lazy(() => import('./pages/AvailabilitySettingsPage'));
+const ClientBookingPage = lazy(() => import('./pages/ClientBookingPage'));
+const PosPage = lazy(() => import('./pages/PosPage'));
+const PosSettingsPage = lazy(() => import('./pages/PosSettingsPage'));
+const LocationsPage = lazy(() => import('./pages/LocationsPage'));
+const Invoices = lazy(() => import('./pages/Invoices'));
+const InvoiceDetail = lazy(() => import('./pages/InvoiceDetail'));
+const InvoiceSettingsPage = lazy(() => import('./pages/InvoiceSettingsPage'));
+const HealthChecklistPage = lazy(() => import('./pages/HealthChecklistPage'));
+const CheckinPage = lazy(() => import('./pages/CheckinPage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const ClientPortalPage = lazy(() => import('./pages/ClientPortalPage'));
+const AppointmentRespondPage = lazy(() => import('./pages/AppointmentRespondPage'));
+const EmbedBookingPage = lazy(() => import('./pages/EmbedBookingPage'));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+const ReviewInvitesPage = lazy(() => import('./pages/ReviewInvitesPage'));
+const NotificationSettings = lazy(() => import('./pages/NotificationSettings'));
+const ArtistProfilePage = lazy(() => import('./pages/ArtistProfilePage'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
 import LocationSelector from './components/LocationSelector';
-import NewClientForm from './pages/NewClientForm';
-import { db } from './db';
-import { detectInitialLanguage } from './lib/i18n';
+const NewClientForm = lazy(() => import('./pages/NewClientForm'));
+import { db, type UserRecord } from './db';
+import { detectInitialLanguage, t, type AppLanguage } from './lib/i18n';
 import { rebuildConsumableProfiles } from './lib/consumableRecommend';
 import { getDaysSinceLastMarketCheck } from './lib/competitorData';
+import { THEME } from './lib/theme';
+
+function PageLoading() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 48 }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: '50%',
+        border: `3px solid ${THEME.border.default}`,
+        borderTopColor: THEME.brand.primary,
+        animation: 'inkflow-spin 0.6s linear infinite',
+      }} />
+      <style>{`@keyframes inkflow-spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
 
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [lang, setLang] = useState<AppLanguage>(detectInitialLanguage);
   const [dueFollowUpCount, setDueFollowUpCount] = useState(0);
   const [marketCheckDue, setMarketCheckDue] = useState(false);
   const [isDev, setIsDev] = useState(false);
@@ -65,11 +85,14 @@ export default function App() {
     document.documentElement.lang = detectInitialLanguage();
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
+    const handleLangChange = (e: Event) => setLang((e as CustomEvent).detail as AppLanguage);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    window.addEventListener('inkflow_lang_change', handleLangChange);
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('inkflow_lang_change', handleLangChange);
     };
   }, []);
 
@@ -121,64 +144,68 @@ export default function App() {
   }, [isLoggedIn, location.pathname]);
 
   useEffect(() => {
-    if (!isDev) { setMarketCheckDue(false); return; }
     const check = () => setMarketCheckDue(getDaysSinceLastMarketCheck() >= 30);
     check();
     const timer = window.setInterval(check, 60 * 1000);
     return () => window.clearInterval(timer);
-  }, [isDev, location.pathname]);
+  }, [location.pathname]);
 
   const tabs = [
-    { path: '/today', label: 'Today', icon: Calendar },
-    { path: '/clients', label: 'Clients', icon: Users },
-    { path: '/me', label: 'Me', icon: User },
+    { path: '/today', label: t(lang, 'tab_today'), icon: Calendar },
+    { path: '/clients', label: t(lang, 'tab_clients'), icon: Users },
+    { path: '/me', label: t(lang, 'tab_me'), icon: User },
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
 
   return (
     <ErrorBoundary>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
-        {!isOnline && <OfflineBanner />}
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: THEME.bg.app, color: THEME.text.primary }}>
+        {!isOnline && <OfflineBanner lang={lang} />}
         {isLoggedIn && dueFollowUpCount > 0 && !location.pathname.startsWith('/leads') && (
           <div
             onClick={() => navigate('/leads')}
             style={{
-              background: '#7f1d1d',
+              background: THEME.brand.danger,
               color: '#fee2e2',
               padding: '10px 14px',
               fontSize: 13,
-              borderBottom: '1px solid #991b1b',
+              borderBottom: `1px solid ${THEME.brand.danger}`,
               cursor: 'pointer',
+              fontWeight: 600,
             }}
           >
-            {dueFollowUpCount} follow-up{dueFollowUpCount > 1 ? 's' : ''} due now. Tap to open Leads.
+            {dueFollowUpCount === 1
+              ? t(lang, 'followup_banner_one')
+              : t(lang, 'followup_banner_other').replace('{n}', String(dueFollowUpCount))}
           </div>
         )}
-        {isDev && marketCheckDue && !location.pathname.startsWith('/competitors') && (
+        {marketCheckDue && !location.pathname.startsWith('/competitors') && (
           <div
             onClick={() => navigate('/competitors')}
             style={{
-              background: 'linear-gradient(135deg, #0f766e, #115e59)',
-              color: '#ccfbf1',
+              background: `linear-gradient(135deg, ${THEME.brand.success}, ${THEME.brand.info})`,
+              color: THEME.text.primary,
               padding: '10px 14px',
               fontSize: 13,
-              borderBottom: '1px solid #0d9488',
+              borderBottom: `1px solid ${THEME.border.default}`,
               cursor: 'pointer',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              fontWeight: 600,
             }}
           >
-            <span>距离上次市场检查已超过30天 - 点击查看竞品动态</span>
-            <span style={{ fontSize: 11, background: '#14b8a620', padding: '2px 8px', borderRadius: 4 }}>查看</span>
+            <span>{t(lang, 'market_check_banner')}</span>
+            <span style={{ fontSize: 11, background: THEME.brand.success, padding: '2px 8px', borderRadius: 4, color: THEME.bg.app }}>{t(lang, 'market_check_view')}</span>
           </div>
         )}
         <div style={{ flex: 1, overflowY: 'auto' }}>
+          <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/verification" element={<Verification />} />
@@ -214,6 +241,7 @@ export default function App() {
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/invoice/:id" element={<InvoiceDetail />} />
             <Route path="/invoice-settings" element={<InvoiceSettingsPage />} />
+            <Route path="/notification-settings" element={<NotificationSettings />} />
             <Route path="/health-checklist" element={<HealthChecklistPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/checkin/:appointmentId" element={<CheckinPage />} />
@@ -221,11 +249,15 @@ export default function App() {
             <Route path="/respond/:id" element={<AppointmentRespondPage />} />
             <Route path="/embed/:artistId" element={<EmbedBookingPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/artist-profile" element={<ArtistProfilePage />} />
+            <Route path="/events" element={<EventsPage />} />
+            <Route path="/review-invites" element={<ReviewInvitesPage />} />
             <Route path="/me" element={<Me />} />
           </Routes>
+          </Suspense>
         </div>
         {isLoggedIn && (
-        <div style={{ borderTop: '1px solid #1e293b' }}>
+        <div style={{ borderTop: `1px solid ${THEME.border.soft}` }}>
           <LocationSelectorWrapper />
         </div>
       )}
@@ -236,10 +268,10 @@ export default function App() {
 }
 
 function LocationSelectorWrapper() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserRecord | null>(null);
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
-    if (stored) { db.users.get(stored).then(u => setUser(u)); }
+    if (stored) { db.users.get(stored).then(u => setUser(u ?? null)); }
   }, []);
   return <LocationSelector user={user} />;
 }

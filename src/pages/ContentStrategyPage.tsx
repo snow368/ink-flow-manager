@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { THEME } from '../lib/theme';
+import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 import {
   runGapAnalysis,
   generateContent,
@@ -15,6 +16,7 @@ const OUR_NAME = 'InkFlow Manager';
 
 export default function ContentStrategyPage() {
   const navigate = useNavigate();
+  const [lang] = useState<AppLanguage>(detectInitialLanguage);
   const [gaps, setGaps] = useState<GapItem[]>([]);
   const [activeStrategy, setActiveStrategy] = useState<StrategyKey>('problem_first');
   const [content, setContent] = useState<ContentPiece | null>(null);
@@ -77,10 +79,10 @@ export default function ContentStrategyPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2, margin: 0 }}>Content Strategy Engine</h2>
-          <p style={{ fontSize: 12, color: THEME.text.muted, marginTop: 2 }}>竞品缺口分析 + SaaS营销策略 + 内容生成</p>
+          <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.2, margin: 0 }}>{t(lang, 'content_strategy_title')}</h2>
+          <p style={{ fontSize: 12, color: THEME.text.muted, marginTop: 2 }}>{t(lang, 'content_strategy_subtitle')}</p>
         </div>
-        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>Back</button>
+        <button onClick={() => navigate('/me')} style={{ border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'back')}</button>
       </div>
 
       {/* Gap Analysis */}
@@ -89,13 +91,13 @@ export default function ContentStrategyPage() {
           onClick={() => setShowGaps(!showGaps)}
           style={{ width: '100%', padding: '12px 16px', background: 'transparent', border: 'none', color: THEME.text.primary, fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <span>Market Gap Analysis ({gaps.length} opportunities)</span>
-          <span style={{ fontSize: 11, color: THEME.text.muted }}>{showGaps ? 'Hide' : 'Show'}</span>
+          <span>{t(lang, 'content_strategy_gap_header').replace('{n}', String(gaps.length))}</span>
+          <span style={{ fontSize: 11, color: THEME.text.muted }}>{showGaps ? t(lang, 'hide') : t(lang, 'show')}</span>
         </button>
         {showGaps && (
           <div style={{ padding: '0 16px 12px' }}>
             {gaps.length === 0 ? (
-              <p style={{ fontSize: 12, color: THEME.text.subtle }}>No competitor data yet. Add competitors to see gap analysis.</p>
+              <p style={{ fontSize: 12, color: THEME.text.subtle }}>{t(lang, 'content_strategy_no_data')}</p>
             ) : (
               <div style={{ display: 'grid', gap: 6 }}>
                 {gaps.slice(0, 8).map(g => (
@@ -105,8 +107,8 @@ export default function ContentStrategyPage() {
                       <span style={{ fontSize: 11, color: THEME.text.muted, marginLeft: 8 }}>{g.missingBy.slice(0, 3).join(', ')}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 11, color: '#f87171' }}>{g.missingCount} missing</span>
-                      <span style={{ fontSize: 11, color: '#fbbf24' }}>{g.basicCount} basic</span>
+                      <span style={{ fontSize: 11, color: '#f87171' }}>{t(lang, 'content_strategy_missing').replace('{n}', String(g.missingCount))}</span>
+                      <span style={{ fontSize: 11, color: '#fbbf24' }}>{t(lang, 'content_strategy_basic').replace('{n}', String(g.basicCount))}</span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: g.opportunityScore >= 60 ? '#4ade80' : '#fbbf24' }}>{g.opportunityScore}%</span>
                     </div>
                   </div>
@@ -119,7 +121,7 @@ export default function ContentStrategyPage() {
 
       {/* Strategy Selector */}
       <div style={{ marginBottom: 14 }}>
-        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>Select Strategy Framework</p>
+        <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 8 }}>{t(lang, 'content_strategy_select_framework')}</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 6 }}>
           {STRATEGIES.map(s => (
             <button
@@ -157,9 +159,9 @@ export default function ContentStrategyPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#7e22ce33', color: '#c4b5fd' }}>{content.type}</span>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={handleRegenerate} style={miniBtn}>Regen</button>
+              <button onClick={handleRegenerate} style={miniBtn}>{t(lang, 'content_strategy_regen')}</button>
               <button onClick={handleCopyContent} style={{ ...miniBtn, background: copied === 'content' ? '#22c55e' : THEME.bg.panelAlt }}>
-                {copied === 'content' ? 'Copied' : 'Copy'}
+                {copied === 'content' ? t(lang, 'copied') : t(lang, 'copy')}
               </button>
             </div>
           </div>
@@ -197,16 +199,16 @@ export default function ContentStrategyPage() {
           onClick={handleBuildPrompt}
           style={{ width: '100%', padding: 12, borderRadius: 10, border: '1px solid #7e22ce80', background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', color: '#c4b5fd', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <span>Build AI Prompt (for Claude / GPT)</span>
-          <span style={{ fontSize: 11, color: '#94a3b8' }}>{showPrompt ? 'Hide' : 'Show'}</span>
+          <span>{t(lang, 'content_strategy_build_prompt')}</span>
+          <span style={{ fontSize: 11, color: '#94a3b8' }}>{showPrompt ? t(lang, 'hide') : t(lang, 'show')}</span>
         </button>
 
         {showPrompt && aiPrompt && (
           <div style={{ marginTop: 8, background: '#0f172a', border: '1px solid #334155', borderRadius: 10, padding: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontSize: 11, color: THEME.text.muted }}>Copy this prompt into Claude or ChatGPT</span>
+              <span style={{ fontSize: 11, color: THEME.text.muted }}>{t(lang, 'content_strategy_copy_prompt_hint')}</span>
               <button onClick={handleCopyPrompt} style={{ ...miniBtn, background: copied === 'prompt' ? '#22c55e' : THEME.bg.panelAlt }}>
-                {copied === 'prompt' ? 'Copied' : 'Copy Prompt'}
+                {copied === 'prompt' ? t(lang, 'copied') : t(lang, 'content_strategy_copy_prompt')}
               </button>
             </div>
             <pre style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'pre-wrap', lineHeight: 1.5, maxHeight: 200, overflowY: 'auto', margin: 0 }}>{aiPrompt}</pre>

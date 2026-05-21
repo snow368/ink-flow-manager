@@ -42,6 +42,47 @@ export function generateIcsFile(appointment: AppointmentRecord & { clientName?: 
   ].join('\r\n');
 }
 
+export function generateFullDayIcs(appointments: (AppointmentRecord & { clientName?: string })[]): string {
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//InkFlow//Tattoo Studio Management//EN',
+    "X-WR-CALNAME:Ink Flow - Today's Appointments",
+  ];
+  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  for (const appt of appointments) {
+    const startDate = new Date(appt.date + 'T' + appt.time + ':00');
+    const endDate = new Date(startDate.getTime() + (appt.duration || 60) * 60 * 1000);
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:inkflow-${appt.id}@inkflow.app`,
+      `DTSTAMP:${now}`,
+      `DTSTART:${fmt(startDate)}`,
+      `DTEND:${fmt(endDate)}`,
+      `SUMMARY:Tattoo - ${appt.clientName || 'Client'}`,
+      `DESCRIPTION:Client: ${appt.clientName || 'N/A'}\\nBody Part: ${appt.bodyPart || 'N/A'}\\nDesign: ${appt.designNotes || 'N/A'}`,
+      `LOCATION:Tattoo Studio`,
+      'END:VEVENT',
+    );
+  }
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+export function downloadTodayIcs(appointments: (AppointmentRecord & { clientName?: string })[]): void {
+  const ics = generateFullDayIcs(appointments);
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `inkflow-today-${new Date().toISOString().slice(0, 10)}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export function downloadIcsFile(appointment: AppointmentRecord & { clientName?: string }): void {
   const ics = generateIcsFile(appointment);
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });

@@ -146,7 +146,7 @@ export default function Clients() {
         ))}
       </div>
 
-      <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}
+      <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
         style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, marginBottom: 12, outline: 'none', boxSizing: 'border-box' }}>
         <option value="createdAt">Sort: Newest First</option>
         <option value="name">Sort: Name</option>
