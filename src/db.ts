@@ -23,6 +23,9 @@ export class InkFlowDB extends Dexie {
   healthChecklists!: Table<HealthChecklistRecord>;
   communicationLog!: Table<CommunicationLogRecord>;
   affiliateClicks!: Table<AffiliateClickRecord>;
+  auditLog!: Table<AuditLogRecord>;
+  shifts!: Table<ShiftRecord>;
+  tasks!: Table<TaskRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -343,7 +346,7 @@ export class InkFlowDB extends Dexie {
       affiliateClicks: 'id, userId, brandId, clickedAt',
     });
 
-    this.version(17).stores({
+    this.version(20).stores({
       users: 'id, email, role, artistId, deviceId, createdAt',
       clients: 'id, name, artistId, createdAt',
       appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
@@ -366,11 +369,26 @@ export class InkFlowDB extends Dexie {
       healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
       communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
       affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
     });
   }
 }
 
 export const db = new InkFlowDB();
+
+// Auto-mark pending sync when data changes (avoids circular import with syncManager)
+const markSyncPending = () => localStorage.setItem('inkflow_pending_sync', '1');
+db.clients.hook('creating').subscribe(markSyncPending);
+db.clients.hook('updating').subscribe(markSyncPending);
+db.clients.hook('deleting').subscribe(markSyncPending);
+db.appointments.hook('creating').subscribe(markSyncPending);
+db.appointments.hook('updating').subscribe(markSyncPending);
+db.appointments.hook('deleting').subscribe(markSyncPending);
+db.portfolio.hook('creating').subscribe(markSyncPending);
+db.portfolio.hook('updating').subscribe(markSyncPending);
+db.portfolio.hook('deleting').subscribe(markSyncPending);
 
 export interface UserRecord {
   id: string;
@@ -420,6 +438,8 @@ export interface UserRecord {
   bioProfile?: { slug?: string; avatarUrl?: string; displayName: string; shopName?: string; address?: string; bookingEnabled: boolean; links: Array<{ id: string; label: string; url: string; icon?: string }>; portfolioImages?: string[] };
   bioEvents?: Array<{ id: string; type: 'convention' | 'guest_spot'; city: string; country?: string; venue: string; startDate: string; endDate: string; active: boolean }>;
   createdAt: number;
+  depositPolicy?: DepositPolicyConfig;
+  permissions?: StaffPermission[];
 }
 
 export interface StudioLocationRecord {
@@ -437,6 +457,7 @@ export interface ClientRecord {
   allergies?: string[]; notes?: string; birthday?: string;
   tags?: string[]; lastVisitAt?: number; totalSpend?: number; leadSource?: string;
   noShowCount?: number;
+  assignToArtistId?: string;
   createdAt: number;
 }
 
@@ -478,6 +499,7 @@ export interface SessionRecord {
   startedAt: number; pausedAt?: number; finishedAt?: number;
   actualDuration: number; timeline: TimelineEvent[];
   photos: string[]; notes: string[]; consumables: ConsumableUsage[];
+  videos?: string[];
 }
 
 export interface TimelineEvent {
@@ -704,6 +726,8 @@ export interface InvoiceRecord {
   sentVia?: 'whatsapp' | 'email' | 'share' | 'copy';
   dueDate?: number;
   amountPaid?: number;
+  stripePaymentIntentId?: string;
+  stripeSessionId?: string;
   createdAt: number;
   paidAt?: number;
 }
@@ -773,4 +797,61 @@ export interface AffiliateClickRecord {
   affiliateLink: string;
   sourcePage: 'supply_brands' | 'supply_new' | 'competitors' | 'other';
   clickedAt: number;
+}
+
+export interface AuditLogRecord {
+  id: string;
+  actorId: string;
+  actorName?: string;
+  action: 'create' | 'update' | 'delete';
+  tableName: string;
+  recordId: string;
+  artistId: string;
+  diff?: Record<string, { from: any; to: any }>;
+  createdAt: number;
+}
+
+export interface ShiftRecord {
+  id: string;
+  artistId: string;
+  staffId?: string;
+  locationId?: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  note?: string;
+  createdAt: number;
+}
+
+export interface TaskRecord {
+  id: string;
+  artistId: string;
+  assigneeId?: string;
+  locationId?: string;
+  clientId?: string;
+  title: string;
+  description?: string;
+  status: 'pending' | 'in_progress' | 'done';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  category: 'general' | 'inventory' | 'marketing' | 'client' | 'admin';
+  dueDate?: number;
+  completedAt?: number;
+  createdAt: number;
+}
+
+export type StaffPermission = 'checkin' | 'inventory' | 'pos' | 'clients_view' | 'clients_edit' | 'appointments_view' | 'appointments_edit' | 'leads_view' | 'leads_edit' | 'invoices_view' | 'invoices_edit' | 'analytics_view';
+
+export interface DepositPolicyConfig {
+  onlineChat: PolicyItem;
+  consultBooking: PolicyItem;
+  directBooking: PolicyItem;
+}
+
+export interface PolicyItem {
+  enabled: boolean;
+  amountMode: 'fixed' | 'percent';
+  amountValue: string;
+  refundable: boolean;
+  canRescheduleOnce: boolean;
+  note?: string;
 }

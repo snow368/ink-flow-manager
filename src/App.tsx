@@ -4,6 +4,8 @@ import { Calendar, Users, User } from 'lucide-react';
 import TabBar from './components/TabBar';
 import ErrorBoundary from './components/ErrorBoundary';
 import OfflineBanner from './components/OfflineBanner';
+import InstallBanner from './components/InstallBanner';
+import { captureInstallEvent } from './lib/pwaInstall';
 const Today = lazy(() => import('./pages/Today'));
 const Clients = lazy(() => import('./pages/Clients'));
 const Me = lazy(() => import('./pages/Me'));
@@ -49,12 +51,20 @@ const ReviewInvitesPage = lazy(() => import('./pages/ReviewInvitesPage'));
 const NotificationSettings = lazy(() => import('./pages/NotificationSettings'));
 const ArtistProfilePage = lazy(() => import('./pages/ArtistProfilePage'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
+const ShiftSchedulingPage = lazy(() => import('./pages/ShiftSchedulingPage'));
+const DailyCloseOutPage = lazy(() => import('./pages/DailyCloseOutPage'));
+const CommunicationLogPage = lazy(() => import('./pages/CommunicationLogPage'));
+const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
+const OwnerDashboard = lazy(() => import('./pages/OwnerDashboard'));
+const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
+const AuditLogPage = lazy(() => import('./pages/AuditLogPage'));
 import LocationSelector from './components/LocationSelector';
 const NewClientForm = lazy(() => import('./pages/NewClientForm'));
 import { db, type UserRecord } from './db';
 import { detectInitialLanguage, t, type AppLanguage } from './lib/i18n';
 import { rebuildConsumableProfiles } from './lib/consumableRecommend';
 import { getDaysSinceLastMarketCheck } from './lib/competitorData';
+import { initAuditLogging } from './lib/auditLog';
 import { THEME } from './lib/theme';
 
 function PageLoading() {
@@ -89,10 +99,12 @@ export default function App() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
     window.addEventListener('inkflow_lang_change', handleLangChange);
+    window.addEventListener('beforeinstallprompt', captureInstallEvent);
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       window.removeEventListener('inkflow_lang_change', handleLangChange);
+      window.removeEventListener('beforeinstallprompt', captureInstallEvent);
     };
   }, []);
 
@@ -100,6 +112,7 @@ export default function App() {
     const stored = localStorage.getItem('inkflow_current_user');
     if (stored) {
       setIsLoggedIn(true);
+      initAuditLogging();
       rebuildConsumableProfiles();
       db.users.get(stored).then(u => { if (u?.roles?.includes('dev')) setIsDev(true); });
     }
@@ -157,7 +170,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings', '/shifts', '/close-out', '/communication-log', '/tasks', '/owner-dashboard', '/staff-management', '/audit-log'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -253,6 +266,13 @@ export default function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/review-invites" element={<ReviewInvitesPage />} />
             <Route path="/me" element={<Me />} />
+            <Route path="/shifts" element={<ShiftSchedulingPage />} />
+            <Route path="/close-out" element={<DailyCloseOutPage />} />
+            <Route path="/communication-log" element={<CommunicationLogPage />} />
+            <Route path="/tasks" element={<TaskManagementPage />} />
+            <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+            <Route path="/staff-management" element={<StaffManagementPage />} />
+            <Route path="/audit-log" element={<AuditLogPage />} />
           </Routes>
           </Suspense>
         </div>
@@ -262,6 +282,7 @@ export default function App() {
         </div>
       )}
       {isLoggedIn && <TabBar tabs={tabs} activeTab={activeTab} />}
+      <InstallBanner />
       </div>
     </ErrorBoundary>
   );

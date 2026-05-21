@@ -47,6 +47,7 @@ export default function ClientDetail() {
   const [potentialDuplicates, setPotentialDuplicates] = useState<ClientRecord[]>([]);
   const [showMergeSuggestion, setShowMergeSuggestion] = useState(false);
   const [commLogs, setCommLogs] = useState<CommunicationLogRecord[]>([]);
+  const [artists, setArtists] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -56,6 +57,9 @@ export default function ClientDetail() {
     db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
     loadImages(id);
     getClientTimeline(id).then(logs => setCommLogs(logs.slice(0, 30)));
+    db.users.where('roles').anyOf(['artist', 'owner']).toArray().then(users => {
+      setArtists(users.map(u => ({ id: u.id, name: u.name })));
+    });
   }, [id]);
 
   const loadImages = async (clientId: string) => {
@@ -257,6 +261,24 @@ export default function ClientDetail() {
           )}
           <button onClick={() => navigate(`/invoices?clientId=${client.id}`)}
             style={qaBtn('#7e22ce')}>Invoice</button>
+        </div>
+      </div>
+
+      {/* Assign to Artist */}
+      <div style={{ background: '#1e293b', padding: 14, borderRadius: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 13, color: '#94a3b8' }}>{t(lang, 'assigned_artist')}</span>
+          <select value={client.assignToArtistId || client.artistId || ''} onChange={async e => {
+            const val = e.target.value || undefined;
+            await db.clients.update(client!.id, { assignToArtistId: val });
+            loadClient();
+          }}
+            style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, maxWidth: 200 }}>
+            <option value="">Unassigned</option>
+            {artists.map(a => (
+              <option key={a.id} value={a.id}>{a.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -507,6 +529,38 @@ export default function ClientDetail() {
           </div>
         </>
       )}
+
+      {/* ── Client 360 ── */}
+      <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #1e1b4b 100%)', border: '1px solid #4338ca', borderRadius: 12, padding: 16, marginTop: 20, marginBottom: 12 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: '#a5b4fc', marginBottom: 10 }}>{t(lang, 'client_360')}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div>
+            <p style={{ fontSize: 11, color: '#64748b' }}>{t(lang, 'client_session_count')}</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#60a5fa' }}>{appointments.length}</p>
+          </div>
+          <div>
+            <p style={{ fontSize: 11, color: '#64748b' }}>{t(lang, 'client_lifetime_value')}</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#4ade80' }}>
+              ${invoices.filter(i => i.paymentStatus === 'paid').reduce((s, i) => s + i.total, 0).toFixed(0)}
+            </p>
+          </div>
+          <div>
+            <p style={{ fontSize: 11, color: '#64748b' }}>Completed</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: '#22c55e' }}>{appointments.filter(a => a.status === 'done').length}</p>
+          </div>
+          <div>
+            <p style={{ fontSize: 11, color: '#64748b' }}>{t(lang, 'client_no_show_rate')}</p>
+            <p style={{ fontSize: 22, fontWeight: 700, color: appointments.length > 0 ? (appointments.filter(a => a.status === 'cancelled').length / appointments.length > 0.3 ? '#ef4444' : '#94a3b8') : '#64748b' }}>
+              {appointments.length > 0 ? Math.round(appointments.filter(a => a.status === 'cancelled').length / appointments.length * 100) + '%' : '—'}
+            </p>
+          </div>
+        </div>
+        {client.tags && client.tags.length > 0 && (
+          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {client.tags.map(t => <span key={t} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: '#312e81', color: '#a5b4fc' }}>{t}</span>)}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

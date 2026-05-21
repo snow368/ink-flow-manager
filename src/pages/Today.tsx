@@ -51,6 +51,7 @@ export default function Today() {
   const [copiedReviewMsg, setCopiedReviewMsg] = useState('');
   const [waitlistCount, setWaitlistCount] = useState(0);
   const [userStations, setUserStations] = useState<{ name: string; color: string }[]>([]);
+  const [todayKpi, setTodayKpi] = useState<{ revenue: number; upcoming: number; pendingDeposits: number; overdueTasks: number } | null>(null);
   const [lastConsumables, setLastConsumables] = useState<Map<string, string[]>>(new Map());
   const [presetItems, setPresetItems] = useState<Map<string, string[]>>(new Map());
   const [conflictModal, setConflictModal] = useState<{
@@ -78,6 +79,7 @@ export default function Today() {
       loadPresets();
       loadReviewInvites(u.id);
       loadAppointmentsForMulti(u);
+      loadTodayKPIs(u);
       getWaitingListCount(u.id).then(setWaitlistCount);
     });
   }, [navigate, selectedDate]);
@@ -316,6 +318,33 @@ export default function Today() {
       }
       setPresetItems(map);
     } catch { /* ignore */ }
+  }
+
+  async function loadTodayKPIs(u: UserRecord) {
+    const artistIds = await getCurrentArtistIds(u);
+    const today = new Date().toISOString().slice(0, 10);
+    const dayStart = new Date(today + 'T00:00:00').getTime();
+    const dayEnd = dayStart + 86400000;
+
+    const [appointments, posTx, invoices, allTasks] = await Promise.all([
+      db.appointments.where('date').equals(today).toArray(),
+      db.posTransactions.filter(tx => tx.createdAt >= dayStart && tx.createdAt < dayEnd).toArray(),
+      db.invoices.filter(inv => inv.createdAt >= dayStart && inv.createdAt < dayEnd).toArray(),
+      db.tasks.toArray(),
+    ]);
+
+    const filteredAppts = appointments.filter(a => artistIds.includes(a.artistId));
+    const filteredPos = posTx.filter(tx => artistIds.includes(tx.artistId));
+    const filteredInvoices = invoices.filter(inv => artistIds.includes(inv.artistId));
+
+    const revenue = filteredPos.reduce((s, t) => s + t.total, 0) +
+      filteredInvoices.filter(i => i.paymentStatus === 'paid').reduce((s, i) => s + i.total, 0);
+    const pendingDeposits = (await db.leads.where('artistId').anyOf(artistIds)
+      .filter(l => l.paymentStatus === 'pending_verify').toArray()).length;
+    const upcoming = filteredAppts.filter(a => a.status !== 'done' && a.status !== 'cancelled').length;
+    const overdueTasks = allTasks.filter(t => t.status !== 'done' && t.dueDate && t.dueDate < Date.now()).length;
+
+    setTodayKpi({ revenue, upcoming, pendingDeposits, overdueTasks });
   }
 
   async function loadReviewInvites(artistId: string) {
@@ -736,26 +765,44 @@ export default function Today() {
   return (
     <div style={{ padding: 20, color: THEME.text.primary, paddingBottom: 12, maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? t(lang, 'today') : selectedDate} - {new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
+        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? t(lang, 'today') : new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
-            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'day')}</button>
-            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? '#e11d48' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'week')}</button>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'day')}</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'week')}</button>
             <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
           </div>
-          {!!getBackendUrl() && (
-            <button onClick={() => {
-              const url = getBookingShareUrl(user?.artistId || user?.id || '');
-              navigator.clipboard.writeText(url).then(() => alert('Booking link copied!'));
-            }} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #6366f1', background: '#1e1b4b', color: '#a5b4fc', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-              🔗 Share
-            </button>
-          )}
-          <button onClick={() => { downloadTodayIcs(appointments.filter(a => a.status !== 'cancelled').map(a => ({ ...a, clientName: a.clientName || undefined }))); }} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #f59e0b', background: '#451a03', color: '#fbbf24', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>📅</button>
-          <button onClick={() => navigate('/pos')} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #22c55e', background: '#14532d', color: '#4ade80', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Register</button>
-          <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+          <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
         </div>
       </div>
+
+      {/* KPI Cards */}
+      {todayKpi && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginBottom: 14 }}>
+          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_revenue')}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: '#4ade80' }}>${todayKpi.revenue.toFixed(0)}</p>
+          </div>
+          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_upcoming')}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: '#60a5fa' }}>{todayKpi.upcoming}</p>
+          </div>
+          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_pending_deposits')}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: '#fbbf24' }}>{todayKpi.pendingDeposits}</p>
+          </div>
+          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155', cursor: 'pointer' }} onClick={() => navigate('/tasks')}>
+            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_overdue_tasks')}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: todayKpi.overdueTasks > 0 ? '#ef4444' : '#64748b' }}>{todayKpi.overdueTasks}</p>
+          </div>
+          {lowStockCount > 0 && (
+            <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #f59e0b44', cursor: 'pointer' }} onClick={() => navigate('/inventory?filter=low')}>
+              <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_low_stock')}</p>
+              <p style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{lowStockCount}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -1026,21 +1073,12 @@ export default function Today() {
         </div>
       )}
 
-      {lowStockCount > 0 && (
-        <div onClick={() => navigate('/inventory')} style={{ background: '#1e293b', border: '1px solid #f59e0b44', borderRadius: 12, padding: 12, marginBottom: 14, cursor: 'pointer' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p style={{ fontSize: 13, color: '#fbbf24', fontWeight: 700 }}>Low Stock Alert: {lowStockCount} item{lowStockCount > 1 ? 's' : ''}</p>
-            <span style={{ fontSize: 12, color: '#93c5fd' }}>Inventory →</span>
-          </div>
-          <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Tap to review low stock items and reorder. Set purchase links in inventory for quick reorder.</p>
-        </div>
-      )}
-
+      {/* Low stock is shown in KPI cards above — single source of truth */}
       {recentlyCompleted && (
         <div style={{ background: '#1e293b', border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <p style={{ fontSize: 13, color: '#4ade80', fontWeight: 700 }}>{recentlyCompleted.clientName}'s appointment completed</p>
-            <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 14, cursor: 'pointer' }}>x</button>
+            <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 14, cursor: 'pointer' }}>X</button>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
@@ -1535,89 +1573,101 @@ function AppointmentCard({
           </div>
         </div>
       )}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ flex: 1 }}>
-        <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}><span style={{ color: '#64748b', marginRight: 6 }}>{appointment.time}</span>{appointment.clientName}</p>
-        <p style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.duration}min{appointment.type && ' - ' + appointment.type.replace('_', ' ')}</p>
-        {appointment.station && (
-          <p style={{ fontSize: 11, marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-            {stationColor && <span style={{ width: 8, height: 8, borderRadius: 2, background: stationColor, flexShrink: 0 }} />}
-            <span style={{ color: stationColor || '#94a3b8' }}>{appointment.station}</span>
+      {/* Vertical layout: header + details + actions */}
+      <div>
+        {/* Header with status */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+          <div>
+            <p style={{ fontSize: 16, fontWeight: 600 }}>
+              <span style={{ color: '#64748b', marginRight: 6 }}>{appointment.time}</span>
+              {appointment.clientName}
+            </p>
+          </div>
+          <span style={{ fontSize: 13, padding: '4px 12px', borderRadius: 6, background: color + '33', color, fontWeight: 600, whiteSpace: 'nowrap' }}>
+            {STATUS_LABELS[appointment.status] || appointment.status}
+          </span>
+        </div>
+        {/* Details */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px 14px', marginBottom: 10 }}>
+          <span style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.duration}min</span>
+          {appointment.type && <span style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.type.replace(/_/g, ' ')}</span>}
+          {appointment.station && stationColor && (
+            <span style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 3, color: stationColor }}>
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: stationColor, display: 'inline-block' }} />
+              {appointment.station}
+            </span>
+          )}
+          {appointment.bodyPart && <span style={{ fontSize: 13, color: '#93c5fd' }}>{appointment.bodyPart}</span>}
+          {appointment.clientPhone && <span style={{ fontSize: 13, color: '#64748b' }}>{appointment.clientPhone}</span>}
+          {appointment.seriesId && (
+            <span style={{ fontSize: 13, color: '#c084fc' }}>
+              Series: {(() => { const idx = appointment.seriesId!.indexOf('_', 7); return idx > 0 ? decodeURIComponent(appointment.seriesId!.slice(idx + 1)) : appointment.seriesId; })()}
+            </span>
+          )}
+          {appointment.depositAmount != null && appointment.depositAmount > 0 && (
+            <span style={{ fontSize: 13, color: '#fbbf24' }}>Deposit: ${(appointment.depositAmount / 100).toFixed(0)}</span>
+          )}
+        </div>
+        {appointment.designNotes && (
+          <p style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic', marginBottom: 8 }}>
+            "{appointment.designNotes.slice(0, 80)}{appointment.designNotes.length > 80 ? '...' : ''}"
           </p>
-        )}
-        {appointment.seriesId && (
-          <p style={{ fontSize: 10, marginTop: 2, color: '#c084fc', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <span style={{ fontSize: 11 }}>🔗</span>
-            {(() => { const idx = appointment.seriesId!.indexOf('_', 7); return idx > 0 ? decodeURIComponent(appointment.seriesId!.slice(idx + 1)) : appointment.seriesId; })()}
-          </p>
-        )}
-        {appointment.clientPhone && <p style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{appointment.clientPhone}</p>}
-        {appointment.bodyPart && <p style={{ fontSize: 11, color: '#93c5fd', marginTop: 2 }}>Body: {appointment.bodyPart}</p>}
-        {appointment.designNotes && <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, fontStyle: 'italic' }}>"{appointment.designNotes.slice(0, 60)}{appointment.designNotes.length > 60 ? '...' : ''}"</p>}
-        {appointment.depositAmount != null && appointment.depositAmount > 0 && (
-          <p style={{ fontSize: 11, color: '#fbbf24', marginTop: 2 }}>Deposit: ${(appointment.depositAmount / 100).toFixed(0)}</p>
         )}
         {(appointment.clientAllergies && appointment.clientAllergies.length > 0) && (
-          <div style={{ marginTop: 4, display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
             {appointment.clientAllergies.map((a, i) => (
-              <span key={i} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>
+              <span key={i} style={{ fontSize: 12, padding: '3px 8px', borderRadius: 5, background: '#7f1d1d', color: '#fca5a5' }}>{a}</span>
             ))}
           </div>
         )}
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-        <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: color + '33', color: color, fontWeight: 600 }}>{STATUS_LABELS[appointment.status] || appointment.status}</span>
-        <button
-          onClick={() => window.open(getGoogleCalendarUrl({ ...appointment, clientName: appointment.clientName }), '_blank', 'noopener,noreferrer')}
-          title="Add to Google Calendar"
-          style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
-        >
-          📅 Calendar
-        </button>
-        {appointment.status !== 'cancelled' && (
-          <button
-            onClick={async () => {
-              setQrUrl(await generateQRDataUrl(appointment.id));
-              setShowQR(true);
-            }}
-            style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}
-          >
-            QR
+        {/* Action buttons */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+          {needsWaiver && (
+            <button onClick={() => navigate('/waiver/' + appointment.id)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#f59e0b', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Waiver</button>
+          )}
+          {(appointment.status === 'ready' || appointment.status === 'unconfirmed' || appointment.status === 'deposit_paid') && (
+            <button onClick={() => navigate('/session/' + appointment.id)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#34d399', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Start</button>
+          )}
+          {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
+            <>
+              <button onClick={() => navigate(`/pos?appointmentId=${encodeURIComponent(appointment.id)}`)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#22c55e', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>POS</button>
+              <button disabled={updating} onClick={() => updateStatus('done')} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#7c3aed', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Done</button>
+            </>
+          )}
+          {appointment.status === 'unconfirmed' && (
+            <button disabled={updating} onClick={() => updateStatus('deposit_paid')} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#60a5fa', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Deposit</button>
+          )}
+          {appointment.status === 'deposit_paid' && (
+            <button disabled={updating} onClick={() => updateStatus('ready')} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#34d399', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Confirm</button>
+          )}
+          {/* Secondary actions */}
+          <button onClick={() => window.open(getGoogleCalendarUrl({ ...appointment, clientName: appointment.clientName }), '_blank', 'noopener,noreferrer')}
+            title="Add to Google Calendar"
+            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+            Calendar
           </button>
-        )}
-        {needsWaiver && (
-          <button onClick={() => navigate('/waiver/' + appointment.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#f59e0b', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Waiver</button>
-        )}
-        {appointment.status === 'unconfirmed' && (
-          <button disabled={updating} onClick={() => updateStatus('deposit_paid')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#60a5fa', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Deposit</button>
-        )}
-        {appointment.status === 'deposit_paid' && (
-          <button disabled={updating} onClick={() => updateStatus('ready')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#34d399', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Confirm</button>
-        )}
-        {appointment.status === 'ready' && (
-          <button onClick={() => navigate('/session/' + appointment.id)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#34d399', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Start</button>
-        )}
-        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
-          <button onClick={() => navigate(`/pos?appointmentId=${encodeURIComponent(appointment.id)}`)} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#22c55e', color: '#0f172a', fontWeight: 600, cursor: 'pointer' }}>Checkout</button>
-        )}
-        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
-          <button disabled={updating} onClick={() => updateStatus('done')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#7c3aed', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Done</button>
-        )}
-        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
-          <button disabled={updating} onClick={() => updateStatus('cancelled')} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: '#475569', color: '#e2e8f0', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-        )}
-        {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
-          <button disabled={updating} onClick={async () => {
-            await updateStatus('cancelled');
-            const c = appointment.clientId ? await db.clients.get(appointment.clientId) : null;
-            if (c) {
-              await db.clients.update(c.id, { noShowCount: (c.noShowCount || 0) + 1 });
-            }
-          }} style={{ fontSize: 10, padding: '4px 8px', borderRadius: 6, border: '1px solid #f8717144', background: '#f8717122', color: '#fca5a5', fontWeight: 600, cursor: 'pointer' }}>
-            No Show
-          </button>
-        )}
-      </div>
+          {appointment.status !== 'cancelled' && (
+            <button onClick={async () => { setQrUrl(await generateQRDataUrl(appointment.id)); setShowQR(true); }}
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              QR
+            </button>
+          )}
+          {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
+            <button disabled={updating} onClick={() => updateStatus('cancelled')}
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              Cancel
+            </button>
+          )}
+          {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
+            <button disabled={updating} onClick={async () => {
+              await updateStatus('cancelled');
+              const c = appointment.clientId ? await db.clients.get(appointment.clientId) : null;
+              if (c) await db.clients.update(c.id, { noShowCount: (c.noShowCount || 0) + 1 });
+            }} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #f8717144', background: 'transparent', color: '#f87171', fontSize: 13, cursor: 'pointer' }}>
+              No Show
+            </button>
+          )}
+        </div>
       </div>
 
       {showQR && (
@@ -1642,7 +1692,7 @@ function AppointmentCard({
 
 const outreachBtn: React.CSSProperties = {
   border: 'none', background: '#334155', color: '#e2e8f0',
-  fontSize: 11, padding: '4px 10px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
+  fontSize: 13, padding: '8px 14px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
 };
 const smallBtn: React.CSSProperties = {
   border: '1px solid #334155',

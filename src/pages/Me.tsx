@@ -8,6 +8,8 @@ import { detectInitialLanguage, setStoredLanguage, t, type AppLanguage } from '.
 import { getSupportedCountries } from '../lib/invoiceConfig';
 import { getClickStats } from '../lib/affiliateTracking';
 import { getAppointmentsNeedingReviewInvite, getAppointmentsNeedingFollowUp } from '../lib/reviewInvite';
+import { syncAll, getSyncStatus, getLastSyncTime } from '../lib/syncManager';
+import { getBackendUrl } from '../lib/backendApi';
 
 export default function Me() {
   const navigate = useNavigate();
@@ -29,6 +31,8 @@ export default function Me() {
   const [editingReview, setEditingReview] = useState(false);
   const [reviewInviteCount, setReviewInviteCount] = useState(0);
   const [reviewFollowUpCount, setReviewFollowUpCount] = useState(0);
+  const [syncStatus, setSyncStatus] = useState(getSyncStatus());
+  const [syncing, setSyncing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -357,6 +361,34 @@ export default function Me() {
         </div>
       )}
 
+      {/* ── Team ── */}
+      {user.roles?.includes('owner') && (
+        <>
+          <SectionHeader label="Team" />
+          <div style={{ marginBottom: 16 }}>
+            <button onClick={() => navigate('/owner-dashboard')}
+              style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #1e3a5f 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{t(lang, 'owner_dashboard')}</span>
+              <span style={{ fontSize: 11, background: '#3b82f620', color: '#60a5fa', padding: '2px 8px', borderRadius: 4 }}>New</span>
+            </button>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <button onClick={() => navigate('/staff-management')}
+              style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{t(lang, 'staff_management')}</span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
+            </button>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <button onClick={() => navigate('/audit-log')}
+              style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{t(lang, 'audit_log')}</span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
+            </button>
+          </div>
+        </>
+      )}
+
       {/* ── Operations ── */}
       <SectionHeader label="Operations" />
 
@@ -389,6 +421,38 @@ export default function Me() {
           style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: 'linear-gradient(135deg, #1e293b 0%, #7c2d12 100%)', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>Events & Guest Spots</span>
           <span style={{ fontSize: 11, background: '#f9731620', color: '#fdba74', padding: '2px 8px', borderRadius: 4 }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/tasks')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'task_manager')}</span>
+          <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/shifts')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'shift_scheduling')}</span>
+          <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/close-out')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'daily_closeout')}</span>
+          <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
+        </button>
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <button onClick={() => navigate('/communication-log')}
+          style={{ width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 15, fontWeight: 600, textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t(lang, 'communication_log')}</span>
+          <span style={{ fontSize: 11, color: '#64748b' }}>New</span>
         </button>
       </div>
 
@@ -444,6 +508,16 @@ export default function Me() {
 
       {/* ── Financial ── */}
       <SectionHeader label="Financial" />
+
+      {(!user.roles?.includes('owner') && !user.roles?.includes('dev') && !user.paymentLinkTemplate) && (
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 14, marginBottom: 16, border: '1px solid #3b82f680' }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#60a5fa', marginBottom: 6 }}>Set up your payment method</p>
+          <p style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
+            Go to <strong style={{ color: '#cbd5e1' }}>Payment Settings</strong> below to add your own PayPal, Venmo, Wise, or bank transfer link.
+            Clients will use this to pay deposits and invoices.
+          </p>
+        </div>
+      )}
 
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => navigate('/payment-settings')}
@@ -537,10 +611,15 @@ export default function Me() {
       {/* ── Data ── */}
       <SectionHeader label="Data & Backup" />
 
-      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
-        <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 14 }}>Payment Tips</p>
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16, border: '1px solid #6366f180' }}>
+        <p style={{ fontWeight: 600, marginBottom: 6, fontSize: 14, color: '#818cf8' }}>收款方式设置 / Payment Setup</p>
         <p style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6 }}>
-          For manual_link: paste your PayPal.me, Zelle, Venmo (US), Wise, Revolut, or SEPA bank link (EU). Use {'{'}amount{'}'} as placeholder. System generates a payment link with the correct amount. Client pays → uploads proof → you verify in Payment History.
+          每个纹身师需要设置自己的收款链接。支持 PayPal / Venmo / Wise / Revolut / 银行卡转账等。
+          去 <strong style={{ color: '#cbd5e1' }}>Payment Settings</strong> 配置你的收款方式。
+          Client 付款后会上传凭证，你在 Payment History 里确认到账。
+        </p>
+        <p style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.6, marginTop: 6 }}>
+          示例: <code style={{ background: '#0f172a', padding: '2px 6px', borderRadius: 4 }}>https://paypal.me/YourStudio/&#123;amount&#125;</code>
         </p>
       </div>
 
@@ -551,6 +630,69 @@ export default function Me() {
           <button onClick={() => fileInputRef.current?.click()} style={{ flex: 1, padding: 10, borderRadius: 10, border: 'none', background: '#334155', color: 'white', fontSize: 13, fontWeight: 600 }}>Import</button>
           <input type="file" accept=".json" ref={fileInputRef} style={{ display: 'none' }} onChange={handleImport} />
         </div>
+      </div>
+
+      {/* ── Cloud Sync ── */}
+      <SectionHeader label="Cloud Sync" />
+
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <p style={{ fontWeight: 600, fontSize: 14 }}>Sync to Backend</p>
+          {syncStatus.backendConfigured ? (
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#22c55e20', color: '#4ade80' }}>Configured</span>
+          ) : (
+            <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: '#f59e0b20', color: '#fbbf24' }}>Not configured</span>
+          )}
+        </div>
+
+        <p style={{ fontSize: 11, color: '#64748b', marginBottom: 12, lineHeight: 1.5 }}>
+          Sync your data to the Cloudflare Worker backend for calendar subscriptions, multi-device access, and owner oversight.
+          {!syncStatus.backendConfigured && (
+            <span> Go to <span onClick={() => navigate('/notification-settings')} style={{ color: '#60a5fa', cursor: 'pointer', textDecoration: 'underline' }}>Notification Settings</span> to set the backend URL.</span>
+          )}
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12, fontSize: 13, color: '#94a3b8' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Last sync</span>
+            <span style={{ color: syncStatus.lastSync > 0 ? '#4ade80' : '#64748b' }}>
+              {syncStatus.lastSync > 0 ? new Date(syncStatus.lastSync).toLocaleString() : 'Never'}
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>Pending changes</span>
+            <span style={{ color: syncStatus.pending ? '#fbbf24' : '#4ade80' }}>
+              {syncStatus.pending ? 'Yes - sync needed' : 'Up to date'}
+            </span>
+          </div>
+        </div>
+
+        <button
+          onClick={async () => {
+            if (!user || syncing) return;
+            setSyncing(true);
+            const result = await syncAll(user);
+            setSyncStatus(getSyncStatus());
+            setSyncing(false);
+            if (result.ok) setMessage(`Sync complete! ${new Date().toLocaleTimeString()}`);
+            else setMessage(`Sync failed: ${result.error || 'unknown error'}`);
+          }}
+          disabled={syncing || !syncStatus.backendConfigured}
+          style={{
+            width: '100%', padding: 12, borderRadius: 10, border: 'none',
+            background: syncing || !syncStatus.backendConfigured ? '#334155' : '#2563eb',
+            color: 'white', fontSize: 14, fontWeight: 600, cursor: syncing || !syncStatus.backendConfigured ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {syncing ? 'Syncing...' : syncStatus.pending ? 'Sync Now (pending changes)' : 'Sync Now'}
+        </button>
+
+        {getBackendUrl() && (
+          <div style={{ marginTop: 8, background: '#0f172a', borderRadius: 6, padding: '6px 10px' }}>
+            <p style={{ fontSize: 10, color: '#475569' }}>Backend URL</p>
+            <p style={{ fontSize: 11, color: '#60a5fa', wordBreak: 'break-all' }}>{getBackendUrl()}</p>
+          </div>
+        )}
       </div>
 
       <div style={{ marginBottom: 16 }}>

@@ -12,6 +12,7 @@ export function createSession(appointment: AppointmentRecord): SessionRecord {
     actualDuration: 0,
     timeline: [{ timestamp: now, type: 'start', payload: appointment.type || 'new_tattoo' }],
     photos: [],
+    videos: [],
     notes: [],
     consumables: [],
   };
@@ -50,6 +51,14 @@ export function addPhoto(session: SessionRecord, photoData: string): SessionReco
     ...session,
     photos: [...session.photos, photoData],
     timeline: [...session.timeline, { timestamp: Date.now(), type: 'photo' }],
+  };
+}
+
+export function addVideo(session: SessionRecord, videoData: string): SessionRecord {
+  return {
+    ...session,
+    videos: [...(session.videos || []), videoData],
+    timeline: [...session.timeline, { timestamp: Date.now(), type: 'photo', payload: 'video' }],
   };
 }
 

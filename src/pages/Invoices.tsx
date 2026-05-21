@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { db, type InvoiceRecord, type UserRecord, type PosTransactionRecord, type ClientRecord } from '../db';
 import { getCountryConfig, formatInvoiceCurrency } from '../lib/invoiceConfig';
 import { loadInvoiceSettings, isInvoiceSetupComplete, type InvoiceStudioSettings } from '../lib/invoiceSettings';
+import { getCurrentArtistIds } from '../lib/locationLogic';
 import { THEME } from '../lib/theme';
 
 type FilterStatus = 'all' | 'pending' | 'paid' | 'cancelled';
@@ -54,14 +55,29 @@ export default function Invoices() {
   }, []);
 
   const loadData = async (u: UserRecord) => {
-    const invs = await db.invoices.where('artistId').equals(u.id).toArray();
-    invs.sort((a, b) => b.createdAt - a.createdAt);
+    const artistIds = await getCurrentArtistIds(u);
+    const artistId = u.artistId || u.id;
+
+    let invs: InvoiceRecord[];
+    if (artistIds.length > 1) {
+      invs = await db.invoices.orderBy('createdAt').reverse().filter(i => artistIds.includes(i.artistId)).toArray();
+    } else {
+      invs = await db.invoices.where('artistId').equals(artistId).toArray();
+      invs.sort((a, b) => b.createdAt - a.createdAt);
+    }
     setInvoices(invs);
 
-    const txs = await db.posTransactions.where('artistId').equals(u.id).toArray();
+    let txs: PosTransactionRecord[];
+    if (artistIds.length > 1) {
+      txs = await db.posTransactions.orderBy('createdAt').reverse().filter(t => artistIds.includes(t.artistId)).toArray();
+    } else {
+      txs = await db.posTransactions.where('artistId').equals(artistId).toArray();
+      txs.sort((a, b) => b.createdAt - a.createdAt);
+    }
     setPosTransactions(txs);
 
-    const cs = await db.clients.where('artistId').equals(u.id).toArray();
+    // Load all clients for selection in invoice form
+    const cs = await db.clients.orderBy('name').toArray();
     setClients(cs);
 
     // If navigated from client detail, auto-open new invoice form
@@ -95,7 +111,7 @@ export default function Invoices() {
     const invoice: InvoiceRecord = {
       id: 'inv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
       invoiceNumber: generateInvoiceNumber(),
-      artistId: user!.id,
+      artistId: user!.artistId || user!.id,
       clientId: clientId || undefined,
       walkInName: clientId ? undefined : walkInName.trim() || undefined,
       items: items.map(i => ({ ...i, total: i.price * i.quantity })),
@@ -145,7 +161,7 @@ export default function Invoices() {
     const invoice: InvoiceRecord = {
       id: 'inv_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
       invoiceNumber: generateInvoiceNumber(),
-      artistId: user!.id,
+      artistId: user!.artistId || user!.id,
       clientId: tx.clientId || undefined,
       walkInName: tx.walkInName || undefined,
       items: tx.items.map(i => ({ type: i.type, name: i.name, price: i.price, quantity: i.quantity, total: i.total })),

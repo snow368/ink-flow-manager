@@ -1,23 +1,8 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { db } from '../db';
+import type { DepositPolicyConfig, PolicyItem } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
-
-type AmountMode = 'fixed' | 'percent';
-
-type PolicyItem = {
-  enabled: boolean;
-  amountMode: AmountMode;
-  amountValue: string;
-  refundable: boolean;
-  canRescheduleOnce: boolean;
-  note: string;
-};
-
-type DepositPolicy = {
-  onlineChat: PolicyItem;
-  consultBooking: PolicyItem;
-  directBooking: PolicyItem;
-};
 
 const defaultItem = (): PolicyItem => ({
   enabled: true,
@@ -28,20 +13,16 @@ const defaultItem = (): PolicyItem => ({
   note: '',
 });
 
-const defaultPolicy = (): DepositPolicy => ({
+const defaultPolicy = (): DepositPolicyConfig => ({
   onlineChat: { ...defaultItem(), enabled: false, note: 'Collect after consultation is clear and executable.' },
   consultBooking: { ...defaultItem(), amountMode: 'fixed', amountValue: '30', refundable: false, canRescheduleOnce: true, note: 'Consult fee can be credited to final tattoo bill.' },
   directBooking: { ...defaultItem(), amountMode: 'fixed', amountValue: '100', refundable: false, canRescheduleOnce: true, note: 'Deposit is required to lock appointment slot.' },
 });
 
-function keyByArtist(artistId: string) {
-  return `inkflow_deposit_policy_${artistId}`;
-}
-
 export default function DepositPolicyPage() {
   const navigate = useNavigate();
   const [artistId, setArtistId] = useState('');
-  const [policy, setPolicy] = useState<DepositPolicy>(defaultPolicy());
+  const [policy, setPolicy] = useState<DepositPolicyConfig>(defaultPolicy());
   const [message, setMessage] = useState('');
   const lang = detectInitialLanguage();
 
@@ -49,25 +30,20 @@ export default function DepositPolicyPage() {
     const current = localStorage.getItem('inkflow_current_user') || '';
     if (!current) return;
     setArtistId(current);
-    const raw = localStorage.getItem(keyByArtist(current));
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as DepositPolicy;
-      if (parsed?.onlineChat && parsed?.consultBooking && parsed?.directBooking) {
-        setPolicy(parsed);
+    db.users.get(current).then(u => {
+      if (u?.depositPolicy) {
+        setPolicy(u.depositPolicy);
       }
-    } catch {
-      // ignore invalid local data
-    }
+    });
   }, []);
 
-  const setItem = (field: keyof DepositPolicy, patch: Partial<PolicyItem>) => {
+  const setItem = (field: keyof DepositPolicyConfig, patch: Partial<PolicyItem>) => {
     setPolicy(prev => ({ ...prev, [field]: { ...prev[field], ...patch } }));
   };
 
-  const save = () => {
+  const save = async () => {
     if (!artistId) return;
-    localStorage.setItem(keyByArtist(artistId), JSON.stringify(policy));
+    await db.users.update(artistId, { depositPolicy: policy });
     setMessage('Deposit policy saved.');
     window.setTimeout(() => setMessage(''), 1500);
   };
@@ -111,7 +87,7 @@ function RuleCard({ title, item, onChange }: { title: string; item: PolicyItem; 
       <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{title}</p>
       <label style={row}><input type="checkbox" checked={item.enabled} onChange={e => onChange({ enabled: e.target.checked })} /> Enable collection</label>
       <div style={{ display: 'grid', gridTemplateColumns: '130px 1fr', gap: 8, marginBottom: 8 }}>
-        <select value={item.amountMode} onChange={e => onChange({ amountMode: e.target.value as AmountMode })} style={inputStyle}>
+        <select value={item.amountMode} onChange={e => onChange({ amountMode: e.target.value as 'fixed' | 'percent' })} style={inputStyle}>
           <option value="fixed">Fixed ($)</option>
           <option value="percent">Percent (%)</option>
         </select>
@@ -161,4 +137,3 @@ const saveBtn: React.CSSProperties = {
   cursor: 'pointer',
   fontWeight: 700,
 };
-

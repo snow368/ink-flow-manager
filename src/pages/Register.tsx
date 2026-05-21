@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collectDeviceFingerprint, checkDeviceBinding, checkIPRegistrationLimit, incrementIPRegistrationCount } from '../lib/fingerprint';
 import { db } from '../db';
@@ -16,6 +16,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [roles, setRoles] = useState<Array<'artist' | 'owner' | 'staff'>>(['artist']);
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const lang = detectInitialLanguage();
 
   useEffect(() => {
@@ -23,11 +24,13 @@ export default function Register() {
       const fp = await collectDeviceFingerprint();
       setDeviceId(fp.hash);
 
+      if (localStorage.getItem('inkflow_current_user')) return;
+
       if (mode === 'login') {
         const boundUser = await checkDeviceBinding(fp.hash);
         if (boundUser) {
           localStorage.setItem('inkflow_current_user', boundUser);
-          navigate('/today', { replace: true });
+          window.location.href = '/today';
           return;
         }
       }
@@ -56,7 +59,7 @@ export default function Register() {
       if (user) {
         await db.users.update(user.id, { deviceId });
         localStorage.setItem('inkflow_current_user', user.id);
-        navigate('/today', { replace: true });
+        window.location.href = '/today';
       } else {
         setError('No account found with this email.');
       }
@@ -68,8 +71,10 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
-    if (!email || !name || roles.length === 0) return;
+    if (!email || !name || roles.length === 0 || submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
+    setError('');
     try {
       const now = Date.now();
       const userId = 'user_' + now + '_' + Math.random().toString(36).slice(2, 8);
@@ -89,7 +94,6 @@ export default function Register() {
         await processReferralOnRegister(userId, refCode);
       }
 
-      // Auto-sync basic artist info to Worker
       const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
       const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
       if (roles.includes('artist')) {
@@ -109,11 +113,13 @@ export default function Register() {
         } catch { /* silent */ }
       }
 
-      navigate('/today?welcome=1', { replace: true });
+      // Force full reload so App reads fresh auth state
+      window.location.href = '/today?welcome=1';
     } catch {
       setError('Registration failed.');
     } finally {
       setSubmitting(false);
+      submittingRef.current = false;
     }
   };
 
@@ -227,4 +233,3 @@ const inputStyle: React.CSSProperties = {
   outline: 'none',
   boxSizing: 'border-box',
 };
-

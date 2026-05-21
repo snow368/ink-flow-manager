@@ -245,7 +245,7 @@ export default function AppointmentForm() {
             </select>
           )}
 
-          {/* 蹇嵎鏃ユ湡鎸夐挳 */}
+          {/* Date quick presets */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
             {datePresets.map(p => (
               <button key={p.value} onClick={() => { const d = new Date(); d.setDate(d.getDate() + p.value); setDate(d.toISOString().slice(0, 10)); }} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #475569', background: '#1e293b', color: '#e2e8f0', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
@@ -254,19 +254,19 @@ export default function AppointmentForm() {
             ))}
           </div>
 
-          {/* 鏃ユ湡閫夋嫨鍣?- 浜壊鍥炬爣 */}
+          {/* Date picker */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Date</label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} style={{ ...inputStyle, marginBottom: 0, colorScheme: 'dark' }} />
           </div>
 
-          {/* 鏃堕棿閫夋嫨鍣?- 浜壊鍥炬爣 */}
+          {/* Time picker */}
           <div style={{ marginBottom: 12 }}>
             <label style={{ display: 'block', fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>Time</label>
             <input type="time" value={time} onChange={e => setTime(e.target.value)} style={{ ...inputStyle, marginBottom: 0, colorScheme: 'dark' }} />
           </div>
 
-          {/* 鏃堕暱閫夋嫨 */}
+          {/* Duration selection */}
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Duration</p>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             {durationPresets.map(p => (
@@ -275,7 +275,7 @@ export default function AppointmentForm() {
           </div>
           <input type="number" placeholder="Custom minutes" value={customDuration} onChange={e => { setCustomDuration(e.target.value); if (e.target.value) setDuration(0); }} style={{ ...inputStyle, marginBottom: 12 }} />
 
-          {/* 棰勭害绫诲瀷 */}
+          {/* Appointment type */}
           <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>{appointmentTypes.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}</select>
 
           {/* Station */}
@@ -299,7 +299,19 @@ export default function AppointmentForm() {
                     <p style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{t(lang, 'series_existing')}</p>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {existingSeries.map(s => (
-                        <button key={s.seriesId} onClick={() => { setSelectedExistingSeriesId(s.seriesId); setSeriesName(''); }}
+                        <button key={s.seriesId} onClick={async () => {
+                          setSelectedExistingSeriesId(s.seriesId);
+                          setSeriesName('');
+                          // Auto-fill body part and type from last session in this series
+                          const lastAppt = await db.appointments
+                            .where('seriesId').equals(s.seriesId)
+                            .reverse().sortBy('createdAt').then(a => a[0]);
+                          if (lastAppt) {
+                            if (lastAppt.bodyPart) setBodyPart(lastAppt.bodyPart);
+                            if (lastAppt.type) setType(lastAppt.type);
+                            if (lastAppt.designNotes && !designNotes) setDesignNotes(lastAppt.designNotes);
+                          }
+                        }}
                           style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid', borderColor: selectedExistingSeriesId === s.seriesId ? '#a855f7' : '#334155', background: selectedExistingSeriesId === s.seriesId ? '#a855f722' : '#1e293b', color: selectedExistingSeriesId === s.seriesId ? '#c084fc' : '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
                           {s.name}
                         </button>
@@ -421,7 +433,7 @@ export default function AppointmentForm() {
 
           {conflictWarning && (
             <div style={{ background: '#7c2d12', border: '1px solid #ea580c', color: '#fed7aa', borderRadius: 10, padding: 10, marginBottom: 12 }}>
-              <p style={{ fontSize: 13 }}>{conflictWarning}</p>
+              <p style={{ fontSize: 13 }}>{conflictWarning} <span style={{ color: '#fbbf24', fontSize: 11 }}>(you can still save if you want to override)</span></p>
               {nextAvailableTime && (
                 <button onClick={() => setTime(nextAvailableTime)} style={{ marginTop: 8, padding: '8px 10px', borderRadius: 8, border: 'none', background: '#ea580c', color: THEME.text.primary, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                   Use next available: {nextAvailableTime}
@@ -431,7 +443,7 @@ export default function AppointmentForm() {
           )}
 
           <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px)', background: 'linear-gradient(to top, #0f172a 80%, rgba(15,23,42,0.2))' }}>
-            <button onClick={handleSave} disabled={saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || !!conflictWarning || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? t(lang, 'saving') : t(lang, 'create_appointment')}</button>
+            <button onClick={handleSave} disabled={saving || !selectedClient || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : t(lang, 'create_appointment')}</button>
           </div>
         </>
       )}

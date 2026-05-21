@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord } from '../db';
+import { db, type UserRecord, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord } from '../db';
 import {
   createSession, addTimelineEvent, addConsumable, addPhoto,
-  addNote, finishSession, getElapsedMinutes, generateSummary,
+  addVideo, addNote, finishSession, getElapsedMinutes, generateSummary,
 } from '../lib/sessionManager';
 import { getCommandsForLocale } from '../lib/voiceCommands';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
+import { generateCaptionOptions, type CaptionOption } from '../lib/captionTemplates';
 
 export default function SessionPage() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
@@ -28,12 +29,28 @@ export default function SessionPage() {
   const recognitionRef = useRef<any>(null);
   const lang = detectInitialLanguage();
 
+  const [user, setUser] = useState<UserRecord | null>(null);
   const [showCheckout, setShowCheckout] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<{ id: string; name: string; used: number; batchNumber?: string }[]>([]);
   const [markedConsumables, setMarkedConsumables] = useState<Map<string, { count: number; batchNumber?: string }>>(new Map());
+  const [captionOptions, setCaptionOptions] = useState<CaptionOption[]>([]);
+  const [showCaptionPicker, setShowCaptionPicker] = useState(false);
+  const [sharingPhoto, setSharingPhoto] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [recordSec, setRecordSec] = useState(0);
+  const [previewVideo, setPreviewVideo] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState(0);
+  const [flash, setFlash] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [cameraFacing, setCameraFacing] = useState<'environment' | 'user'>('environment');
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const videoBlobsRef = useRef<Map<number, Blob>>(new Map());
+  const videoIdxRef = useRef(0);
 
   useEffect(() => {
     if (!appointmentId) return;
+    const current = localStorage.getItem('inkflow_current_user');
+    if (current) db.users.get(current).then(u => setUser(u || null));
     db.appointments.get(appointmentId).then(a => {
       if (!a) { setError(t(lang, 'session_not_found')); return; }
       setAppointment(a);
@@ -76,16 +93,23 @@ export default function SessionPage() {
   const timeDisplay = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   const addMessage = (msg: string) => setMessages(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
 
-  const tryStartCamera = async () => {
+  const tryStartCamera = async (facing?: 'environment' | 'user') => {
     try {
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+      const mode = facing || cameraFacing;
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mode, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
       streamRef.current = stream;
       if (videoRef.current) { videoRef.current.srcObject = stream; videoRef.current.setAttribute('playsinline', 'true'); videoRef.current.onloadedmetadata = () => videoRef.current?.play().then(() => setCameraReady(true)).catch(() => {}); setTimeout(() => { if (!cameraReady) setCameraReady(false); }, 5000); }
     } catch { setCameraReady(false); }
   };
-  const stopCamera = () => { if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; } setCameraReady(false); };
-  const takePhoto = () => {
+  const toggleCamera = () => {
+    const next = cameraFacing === 'environment' ? 'user' : 'environment';
+    setCameraFacing(next);
+    setCameraReady(false);
+    tryStartCamera(next);
+  };
+  const stopCamera = () => { if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; } setCameraReady(false); setRecording(false); if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') mediaRecorderRef.current.stop(); };
+  const doCapture = () => {
     const video = videoRef.current;
     if (!video || !session || !cameraReady) { addMessage('Camera not ready'); speakMessage('Camera not available'); return; }
     const canvas = document.createElement('canvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight;
@@ -97,7 +121,98 @@ export default function SessionPage() {
     setSession(addPhoto(session, data));
     addMessage(t(lang, 'session_photo_captured'));
     speakMessage(t(lang, 'session_photo_saved'));
+    // Flash feedback
+    setFlash(true);
+    setTimeout(() => setFlash(false), 200);
   };
+
+  const takePhoto = () => {
+    doCapture();
+  };
+
+  const voiceTakePhoto = () => {
+    if (!cameraReady) { tryStartCamera().then(() => setTimeout(voiceTakePhoto, 1500)); return; }
+    // Countdown 3-2-1
+    setCountdown(3);
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance('3');
+      u.lang = navigator.language; u.rate = 0.9;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    }
+    let c = 3;
+    const interval = setInterval(() => {
+      c--;
+      if (c > 0) {
+        setCountdown(c);
+        if ('speechSynthesis' in window) {
+          const u = new SpeechSynthesisUtterance(String(c));
+          u.lang = navigator.language; u.rate = 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      } else {
+        clearInterval(interval);
+        setCountdown(0);
+        doCapture();
+      }
+    }, 1000);
+  };
+
+  const recordVideo = () => {
+    if (!session || !streamRef.current) return;
+    if (recording) {
+      // Stop recording
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+      setRecording(false);
+      addMessage('Video saved');
+      speakMessage('Video saved');
+      return;
+    }
+    // Start recording
+    addMessage('Recording started');
+    speakMessage('Recording started');
+    const stream = streamRef.current;
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+      ? 'video/webm;codecs=vp8,opus'
+      : 'video/webm';
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      if (blob.size < 1000) { addMessage('Recording too short, discarded.'); return; }
+      const url = URL.createObjectURL(blob);
+      const idx = videoIdxRef.current++;
+      videoBlobsRef.current.set(idx, blob);
+      setSession(prev => prev ? addVideo(prev, url) : prev);
+      addMessage(`Video saved (${(blob.size / 1024).toFixed(0)}KB)`);
+      setPreviewVideo(url);
+    };
+    recorder.start(1000);
+    mediaRecorderRef.current = recorder;
+    setRecording(true);
+    setRecordSec(0);
+  };
+
+  // Recording timer + 15-second auto-stop
+  useEffect(() => {
+    if (!recording) return;
+    const interval = setInterval(() => setRecordSec(s => s + 1), 1000);
+    const autoStop = setTimeout(() => {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+      setRecording(false);
+      setRecordSec(0);
+      addMessage('Auto-stopped at 15s');
+      speakMessage('Recording saved');
+    }, 15000);
+    return () => { clearInterval(interval); clearTimeout(autoStop); };
+  }, [recording]);
 
   const toggleVoice = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -111,11 +226,16 @@ export default function SessionPage() {
       const action = commands[transcript] || Object.keys(commands).find(k => transcript.includes(k));
       if (action) {
         const cmd = commands[action || transcript] || action;
-        if (cmd === 'take_photo') { if (!cameraReady) tryStartCamera().then(() => setTimeout(takePhoto, 1500)); else takePhoto(); }
+        if (cmd === 'take_photo') { if (!recording) voiceTakePhoto(); else addMessage('Finish recording first'); }
+        else if (cmd === 'record_video') { if (!cameraReady) tryStartCamera().then(() => setTimeout(recordVideo, 1500)); else recordVideo(); }
         else if (cmd === 'announce_time') { const msg = `${elapsed} minutes elapsed`; addMessage(msg); speakMessage(msg); }
         else if (cmd === 'pause_timer') { pauseTimer(); addMessage(t(lang, 'session_paused_msg')); }
         else if (cmd === 'resume_timer') { resumeTimer(); addMessage(t(lang, 'session_resumed_msg')); }
         else if (cmd === 'end_session') handleFinishClick();
+        else if (cmd === 'emergency_stop') {
+          if (recording) { recordVideo(); addMessage('Recording stopped'); }
+          else { stopCamera(); pauseTimer(); addMessage('Emergency stop'); }
+        }
         else addMessage('Command: ' + cmd);
       }
     };
@@ -178,7 +298,29 @@ export default function SessionPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: THEME.bg.app, color: 'white' }}>
-      <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
+      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }@keyframes flashOut { 0% { opacity: 1; } 100% { opacity: 0; } }`}</style>
+      {cameraReady ? (
+        <div style={{ position: 'relative', margin: '0 24px 8px', borderRadius: 12, overflow: 'hidden', background: '#0f172a', aspectRatio: '4/3' }}>
+          <video ref={videoRef} autoPlay playsInline muted
+            style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+          {/* Countdown overlay */}
+          {countdown > 0 && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.4)' }}>
+              <span style={{ fontSize: 96, fontWeight: 800, color: 'white', textShadow: '0 0 30px rgba(0,0,0,0.8)' }}>{countdown}</span>
+            </div>
+          )}
+          {/* Flash overlay */}
+          {flash && <div style={{ position: 'absolute', inset: 0, background: 'white' }} />}
+          {/* Photo/video count badge */}
+          {(session.photos.length > 0 || (session.videos?.length || 0) > 0) && (
+            <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.6)', borderRadius: 6, padding: '3px 8px', fontSize: 11, color: 'white' }}>
+              📷{session.photos.length} 🎥{session.videos?.length || 0}
+            </div>
+          )}
+        </div>
+      ) : (
+        <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
+      )}
 
       {showCheckout && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -226,7 +368,12 @@ export default function SessionPage() {
           <h2 style={{ fontSize: 18, fontWeight: 'bold' }}>{t(lang, 'session_title')}</h2>
           {cameraReady && <div style={{ width: 8, height: 8, borderRadius: 4, background: THEME.brand.success, boxShadow: '0 0 4px #22c55e' }} title={t(lang, 'session_camera_ready')} />}
         </div>
-        <button onClick={() => { stopCamera(); navigate('/today'); }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>X</button>
+        <button onClick={() => {
+          if (session.photos.length > 0 || (session.videos?.length || 0) > 0 || session.consumables.length > 0) {
+            if (!confirm('End this session and go back to Today?')) return;
+          }
+          stopCamera(); navigate('/today');
+        }} style={{ color: '#94a3b8', background: 'none', border: 'none', fontSize: 20 }}>X</button>
       </div>
       {client && (
         <div style={{ padding: '0 16px' }}>
@@ -255,6 +402,49 @@ export default function SessionPage() {
         <button onClick={toggleVoice} style={ctrlBtn(voiceActive ? '#ef4444' : '#8b5cf6')}>{voiceActive ? t(lang, 'session_voice_off') : t(lang, 'session_voice_on')}</button>
       </div>
 
+      {/* Camera toggle when off */}
+      {!cameraReady && (
+        <div style={{ padding: '0 24px', marginBottom: 8 }}>
+          <button onClick={() => tryStartCamera()} style={{ width: '100%', padding: '10px 0', borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+            📷 {t(lang, 'session_camera_start') || 'Turn on camera'}
+          </button>
+        </div>
+      )}
+      {/* Camera controls */}
+      {cameraReady && (
+        <div style={{ display: 'flex', gap: 8, padding: '0 24px', marginBottom: 8 }}>
+          <button onClick={takePhoto} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: '#1e293b', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            📷 Photo
+          </button>
+          <button onClick={recordVideo} style={{
+            flex: 1, padding: '10px 0', borderRadius: 10, border: 'none',
+            background: recording ? '#dc2626' : '#1e293b',
+            color: 'white', fontSize: recording ? 16 : 13, fontWeight: recording ? 800 : 600, cursor: 'pointer',
+            animation: recording ? 'pulse 1s infinite' : 'none',
+          }}>
+            {recording ? `🔴 Stop (${recordSec}s)` : '🎥 Video'}
+          </button>
+          <button onClick={toggleCamera}
+            style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+            🔄
+          </button>
+        </div>
+      )}
+      {/* Recording indicator bar */}
+      {saving && (
+        <div style={{ margin: '0 24px 8px', padding: '6px 12px', borderRadius: 8, background: '#1e3a5f', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: '#60a5fa' }} />
+          <span style={{ color: '#93c5fd', fontSize: 12, fontWeight: 600 }}>Saving video...</span>
+        </div>
+      )}
+      {recording && (
+        <div style={{ margin: '0 24px 8px', padding: '6px 12px', borderRadius: 8, background: '#7f1d1d', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: '#ef4444', animation: 'pulse 0.8s infinite' }} />
+          <span style={{ color: '#fca5a5', fontSize: 12, fontWeight: 600 }}>Recording... {recordSec}s / 15s</span>
+          <span style={{ color: '#fca5a5', fontSize: 12, fontWeight: 600 }}>Tap STOP or auto-stops at 15s</span>
+        </div>
+      )}
+
       {voiceActive && <p style={{ color: '#a78bfa', fontSize: 13, padding: '0 24px', marginBottom: 6 }}>{t(lang, 'session_voice_hint')}</p>}
 
       <div style={{ padding: '0 24px', marginBottom: 12 }}>
@@ -275,6 +465,92 @@ export default function SessionPage() {
       </div>
 
       <div style={{ padding: '12px 24px' }}>
+        {/* Media gallery: photo/video thumbnails */}
+        {(session.photos.length > 0 || (session.videos && session.videos.length > 0)) && (
+          <div style={{ display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto', paddingBottom: 4 }}>
+            {session.photos.map((p, i) => (
+              <img key={'p'+i} src={p} alt={`Photo ${i+1}`}
+                style={{ width: 80, height: 80, borderRadius: 10, objectFit: 'cover', flexShrink: 0, cursor: 'pointer' }} onClick={() => setPreviewVideo(p)} />
+            ))}
+            {(session.videos || []).map((v, i) => (
+              <div key={'v'+i} onClick={() => setPreviewVideo(v)}
+                style={{ width: 80, height: 80, borderRadius: 10, background: '#0f172a', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: '1px solid #334155', fontSize: 24 }}>
+                ▶️
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Video preview modal */}
+        {previewVideo && (
+          <div onClick={() => setPreviewVideo(null)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
+            {previewVideo.startsWith('blob:') || previewVideo.startsWith('data:video') ? (
+              <video src={previewVideo} controls autoPlay playsInline
+                style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: 12 }} />
+            ) : (
+              <img src={previewVideo} style={{ maxWidth: '100%', maxHeight: '70vh', borderRadius: 12 }} />
+            )}
+          </div>
+          </div>
+        )}
+        {session.photos.length > 0 && (
+          <>
+            {showCaptionPicker ? (
+              <div style={{ marginBottom: 8 }}>
+                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose a caption style:</p>
+                {captionOptions.map((opt, i) => (
+                  <button key={i} onClick={async () => {
+                    setShowCaptionPicker(false);
+                    setSharingPhoto(true);
+                    const fullCaption = `${opt.caption}\n\n${opt.tags}`;
+                    const lastPhoto = session.photos[session.photos.length - 1];
+                    try {
+                      if (navigator.share) {
+                        const blob = await (await fetch(lastPhoto)).blob();
+                        const file = new File([blob], 'tattoo.jpg', { type: 'image/jpeg' });
+                        await navigator.share({ title: opt.label, text: fullCaption, files: [file] });
+                      } else {
+                        const blob = await (await fetch(lastPhoto)).blob();
+                        await navigator.clipboard.write([new ClipboardItem({ 'image/jpeg': blob })]);
+                        await navigator.clipboard.writeText(fullCaption);
+                        addMessage('Photo + caption copied! Paste into Instagram.');
+                      }
+                    } catch { addMessage('Share cancelled or failed.'); }
+                    setSharingPhoto(false);
+                  }} style={{ width: '100%', textAlign: 'left', padding: 12, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, cursor: 'pointer', marginBottom: 6, lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>{opt.label}</span>
+                    <p style={{ marginTop: 4, color: '#cbd5e1' }}>{opt.caption}</p>
+                    <p style={{ marginTop: 3, color: '#60a5fa', fontSize: 11 }}>{opt.tags}</p>
+                  </button>
+                ))}
+                <button onClick={() => setShowCaptionPicker(false)}
+                  style={{ width: '100%', padding: 8, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => {
+                const typeName = (appointment?.type || 'tattoo').replace(/_/g, ' ');
+                const bodyPart = appointment?.bodyPart || 'body';
+                const artistName = user?.name || 'artist';
+                const opts = generateCaptionOptions({
+                  clientName: client?.name || 'client',
+                  type: typeName,
+                  bodyPart,
+                  time: timeDisplay,
+                  artistName,
+                });
+                setCaptionOptions(opts);
+                setShowCaptionPicker(true);
+              }}
+                disabled={sharingPhoto}
+                style={{ width: '100%', padding: 14, borderRadius: 14, border: 'none', background: sharingPhoto ? '#4b5563' : 'linear-gradient(135deg, #833AB4, #FD1D1D, #F77737)', color: 'white', fontSize: 14, fontWeight: 700, marginBottom: 8, cursor: 'pointer' }}>
+                {sharingPhoto ? 'Sharing...' : `📸 Share to Instagram (${session.photos.length} photos${session.videos?.length ? ' + ' + session.videos.length + ' videos' : ''})`}
+              </button>
+            )}
+          </>
+        )}
         <button onClick={handleFinishClick} style={{ width: '100%', padding: 16, borderRadius: 16, border: 'none', background: THEME.brand.success, color: 'white', fontSize: 18, fontWeight: 700 }}>
           {t(lang, 'session_finish')}
         </button>

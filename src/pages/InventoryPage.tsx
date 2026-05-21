@@ -24,6 +24,7 @@ export default function InventoryPage() {
   const [message, setMessage] = useState('');
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [lowStockOnly, setLowStockOnly] = useState(() => new URLSearchParams(window.location.search).get('filter') === 'low');
   const lang = detectInitialLanguage();
   const [guideStep, setGuideStep] = useState(0);
   const [photoData, setPhotoData] = useState('');
@@ -279,6 +280,12 @@ export default function InventoryPage() {
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 10 }}>
             <button onClick={() => setCategoryFilter('')}
               style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: !categoryFilter ? '#e11d48' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>All</button>
+            {(() => { const low = items.filter(i => i.quantity <= i.reorderLevel).length; return low > 0 ? (
+              <button onClick={() => setCategoryFilter(categoryFilter === '__low__' ? '' : '__low__')}
+                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: categoryFilter === '__low__' ? '#f97316' : '#451a03', color: categoryFilter === '__low__' ? 'white' : '#fdba74', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                Low Stock ({low})
+              </button>
+            ) : null; })()}
             {cats.map(cat => (
               <button key={cat} onClick={() => setCategoryFilter(categoryFilter === cat ? '' : cat)}
                 style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: categoryFilter === cat ? '#e11d48' : '#334155', color: categoryFilter === cat ? 'white' : '#94a3b8', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>

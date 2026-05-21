@@ -42,6 +42,12 @@ export function syncArtistData(params: {
     sendAt: number;
     sent: boolean;
   }>;
+  portfolio?: Array<{
+    id: string;
+    thumbnailUrl?: string;
+    tags: string[];
+    createdAt: number;
+  }>;
 }): Promise<void> {
   return apiFetch('/api/sync', params);
 }

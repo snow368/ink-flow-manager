@@ -10,10 +10,12 @@ export default function Clients() {
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [search, setSearch] = useState('');
   const [tagFilter, setTagFilter] = useState('');
+  const [artistFilter, setArtistFilter] = useState('');
   const [sortBy, setSortBy] = useState<'createdAt' | 'name' | 'lastVisit' | 'totalSpend'>('createdAt');
   const [duplicateGroups, setDuplicateGroups] = useState<DuplicateGroup[]>([]);
   const [showMerge, setShowMerge] = useState(false);
   const [merging, setMerging] = useState(false);
+  const [artistMap, setArtistMap] = useState<Record<string, string>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,6 +25,12 @@ export default function Clients() {
       if (!u) { navigate('/register'); return; }
       setUser(u);
       loadClients(u);
+      // Build artist name map
+      db.users.where('roles').anyOf(['artist', 'staff', 'owner']).toArray().then(users => {
+        const map: Record<string, string> = {};
+        users.forEach(u => { map[u.id] = u.name; });
+        setArtistMap(map);
+      });
     });
   }, [navigate]);
 
@@ -61,7 +69,8 @@ export default function Clients() {
       const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
         (c.phone && c.phone.includes(search));
       const matchTag = !tagFilter || (c.tags || []).includes(tagFilter);
-      return matchSearch && matchTag;
+      const matchArtist = !artistFilter || c.artistId === artistFilter || c.assignToArtistId === artistFilter;
+      return matchSearch && matchTag && matchArtist;
     })
     .sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
@@ -146,13 +155,22 @@ export default function Clients() {
         ))}
       </div>
 
-      <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
-        style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, marginBottom: 12, outline: 'none', boxSizing: 'border-box' }}>
-        <option value="createdAt">Sort: Newest First</option>
-        <option value="name">Sort: Name</option>
-        <option value="lastVisit">Sort: Last Visit</option>
-        <option value="totalSpend">Sort: Total Spend</option>
-      </select>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+        <select value={artistFilter} onChange={e => setArtistFilter(e.target.value)}
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, outline: 'none' }}>
+          <option value="">All Artists</option>
+          {Object.entries(artistMap).map(([id, name]) => (
+            <option key={id} value={id}>{name}</option>
+          ))}
+        </select>
+        <select value={sortBy} onChange={e => setSortBy(e.target.value as typeof sortBy)}
+          style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 12, outline: 'none' }}>
+          <option value="createdAt">Newest</option>
+          <option value="name">Name</option>
+          <option value="lastVisit">Last Visit</option>
+          <option value="totalSpend">Total Spend</option>
+        </select>
+      </div>
 
       {showMerge && (
         <div style={{ marginBottom: 14 }}>
@@ -200,7 +218,6 @@ export default function Clients() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <p style={{ fontSize: 48, marginBottom: 12 }}>👤</p>
             <p style={{ fontSize: 16, color: '#94a3b8', marginBottom: 4 }}>{clients.length === 0 ? 'No clients yet' : 'No matches'}</p>
             <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
               {clients.length === 0 ? 'Add your first client to get started' : 'Try a different search or tag filter'}
@@ -227,6 +244,11 @@ export default function Clients() {
               {client.totalSpend != null && client.totalSpend > 0 && (
                 <span style={{ fontSize: 11, color: '#22c55e' }}>
                   Total: ${(client.totalSpend / 100).toFixed(0)}
+                </span>
+              )}
+              {(client.assignToArtistId || client.artistId) && artistMap[client.assignToArtistId || client.artistId || ''] && (
+                <span style={{ fontSize: 11, color: '#60a5fa' }}>
+                  → {artistMap[client.assignToArtistId || client.artistId || '']}
                 </span>
               )}
             </div>

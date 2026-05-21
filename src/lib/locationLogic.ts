@@ -61,3 +61,19 @@ export async function getArtistIdsForLocation(locationId: string, ownerId: strin
   const artistIds = await getLocationArtistIds(locationId);
   return artistIds;
 }
+
+export async function getStaffForLocation(locationId: string): Promise<UserRecord[]> {
+  const users = await db.users.toArray();
+  return users.filter(u => u.assignedLocationIds?.includes(locationId) && (u.roles?.includes('staff') || u.roles?.includes('artist')));
+}
+
+export async function getOwnerStaffIds(ownerId: string): Promise<string[]> {
+  const locs = await db.studioLocations.where('ownerId').equals(ownerId).toArray();
+  if (locs.length === 0) return [ownerId];
+  const ids = new Set<string>();
+  for (const loc of locs) {
+    const staffIds = await getLocationArtistIds(loc.id!);
+    staffIds.forEach(id => ids.add(id));
+  }
+  return ids.size > 0 ? Array.from(ids) : [ownerId];
+}
