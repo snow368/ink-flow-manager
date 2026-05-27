@@ -808,6 +808,10 @@ export default function Today() {
             <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
+          <button onClick={() => navigate('/walkin/' + (user?.artistId || user?.id || ''))} title="Walk-in QR"
+            style={{ width: 44, height: 44, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            ✋
+          </button>
         </div>
       </div>
 

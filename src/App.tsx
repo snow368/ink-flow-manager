@@ -63,6 +63,7 @@ const OwnerDashboard = lazy(() => import('./pages/OwnerDashboard'));
 const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
+const WalkinPage = lazy(() => import('./pages/WalkinPage'));
 const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
@@ -305,6 +306,7 @@ export default function App() {
             <Route path="/staff-management" element={<StaffManagementPage />} />
             <Route path="/audit-log" element={<AuditLogPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/walkin/:artistId" element={<WalkinPage />} />
             <Route path="/studio-settings" element={<StudioSettings />} />
             <Route path="/business-settings" element={<BusinessSettings />} />
             <Route path="/account-settings" element={<AccountSettings />} />

@@ -598,6 +598,7 @@ export interface AppointmentRecord {
   status: 'unconfirmed'|'deposit_paid'|'ready'|'attention'|'blocked'|'done'|'cancelled';
   waiverCompleted: boolean; depositAmount?: number; bodyPart?: string; designNotes?: string;
   station?: string; seriesId?: string;
+  walkIn?: boolean;
   rescheduleRequest?: { proposedDate: string; proposedTime: string; requestedAt: number };
   reviewInvitedAt?: number;
   reviewFollowedUpAt?: number;
