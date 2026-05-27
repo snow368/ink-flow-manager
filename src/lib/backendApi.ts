@@ -48,6 +48,13 @@ export function syncArtistData(params: {
     tags: string[];
     createdAt: number;
   }>;
+  leads?: any[];
+  inventory?: any[];
+  sessions?: any[];
+  waivers?: any[];
+  posTransactions?: any[];
+  invoices?: any[];
+  communicationLog?: any[];
 }): Promise<void> {
   return apiFetch('/api/sync', params);
 }

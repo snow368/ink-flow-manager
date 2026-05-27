@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type ReferralRecord } from '../db';
-import {
-  getMyReferralCode,
-  getReferralLink,
-  getReferralStats,
-  getMonthlyLeaderboard,
-  isDoubleMonth,
-  getRewardMonths,
-} from '../lib/referralLogic';
+import { getMyReferralCode, getReferralLink, getReferralStats, getMonthlyLeaderboard, getReferralShareText } from '../lib/referralLogic';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 
 export default function Referral() {
@@ -17,13 +10,14 @@ export default function Referral() {
   const [referralCode, setReferralCode] = useState('');
   const [totalInvited, setTotalInvited] = useState(0);
   const [verifiedCount, setVerifiedCount] = useState(0);
-  const [proDaysEarned, setProDaysEarned] = useState(0);
+  const [freeMonthsEarned, setFreeMonthsEarned] = useState(0);
+  const [freeMonthsUsed, setFreeMonthsUsed] = useState(0);
+  const [freeMonthsRemaining, setFreeMonthsRemaining] = useState(0);
   const [leaderboard, setLeaderboard] = useState<{ name: string; count: number; verified: boolean }[]>([]);
   const [copied, setCopied] = useState(false);
   const [referrals, setReferrals] = useState<ReferralRecord[]>([]);
-  const doubleMonth = isDoubleMonth();
+  const [inviteeNames, setInviteeNames] = useState<Record<string, string>>({});
   const lang: AppLanguage = detectInitialLanguage();
-  const rewardMonths = getRewardMonths();
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
@@ -36,15 +30,28 @@ export default function Referral() {
       const stats = await getReferralStats(u.id);
       setTotalInvited(stats.totalInvited);
       setVerifiedCount(stats.verifiedCount);
-      setProDaysEarned(stats.proDaysEarned);
+      setFreeMonthsEarned(stats.freeMonthsEarned);
+      setFreeMonthsUsed(stats.freeMonthsUsed);
+      setFreeMonthsRemaining(stats.freeMonthsRemaining);
       setReferrals(stats.referrals);
+      // Load invitee names for display
+      const nameMap: Record<string, string> = {};
+      for (const ref of stats.referrals) {
+        const invitee = await db.users.get(ref.inviteeId);
+        if (invitee) {
+          nameMap[ref.inviteeId] = invitee.instagramHandle
+            ? `@${invitee.instagramHandle.replace(/^@/, '')}`
+            : invitee.name || ref.inviteeId.slice(0, 8) + '...';
+        }
+      }
+      setInviteeNames(nameMap);
       const lb = await getMonthlyLeaderboard();
       setLeaderboard(lb);
     });
   }, [navigate]);
 
   const inviteLink = getReferralLink(referralCode);
-  const inviteText = `Join me on InkFlow, the tattoo studio management app. Use my link and we both get ${rewardMonths} month${rewardMonths > 1 ? 's' : ''} of Pro free.`;
+  const inviteText = getReferralShareText();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inviteLink).then(() => {
@@ -60,18 +67,16 @@ export default function Referral() {
     { label: 'TikTok', icon: 'TT', onClick: () => { handleCopy(); alert(t(lang, 'referral_link_copied')); } },
   ];
 
-  const monthsPlural = rewardMonths > 1 ? 's' : '';
-
   if (!user) return <div style={{ padding: 24, color: 'white' }}>{t(lang, 'referral_loading')}</div>;
 
   return (
     <div style={{ padding: 24, color: 'white' }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>{t(lang, 'referral_title')}</h2>
 
-      <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', padding: 20, borderRadius: 16, marginBottom: 16, border: doubleMonth ? '2px solid #fbbf24' : '2px solid #a78bfa' }}>
-        <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{doubleMonth ? t(lang, 'referral_double_month') : t(lang, 'referral_invite_earn')}</p>
+      <div style={{ background: 'linear-gradient(135deg, #1e293b 0%, #312e81 100%)', padding: 20, borderRadius: 16, marginBottom: 16, border: '2px solid #a78bfa' }}>
+        <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{t(lang, 'referral_invite_earn')}</p>
         <p style={{ fontSize: 14, color: '#a5b4fc' }}>
-          {t(lang, 'referral_reward_desc').replace('{months}', String(rewardMonths)).replace('{plural}', monthsPlural)}
+          {t(lang, 'referral_reward_share_get')}
         </p>
       </div>
 
@@ -107,8 +112,13 @@ export default function Referral() {
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         <div style={{ flex: 1, background: '#1e293b', borderRadius: 12, padding: 12, textAlign: 'center' }}><p style={{ fontSize: 24, fontWeight: 700 }}>{totalInvited}</p><p style={{ fontSize: 11, color: '#94a3b8' }}>{t(lang, 'referral_invited')}</p></div>
         <div style={{ flex: 1, background: '#1e293b', borderRadius: 12, padding: 12, textAlign: 'center' }}><p style={{ fontSize: 24, fontWeight: 700, color: '#22c55e' }}>{verifiedCount}</p><p style={{ fontSize: 11, color: '#94a3b8' }}>{t(lang, 'referral_verified')}</p></div>
-        <div style={{ flex: 1, background: '#1e293b', borderRadius: 12, padding: 12, textAlign: 'center' }}><p style={{ fontSize: 24, fontWeight: 700, color: '#fbbf24' }}>{proDaysEarned}d</p><p style={{ fontSize: 11, color: '#94a3b8' }}>{t(lang, 'referral_pro_earned')}</p></div>
+        <div style={{ flex: 1, background: '#1e293b', borderRadius: 12, padding: 12, textAlign: 'center' }}><p style={{ fontSize: 20, fontWeight: 700, color: '#fbbf24' }}>{freeMonthsRemaining}</p><p style={{ fontSize: 11, color: '#94a3b8' }}>{t(lang, 'referral_free_months')}</p></div>
       </div>
+      {freeMonthsEarned > 0 && (
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 16, textAlign: 'center' }}>
+          <p style={{ fontSize: 13, color: '#94a3b8' }}>Earned {freeMonthsEarned} free month{freeMonthsEarned > 1 ? 's' : ''} — used {freeMonthsUsed} month{freeMonthsUsed !== 1 ? 's' : ''}</p>
+        </div>
+      )}
 
       <div style={{ background: '#1e293b', borderRadius: 14, padding: 16, marginBottom: 16 }}>
         <p style={{ fontWeight: 600, marginBottom: 12 }}>{t(lang, 'referral_leaderboard')}</p>
@@ -136,7 +146,7 @@ export default function Referral() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {referrals.slice(0, 10).map(ref => (
               <div key={ref.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13 }}>
-                <span style={{ color: '#94a3b8' }}>{ref.inviteeId.slice(0, 8)}...</span>
+                <span style={{ color: '#94a3b8' }}>{inviteeNames[ref.inviteeId] || ref.inviteeId.slice(0, 8) + '...'}</span>
                 <span style={{ padding: '2px 8px', borderRadius: 6, fontSize: 11, background: ref.status === 'verified' || ref.status === 'rewarded' ? '#14532d' : '#1e293b', color: ref.status === 'verified' || ref.status === 'rewarded' ? '#86efac' : '#64748b' }}>
                   {ref.status === 'pending' ? t(lang, 'referral_pending') : ref.status === 'verified' ? t(lang, 'referral_verified_label') : t(lang, 'referral_reward_sent')}
                 </span>

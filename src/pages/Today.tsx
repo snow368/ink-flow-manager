@@ -18,6 +18,7 @@ import { sendSms, sendWhatsApp, getTwilioConfig } from '../lib/smsService';
 import { syncArtistData, getBackendUrl } from '../lib/backendApi';
 import { pollPendingBookings, ackBooking, acceptBookingApi, getBookingShareUrl, getBookingStatusUrl, type PendingBooking } from '../lib/bookingPoll';
 import { getWaitingListCount } from '../lib/waitingList';
+import { getMyPendingReferral, verifyInstagramTattooArtist, completeMyReferral, getRewardMonths } from '../lib/referralLogic';
 
 type PaymentReminderItem = { lead: LeadRecord; stage: '24h' | '48h' };
 
@@ -54,6 +55,10 @@ export default function Today() {
   const [todayKpi, setTodayKpi] = useState<{ revenue: number; upcoming: number; pendingDeposits: number; overdueTasks: number } | null>(null);
   const [lastConsumables, setLastConsumables] = useState<Map<string, string[]>>(new Map());
   const [presetItems, setPresetItems] = useState<Map<string, string[]>>(new Map());
+  const [referralVerifyOpen, setReferralVerifyOpen] = useState(false);
+  const [referralIgHandle, setReferralIgHandle] = useState('');
+  const [referralVerifyState, setReferralVerifyState] = useState<'idle' | 'verifying' | 'success' | 'failed'>('idle');
+  const [referralVerifyMsg, setReferralVerifyMsg] = useState('');
   const [conflictModal, setConflictModal] = useState<{
     open: boolean;
     appointmentId: string;
@@ -114,7 +119,7 @@ export default function Today() {
       const client = await db.clients.get(r.appointment.clientId);
       const phone = client?.phone;
       if (!phone) { remaining.push(r); continue; }
-      const canApi = (user?.plan === 'pro' || user?.plan === 'plus') && twilioReady;
+      const canApi = (user?.plan && user?.plan !== 'free') && twilioReady;
       const freeApi = user?.plan === 'free' && twilioReady && ((user?.smsFreeUsed || 0) + sent < 5);
       if (canApi || freeApi) {
         const msg = getReminderMessage(r.appointment, r.stage);
@@ -194,13 +199,44 @@ export default function Today() {
     if (!user || !getBackendUrl()) return;
     const artistId = user.artistId || user.id;
     const poll = async () => {
-      const bookings = await pollPendingBookings(artistId);
-      if (bookings.length > 0) setPendingBookings(bookings);
+      const all = await pollPendingBookings(artistId);
+      if (all.length === 0) return;
+      // Auto-process confirmed bookings into Dexie
+      const confirmed = all.filter(b => b.status === 'confirmed' || b.status === 'paid');
+      for (const b of confirmed) {
+        await autoAcceptBooking(b);
+      }
+      // Update existing appointments if client paid after being auto-accepted
+      const paidBookings = all.filter(b => b.status === 'paid');
+      for (const b of paidBookings) {
+        const existingAppt = await db.appointments.where('date').equals(b.date).toArray();
+        const match = existingAppt.find(a => a.time === b.time && a.clientId && a.status === 'unconfirmed');
+        if (match) {
+          await db.appointments.update(match.id, { status: 'deposit_paid' });
+          updateAppointmentInState(match.id, { status: 'deposit_paid' });
+        }
+      }
+      // Show only pending_confirmation in the UI
+      const pending = all.filter(b => b.status === 'pending_confirmation');
+      if (pending.length > 0) setPendingBookings(pending);
     };
     poll();
+    // Re-poll every 30s so artist sees new bookings quickly
+    const timer = setInterval(poll, 30000);
+    return () => clearInterval(timer);
   }, [user]);
 
-  async function acceptBooking(b: PendingBooking) {
+  // Check for pending referral verification (invitee)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const isWelcome = params.get('welcome') === '1';
+    if (!isWelcome) return;
+    getMyPendingReferral().then(ref => {
+      if (ref) setReferralVerifyOpen(true);
+    });
+  }, []);
+
+  async function autoAcceptBooking(b: PendingBooking) {
     if (!user) return;
     const artistId = user.artistId || user.id;
     // Create client if needed
@@ -209,34 +245,33 @@ export default function Today() {
     if (existing) {
       clientId = existing.id;
     } else {
-      clientId = 'cli_' + Date.now();
+      clientId = 'client_' + Date.now() + '_' + Math.random().toString(36).slice(2, 4);
       await db.clients.add({
-        id: clientId,
-        name: b.clientName,
-        phone: b.clientPhone,
-        email: b.clientEmail,
-        artistId,
-        createdAt: Date.now(),
+        id: clientId, name: b.clientName, phone: b.clientPhone,
+        email: b.clientEmail || '', createdAt: Date.now(),
       });
     }
-    // Create appointment
-    const apptId = 'apt_' + Date.now();
-    await db.appointments.add({
-      id: apptId,
-      clientId,
-      artistId,
-      date: b.date,
-      time: b.time,
-      duration: 60,
-      status: 'unconfirmed',
-      waiverCompleted: false,
-      designNotes: b.idea,
-      createdAt: Date.now(),
-    });
-    // Accept on server → marks as 'confirmed' with payment link for status page
-    await acceptBookingApi(artistId, b.id);
-    setPendingBookings(prev => prev.filter(x => x.id !== b.id));
+    // Create appointment (skip if already exists)
+    const existingAppt = await db.appointments.where('date').equals(b.date).toArray();
+    const dup = existingAppt.find(a => a.time === b.time && a.clientId === clientId);
+    if (!dup) {
+      await db.appointments.add({
+        id: 'apt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 4),
+        clientId, artistId,
+        date: b.date, time: b.time, duration: 60,
+        status: b.status === 'paid' ? 'deposit_paid' : 'unconfirmed',
+        waiverCompleted: false,
+        designNotes: b.idea || '', createdAt: Date.now(),
+      });
+    }
+    // Remove from KV (mark as processed)
+    await ackBooking(artistId, b.id);
     if (user) loadAppointmentsForDate(user, selectedDate);
+  }
+
+  async function acceptBooking(b: PendingBooking) {
+    await autoAcceptBooking(b);
+    setPendingBookings(prev => prev.filter(x => x.id !== b.id));
   }
 
   async function requestDeposit(b: PendingBooking) {
@@ -271,7 +306,7 @@ export default function Today() {
         const client = await db.clients.get(r.appointment.clientId);
         const phone = client?.phone;
         if (!phone) { remaining.push(r); continue; }
-        const canApi = (user.plan === 'pro' || user.plan === 'plus');
+        const canApi = (user.plan !== 'free');
         const freeApi = user.plan === 'free' && ((user.smsFreeUsed || 0) + sent < 5);
         if (canApi || freeApi) {
           const msg = getReminderMessage(r.appointment, r.stage);
@@ -768,9 +803,9 @@ export default function Today() {
         <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? t(lang, 'today') : new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
-            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'day')}</button>
-            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'week')}</button>
-            <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 8, padding: '6px 10px', fontSize: 12, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'day')}</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'week')}</button>
+            <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
         </div>
@@ -807,7 +842,7 @@ export default function Today() {
       <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 13, color: '#fca5a5', fontWeight: 700 }}>Must Follow Up Now: {dueLeads.length}</p>
-          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 8, padding: '4px 8px', fontSize: 12, cursor: 'pointer' }}>Open Leads</button>
+          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 10, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Open Leads</button>
         </div>
         {dueLeads.length === 0 ? (
           <p style={{ fontSize: 12, color: '#94a3b8' }}>No overdue follow-ups right now.</p>
@@ -985,7 +1020,7 @@ export default function Today() {
                     {/* SMS button */}
                     {(() => {
                       const twilioReady = !!getTwilioConfig();
-                      const canApi = (user?.plan === 'pro' || user?.plan === 'plus') && twilioReady;
+                      const canApi = (user?.plan && user?.plan !== 'free') && twilioReady;
                       const freeApi = user?.plan === 'free' && twilioReady && (user?.smsFreeUsed || 0) < 5;
                       const useApi = canApi || freeApi;
                       return (
@@ -1013,7 +1048,7 @@ export default function Today() {
                     {/* WhatsApp auto button — same API, `whatsapp:` prefix */}
                     {(() => {
                       const twilioReady = !!getTwilioConfig();
-                      const canApi = (user?.plan === 'pro' || user?.plan === 'plus') && twilioReady;
+                      const canApi = (user?.plan && user?.plan !== 'free') && twilioReady;
                       const freeApi = user?.plan === 'free' && twilioReady && (user?.smsFreeUsed || 0) < 5;
                       if (!canApi && !freeApi) return null;
                       return (
@@ -1059,12 +1094,12 @@ export default function Today() {
                   {b.idea && <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>"{b.idea}"</p>}
                   <p style={{ fontSize: 10, color: '#64748b', marginTop: 2 }}>Phone: {b.clientPhone}</p>
                 </div>
-                <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                  <button onClick={() => acceptBooking(b)} style={{ padding: '6px 12px', borderRadius: 6, border: 'none', background: '#22c55e', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-                    Accept
-                  </button>
-                  <button onClick={() => dismissBooking(b)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
-                    ✕
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                  <span style={{ padding: '4px 8px', borderRadius: 6, background: '#a855f722', color: '#c084fc', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                    Awaiting confirmation
+                  </span>
+                  <button onClick={() => acceptBooking(b)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+                    Force Accept
                   </button>
                 </div>
               </div>
@@ -1110,7 +1145,7 @@ export default function Today() {
       <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 13, color: '#fcd34d', fontWeight: 700 }}>Deposit Reminders: {paymentReminders.length}</p>
-          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 8, padding: '4px 8px', fontSize: 12, cursor: 'pointer' }}>Open Leads</button>
+          <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 10, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Open Leads</button>
         </div>
         {paymentReminders.length === 0 ? (
           <p style={{ fontSize: 12, color: '#94a3b8' }}>No pending 24h/48h payment reminders.</p>
@@ -1499,6 +1534,89 @@ export default function Today() {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Referral Verification Modal */}
+      {referralVerifyOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: 20 }}>
+          <div style={{ width: '100%', maxWidth: 400, background: '#1e293b', border: '1px solid #334155', borderRadius: 16, padding: 24 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#fbbf24' }}>🎉 Welcome! You were invited!</h3>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16, lineHeight: 1.5 }}>
+              Someone invited you to InkFlow. Enter your Instagram to verify you're a tattoo artist —
+              <strong style={{ color: '#e2e8f0' }}> both you and the inviter get {getRewardMonths()} month{getRewardMonths() > 1 ? 's' : ''} of Pro free!</strong>
+            </p>
+
+            {referralVerifyState === 'success' ? (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <p style={{ fontSize: 40, marginBottom: 8 }}>✅</p>
+                <p style={{ fontSize: 16, fontWeight: 700, color: '#4ade80', marginBottom: 4 }}>Verified!</p>
+                <p style={{ fontSize: 13, color: '#94a3b8' }}>Your Pro days have been added. Enjoy!</p>
+                <button onClick={() => { setReferralVerifyOpen(false); window.history.replaceState({}, '', '/today'); }}
+                  style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, border: 'none', background: '#22c55e', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <div style={{ background: '#0f172a', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                  <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>Instagram handle or URL</p>
+                  <input
+                    placeholder="@your_handle or https://instagram.com/..."
+                    value={referralIgHandle}
+                    onChange={e => setReferralIgHandle(e.target.value)}
+                    disabled={referralVerifyState === 'verifying'}
+                    style={{
+                      width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid #334155',
+                      background: '#1e293b', color: 'white', fontSize: 14, outline: 'none',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+
+                {referralVerifyState === 'failed' && referralVerifyMsg && (
+                  <p style={{ fontSize: 12, color: '#fca5a5', marginBottom: 12, padding: '8px 12px', background: '#7f1d1d44', borderRadius: 8 }}>{referralVerifyMsg}</p>
+                )}
+
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={async () => {
+                    if (!referralIgHandle.trim() || referralVerifyState === 'verifying') return;
+                    setReferralVerifyState('verifying');
+                    setReferralVerifyMsg('');
+                    try {
+                      const result = await verifyInstagramTattooArtist(referralIgHandle.trim());
+                      if (result.ok && result.score >= 0.45) {
+                        await completeMyReferral(referralIgHandle.trim());
+                        setReferralVerifyState('success');
+                      } else {
+                        const reasons: string[] = [];
+                        if (result.verdict === 'low') reasons.push('This doesn\'t look like a tattoo artist account');
+                        if (result.verdict === 'error') reasons.push('Couldn\'t reach verification server');
+                        setReferralVerifyMsg(reasons.join('. ') || 'Verification failed. Try a different Instagram handle.');
+                        setReferralVerifyState('failed');
+                      }
+                    } catch {
+                      setReferralVerifyMsg('Network error. Try again later.');
+                      setReferralVerifyState('failed');
+                    }
+                  }} style={{
+                    flex: 1, padding: '12px 16px', borderRadius: 10, border: 'none',
+                    background: referralVerifyState === 'verifying' ? '#4b5563' : '#e11d48',
+                    color: 'white', fontSize: 14, fontWeight: 600, cursor: referralVerifyState === 'verifying' ? 'not-allowed' : 'pointer',
+                  }}>
+                    {referralVerifyState === 'verifying' ? 'Verifying...' : 'Verify'}
+                  </button>
+                  <button onClick={() => { setReferralVerifyOpen(false); window.history.replaceState({}, '', '/today'); }}
+                    style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
+                    Skip
+                  </button>
+                </div>
+                <p style={{ fontSize: 10, color: '#64748b', marginTop: 12, textAlign: 'center' }}>
+                  We check your Instagram bio &amp; posts to confirm you're a tattoo artist. Your data stays private.
+                </p>
+              </>
+            )}
           </div>
         </div>
       )}

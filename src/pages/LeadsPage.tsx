@@ -5,7 +5,6 @@ import { detectInitialLanguage, t } from '../lib/i18n';
 import { buildDepositLink, getSuggestedDepositAmount } from '../lib/payments';
 import { getCurrentArtistIds } from '../lib/locationLogic';
 import { getArtistAvailability } from '../lib/availability';
-import { canConsumeMessage, consumeMessage } from '../lib/quota';
 
 type FollowPreset = {
   id: string;
@@ -486,12 +485,6 @@ export default function LeadsPage() {
   };
 
   const copyPaymentTemplateMessage = (lead: LeadRecord) => {
-    const messageCheck = canConsumeMessage(artistUser, lead.artistId, 1);
-    if (!messageCheck.ok) {
-      const go = window.confirm(`Message quota exceeded (${messageCheck.used}/${messageCheck.quota}). Upgrade now?`);
-      if (go) navigate('/me');
-      return;
-    }
     const payLink = `${window.location.origin}/pay/${encodeURIComponent(lead.id)}`;
     const statusLink = `${window.location.origin}/pay/status/${encodeURIComponent(lead.id)}`;
     const msg = [
@@ -502,17 +495,10 @@ export default function LeadsPage() {
       `You can check payment status here: ${statusLink}`,
     ].join('\n');
     navigator.clipboard.writeText(msg);
-    consumeMessage(artistUser, lead.artistId, 1);
     void enqueueNotificationLog(lead, 'payment_link', { payLink, statusLink });
   };
 
   const copyPaymentReminderMessage = (lead: LeadRecord, stage: '24h' | '48h') => {
-    const messageCheck = canConsumeMessage(artistUser, lead.artistId, 1);
-    if (!messageCheck.ok) {
-      const go = window.confirm(`Message quota exceeded (${messageCheck.used}/${messageCheck.quota}). Upgrade now?`);
-      if (go) navigate('/me');
-      return;
-    }
     const payLink = `${window.location.origin}/pay/${encodeURIComponent(lead.id)}`;
     const statusLink = `${window.location.origin}/pay/status/${encodeURIComponent(lead.id)}`;
     const msg = stage === '24h'
@@ -527,7 +513,6 @@ export default function LeadsPage() {
           `Status link: ${statusLink}`,
         ].join('\n');
     navigator.clipboard.writeText(msg);
-    consumeMessage(artistUser, lead.artistId, 1);
     void enqueueNotificationLog(
       lead,
       stage === '24h' ? 'payment_reminder_24h' : 'payment_reminder_48h',

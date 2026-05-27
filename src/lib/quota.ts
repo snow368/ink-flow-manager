@@ -1,60 +1,28 @@
 import { db, type UserRecord } from '../db';
 
-type PlanKey = 'free' | 'pro' | 'plus';
+type PlanKey = 'free' | 'solo' | 'pro' | 'pro_plus';
 
 type Quota = {
-  monthlyMessages: number;
   storageMb: number;
 };
 
 const QUOTA_BY_PLAN: Record<PlanKey, Quota> = {
-  free: { monthlyMessages: 0, storageMb: 0 },
-  pro: { monthlyMessages: 200, storageMb: 50 * 1024 },
-  plus: { monthlyMessages: 1500, storageMb: 200 * 1024 },
+  free: { storageMb: 0 },
+  solo: { storageMb: 10 * 1024 },
+  pro: { storageMb: 50 * 1024 },
+  pro_plus: { storageMb: 200 * 1024 },
 };
-
-function currentMonthKey() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
-
-function messageCounterKey(artistId: string) {
-  return `inkflow_msg_usage_${artistId}_${currentMonthKey()}`;
-}
 
 function resolvePlan(user?: UserRecord | null): PlanKey {
   if (!user) return 'free';
-  if (user.plan === 'plus') return 'plus';
+  if (user.plan === 'pro_plus') return 'pro_plus';
   if (user.plan === 'pro') return 'pro';
+  if (user.plan === 'solo') return 'solo';
   return 'free';
 }
 
 export function getQuotaForUser(user?: UserRecord | null): Quota {
   return QUOTA_BY_PLAN[resolvePlan(user)];
-}
-
-export function getUsedMessagesThisMonth(artistId: string): number {
-  return Number(localStorage.getItem(messageCounterKey(artistId)) || '0');
-}
-
-export function canConsumeMessage(user: UserRecord | null, artistId: string, amount = 1): { ok: boolean; quota: number; used: number } {
-  const quota = getQuotaForUser(user).monthlyMessages;
-  const used = getUsedMessagesThisMonth(artistId);
-  if (quota <= 0) return { ok: false, quota, used };
-  return { ok: used + amount <= quota, quota, used };
-}
-
-export function consumeMessage(user: UserRecord | null, artistId: string, amount = 1) {
-  const check = canConsumeMessage(user, artistId, amount);
-  if (!check.ok) return false;
-  localStorage.setItem(messageCounterKey(artistId), String(check.used + amount));
-  return true;
-}
-
-function estimateBase64Bytes(dataUrl: string): number {
-  const idx = dataUrl.indexOf(',');
-  const base64 = idx >= 0 ? dataUrl.slice(idx + 1) : dataUrl;
-  return Math.floor((base64.length * 3) / 4);
 }
 
 export async function estimateArtistStorageMb(artistId: string): Promise<number> {
@@ -84,4 +52,10 @@ export async function canAddStorage(user: UserRecord | null, artistId: string, i
   const incomingMb = incomingBytes / (1024 * 1024);
   if (quotaMb <= 0) return { ok: false, quotaMb, usedMb };
   return { ok: usedMb + incomingMb <= quotaMb, quotaMb, usedMb };
+}
+
+function estimateBase64Bytes(dataUrl: string): number {
+  const idx = dataUrl.indexOf(',');
+  const base64 = idx >= 0 ? dataUrl.slice(idx + 1) : dataUrl;
+  return Math.floor((base64.length * 3) / 4);
 }

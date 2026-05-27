@@ -7,8 +7,10 @@ import {
 } from '../lib/sessionManager';
 import { getCommandsForLocale } from '../lib/voiceCommands';
 import { THEME } from '../lib/theme';
+import { logCommunication } from '../lib/communicationLog';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 import { generateCaptionOptions, type CaptionOption } from '../lib/captionTemplates';
+import { SessionCompleteModal } from '../components/SessionCompleteModal';
 
 export default function SessionPage() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
@@ -46,6 +48,7 @@ export default function SessionPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const videoBlobsRef = useRef<Map<number, Blob>>(new Map());
   const videoIdxRef = useRef(0);
+  const [showPostSession, setShowPostSession] = useState(false);
 
   useEffect(() => {
     if (!appointmentId) return;
@@ -275,10 +278,14 @@ export default function SessionPage() {
     }
     const finished = await finishSession(updatedSession);
     setSession(finished);
-    addMessage(`Session finished! ${finished.photos.length} photos. ${checkoutItems.reduce((s, i) => s + i.used, 0)} items consumed.`);
     setShowCheckout(false);
-    addMessage('Session saved! Redirecting to checkout...');
-    setTimeout(() => navigate(`/pos?appointmentId=${appointment.id}`), 1500);
+    setShowPostSession(true);
+    logCommunication(appointment.artistId, 'app_note', 'auto', {
+      clientId: appointment.clientId,
+      appointmentId: appointment.id,
+      message: `Session completed — ${finished.actualDuration || '-'} min, ${checkoutItems.length} consumables used`,
+      templateType: 'session_completed',
+    });
   };
 
   const handleSkipCheckout = async () => {
@@ -287,10 +294,14 @@ export default function SessionPage() {
     stopCamera();
     const finished = await finishSession(session);
     setSession(finished);
-    addMessage(`Session finished! ${finished.photos.length} photos. No inventory deducted.`);
     setShowCheckout(false);
-    addMessage('Session saved! Redirecting to checkout...');
-    setTimeout(() => navigate(`/pos?appointmentId=${appointment.id}`), 1500);
+    setShowPostSession(true);
+    logCommunication(appointment.artistId, 'app_note', 'auto', {
+      clientId: appointment.clientId,
+      appointmentId: appointment.id,
+      message: `Session completed — ${finished.actualDuration || '-'} min`,
+      templateType: 'session_completed',
+    });
   };
 
   if (error) return <div style={{ padding: 24, color: 'white' }}><p>{error}</p><button onClick={() => navigate(-1)} style={{ color: '#60a5fa' }}>Go back</button></div>;
@@ -556,6 +567,16 @@ export default function SessionPage() {
         </button>
         <div style={{ height: 'env(safe-area-inset-bottom, 12px)' }} />
       </div>
+
+      {showPostSession && (
+        <SessionCompleteModal
+          artistId={appointment?.artistId || ''}
+          clientId={appointment?.clientId || ''}
+          clientName={client?.name}
+          appointmentId={appointment?.id}
+          onDone={() => navigate(`/pos?appointmentId=${appointment?.id}`)}
+        />
+      )}
     </div>
   );
 }

@@ -9,6 +9,8 @@ import { getCountryConfig } from '../lib/invoiceConfig';
 import { loadInvoiceSettings } from '../lib/invoiceSettings';
 import { isTippingCountry } from '../lib/tipConfig';
 import { getArtistCommissionRate, calculateCommission } from '../lib/commissionLogic';
+import { getFriendDiscountByAppointment, markReferralRewarded } from '../lib/clientReferral';
+import { logCommunication } from '../lib/communicationLog';
 
 export default function PosPage() {
   const navigate = useNavigate();
@@ -47,6 +49,10 @@ export default function PosPage() {
   const [defaultServices, setDefaultServices] = useState<{ name: string; price: number }[]>([]);
   const [showTip, setShowTip] = useState(true);
   const [artistCommissionRate, setArtistCommissionRate] = useState<number | undefined>();
+
+  // Referral friend discount
+  const [friendDiscountCents, setFriendDiscountCents] = useState(0);
+  const [friendDiscountCode, setFriendDiscountCode] = useState('');
 
   // UI state
   const [message, setMessage] = useState('');
@@ -120,6 +126,15 @@ export default function PosPage() {
       setLinkedClient(c || null);
       const rate = await getArtistCommissionRate(a.artistId);
       setArtistCommissionRate(rate);
+      // Check for referral friend discount
+      const refInfo = await getFriendDiscountByAppointment(aid);
+      if (refInfo) {
+        setFriendDiscountCents(refInfo.friendDiscount * 100);
+        setFriendDiscountCode(refInfo.code);
+      } else {
+        setFriendDiscountCents(0);
+        setFriendDiscountCode('');
+      }
     }
   };
 
@@ -150,7 +165,7 @@ export default function PosPage() {
   const taxAmount = Math.round(cartTotal * taxRate / 100);
   const tipAmount = tipCustom ? parseInt(tipCustom, 10) : Math.round(cartTotal * tipPercent / 100);
   const grossTotal = cartTotal + taxAmount + tipAmount;
-  const balanceDue = Math.max(0, grossTotal - depositAmount);
+  const balanceDue = Math.max(0, grossTotal - depositAmount - friendDiscountCents);
   const cashTenderedCents = Math.round(parseFloat(cashTendered || '0') * 100);
   const cashChange = paymentMethod === 'cash' && cashTendered ? Math.max(0, cashTenderedCents - balanceDue) : 0;
 
@@ -265,6 +280,11 @@ export default function PosPage() {
         await db.appointments.update(appointmentId, { status: 'done' });
       }
 
+      // Mark referral as rewarded after payment
+      if (friendDiscountCode) {
+        await markReferralRewarded(friendDiscountCode);
+      }
+
       const clientName = linkedClient?.name || walkInName;
       setMessage(t(lang, 'pos_sale_completed') + ' ' + receiptNumber);
       setLastCompletedTx({
@@ -277,12 +297,20 @@ export default function PosPage() {
       setInvoicePaymentMethod((paymentMethod === 'other' ? 'cash' : paymentMethod) as InvoiceRecord['paymentMethod']);
       setInvoiceNotes('');
       feedbackSuccess();
+      logCommunication(uid, 'app_note', 'auto', {
+        clientId: linkedClientId || undefined,
+        appointmentId: appointmentId || undefined,
+        message: `Payment received: $${(balanceDue + (depositPaid ? depositAmount : 0)).toFixed(2)} (${paymentMethod})${linkedClient?.name ? ' from ' + linkedClient.name : ''}`,
+        templateType: 'payment_received',
+      });
       printReceipt(tx, clientName);
       clearCart();
       setAppointment(null);
       setAppointmentId('');
       setLinkedClient(null);
       setLinkedClientId('');
+      setFriendDiscountCents(0);
+      setFriendDiscountCode('');
       setMode('quick');
       loadRecentTransactions(artistIds);
       loadInventory();
@@ -681,6 +709,12 @@ export default function PosPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
             <span style={{ color: '#4ade80', fontSize: 12 }}>{t(lang, 'pos_deposit_paid_label')} {t(lang, 'pos_applied')}</span>
             <span style={{ fontSize: 12, color: '#4ade80' }}>-${formatCents(depositAmount)}</span>
+          </div>
+        )}
+        {friendDiscountCents > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+            <span style={{ color: '#fbbf24', fontSize: 12 }}>🎁 {t(lang, 'referral_client_title')}</span>
+            <span style={{ fontSize: 12, color: '#fbbf24' }}>-${formatCents(friendDiscountCents)}</span>
           </div>
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, paddingTop: 4, borderTop: '1px solid #334155' }}>

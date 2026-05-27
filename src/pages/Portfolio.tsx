@@ -3,29 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { db, type PortfolioRecord, type UserRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { uploadImage, deleteImage } from '../lib/storageService';
 
 const TAGS = ['japanese', 'realism', 'traditional', 'neo-traditional', 'blackwork', 'dotwork',
   'geometric', 'watercolor', 'tribal', 'minimalist', 'sketch', 'portrait',
   'lettering', 'cover-up', 'arm', 'leg', 'back', 'chest', 'sleeve', 'hand', 'neck'];
-
-function generateThumbnail(dataUrl: string, maxW = 300): Promise<string> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const scale = Math.min(maxW / img.width, 1);
-      const w = Math.round(img.width * scale);
-      const h = Math.round(img.height * scale);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.7));
-    };
-    img.onerror = () => resolve(dataUrl);
-    img.src = dataUrl;
-  });
-}
 
 export default function Portfolio() {
   const navigate = useNavigate();
@@ -64,33 +46,36 @@ export default function Portfolio() {
     setUploadCount(0);
     const fileArr = Array.from(files).slice(0, 20);
     let count = 0;
+    let hadError = false;
 
     for (const file of fileArr) {
       if (!file.type.startsWith('image/')) continue;
-      const dataUrl = await new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result || ''));
-        reader.readAsDataURL(file);
-      });
-      const thumbnailUrl = await generateThumbnail(dataUrl);
 
-      await db.portfolio.add({
-        id: 'pf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-        artistId: user.id,
-        imageUrl: dataUrl,
-        thumbnailUrl,
-        tags: [],
-        isPublic: true,
-        consentForSocial: false,
-        consentForPromotion: false,
-        createdAt: Date.now(),
-      });
-      count++;
+      try {
+        // Upload to R2
+        const imageUrl = await uploadImage(user.id, file);
+
+        await db.portfolio.add({
+          id: 'pf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          artistId: user.id,
+          imageUrl,
+          thumbnailUrl: imageUrl, // R2 CDN is fast — use full image as thumbnail for now
+          tags: [],
+          isPublic: true,
+          consentForSocial: false,
+          consentForPromotion: false,
+          createdAt: Date.now(),
+        });
+        count++;
+      } catch {
+        hadError = true;
+      }
       setUploadCount(count);
     }
 
     setUploading(false);
-    setMessage(`${count} photo(s) added`);
+    const msg = hadError ? `${count} uploaded, some failed (check connection)` : `${count} photo(s) added`;
+    setMessage(msg);
     setTimeout(() => setMessage(''), 2500);
     loadItems(user.id);
     syncPortfolio(user.id);
@@ -148,6 +133,8 @@ export default function Portfolio() {
     await db.portfolio.delete(item.id);
     setItems(prev => prev.filter(i => i.id !== item.id));
     if (selected?.id === item.id) setSelected(null);
+    // Clean up R2 if stored there
+    void deleteImage(item.imageUrl).catch(() => {});
     if (user) syncPortfolio(user.id);
   };
 
@@ -155,7 +142,11 @@ export default function Portfolio() {
     if (selectedIds.size === 0) return;
     if (!confirm(`Delete ${selectedIds.size} photo(s)?`)) return;
     for (const id of selectedIds) {
-      await db.portfolio.delete(id);
+      const item = items.find(i => i.id === id);
+      if (item) {
+        await db.portfolio.delete(id);
+        void deleteImage(item.imageUrl).catch(() => {});
+      }
     }
     setItems(prev => prev.filter(i => !selectedIds.has(i.id)));
     setSelectedIds(new Set());

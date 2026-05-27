@@ -201,6 +201,7 @@ export function buildConsentContent(
   if (cc.idVerificationNote) {
     add(`[ID VERIFIED] ${fill(cc.idVerificationNote)}`, '');
   }
+  add(`[ID PHOTO CONSENT] I consent to ${fill(shopName)} storing my photo ID for age verification and record-keeping purposes. I understand this data will be retained for ${cc.recordRetentionYears || 7} years as required by applicable law.`, '');
 
   for (const d of cc.mandatoryDisclosures) {
     add(`- ${fill(d)}`);

@@ -4,6 +4,8 @@ import { db, type ClientRecord, type AppointmentRecord, type LeadRecord, type Le
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability } from '../lib/availability';
+import { logCommunication } from '../lib/communicationLog';
+import { getBackendUrl } from '../lib/backendApi';
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
@@ -23,6 +25,8 @@ export default function AppointmentForm() {
   const [loadingClients, setLoadingClients] = useState(true);
   const [quickName, setQuickName] = useState('');
   const [quickPhone, setQuickPhone] = useState('');
+  const [quickEmail, setQuickEmail] = useState('');
+  const [showNewClientForm, setShowNewClientForm] = useState(false);
   const [creatingClient, setCreatingClient] = useState(false);
   const [initialStatus, setInitialStatus] = useState<'unconfirmed' | 'deposit_paid'>('unconfirmed');
   const [depositAmount, setDepositAmount] = useState('');
@@ -180,10 +184,12 @@ export default function AppointmentForm() {
     try {
       const now = Date.now();
       const id = 'client_' + now + '_' + Math.random().toString(36).slice(2, 6);
-      await db.clients.add({ id, name: quickName.trim(), phone: quickPhone.trim() || undefined, createdAt: now });
+      await db.clients.add({ id, name: quickName.trim(), phone: quickPhone.trim() || undefined, email: quickEmail.trim() || undefined, createdAt: now });
       setSelectedClient(id);
       setQuickName('');
       setQuickPhone('');
+      setQuickEmail('');
+      setShowNewClientForm(false);
       await loadClients();
     } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
     finally { setCreatingClient(false); }
@@ -207,6 +213,36 @@ export default function AppointmentForm() {
         }
       }
       await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, bodyPart: bodyPart || undefined, designNotes: designNotes || undefined, station: station || undefined, seriesId, status: initialStatus, depositAmount: dAmount, waiverCompleted: false, createdAt: Date.now() });
+      logCommunication(artistId, 'app_note', 'auto', {
+        clientId: selectedClient,
+        appointmentId: id,
+        message: `${type ? type.replace(/_/g, ' ') : 'Appointment'} confirmed for ${date} at ${time} — ${finalDuration}min`,
+        templateType: 'appointment_confirmed',
+      });
+      // Notify backend (async)
+      const bu = getBackendUrl();
+      const client = await db.clients.get(selectedClient);
+      if (bu && artistId) {
+        fetch(`${bu}/api/booking/${artistId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date, time, name: client?.name || 'Client', phone: client?.phone || '', email: client?.email || undefined, placement: bodyPart || undefined }),
+        }).catch(() => {});
+        const user = await db.users.get(artistId).catch(() => null);
+        fetch(`${bu}/api/waiver/create-stub`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': localStorage.getItem('inkflow_backend_secret') || '' },
+          body: JSON.stringify({
+            appointmentId: id,
+            clientName: client?.name || 'Client',
+            artistName: user?.name || user?.email || 'Artist',
+            shopName: user?.studioName || '',
+            appointmentType: type || 'new_tattoo',
+            country: user?.country || '',
+            clientId: selectedClient,
+          }),
+        }).catch(() => {});
+      }
       navigate('/today');
     } catch (e: any) { setError('Failed: ' + (e?.message || 'unknown')); }
     finally { setSaving(false); }
@@ -221,29 +257,41 @@ export default function AppointmentForm() {
     { label: 'Continuation', value: 'continuation' },
   ];
 
-  const showQuickCreate = !loadingClients && clients.length === 0;
-
   return (
     <div style={{ padding: 24, color: THEME.text.primary, paddingBottom: 110 }}>
       <h2 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>{t(lang, 'new_appointment')}</h2>
       {error && <div style={{ background: '#7f1d1d', padding: 12, borderRadius: 10, marginBottom: 16 }}><p style={{ color: '#fca5a5', fontSize: 14 }}>{error}</p></div>}
 
-      {showQuickCreate ? (
-        <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
-          <p style={{ fontSize: 15, fontWeight: 600, marginBottom: 12 }}>Quick Add Client</p>
-          <input placeholder="Client name" value={quickName} onChange={e => setQuickName(e.target.value)} style={inputStyle} />
-          <input placeholder="Phone (optional)" value={quickPhone} onChange={e => setQuickPhone(e.target.value)} style={inputStyle} />
-          <button onClick={handleQuickCreateClient} disabled={creatingClient || !quickName.trim()} style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', background: creatingClient || !quickName.trim() ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 14, fontWeight: 600 }}>{creatingClient ? 'Adding...' : 'Add Client & Continue'}</button>
-          <p onClick={() => navigate('/client/new')} style={{ textAlign: 'center', marginTop: 12, color: '#94a3b8', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>or create a full client profile</p>
-        </div>
-      ) : (
-        <>
-          {loadingClients ? <p style={{ color: '#94a3b8' }}>Loading clients...</p> : (
-            <select value={selectedClient} onChange={e => { setSelectedClient(e.target.value); setError(''); }} style={selectStyle}>
+      {/* Client selection — dropdown + inline create */}
+      <div style={{ background: '#1e293b', padding: 16, borderRadius: 12, marginBottom: 16 }}>
+        {loadingClients ? <p style={{ color: '#94a3b8' }}>Loading clients...</p> : (
+          <>
+            <select value={showNewClientForm ? '__new__' : selectedClient} onChange={e => {
+              if (e.target.value === '__new__') { setShowNewClientForm(true); setSelectedClient(''); }
+              else { setSelectedClient(e.target.value); setShowNewClientForm(false); }
+              setError('');
+            }} style={selectStyle}>
               <option value="">Select client</option>
+              <option value="__new__">✨ New Client</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-          )}
+
+            {showNewClientForm && (
+              <div style={{ marginTop: 12, borderTop: '1px solid #334155', paddingTop: 12 }}>
+                <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>New Client Details</p>
+                <input placeholder="Name *" value={quickName} onChange={e => setQuickName(e.target.value)} style={inputStyle} />
+                <input placeholder="Phone (optional)" value={quickPhone} onChange={e => setQuickPhone(e.target.value)} style={inputStyle} />
+                <input placeholder="Email (optional, needed for confirmation)" value={quickEmail} onChange={e => setQuickEmail(e.target.value)} style={inputStyle} type="email" />
+                {!quickEmail.trim() && <p style={{ fontSize: 11, color: '#fbbf24', margin: '0 0 6px 0' }}>⚠️ No email = client won't get confirmation</p>}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={handleQuickCreateClient} disabled={creatingClient || !quickName.trim()} style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: creatingClient || !quickName.trim() ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 14, fontWeight: 600, cursor: creatingClient || !quickName.trim() ? 'not-allowed' : 'pointer' }}>{creatingClient ? 'Adding...' : 'Create & Select'}</button>
+                  <button onClick={() => { setShowNewClientForm(false); setQuickName(''); setQuickPhone(''); setQuickEmail(''); }} style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #475569', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
           {/* Date quick presets */}
           <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
@@ -445,8 +493,6 @@ export default function AppointmentForm() {
           <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, padding: '12px 24px calc(env(safe-area-inset-bottom, 0px) + 12px)', background: 'linear-gradient(to top, #0f172a 80%, rgba(15,23,42,0.2))' }}>
             <button onClick={handleSave} disabled={saving || !selectedClient || (!!fromLead && !reviewConfirmed)} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', background: saving || !selectedClient || (!!fromLead && !reviewConfirmed) ? '#4b5563' : '#e11d48', color: THEME.text.primary, fontSize: 16, fontWeight: 600, cursor: saving || !selectedClient || (!!fromLead && !reviewConfirmed) ? 'not-allowed' : 'pointer' }}>{saving ? 'Saving...' : t(lang, 'create_appointment')}</button>
           </div>
-        </>
-      )}
     </div>
   );
 }

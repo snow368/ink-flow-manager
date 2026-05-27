@@ -4,7 +4,9 @@ import cors from 'cors';
 import Stripe from 'stripe';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import webpush from 'web-push';
 
 const app = express();
 const port = Number(process.env.PORT || 8787);
@@ -13,6 +15,22 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 const platformFeePercent = Number(process.env.STRIPE_PLATFORM_FEE_PERCENT || '0');
 const serverApiKey = process.env.SERVER_API_KEY || '';
 const requireApiKey = String(process.env.REQUIRE_API_KEY || '').toLowerCase() === 'true';
+const publicUrl = String(process.env.PUBLIC_URL || 'http://localhost:5173').replace(/\/+$/, '');
+
+// ---- VAPID for push notifications ----
+const vapidKeys = (() => {
+  const envPub = process.env.VAPID_PUBLIC_KEY;
+  const envPriv = process.env.VAPID_PRIVATE_KEY;
+  if (envPub && envPriv) return { publicKey: envPub, privateKey: envPriv };
+  const generated = webpush.generateVAPIDKeys();
+  console.log('[push] VAPID keys generated (not persisted). Set VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY in .env to reuse.');
+  return generated;
+})();
+webpush.setVapidDetails(
+  process.env.VAPID_SUBJECT || 'mailto:admin@inkflow.app',
+  vapidKeys.publicKey,
+  vapidKeys.privateKey,
+);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +42,8 @@ const files = {
   notifications: path.join(dataDir, 'notifications.json'),
   audit: path.join(dataDir, 'audit.json'),
   webhookEvents: path.join(dataDir, 'webhook_events.json'),
+  pushSubscriptions: path.join(dataDir, 'push_subscriptions.json'),
+  waivers: path.join(dataDir, 'waivers.json'),
 };
 
 if (!stripeSecretKey) {
@@ -451,6 +471,248 @@ app.post('/api/stripe/webhook', (req, res) => {
     return res.status(400).send('Webhook error');
   }
 });
+
+// =============================================
+// Push Notification Endpoints
+// =============================================
+
+function sendPushToArtist(artistId, payload) {
+  const subs = readJsonArray(files.pushSubscriptions).filter(s => s.artistId === artistId);
+  if (subs.length === 0) return;
+  const full = { ...payload, timestamp: Date.now() };
+  for (const sub of subs) {
+    webpush.sendNotification(sub, JSON.stringify(full)).catch(err => {
+      // 410 Gone = subscription expired; remove it
+      if (err.statusCode === 410) {
+        const remaining = readJsonArray(files.pushSubscriptions).filter(s => s.endpoint !== sub.endpoint);
+        writeJsonArray(files.pushSubscriptions, remaining);
+      }
+    });
+  }
+}
+
+// GET VAPID public key (no auth — needed before subscribing)
+app.get('/api/push/vapid-key', (_req, res) => {
+  res.json({ publicKey: vapidKeys.publicKey });
+});
+
+// POST subscribe (no auth — called from browser PushManager)
+app.post('/api/push/subscribe', (req, res) => {
+  const { artistId, endpoint, keys } = req.body || {};
+  if (!artistId || !endpoint || !keys) {
+    return res.status(400).json({ error: 'artistId, endpoint, keys required' });
+  }
+  const all = readJsonArray(files.pushSubscriptions);
+  // Remove old subscription for this endpoint if exists
+  const filtered = all.filter(s => s.endpoint !== endpoint);
+  filtered.push({
+    artistId,
+    endpoint,
+    keys,
+    createdAt: Date.now(),
+  });
+  writeJsonArray(files.pushSubscriptions, filtered);
+  audit('push_subscribed', { artistId, endpoint: endpoint.slice(0, 50) });
+  res.json({ ok: true });
+});
+
+// POST unsubscribe
+app.post('/api/push/unsubscribe', (req, res) => {
+  const { endpoint } = req.body || {};
+  if (!endpoint) return res.status(400).json({ error: 'endpoint required' });
+  const all = readJsonArray(files.pushSubscriptions);
+  writeJsonArray(files.pushSubscriptions, all.filter(s => s.endpoint !== endpoint));
+  res.json({ ok: true });
+});
+
+// POST send test push (auth required)
+app.post('/api/push/send', requireAuth, requireRole('owner'), (req, res) => {
+  const { artistId, title, body, tag, url } = req.body || {};
+  if (!artistId) return res.status(400).json({ error: 'artistId required' });
+  sendPushToArtist(artistId, {
+    title: title || 'Test Notification',
+    body: body || 'This is a test push from InkFlow',
+    tag: tag || 'test',
+    url: url || '/today',
+  });
+  audit('push_sent_test', { artistId });
+  res.json({ ok: true });
+});
+
+// POST booking — triggers push notification to artist
+app.post('/api/booking/:artistId', (req, res) => {
+  const { artistId } = req.params;
+  const { name, date, time } = req.body || {};
+  sendPushToArtist(artistId, {
+    title: 'New Booking!',
+    body: `${name || 'Someone'} booked for ${date || ''} at ${time || ''}`,
+    tag: 'new_booking',
+    url: '/today',
+  });
+  audit('booking_push_sent', { artistId, clientName: name });
+  res.json({ ok: true });
+});
+
+// =============================================
+// Waiver API Endpoints
+// =============================================
+
+// GET public waiver info — returns appointment client name, artist info, waiver text (no auth)
+app.get('/api/waiver/public/:appointmentId', (req, res) => {
+  const { appointmentId } = req.params;
+  const waivers = readJsonArray(files.waivers);
+  // Check for signed waiver first
+  const signed = waivers.find(w => w.appointmentId === appointmentId && w.status === 'signed');
+  if (signed) {
+    return res.json({ alreadySigned: true, signedAt: signed.signedAt });
+  }
+  // Then check for a pending stub
+  const stub = waivers.find(w => w.appointmentId === appointmentId && w.status === 'pending');
+  if (!stub) {
+    return res.status(404).json({ error: 'Waiver not found for this appointment' });
+  }
+  res.json({
+    alreadySigned: false,
+    appointmentId: stub.appointmentId,
+    clientName: stub.clientName,
+    artistName: stub.artistName,
+    shopName: stub.shopName,
+    appointmentType: stub.appointmentType,
+    waiverText: stub.waiverText,
+    country: stub.country,
+  });
+});
+
+// POST create waiver stub (called when a booking is created, auth required)
+app.post('/api/waiver/create-stub', requireAuth, requireRole('owner', 'staff', 'artist'), (req, res) => {
+  const { appointmentId, clientName, artistName, shopName, appointmentType, country, clientId } = req.body || {};
+  if (!appointmentId || !clientName) {
+    return res.status(400).json({ error: 'appointmentId and clientName required' });
+  }
+  const all = readJsonArray(files.waivers);
+  // Don't create stub if already exists
+  if (all.some(w => w.appointmentId === appointmentId)) {
+    return res.json({ ok: true });
+  }
+  // Build waiver text server-side using simple template
+  const typeLabel = appointmentType === 'new_tattoo' ? 'Tattoo' : appointmentType === 'touch_up' ? 'Touch-up' : 'Service';
+  const waiverText = [
+    `${typeLabel} CONSENT AND RELEASE FORM`,
+    '',
+    `Client: ${clientName}`,
+    `Artist: ${artistName}`,
+    `Studio: ${shopName || artistName}`,
+    `Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+    '',
+    'I hereby give my informed consent for the tattoo procedure described below.',
+    'I understand that the procedure is permanent and results may vary.',
+    'I confirm that I am not under the influence of alcohol or drugs.',
+    'I have read and understand the aftercare instructions provided by the artist.',
+    '',
+    'By signing this form, I release the artist and studio from any liability',
+    'related to allergic reactions, infections, or dissatisfaction with the result,',
+    'provided standard professional procedures were followed.',
+    '',
+    country === 'DE' ? 'This consent does not affect your statutory rights under applicable law.' : '',
+    country === 'UK' ? 'You have the right to cancel this service within 14 days under the Consumer Contracts Regulations.' : '',
+    country === 'JP' ? 'この同意書は、日本の法律に基づくお客様の権利に影響を与えません。' : '',
+  ].filter(Boolean).join('\n');
+
+  all.push({
+    id: `waiver_stub_${appointmentId}`,
+    appointmentId,
+    clientId: clientId || '',
+    clientName,
+    artistName,
+    shopName,
+    appointmentType: appointmentType || 'new_tattoo',
+    waiverText,
+    country: country || '',
+    status: 'pending',
+    createdAt: Date.now(),
+  });
+  writeJsonArray(files.waivers, all);
+  res.json({ ok: true });
+});
+
+// POST sign waiver (public — called from public waiver page)
+app.post('/api/waiver/sign', (req, res) => {
+  const { appointmentId, name, email, phone, signature, idPhoto, clientDob, healthAnswers, waiverText } = req.body || {};
+  if (!appointmentId || !signature) {
+    return res.status(400).json({ error: 'appointmentId and signature required' });
+  }
+  const all = readJsonArray(files.waivers);
+  // Check if already signed
+  if (all.some(w => w.appointmentId === appointmentId && w.status === 'signed')) {
+    return res.status(409).json({ error: 'already_signed' });
+  }
+  const now = Date.now();
+  const record = {
+    id: `waiver_${appointmentId}_${now}`,
+    appointmentId,
+    clientName: name || '',
+    clientEmail: email || '',
+    clientPhone: phone || '',
+    signature,
+    idPhoto: idPhoto || null,
+    clientDob: clientDob || null,
+    healthAnswers: healthAnswers || [],
+    waiverText: waiverText || '',
+    status: 'signed',
+    signedAt: now,
+    createdAt: now,
+    ip: req.ip || req.socket?.remoteAddress || '',
+    userAgent: req.headers['user-agent'] || '',
+  };
+  all.push(record);
+  writeJsonArray(files.waivers, all);
+  audit('waiver_signed', { appointmentId, clientName: name });
+  res.json({ ok: true, id: record.id });
+});
+
+// GET waiver record (auth required — for artist/owner to view)
+app.get('/api/waiver/:appointmentId', requireAuth, (req, res) => {
+  const { appointmentId } = req.params;
+  const all = readJsonArray(files.waivers);
+  const waiver = all.find(w => w.appointmentId === appointmentId && w.status === 'signed');
+  if (!waiver) return res.status(404).json({ error: 'not_found' });
+  res.json(waiver);
+});
+
+// GET list waivers for an artist (auth required)
+app.get('/api/waivers/:artistId', requireAuth, requireRole('owner', 'staff', 'artist'), (req, res) => {
+  const { artistId } = req.params;
+  // Waivers aren't indexed by artistId directly; return all signed waivers (client can filter on frontend)
+  const all = readJsonArray(files.waivers).filter(w => w.status === 'signed').sort((a, b) => b.signedAt - a.signedAt);
+  res.json({ items: all });
+});
+
+// POST send waiver signing link (auth required — queues notification)
+app.post('/api/waiver/send-link', requireAuth, requireRole('owner', 'staff', 'artist'), (req, res) => {
+  const { appointmentId, clientName, clientPhone, clientEmail, artistId } = req.body || {};
+  if (!appointmentId || !artistId) {
+    return res.status(400).json({ error: 'appointmentId and artistId required' });
+  }
+  const waiverUrl = `${publicUrl}/public-waiver/${appointmentId}`;
+  // Enqueue notification
+  const ntfItem = {
+    id: `ntf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    artistId,
+    leadId: appointmentId,
+    channel: clientEmail ? 'email' : 'sms',
+    templateType: 'waiver_link',
+    payload: { waiverUrl, clientName, appointmentId, to: clientEmail || clientPhone },
+    status: 'queued',
+    retries: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+  appendJsonItem(files.notifications, ntfItem);
+  audit('waiver_link_sent', { appointmentId, artistId });
+  res.json({ ok: true, id: ntfItem.id, waiverUrl });
+});
+
+// =============================================
 
 app.listen(port, () => {
   ensureDataFiles();

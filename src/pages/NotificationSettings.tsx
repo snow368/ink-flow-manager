@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
-import { getTwilioConfig, setTwilioConfig, testSmsConnection, SMS_PACKS, addSmsCredits } from '../lib/smsService';
+import { getTwilioConfig, setTwilioConfig, testSmsConnection, addSmsCredits, getSmsConfig, getCachedSmsConfig, type SmsPack } from '../lib/smsService';
 import { getSendGridConfig, setSendGridConfig, testEmailConnection } from '../lib/emailService';
 import { getBackendUrl, setBackendConfig, getCalendarSubscriptionUrl } from '../lib/backendApi';
+import { subscribe, unsubscribe, isSubscribed } from '../lib/push';
 
 export default function NotificationSettings() {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ export default function NotificationSettings() {
   const [showOwnerEmail, setShowOwnerEmail] = useState(false);
   const [testing, setTesting] = useState<'sms' | 'email' | null>(null);
   const [message, setMessage] = useState('');
+  const [pushSubscribed, setPushSubscribed] = useState(false);
+  const [pushSubscribing, setPushSubscribing] = useState(false);
 
   // Backend config
   const [backendUrl, setBackendUrlState] = useState('');
@@ -40,6 +43,7 @@ export default function NotificationSettings() {
   const credits = user?.smsCredits || 0;
   const freeUsed = user?.smsFreeUsed || 0;
   const freeTrialActive = !!(user?.smsFreeUntil && Date.now() < user.smsFreeUntil);
+  const [smsPacks, setSmsPacks] = useState<SmsPack[]>(getCachedSmsConfig().packs);
 
   useEffect(() => {
     const uid = localStorage.getItem('inkflow_current_user');
@@ -60,6 +64,8 @@ export default function NotificationSettings() {
     if (bu) setBackendUrlState(bu);
     const bs = localStorage.getItem('inkflow_backend_secret');
     if (bs) setBackendSecretState(bs);
+    isSubscribed().then(setPushSubscribed);
+    getSmsConfig().then(cfg => setSmsPacks(cfg.packs));
   }, [navigate]);
 
   const saveUser = async (patch: Partial<UserRecord>) => {
@@ -69,8 +75,20 @@ export default function NotificationSettings() {
     if (fresh) setUser(fresh);
   };
 
-  const saveTwilioGlobal = () => {
+  const saveTwilioGlobal = async () => {
     setTwilioConfig(twilioSid, twilioToken, twilioFrom);
+    // Also save to backend so Worker can auto-send confirmation SMS
+    const base = getBackendUrl();
+    const secret = localStorage.getItem('inkflow_backend_secret');
+    if (base && secret && twilioSid && twilioToken && twilioFrom) {
+      try {
+        await fetch(`${base}/api/config/twilio`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': secret },
+          body: JSON.stringify({ sid: twilioSid, token: twilioToken, from: twilioFrom }),
+        });
+      } catch {}
+    }
     setMessage('Twilio config saved.');
     setTimeout(() => setMessage(''), 2000);
   };
@@ -103,7 +121,7 @@ export default function NotificationSettings() {
     setTesting(null);
   };
 
-  const handleBuyPack = async (pack: typeof SMS_PACKS[number]) => {
+  const handleBuyPack = async (pack: SmsPack) => {
     if (!user) return;
     await addSmsCredits(user.id, pack.amount);
     // TODO: real payment integration
@@ -180,7 +198,7 @@ export default function NotificationSettings() {
       <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 16, marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <p style={{ fontWeight: 700, fontSize: 16 }}>SMS Balance</p>
-          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 10, background: plan === 'free' ? '#334155' : plan === 'pro' ? '#2563eb' : '#a855f7', color: 'white', fontWeight: 600 }}>
+          <span style={{ fontSize: 12, padding: '3px 10px', borderRadius: 10, background: plan === 'free' ? '#334155' : plan === 'solo' ? '#6366f1' : plan === 'pro' ? '#2563eb' : '#a855f7', color: 'white', fontWeight: 600 }}>
             {plan.toUpperCase()}
           </span>
         </div>
@@ -190,9 +208,9 @@ export default function NotificationSettings() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <div style={{ flex: 1, height: 8, background: '#334155', borderRadius: 4, overflow: 'hidden' }}>
-                <div style={{ width: `${(freeUsed / 5) * 100}%`, height: '100%', background: '#f59e0b', borderRadius: 4 }} />
+                <div style={{ width: `${(freeUsed / Math.max(getCachedSmsConfig().freeTierLimit, 1)) * 100}%`, height: '100%', background: '#f59e0b', borderRadius: 4 }} />
               </div>
-              <span style={{ fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}>{freeUsed}/5 free</span>
+              <span style={{ fontSize: 13, color: '#94a3b8', whiteSpace: 'nowrap' }}>{freeUsed}/{getCachedSmsConfig().freeTierLimit} free</span>
             </div>
             <div style={{ background: '#0a1a2a', border: '1px solid #3b82f644', borderRadius: 8, padding: 8 }}>
               <p style={{ fontSize: 11, color: '#60a5fa', fontWeight: 600, marginBottom: 2 }}>Each reminder you auto-send saves 1 minute of copy-paste</p>
@@ -244,7 +262,7 @@ export default function NotificationSettings() {
           <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>$0.01/SMS. ~3 reminders/day → M pack/month ($1.00).</p>
           <p style={{ fontSize: 10, color: '#475569', marginBottom: 10 }}>SMS + WhatsApp share the same balance.</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            {SMS_PACKS.map(p => (
+            {smsPacks.map(p => (
               <button key={p.id} onClick={() => handleBuyPack(p)}
                 style={{ padding: '10px 8px', borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 12, cursor: 'pointer', textAlign: 'center' }}>
                 <p style={{ fontWeight: 600 }}>{p.amount} SMS</p>
@@ -274,6 +292,49 @@ export default function NotificationSettings() {
           </div>
         )}
       </details>
+
+      {/* ---- Push Notifications ---- */}
+      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 4 }}>🔔 Push Notifications</p>
+        <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 12 }}>
+          Get notified when a new booking comes in or a payment is received — even when the app is closed.
+        </p>
+        {pushSubscribed ? (
+          <button onClick={async () => {
+            const ok = await unsubscribe();
+            if (ok) setPushSubscribed(false);
+          }} style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid #ef4444', background: 'transparent', color: '#fca5a5', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            Unsubscribe from Push
+          </button>
+        ) : (
+          <button onClick={async () => {
+            setPushSubscribing(true);
+            try {
+              const backendUrl = getBackendUrl();
+              if (!backendUrl) { setMessage('Set Backend URL first'); return; }
+              const sub = await subscribe(backendUrl);
+              if (!sub) { setMessage('Push not supported or permission denied'); return; }
+              // Save subscription to Worker
+              const secret = localStorage.getItem('inkflow_backend_secret');
+              const res = await fetch(`${backendUrl}/api/push/subscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...(secret ? { 'x-api-secret': secret } : {}) },
+                body: JSON.stringify({ artistId: user?.id, endpoint: sub.endpoint, keys: sub.toJSON().keys }),
+              });
+              if (res.ok) {
+                setPushSubscribed(true);
+                setMessage('Push notifications enabled!');
+              } else {
+                setMessage('Failed to save subscription');
+              }
+            } catch { setMessage('Push setup failed'); }
+            setPushSubscribing(false);
+            setTimeout(() => setMessage(''), 3000);
+          }} style={{ padding: '10px 16px', borderRadius: 8, border: 'none', background: '#6366f1', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            {pushSubscribing ? '...' : 'Enable Push Notifications'}
+          </button>
+        )}
+      </div>
 
       {/* ---- Pricing Info ---- */}
       <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 12, padding: 14, marginBottom: 16 }}>

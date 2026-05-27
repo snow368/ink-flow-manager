@@ -4,6 +4,7 @@ import { db, type ClientRecord, type AppointmentRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { buildBirthdayMessage, getDormantClients } from '../lib/marketingLogic';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
+import { getCurrentArtistIds } from '../lib/locationLogic';
 
 type Channel = 'whatsapp' | 'sms' | 'instagram' | 'facebook' | 'tiktok';
 type TemplateKey = 'booking_confirm' | 'booking_reminder' | 'reschedule' | 'birthday_greeting' | 're_engagement';
@@ -48,7 +49,11 @@ export default function Outreach() {
   const lang: AppLanguage = detectInitialLanguage();
 
   useEffect(() => {
-    db.clients.orderBy('createdAt').reverse().toArray().then((list) => {
+    const uid = localStorage.getItem('inkflow_current_user');
+    if (!uid) return;
+    db.users.get(uid).then(async u => {
+      const artistIds = await getCurrentArtistIds(u || null);
+      const list = await db.clients.orderBy('createdAt').reverse().filter(c => artistIds.includes(c.artistId || '')).toArray();
       setClients(list);
       if (list[0]) setSelectedClientId(list[0].id);
     });

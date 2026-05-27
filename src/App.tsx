@@ -14,6 +14,7 @@ const Verification = lazy(() => import('./pages/Verification'));
 const ClientDetail = lazy(() => import('./pages/ClientDetail'));
 const AppointmentForm = lazy(() => import('./pages/AppointmentForm'));
 const WaiverSign = lazy(() => import('./pages/WaiverSign'));
+const PublicWaiverSign = lazy(() => import('./pages/PublicWaiverSign'));
 const SessionPage = lazy(() => import('./pages/SessionPage'));
 const InventoryPage = lazy(() => import('./pages/InventoryPage'));
 const Referral = lazy(() => import('./pages/Referral'));
@@ -34,6 +35,7 @@ const ContentStrategyPage = lazy(() => import('./pages/ContentStrategyPage'));
 const SupplyReviewsPage = lazy(() => import('./pages/SupplyReviewsPage'));
 const AvailabilitySettingsPage = lazy(() => import('./pages/AvailabilitySettingsPage'));
 const ClientBookingPage = lazy(() => import('./pages/ClientBookingPage'));
+const ReferralShortPage = lazy(() => import('./pages/ReferralShortPage'));
 const PosPage = lazy(() => import('./pages/PosPage'));
 const PosSettingsPage = lazy(() => import('./pages/PosSettingsPage'));
 const LocationsPage = lazy(() => import('./pages/LocationsPage'));
@@ -48,8 +50,10 @@ const AppointmentRespondPage = lazy(() => import('./pages/AppointmentRespondPage
 const EmbedBookingPage = lazy(() => import('./pages/EmbedBookingPage'));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const ReviewInvitesPage = lazy(() => import('./pages/ReviewInvitesPage'));
+const WaiverManager = lazy(() => import('./pages/WaiverManager'));
 const NotificationSettings = lazy(() => import('./pages/NotificationSettings'));
 const ArtistProfilePage = lazy(() => import('./pages/ArtistProfilePage'));
+const ConfirmBookingPage = lazy(() => import('./pages/ConfirmBookingPage'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
 const ShiftSchedulingPage = lazy(() => import('./pages/ShiftSchedulingPage'));
 const DailyCloseOutPage = lazy(() => import('./pages/DailyCloseOutPage'));
@@ -58,6 +62,11 @@ const TaskManagementPage = lazy(() => import('./pages/TaskManagementPage'));
 const OwnerDashboard = lazy(() => import('./pages/OwnerDashboard'));
 const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'));
+const PricingPage = lazy(() => import('./pages/PricingPage'));
+const StudioSettings = lazy(() => import('./pages/StudioSettings'));
+const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
+const AccountSettings = lazy(() => import('./pages/AccountSettings'));
+const ProPlusSetup = lazy(() => import('./pages/ProPlusSetup'));
 import LocationSelector from './components/LocationSelector';
 const NewClientForm = lazy(() => import('./pages/NewClientForm'));
 import { db, type UserRecord } from './db';
@@ -80,6 +89,22 @@ function PageLoading() {
     </div>
   );
 }
+
+const RESPONSIVE_STYLE = `
+@media (min-width: 768px) {
+  .inkflow-content {
+    max-width: 1024px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    padding: 0 24px !important;
+  }
+}
+@media (min-width: 1280px) {
+  .inkflow-content {
+    max-width: 1200px !important;
+  }
+}
+`;
 
 export default function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -170,12 +195,14 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings', '/shifts', '/close-out', '/communication-log', '/tasks', '/owner-dashboard', '/staff-management', '/audit-log'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings', '/shifts', '/close-out', '/communication-log', '/tasks', '/owner-dashboard', '/staff-management', '/audit-log', '/studio-settings', '/business-settings', '/account-settings', '/pro-plus-setup'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
 
   return (
+    <>
+    <style>{RESPONSIVE_STYLE}</style>
     <ErrorBoundary>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: THEME.bg.app, color: THEME.text.primary }}>
         {!isOnline && <OfflineBanner lang={lang} />}
@@ -217,7 +244,7 @@ export default function App() {
             <span style={{ fontSize: 11, background: THEME.brand.success, padding: '2px 8px', borderRadius: 4, color: THEME.bg.app }}>{t(lang, 'market_check_view')}</span>
           </div>
         )}
-        <div style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{ flex: 1, overflowY: 'auto' }} className="inkflow-content">
           <Suspense fallback={<PageLoading />}>
           <Routes>
             <Route path="/register" element={<Register />} />
@@ -228,6 +255,8 @@ export default function App() {
             <Route path="/client/new" element={<NewClientForm />} />
             <Route path="/appointment/new" element={<AppointmentForm />} />
             <Route path="/waiver/:appointmentId" element={<WaiverSign />} />
+            <Route path="/public-waiver/:appointmentId" element={<PublicWaiverSign />} />
+            <Route path="/waiver-manager" element={<WaiverManager />} />
             <Route path="/session/:appointmentId" element={<SessionPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/referral" element={<Referral />} />
@@ -248,6 +277,7 @@ export default function App() {
             <Route path="/supply-reviews" element={<SupplyReviewsPage />} />
             <Route path="/availability-settings" element={<AvailabilitySettingsPage />} />
             <Route path="/book/:artistId" element={<ClientBookingPage />} />
+            <Route path="/r/:slug" element={<ReferralShortPage />} />
             <Route path="/pos" element={<PosPage />} />
             <Route path="/pos-settings" element={<PosSettingsPage />} />
             <Route path="/locations" element={<LocationsPage />} />
@@ -263,6 +293,7 @@ export default function App() {
             <Route path="/embed/:artistId" element={<EmbedBookingPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/artist-profile" element={<ArtistProfilePage />} />
+            <Route path="/confirm/:artistId/:bookingId" element={<ConfirmBookingPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/review-invites" element={<ReviewInvitesPage />} />
             <Route path="/me" element={<Me />} />
@@ -273,6 +304,11 @@ export default function App() {
             <Route path="/owner-dashboard" element={<OwnerDashboard />} />
             <Route path="/staff-management" element={<StaffManagementPage />} />
             <Route path="/audit-log" element={<AuditLogPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/studio-settings" element={<StudioSettings />} />
+            <Route path="/business-settings" element={<BusinessSettings />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
+            <Route path="/pro-plus-setup" element={<ProPlusSetup />} />
           </Routes>
           </Suspense>
         </div>
@@ -285,6 +321,7 @@ export default function App() {
       <InstallBanner />
       </div>
     </ErrorBoundary>
+  </>
   );
 }
 

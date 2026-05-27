@@ -42,7 +42,7 @@ export default function EmbedBookingPage() {
     if (isDayOff(date, avail.daysOff)) { setSlots([]); return; }
     const dayStart = toMinutes(avail.start);
     const dayEnd = toMinutes(avail.end);
-    const existing = await db.appointments.where('date').equals(date).toArray();
+    const existing = await db.appointments.where('date').equals(date).filter(a => a.artistId === artistId).toArray();
     const times = findMultipleAvailableTimes(existing, dayStart, dayEnd, 60, dayStart);
     setSlots(times);
   }

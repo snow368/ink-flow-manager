@@ -55,10 +55,15 @@ export async function syncAll(user: UserRecord): Promise<{ ok: boolean; error?: 
 
   try {
     // Gather data
-    const [clients, appointments, portfolio] = await Promise.all([
+    const [clients, appointments, portfolio, leads, sessions, posTx, invoices, commLog] = await Promise.all([
       db.clients.where('artistId').equals(artistId).toArray(),
       db.appointments.where('artistId').equals(artistId).toArray(),
       db.portfolio.where('artistId').equals(artistId).toArray(),
+      db.leads.where('artistId').equals(artistId).toArray(),
+      db.sessions.where('artistId').equals(artistId).toArray(),
+      db.posTransactions.where('artistId').equals(artistId).toArray(),
+      db.invoices.where('artistId').equals(artistId).toArray(),
+      db.communicationLog.where('artistId').equals(artistId).toArray(),
     ]);
 
     const settings: Record<string, any> = {
@@ -107,6 +112,33 @@ export async function syncAll(user: UserRecord): Promise<{ ok: boolean; error?: 
         thumbnailUrl: p.thumbnailUrl || p.imageUrl,
         tags: p.tags,
         createdAt: p.createdAt,
+      })),
+      leads: leads.map(l => ({
+        id: l.id, name: l.name, phone: l.phone, email: l.email,
+        source: l.source, status: l.status, paymentStatus: l.paymentStatus,
+        bodyPart: l.bodyPart, style: l.style, consultMode: l.consultMode,
+        createdAt: l.createdAt,
+      })),
+      sessions: sessions.map(s => ({
+        id: s.id, appointmentId: s.appointmentId, status: s.status,
+        startedAt: s.startedAt, finishedAt: s.finishedAt,
+        actualDuration: s.actualDuration, photos: s.photos,
+        createdAt: s.startedAt,
+      })),
+      posTransactions: posTx.map(t => ({
+        id: t.id, clientId: t.clientId, total: t.total,
+        paymentMethod: t.paymentMethod, paymentStatus: t.paymentStatus,
+        locationId: t.locationId, createdAt: t.createdAt,
+      })),
+      invoices: invoices.map(i => ({
+        id: i.id, invoiceNumber: i.invoiceNumber, clientId: i.clientId,
+        total: i.total, paymentStatus: i.paymentStatus,
+        locationId: i.locationId, createdAt: i.createdAt,
+      })),
+      communicationLog: commLog.map(l => ({
+        id: l.id, clientId: l.clientId, appointmentId: l.appointmentId,
+        channel: l.channel, direction: l.direction, message: l.message,
+        createdAt: l.createdAt,
       })),
     });
 

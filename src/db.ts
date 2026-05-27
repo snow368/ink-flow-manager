@@ -26,6 +26,8 @@ export class InkFlowDB extends Dexie {
   auditLog!: Table<AuditLogRecord>;
   shifts!: Table<ShiftRecord>;
   tasks!: Table<TaskRecord>;
+  reviews!: Table<ReviewRecord>;
+  clientReferrals!: Table<ClientReferralRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -373,6 +375,128 @@ export class InkFlowDB extends Dexie {
       shifts: 'id, artistId, staffId, locationId, date, createdAt',
       tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
     });
+    this.version(21).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, createdAt',
+    });
+    this.version(22).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+    });
+    this.version(23).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+    }).upgrade(async (tx) => {
+      // Migrate old plan names to new tiers
+      await tx.table('users').toCollection().modify((user: any) => {
+        if (user.plan === 'pro') user.plan = 'solo';
+        else if (user.plan === 'plus') user.plan = 'pro';
+      });
+    });
+    this.version(24).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, clientId, projectId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, createdAt',
+      waivers: 'id, appointmentId, clientId, status, createdAt',
+      sessions: 'id, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+    });
   }
 }
 
@@ -395,7 +519,7 @@ export interface UserRecord {
   email: string;
   name: string;
   roles: Array<'artist' | 'owner' | 'staff' | 'dev'>;
-  plan?: 'free' | 'pro' | 'plus';
+  plan?: 'free' | 'solo' | 'pro' | 'pro_plus';
   artistId?: string;
   deviceId?: string;
   verified: boolean;
@@ -437,9 +561,15 @@ export interface UserRecord {
   reviewLinks?: { google?: string; platform2Name?: string; platform2Url?: string; platform3Name?: string; platform3Url?: string };
   bioProfile?: { slug?: string; avatarUrl?: string; displayName: string; shopName?: string; address?: string; bookingEnabled: boolean; links: Array<{ id: string; label: string; url: string; icon?: string }>; portfolioImages?: string[] };
   bioEvents?: Array<{ id: string; type: 'convention' | 'guest_spot'; city: string; country?: string; venue: string; startDate: string; endDate: string; active: boolean }>;
+  googlePlaceId?: string;
+  referralConfig?: { friendDiscount: number; referrerReward: number };
+  b2bCreditMonths?: number;
+  b2bCreditUsed?: number;
   createdAt: number;
   depositPolicy?: DepositPolicyConfig;
   permissions?: StaffPermission[];
+  passwordHash?: string;
+  proPlusOnboarded?: boolean;
 }
 
 export interface StudioLocationRecord {
@@ -454,6 +584,7 @@ export interface StudioLocationRecord {
 
 export interface ClientRecord {
   id: string; name: string; artistId?: string; phone?: string; email?: string;
+  instagram?: string;
   allergies?: string[]; notes?: string; birthday?: string;
   tags?: string[]; lastVisitAt?: number; totalSpend?: number; leadSource?: string;
   noShowCount?: number;
@@ -513,6 +644,7 @@ export interface InventoryRecord {
   id: string; name: string; category: string; quantity: number;
   reorderLevel: number; unit: string; price?: number; sku?: string; sellable?: boolean;
   batchNumber?: string; batchPhotoUrl?: string; reorderUrl?: string;
+  locationId?: string;
   createdAt: number;
 }
 
@@ -563,6 +695,34 @@ export interface ReferralRecord {
   rewardGranted: boolean; createdAt: number;
 }
 
+export interface ReviewRecord {
+  id: string;
+  artistId: string;
+  clientId: string;
+  clientName?: string;
+  appointmentId?: string;
+  rating: number; // 1-5
+  text?: string;
+  source: 'inkflow' | 'google';
+  googleReviewId?: string;
+  createdAt: number;
+}
+
+export interface ClientReferralRecord {
+  id: string;
+  artistId: string;
+  clientId: string;
+  code: string;
+  slug?: string;
+  referrerName?: string;
+  discountAmount: number; // referrer's reward ($ off)
+  friendDiscountAmount: number; // friend's discount ($ off)
+  status: 'active' | 'used';
+  usedByLeadId?: string;
+  usedAt?: number;
+  createdAt: number;
+}
+
 export interface LeadRecord {
   id: string;
   artistId: string;
@@ -571,6 +731,7 @@ export interface LeadRecord {
   email?: string;
   source: 'instagram' | 'facebook' | 'tiktok' | 'referral' | 'walk_in' | 'other';
   creativeId?: string;
+  referrerCode?: string;
   consultMode?: 'online_chat' | 'consult_booking' | 'walk_in_direct';
   status: 'new' | 'contacted' | 'booked' | 'won' | 'lost';
   paymentMethod?: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal';

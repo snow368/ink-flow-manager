@@ -1,4 +1,18 @@
-import { db, type ReferralRecord } from '../db';
+import { db, type ReferralRecord, type UserRecord } from '../db';
+
+const PLAN_MONTHLY_PRICE: Record<string, number> = {
+  free: 0,
+  solo: 9.9,
+  pro: 29.9,
+  pro_plus: 39.9,
+};
+
+/**
+ * 获取邀请双方各得的免单月数
+ */
+export function getRewardMonths(): number {
+  return 1;
+}
 
 /**
  * 生成邀请码（基于用户ID的短哈希）
@@ -22,25 +36,17 @@ export async function getMyReferralCode(): Promise<string> {
 }
 
 /**
- * 判断当前月份是否为双月（2/4/6/8/10/12）
- */
-export function isDoubleMonth(): boolean {
-  const month = new Date().getMonth() + 1;
-  return month % 2 === 0;
-}
-
-/**
- * 计算奖励月数
- */
-export function getRewardMonths(): number {
-  return isDoubleMonth() ? 2 : 1;
-}
-
-/**
  * 获取邀请链接
  */
 export function getReferralLink(code: string): string {
   return `${window.location.origin}/register?ref=${code}`;
+}
+
+/**
+ * 获取分享文案
+ */
+export function getReferralShareText(): string {
+  return 'Join me on InkFlow — the tattoo studio management app. Use my link and we both get 1 month free!';
 }
 
 /**
@@ -65,25 +71,42 @@ export async function createReferral(
 
 /**
  * 完成邀请（被邀请人认证后调用）
+ * 双方各得 1 个月免单 credit
  */
 export async function completeReferral(inviteeId: string): Promise<void> {
   const referral = await db.referrals.where('inviteeId').equals(inviteeId).first();
   if (!referral) return;
 
-  await db.referrals.update(referral.id, { status: 'verified' });
+  await db.referrals.update(referral.id, { status: 'verified', rewardGranted: true });
 
-  const months = getRewardMonths();
+  // 推荐人：+1 个月 credit（按自己当前 plan）
   const inviter = await db.users.get(referral.inviterId);
-  const invitee = await db.users.get(inviteeId);
-
   if (inviter) {
-    const currentProDays = inviter.proDaysLeft || 0;
-    await db.users.update(inviter.id, { proDaysLeft: currentProDays + months * 30 });
+    grantFreeMonth(inviter);
   }
-  if (invitee) {
-    const currentProDays = invitee.proDaysLeft || 0;
-    await db.users.update(invitee.id, { proDaysLeft: currentProDays + months * 30 });
-  }
+
+  // 被推荐人：首月免单（走注册流程时 handled）
+}
+
+/**
+ * 给用户加 1 个月免单 credit
+ */
+export async function grantFreeMonth(user: UserRecord): Promise<void> {
+  const current = user.b2bCreditMonths || 0;
+  await db.users.update(user.id, { b2bCreditMonths: current + 1 });
+}
+
+/**
+ * 消耗免单 credit（如结算时调用）
+ */
+export async function consumeFreeMonth(userId: string): Promise<boolean> {
+  const user = await db.users.get(userId);
+  if (!user) return false;
+  const credits = user.b2bCreditMonths || 0;
+  const used = user.b2bCreditUsed || 0;
+  if (credits <= used) return false;
+  await db.users.update(userId, { b2bCreditUsed: used + 1 });
+  return true;
 }
 
 /**
@@ -92,18 +115,23 @@ export async function completeReferral(inviteeId: string): Promise<void> {
 export async function getReferralStats(userId: string): Promise<{
   totalInvited: number;
   verifiedCount: number;
-  proDaysEarned: number;
+  freeMonthsEarned: number;
+  freeMonthsUsed: number;
+  freeMonthsRemaining: number;
   referrals: ReferralRecord[];
 }> {
   const user = await db.users.get(userId);
   const referrals = await db.referrals.where('inviterId').equals(userId).toArray();
   const verifiedCount = referrals.filter(r => r.status === 'verified' || r.status === 'rewarded').length;
-  const proDaysEarned = verifiedCount * (isDoubleMonth() ? 60 : 30);
+  const freeMonthsEarned = user?.b2bCreditMonths || 0;
+  const freeMonthsUsed = user?.b2bCreditUsed || 0;
 
   return {
     totalInvited: referrals.length,
     verifiedCount,
-    proDaysEarned: user?.proDaysLeft || proDaysEarned,
+    freeMonthsEarned,
+    freeMonthsUsed,
+    freeMonthsRemaining: Math.max(0, freeMonthsEarned - freeMonthsUsed),
     referrals,
   };
 }
@@ -144,6 +172,63 @@ export async function getMonthlyLeaderboard(): Promise<
   );
 
   return result;
+}
+
+/**
+ * 获取当前用户的 pending referral（被别人邀请，还没验证）
+ */
+export async function getMyPendingReferral(): Promise<ReferralRecord | null> {
+  const userId = localStorage.getItem('inkflow_current_user');
+  if (!userId) return null;
+  const ref = await db.referrals.where('inviteeId').equals(userId).first();
+  if (!ref || ref.status !== 'pending') return null;
+  return ref;
+}
+
+/**
+ * 调用后端验证 Instagram 是否为纹身师账号
+ */
+const TATTOO_HANDLE_RE = /(shop|studio|tattoo|ink|irezumi|pierc|needle|tat2|tatto|tattooer|tattooartist|tattoos|_ink|ink_|tats_)/i;
+const NON_TATTOO_HANDLE_RE = /^(wix|clairesstores|visionexpress|lovisajewellery)$/i;
+
+function isLikelyTattooHandle(raw: string): boolean {
+  const h = raw.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '').trim().toLowerCase();
+  if (!h || h.length < 2) return false;
+  if (NON_TATTOO_HANDLE_RE.test(h)) return false;
+  return TATTOO_HANDLE_RE.test(h);
+}
+
+export async function verifyInstagramTattooArtist(handle: string): Promise<{ ok: boolean; score: number; verdict: string }> {
+  // First try server-side validation
+  const backendUrl = localStorage.getItem('inkflow_harvests_url') || 'http://localhost:3000';
+  const url = handle.startsWith('http') ? handle : `https://instagram.com/${handle.replace(/^@/, '')}`;
+  try {
+    const res = await fetch(`${backendUrl}/api/instagram/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, shopType: 'shop' }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.ok) return data;
+    }
+  } catch { /* fall through to local check */ }
+
+  // Fallback: client-side handle heuristic
+  const ok = isLikelyTattooHandle(handle);
+  return { ok, score: ok ? 0.5 : 0, verdict: ok ? 'medium' : 'low' };
+}
+
+/**
+ * 以当前用户身份完成邀请验证（自己是被邀请人）
+ */
+export async function completeMyReferral(instagramHandle?: string): Promise<void> {
+  const userId = localStorage.getItem('inkflow_current_user');
+  if (!userId) return;
+  if (instagramHandle) {
+    await db.users.update(userId, { instagramHandle, verified: true } as any);
+  }
+  await completeReferral(userId);
 }
 
 /**

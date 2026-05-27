@@ -5,6 +5,8 @@ import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability, isDayOff, toMinutes, toTimeString, findMultipleAvailableTimes } from '../lib/availability';
 import { createWaitingListEntry } from '../lib/waitingList';
 import { getGoogleCalendarUrl, downloadIcsFile } from '../lib/calendarSync';
+import { trackClientReferral } from '../lib/clientReferral';
+import { getBackendUrl } from '../lib/backendApi';
 
 type Step = 'date' | 'info' | 'payment' | 'confirmed';
 
@@ -151,6 +153,7 @@ export default function ClientBookingPage() {
         createdAt: now,
       });
 
+      const refCode = searchParams.get('ref') || '';
       await db.leads.add({
         id: leadId,
         artistId,
@@ -158,6 +161,7 @@ export default function ClientBookingPage() {
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
         source: 'other',
+        referrerCode: refCode || undefined,
         consultMode: 'consult_booking',
         status: 'booked',
         bodyPart: bodyPart.trim() || undefined,
@@ -167,6 +171,10 @@ export default function ClientBookingPage() {
         preferredTime: selectedTime,
         createdAt: now,
       });
+
+      if (refCode) {
+        trackClientReferral(refCode, leadId).catch(() => {});
+      }
 
       const apptId = 'appt_' + now + '_' + Math.random().toString(36).slice(2, 8);
       await db.appointments.add({
@@ -181,6 +189,30 @@ export default function ClientBookingPage() {
         waiverCompleted: false,
         createdAt: now,
       });
+
+      // Notify backend (async, non-blocking)
+      const bu = getBackendUrl();
+      if (bu && artistId) {
+        fetch(`${bu}/api/booking/${artistId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: selectedDate, time: selectedTime, name: name.trim(), phone: phone.trim(), email: email.trim() || undefined, placement: bodyPart.trim() || undefined, idea: note.trim() || undefined, origin: window.location.origin }),
+        }).catch(() => {});
+        // Create waiver stub for remote signing
+        fetch(`${bu}/api/waiver/create-stub`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': localStorage.getItem('inkflow_backend_secret') || '' },
+          body: JSON.stringify({
+            appointmentId: apptId,
+            clientName: name.trim(),
+            artistName: artist?.name || artist?.email || 'Artist',
+            shopName: artist?.studioName || '',
+            appointmentType: 'consultation',
+            country: artist?.country || '',
+            clientId,
+          }),
+        }).catch(() => {});
+      }
 
       setCreatedLeadId(leadId);
       setCreatedAppointmentId(apptId);
@@ -365,7 +397,7 @@ export default function ClientBookingPage() {
 
           <input value={name} onChange={e => setName(e.target.value)} placeholder="Name *" style={inputStyle} />
           <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone" style={inputStyle} />
-          <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" style={inputStyle} />
+          <input value={email} onChange={e => setEmail(e.target.value)} placeholder="Email (for booking confirmation)" style={inputStyle} />
 
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>{t(lang, 'tattoo_details')}</p>
           <input value={bodyPart} onChange={e => setBodyPart(e.target.value)} placeholder="Body part (e.g. left arm)" style={inputStyle} />
@@ -537,6 +569,20 @@ export default function ClientBookingPage() {
                 {t(lang, 'contact_instagram')}
               </button>
             )}
+            <button onClick={() => {
+              const waiverUrl = `${window.location.origin}/public-waiver/${createdAppointmentId}`;
+              if (navigator.share) {
+                navigator.share({ title: 'Sign Your Waiver', text: 'Please sign your waiver before your appointment:', url: waiverUrl });
+              } else {
+                navigator.clipboard.writeText(waiverUrl);
+                alert('Waiver link copied to clipboard!');
+              }
+            }} style={{
+              width: '100%', padding: 14, borderRadius: 12, border: '1px solid #6366f1',
+              background: '#6366f122', color: '#a5b4fc', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}>
+              📝 Sign Waiver Online
+            </button>
           </div>
         </div>
       )}

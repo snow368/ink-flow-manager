@@ -283,7 +283,7 @@ export default function Invoices() {
                   </p>
                 </div>
                 <button onClick={() => handleCreateFromPos(tx)}
-                  style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#2563eb', color: 'white', fontSize: 12, cursor: 'pointer' }}>
+                  style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   Generate
                 </button>
               </div>
@@ -300,7 +300,7 @@ export default function Invoices() {
             <p style={{ fontSize: 11, color: '#a5b4fc', marginTop: 2 }}>Your name, address, and terms will auto-fill every invoice.</p>
           </div>
           <button onClick={() => navigate('/invoice-settings')}
-            style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: '#7e22ce', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
             Setup
           </button>
         </div>
@@ -350,7 +350,7 @@ export default function Invoices() {
               <button key={'svc-' + i} onClick={() => {
                 setItems([...items, { name: p.name, price: p.price, quantity: 1, type: 'service' }]);
               }}
-              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 {p.name} ${p.price}
               </button>
             ))}
@@ -358,7 +358,7 @@ export default function Invoices() {
               <button key={'prd-' + i} onClick={() => {
                 setItems([...items, { name: p.name, price: p.price, quantity: 1, type: 'product' }]);
               }}
-              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #166534', background: '#14532d20', color: '#86efac', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #166534', background: '#14532d20', color: '#86efac', fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                 {p.name} ${p.price}
               </button>
             ))}
@@ -523,11 +523,11 @@ export default function Invoices() {
         {filterTabs.map(t => (
           <button key={t.key} onClick={() => setFilter(t.key)}
             style={{
-              padding: '6px 14px', borderRadius: 8, border: '1px solid',
+              padding: '8px 18px', borderRadius: 10, border: '1px solid',
               borderColor: filter === t.key ? '#e11d48' : '#334155',
               background: filter === t.key ? '#e11d4820' : 'transparent',
               color: filter === t.key ? '#e11d48' : '#94a3b8',
-              fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer',
             }}>
             {t.label}
           </button>

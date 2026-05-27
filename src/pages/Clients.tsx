@@ -125,13 +125,13 @@ export default function Clients() {
               }
             }}
           />
-          <button onClick={() => fileInputRef.current?.click()} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: '#334155', color: 'white', fontSize: 13 }}>
+          <button onClick={() => fileInputRef.current?.click()} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             Import
           </button>
-          <button onClick={handleFindDuplicates} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: '#7c3aed', color: 'white', fontSize: 13, fontWeight: 600 }}>
+          <button onClick={handleFindDuplicates} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#7c3aed', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             Find Duplicates
           </button>
-          <button onClick={() => navigate('/client/new')} style={{ width: 36, height: 36, borderRadius: 18, border: 'none', background: '#e11d48', color: 'white', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={() => navigate('/client/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: '#e11d48', color: 'white', fontSize: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             +
           </button>
         </div>
@@ -144,12 +144,12 @@ export default function Clients() {
         style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: 'white', fontSize: 14, marginBottom: 10, outline: 'none', boxSizing: 'border-box' }}
       />
 
-      <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={() => setTagFilter('')}
-          style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: !tagFilter ? '#e11d48' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>All</button>
+          style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: !tagFilter ? '#e11d48' : '#334155', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>All</button>
         {TAG_LIST.map(tag => (
           <button key={tag} onClick={() => setTagFilter(tagFilter === tag ? '' : tag)}
-            style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: tagFilter === tag ? TAG_COLORS[tag] : '#334155', color: tagFilter === tag ? '#0f172a' : TAG_COLORS[tag], fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: tagFilter === tag ? TAG_COLORS[tag] : '#334155', color: tagFilter === tag ? '#0f172a' : TAG_COLORS[tag], fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             {tag}
           </button>
         ))}
@@ -223,7 +223,7 @@ export default function Clients() {
               {clients.length === 0 ? 'Add your first client to get started' : 'Try a different search or tag filter'}
             </p>
             {clients.length === 0 && (
-              <button onClick={() => navigate('/client/new')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#e11d48', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => navigate('/client/new')} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', background: '#e11d48', color: 'white', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}>
                 + Add Client
               </button>
             )}
@@ -268,13 +268,13 @@ export default function Clients() {
             )}
             <div style={{ display: 'flex', gap: 6, marginTop: 10 }} onClick={e => e.stopPropagation()}>
               <button onClick={() => navigate(`/appointment/new?clientId=${client.id}`)}
-                style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#e11d48', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Book</button>
+                style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#e11d48', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Book</button>
               {client.phone && (
                 <button onClick={() => window.open(`https://wa.me/${client.phone!.replace(/\D/g, '')}`, '_blank')}
-                  style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#075e54', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>WhatsApp</button>
+                  style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#075e54', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>WhatsApp</button>
               )}
               <button onClick={() => navigate(`/invoices?clientId=${client.id}`)}
-                style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#7e22ce', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>Invoice</button>
+                style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#7e22ce', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Invoice</button>
             </div>
           </div>
         ))

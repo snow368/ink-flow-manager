@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { THEME } from '../lib/theme';
+import { getCurrentArtistIds } from '../lib/locationLogic';
 
 export default function DailyCloseOutPage() {
   const navigate = useNavigate();
@@ -22,20 +23,22 @@ export default function DailyCloseOutPage() {
     const uid = localStorage.getItem('inkflow_current_user');
     if (!uid) { navigate('/register'); return; }
     const load = async () => {
+      const user = await db.users.get(uid);
+      const artistIds = await getCurrentArtistIds(user || null);
       const dayStart = new Date(date + 'T00:00:00').getTime();
       const dayEnd = dayStart + 86400000;
 
       const [appointments, posTx, invoices, inventory, leads, comms] = await Promise.all([
-        db.appointments.where('date').equals(date).toArray(),
-        db.posTransactions.filter(tx => tx.createdAt >= dayStart && tx.createdAt < dayEnd).toArray(),
-        db.invoices.filter(inv => inv.createdAt >= dayStart && inv.createdAt < dayEnd).toArray(),
+        db.appointments.where('date').equals(date).filter(a => artistIds.includes(a.artistId)).toArray(),
+        db.posTransactions.filter(tx => tx.createdAt >= dayStart && tx.createdAt < dayEnd && artistIds.includes(tx.artistId)).toArray(),
+        db.invoices.filter(inv => inv.createdAt >= dayStart && inv.createdAt < dayEnd && artistIds.includes(inv.artistId)).toArray(),
         db.inventory.toArray(),
-        db.leads.where('createdAt').between(dayStart, dayEnd).toArray(),
-        db.communicationLog.filter(l => l.createdAt >= dayStart && l.createdAt < dayEnd).toArray(),
+        db.leads.where('createdAt').between(dayStart, dayEnd).filter(l => artistIds.includes(l.artistId)).toArray(),
+        db.communicationLog.filter(l => l.createdAt >= dayStart && l.createdAt < dayEnd && artistIds.includes(l.artistId)).toArray(),
       ]);
 
       // Count inventory items sold (from sessions)
-      const sessions = await db.sessions.filter(s => s.startedAt >= dayStart && s.startedAt < dayEnd).toArray();
+      const sessions = await db.sessions.filter(s => s.startedAt >= dayStart && s.startedAt < dayEnd && artistIds.includes(s.artistId)).toArray();
       const inventorySold = sessions.reduce((sum, s) => sum + (s.consumables?.length || 0), 0);
 
       setReport({

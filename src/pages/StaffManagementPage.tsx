@@ -5,6 +5,8 @@ import type { UserRecord, StaffPermission } from '../db';
 import { can, STAFF_PERMISSION_LABELS } from '../lib/staffPermissions';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { THEME } from '../lib/theme';
+import { canAccess } from '../lib/planAccess';
+import { hashPassword } from '../lib/auth';
 
 export default function StaffManagementPage() {
   const navigate = useNavigate();
@@ -12,12 +14,16 @@ export default function StaffManagementPage() {
   const [staff, setStaff] = useState<UserRecord[]>([]);
   const [artists, setArtists] = useState<UserRecord[]>([]);
   const [message, setMessage] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
     const uid = localStorage.getItem('inkflow_current_user');
     if (!uid) { navigate('/register'); return; }
     db.users.get(uid).then(u => {
-      if (!u?.roles?.includes('owner')) { navigate('/me'); return; }
+      if (!u || !canAccess(u, 'staff_management')) { navigate('/me'); return; }
       db.users.toArray().then(all => {
         setStaff(all.filter(u => u.roles?.includes('staff')));
         setArtists(all.filter(u => u.roles?.includes('artist')));
@@ -49,21 +55,28 @@ export default function StaffManagementPage() {
     setStaff(all.filter(u => u.roles?.includes('staff')));
   };
 
-  const addStaffUser = async () => {
-    const name = prompt('Staff member name:');
-    if (!name) return;
+  const resetAddForm = () => { setShowAdd(false); setNewName(''); setNewEmail(''); setNewPassword(''); };
+
+  const handleAddStaff = async () => {
+    if (!newName.trim() || !newEmail.trim() || !newPassword) return;
+    if (newPassword.length < 6) { setMessage('Password must be at least 6 characters.'); return; }
+    const existing = await db.users.where('email').equals(newEmail.trim()).first();
+    if (existing) { setMessage('Email already in use.'); return; }
     const id = 'user_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+    const passwordHash = await hashPassword(newPassword);
     await db.users.add({
       id,
-      name,
-      email: name.toLowerCase().replace(/\s+/g, '.') + '@staff.inkflow',
+      name: newName.trim(),
+      email: newEmail.trim(),
       roles: ['staff'],
+      passwordHash,
       verified: true,
       createdAt: Date.now(),
     });
     const all = await db.users.toArray();
     setStaff(all.filter(u => u.roles?.includes('staff')));
-    setMessage(`Added ${name} as staff.`);
+    setMessage(`Added ${newName.trim()} as staff.`);
+    resetAddForm();
     setTimeout(() => setMessage(''), 3000);
   };
 
@@ -74,7 +87,7 @@ export default function StaffManagementPage() {
       <button onClick={() => navigate('/me')} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 14, cursor: 'pointer', marginBottom: 16 }}>← {t(lang, 'back')}</button>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{ fontSize: 20, fontWeight: 'bold' }}>{t(lang, 'staff_management')}</h2>
-        <button onClick={addStaffUser} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>+ Add Staff</button>
+        <button onClick={() => setShowAdd(true)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>+ Add Staff</button>
       </div>
 
       {message && <div style={{ padding: 10, borderRadius: 8, background: '#166534', marginBottom: 12, fontSize: 13, color: '#4ade80' }}>{message}</div>}
@@ -113,6 +126,34 @@ export default function StaffManagementPage() {
           <p style={{ fontSize: 13 }}>Tap "Add Staff" to create a staff account</p>
         </div>
       )}
+
+      {/* Add Staff Modal */}
+      {showAdd && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 24 }}>
+          <div style={{ background: '#1e293b', borderRadius: 16, padding: 24, width: '100%', maxWidth: 360 }}>
+            <p style={{ fontSize: 17, fontWeight: 700, marginBottom: 16 }}>Add Staff Member</p>
+            <input placeholder="Name *" value={newName} onChange={e => setNewName(e.target.value)} style={inputStyle} autoFocus />
+            <input placeholder="Email *" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} style={inputStyle} />
+            <input placeholder="Password * (min 6 chars)" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} style={inputStyle} />
+            <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              <button onClick={handleAddStaff} disabled={!newName.trim() || !newEmail.trim() || !newPassword}
+                style={{ flex: 1, padding: 12, borderRadius: 10, border: 'none', background: (!newName.trim() || !newEmail.trim() || !newPassword) ? '#4b5563' : '#e11d48', color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+                Add
+              </button>
+              <button onClick={resetAddForm}
+                style={{ padding: '12px 20px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  width: '100%', padding: '10px 14px', marginBottom: 8,
+  borderRadius: 10, border: '1px solid #334155', background: '#0f172a',
+  color: 'white', fontSize: 14, outline: 'none', boxSizing: 'border-box',
+};

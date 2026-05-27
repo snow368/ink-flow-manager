@@ -1,20 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collectDeviceFingerprint, checkDeviceBinding, checkIPRegistrationLimit, incrementIPRegistrationCount } from '../lib/fingerprint';
-import { db } from '../db';
+import { db, type StudioLocationRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { processReferralOnRegister } from '../lib/referralLogic';
+import { hashPassword } from '../lib/auth';
 
 export default function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get('ref') || '';
+  const upgradePlan = searchParams.get('upgrade') || '';
   const [mode, setMode] = useState<'register' | 'login'>('register');
   const [deviceId, setDeviceId] = useState('');
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [roles, setRoles] = useState<Array<'artist' | 'owner' | 'staff'>>(['artist']);
+  const [studioName, setStudioName] = useState('');
+  const [studioAddress, setStudioAddress] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const lang = detectInitialLanguage();
@@ -26,19 +32,10 @@ export default function Register() {
 
       if (localStorage.getItem('inkflow_current_user')) return;
 
-      if (mode === 'login') {
-        const boundUser = await checkDeviceBinding(fp.hash);
-        if (boundUser) {
-          localStorage.setItem('inkflow_current_user', boundUser);
-          window.location.href = '/today';
-          return;
-        }
-      }
-
       if (mode === 'register') {
         const bound = await checkDeviceBinding(fp.hash);
         if (bound) {
-          setError('This device is already registered. Switch to login.');
+          setError('This device already has an account. Switch to login.');
           return;
         }
         const ipCheck = checkIPRegistrationLimit();
@@ -52,16 +49,26 @@ export default function Register() {
   }, [mode, navigate]);
 
   const handleLogin = async () => {
-    if (!email) return;
+    if (!email || !password) return;
     setSubmitting(true);
+    setError('');
     try {
       const user = await db.users.where('email').equals(email).first();
-      if (user) {
-        await db.users.update(user.id, { deviceId });
-        localStorage.setItem('inkflow_current_user', user.id);
-        window.location.href = '/today';
+      if (!user) { setError('No account found with this email.'); return; }
+      const pwHash = await hashPassword(password);
+      if (user.passwordHash && user.passwordHash !== pwHash) { setError('Wrong password.'); return; }
+      if (!user.passwordHash) {
+        // Migrate: no password set yet — set it now
+        await db.users.update(user.id, { passwordHash: pwHash, deviceId });
       } else {
-        setError('No account found with this email.');
+        await db.users.update(user.id, { deviceId });
+      }
+      localStorage.setItem('inkflow_current_user', user.id);
+      if (upgradePlan === 'pro_plus') {
+        await db.users.update(user.id, { plan: 'pro_plus' });
+        window.location.href = '/pro-plus-setup';
+      } else {
+        window.location.href = '/today';
       }
     } catch {
       setError('Login failed.');
@@ -71,18 +78,25 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
-    if (!email || !name || roles.length === 0 || submittingRef.current) return;
+    if (!email || !name || !password || !studioName.trim() || roles.length === 0 || submittingRef.current) return;
+    if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
+    if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
+    // Check duplicate email
+    const existing = await db.users.where('email').equals(email).first();
+    if (existing) { setError('Email already registered.'); return; }
     submittingRef.current = true;
     setSubmitting(true);
     setError('');
     try {
       const now = Date.now();
       const userId = 'user_' + now + '_' + Math.random().toString(36).slice(2, 8);
+      const passwordHash = await hashPassword(password);
       await db.users.add({
         id: userId,
         email,
         name,
         roles,
+        passwordHash,
         deviceId,
         verified: false,
         createdAt: now,
@@ -113,8 +127,41 @@ export default function Register() {
         } catch { /* silent */ }
       }
 
+      // Auto-join existing studio if name+address match
+      let assignedLocationIds: string[] | undefined;
+      if (studioName.trim()) {
+        const allLocs = await db.studioLocations.toArray();
+        const match = allLocs.find(l =>
+          l.name.toLowerCase() === studioName.trim().toLowerCase() &&
+          (!studioAddress.trim() || l.address?.toLowerCase() === studioAddress.trim().toLowerCase())
+        );
+        if (match) {
+          assignedLocationIds = [match.id];
+        } else if (roles.includes('owner')) {
+          const locId = 'loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+          const newLoc: StudioLocationRecord = {
+            id: locId, ownerId: userId, name: studioName.trim(),
+            address: studioAddress.trim() || undefined,
+            createdAt: Date.now(),
+          };
+          await db.studioLocations.add(newLoc);
+          assignedLocationIds = [locId];
+        }
+      }
+      if (assignedLocationIds || studioName.trim()) {
+        await db.users.update(userId, {
+          ...(assignedLocationIds ? { assignedLocationIds } : {}),
+          studioName: studioName.trim() || undefined,
+        });
+      }
+
       // Force full reload so App reads fresh auth state
-      window.location.href = '/today?welcome=1';
+      if (upgradePlan === 'pro_plus') {
+        await db.users.update(userId, { plan: 'pro_plus' });
+        window.location.href = '/pro-plus-setup';
+      } else {
+        window.location.href = '/today?welcome=1';
+      }
     } catch {
       setError('Registration failed.');
     } finally {
@@ -152,6 +199,12 @@ export default function Register() {
       )}
 
       <input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+
+      <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
+
+      {mode === 'register' && (
+        <input placeholder="Confirm password" type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} style={inputStyle} autoComplete="new-password" />
+      )}
 
       {mode === 'register' && (
         <div style={{ marginBottom: 16 }}>
@@ -193,15 +246,23 @@ export default function Register() {
         </div>
       )}
 
+      {mode === 'register' && (
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Studio <span style={{ color: '#ef4444' }}>*</span></p>
+          <input placeholder="Studio name *" value={studioName} onChange={e => setStudioName(e.target.value)} style={inputStyle} />
+          <input placeholder="Studio address (city, country) *" value={studioAddress} onChange={e => setStudioAddress(e.target.value)} style={inputStyle} />
+        </div>
+      )}
+
       <button
         onClick={mode === 'register' ? handleRegister : handleLogin}
-        disabled={submitting || !email || (mode === 'register' && (!name || roles.length === 0))}
+        disabled={submitting || !email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))}
         style={{
           width: '100%',
           padding: 14,
           borderRadius: 12,
           border: 'none',
-          background: (!email || (mode === 'register' && (!name || roles.length === 0))) ? '#4b5563' : '#e11d48',
+          background: (!email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))) ? '#4b5563' : '#e11d48',
           color: 'white',
           fontSize: 16,
           fontWeight: 600,

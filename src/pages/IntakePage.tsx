@@ -1,8 +1,9 @@
-﻿import { useMemo, useState } from 'react';
+﻿import { useMemo, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { canAddStorage } from '../lib/quota';
+import { trackClientReferral } from '../lib/clientReferral';
 
 const ALLERGY_OPTIONS = [
   'Latex gloves',
@@ -28,6 +29,7 @@ export default function IntakePage() {
     () => new URLSearchParams(location.search).get('cr') || undefined,
     [location.search]
   );
+  const refCode = useRef(new URLSearchParams(location.search).get('ref') || '');
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -93,13 +95,15 @@ export default function IntakePage() {
         `Decision maker: ${decisionMaker}`,
       ].join(' | ');
 
+      const leadId = `lead_${now}_${Math.random().toString(36).slice(2, 6)}`;
       await db.leads.add({
-        id: `lead_${now}_${Math.random().toString(36).slice(2, 6)}`,
+        id: leadId,
         artistId,
         name: name.trim(),
         phone: phone.trim() || undefined,
         email: email.trim() || undefined,
-        source,
+        source: refCode.current ? 'referral' : source,
+        referrerCode: refCode.current || undefined,
         creativeId: creativeIdFromQuery,
         consultMode,
         status: 'new',
@@ -117,6 +121,9 @@ export default function IntakePage() {
         allergyNote: allergyNote.trim() || undefined,
         createdAt: now,
       });
+      if (refCode.current) {
+        trackClientReferral(refCode.current, leadId).catch(() => {});
+      }
       setDone(true);
     } finally {
       setSubmitting(false);

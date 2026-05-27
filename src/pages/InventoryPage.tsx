@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { db, type InventoryRecord } from '../db';
 import { getInventoryGuide, speakGuide, tryOCR, addInventoryFromPhoto, shouldShowGuide, markScanComplete } from '../lib/inventoryCamera';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { getCurrentLocation } from '../lib/locationLogic';
 
 export default function InventoryPage() {
   const navigate = useNavigate();
@@ -34,7 +35,14 @@ export default function InventoryPage() {
   const streamRef = useRef<MediaStream | null>(null);
   const guide = getInventoryGuide();
 
-  const loadItems = () => db.inventory.orderBy('name').toArray().then(setItems);
+  const loadItems = () => {
+    const locId = getCurrentLocation();
+    if (locId && locId !== 'all') {
+      db.inventory.where('locationId').equals(locId).toArray().then(setItems);
+    } else {
+      db.inventory.orderBy('name').toArray().then(setItems);
+    }
+  };
   useEffect(() => { loadItems(); }, []);
 
   const resetForm = () => {
@@ -55,8 +63,9 @@ export default function InventoryPage() {
       if (photoData) {
         await addInventoryFromPhoto(photoData, name.trim(), category, quantity, unit);
       } else {
+        const locId = getCurrentLocation();
         const id = 'inv_' + now + '_' + Math.random().toString(36).slice(2, 6);
-        await db.inventory.add({ id, name: name.trim(), category: category.trim() || 'General', quantity, reorderLevel, unit, price: priceCents, sku: sku.trim() || undefined, sellable: sellable || undefined, batchNumber: batchNumber.trim() || undefined, batchPhotoUrl: batchPhotoUrl || undefined, reorderUrl: reorderUrl.trim() || undefined, createdAt: now });
+        await db.inventory.add({ id, name: name.trim(), category: category.trim() || 'General', quantity, reorderLevel, unit, price: priceCents, sku: sku.trim() || undefined, sellable: sellable || undefined, batchNumber: batchNumber.trim() || undefined, batchPhotoUrl: batchPhotoUrl || undefined, reorderUrl: reorderUrl.trim() || undefined, locationId: locId && locId !== 'all' ? locId : undefined, createdAt: now });
       }
       setMessage('Item added.');
       markScanComplete();
