@@ -20,6 +20,14 @@ async function generateQRFromText(text: string): Promise<string> {
   return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encoded}&bgcolor=0f172a&color=ffffff`;
 }
 
+export function getWalkinUrl(artistId: string): string {
+  return `${window.location.origin}/walkin/${artistId}`;
+}
+
+export async function generateWalkinQR(artistId: string): Promise<string> {
+  return generateQRFromText(getWalkinUrl(artistId));
+}
+
 export function getCheckinUrl(appointmentId: string): string {
   return `${window.location.origin}/checkin/${appointmentId}`;
 }

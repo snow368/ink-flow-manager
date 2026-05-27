@@ -12,7 +12,7 @@ import { getClientsWithBirthdayToday, getYearAwayClients, getUpcomingBirthdays, 
 import { getLowStockCount } from '../lib/inventoryAlerts';
 import { getAftercareWhatsAppUrl } from '../lib/aftercareLogic';
 import { getGoogleCalendarUrl, downloadTodayIcs } from '../lib/calendarSync';
-import { generateQRDataUrl } from '../lib/qrCheckin';
+import { generateQRDataUrl, getWalkinUrl, generateWalkinQR } from '../lib/qrCheckin';
 import { getReviewRequestWhatsAppUrl } from '../lib/reviewRequest';
 import { sendSms, sendWhatsApp, getTwilioConfig } from '../lib/smsService';
 import { syncArtistData, getBackendUrl } from '../lib/backendApi';
@@ -101,6 +101,8 @@ export default function Today() {
   const [autoSend, setAutoSend] = useState(() => localStorage.getItem('inkflow_auto_send') === 'true');
   const [autoSentCount, setAutoSentCount] = useState(0);
   const [pendingBookings, setPendingBookings] = useState<PendingBooking[]>([]);
+  const [showWalkinQR, setShowWalkinQR] = useState(false);
+  const [walkinQrUrl, setWalkinQrUrl] = useState('');
   const autoSentRef = useRef(new Set<string>());
 
   function toggleAutoSend() {
@@ -808,7 +810,11 @@ export default function Today() {
             <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
-          <button onClick={() => navigate('/walkin/' + (user?.artistId || user?.id || ''))} title="Walk-in QR"
+          <button onClick={async () => {
+            const artistId = user?.artistId || user?.id || '';
+            setWalkinQrUrl(await generateWalkinQR(artistId));
+            setShowWalkinQR(true);
+          }} title="Walk-in QR"
             style={{ width: 44, height: 44, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             ✋
           </button>
@@ -1537,6 +1543,41 @@ export default function Today() {
               style={{ width: '100%', border: '1px solid #475569', borderRadius: 8, padding: '9px 10px', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}
             >
               Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Walk-in QR Modal */}
+      {showWalkinQR && (
+        <div onClick={() => setShowWalkinQR(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 380, background: '#1e293b', border: '1px solid #334155', borderRadius: 16, padding: 24, textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>✋</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Walk-in QR</h3>
+            <p style={{ fontSize: 12, color: '#fbbf24', background: '#422006', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
+              💡 Print this QR and display at front desk — walk-in clients scan to check in.
+            </p>
+            {walkinQrUrl ? (
+              <img src={walkinQrUrl} alt="Walk-in QR" style={{ width: 200, height: 200, borderRadius: 8, marginBottom: 12 }} />
+            ) : (
+              <div style={{ width: 200, height: 200, borderRadius: 8, background: '#0f172a', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#64748b' }}>Loading...</div>
+            )}
+            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 12, wordBreak: 'break-all' }}>
+              {getWalkinUrl(user?.artistId || user?.id || '')}
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => { navigator.clipboard.writeText(getWalkinUrl(user?.artistId || user?.id || '')); }}
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+                Copy URL
+              </button>
+              <button onClick={() => { window.open(walkinQrUrl, '_blank'); }}
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none', background: '#e11d48', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                Print QR
+              </button>
+            </div>
+            <button onClick={() => setShowWalkinQR(false)}
+              style={{ marginTop: 8, padding: '8px 16px', borderRadius: 8, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer' }}>
+              Close
             </button>
           </div>
         </div>
