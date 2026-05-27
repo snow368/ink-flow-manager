@@ -82,9 +82,10 @@ export async function getFriendDiscountByAppointment(appointmentId: string): Pro
   friendDiscount: number;
   referrerName?: string;
 } | null> {
-  const appt = await db.appointments.get(appointmentId);
-  if (!appt?.projectId) return null;
-  const lead = await db.leads.get(appt.projectId);
+  const { getAppointmentProjectView, getSourceLeadForAppointmentView } = await import('./projectAccess');
+  const view = await getAppointmentProjectView(appointmentId);
+  if (!view) return null;
+  const lead = await getSourceLeadForAppointmentView(view);
   if (!lead?.referrerCode) return null;
   const ref = await db.clientReferrals.where('code').equals(lead.referrerCode).first();
   if (!ref || ref.status !== 'active') return null;

@@ -30,8 +30,9 @@ describe('appointmentLogic', () => {
   });
 
   describe('APPOINTMENT_STATUS', () => {
-    it('includes all 7 statuses', () => {
-      expect(APPOINTMENT_STATUS).toHaveLength(7);
+    it('includes all 8 statuses', () => {
+      expect(APPOINTMENT_STATUS).toHaveLength(8);
+      expect(APPOINTMENT_STATUS).toContain('draft');
       expect(APPOINTMENT_STATUS).toContain('unconfirmed');
       expect(APPOINTMENT_STATUS).toContain('deposit_paid');
       expect(APPOINTMENT_STATUS).toContain('ready');

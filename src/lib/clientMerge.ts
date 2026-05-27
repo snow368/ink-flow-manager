@@ -91,8 +91,10 @@ export async function mergeClients(keepId: string, mergeIds: string[]): Promise<
     // Merge noShowCount
     keep.noShowCount = (keep.noShowCount || 0) + (other.noShowCount || 0);
 
-    // Reassign appointments to kept client
+    await db.projects.where('clientId').equals(mergeId).modify({ clientId: keepId });
     await db.appointments.where('clientId').equals(mergeId).modify({ clientId: keepId });
+    await db.sessions.where('clientId').equals(mergeId).modify({ clientId: keepId });
+    await db.invoices.where('clientId').equals(mergeId).modify({ clientId: keepId });
     await db.waitingList.where('clientId').equals(mergeId).modify({ clientId: keepId });
     await db.leads.where('name').equals(other.name).modify({ name: keep.name });
 

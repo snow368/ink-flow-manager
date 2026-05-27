@@ -1,7 +1,8 @@
-﻿export const APPOINTMENT_STATUS = ['unconfirmed', 'deposit_paid', 'ready', 'attention', 'blocked', 'done', 'cancelled'] as const;
+﻿export const APPOINTMENT_STATUS = ['draft', 'unconfirmed', 'deposit_paid', 'ready', 'attention', 'blocked', 'done', 'cancelled'] as const;
 export type AppointmentStatus = typeof APPOINTMENT_STATUS[number];
 
 export const STATUS_COLORS: Record<AppointmentStatus, string> = {
+  draft: '#64748b',
   unconfirmed: '#fbbf24',
   deposit_paid: '#60a5fa',
   ready: '#34d399',
@@ -12,6 +13,7 @@ export const STATUS_COLORS: Record<AppointmentStatus, string> = {
 };
 
 export const STATUS_LABELS: Record<AppointmentStatus, string> = {
+  draft: 'Draft',
   unconfirmed: 'Unconfirmed',
   deposit_paid: 'Deposit Paid',
   ready: 'Ready',

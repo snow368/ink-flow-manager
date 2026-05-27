@@ -70,7 +70,7 @@ export async function logCommunication(
   artistId: string,
   channel: CommunicationLogRecord['channel'],
   direction: CommunicationLogRecord['direction'],
-  data: { clientId?: string; appointmentId?: string; message?: string; templateType?: string },
+  data: { clientId?: string; appointmentId?: string; projectId?: string; message?: string; templateType?: string },
 ): Promise<void> {
   const id = 'comm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
   await db.communicationLog.add({
@@ -78,6 +78,7 @@ export async function logCommunication(
     artistId,
     clientId: data.clientId,
     appointmentId: data.appointmentId,
+    projectId: data.projectId,
     channel,
     direction,
     message: data.message,

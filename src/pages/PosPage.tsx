@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { db, type InventoryRecord, type ClientRecord, type AppointmentRecord, type PosLineItem, type UserRecord, type InvoiceRecord } from '../db';
+import { db, type InventoryRecord, type ClientRecord, type AppointmentRecord, type PosLineItem, type UserRecord, type InvoiceRecord, type ProjectRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { generateReceiptNumber, printReceipt, deductInventory, restoreInventory, loadPosSettings } from '../lib/posLogic';
@@ -25,6 +25,7 @@ export default function PosPage() {
   // Session checkout state
   const [appointmentId, setAppointmentId] = useState(searchParams.get('appointmentId') || '');
   const [appointment, setAppointment] = useState<AppointmentRecord | null>(null);
+  const [linkedProject, setLinkedProject] = useState<ProjectRecord | null>(null);
   const [todayAppointments, setTodayAppointments] = useState<(AppointmentRecord & { clientName?: string })[]>([]);
 
   // Shared state
@@ -71,9 +72,10 @@ export default function PosPage() {
   const [invoicePaymentMethod, setInvoicePaymentMethod] = useState<InvoiceRecord['paymentMethod']>('cash');
   const [invoiceNotes, setInvoiceNotes] = useState('');
 
-  // Deposit from appointment
-  const depositAmount = appointment?.depositAmount || 0;
-  const depositPaid = appointment?.status === 'deposit_paid' && depositAmount > 0;
+  const depositAmount = linkedProject?.depositAmount || 0;
+  const depositPaid =
+    depositAmount > 0 &&
+    (appointment?.status === 'deposit_paid' || linkedProject?.depositStatus === 'paid');
 
   useEffect(() => {
 
@@ -124,6 +126,8 @@ export default function PosPage() {
       setLinkedClientId(a.clientId);
       const c = await db.clients.get(a.clientId);
       setLinkedClient(c || null);
+      const p = a.projectId ? await db.projects.get(a.projectId) : undefined;
+      setLinkedProject(p || null);
       const rate = await getArtistCommissionRate(a.artistId);
       setArtistCommissionRate(rate);
       // Check for referral friend discount

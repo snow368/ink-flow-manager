@@ -29,6 +29,7 @@ function apiFetch(path: string, body: any): Promise<void> {
 
 export function syncArtistData(params: {
   artistId: string;
+  projects?: any[];
   appointments?: any[];
   clients?: any[];
   settings?: any;

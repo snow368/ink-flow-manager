@@ -36,14 +36,15 @@ export function markDataChanged() {
 function filterAppointmentsForSync(appointments: AppointmentRecord[], artistId: string) {
   return appointments.map(a => ({
     id: a.id,
+    projectId: a.projectId,
     artistId,
+    clientId: a.clientId,
     clientName: '',
     date: a.date,
     time: a.time,
     duration: a.duration,
-    bodyPart: a.bodyPart,
-    designNotes: a.designNotes,
     status: a.status,
+    type: a.type,
   }));
 }
 
@@ -55,8 +56,9 @@ export async function syncAll(user: UserRecord): Promise<{ ok: boolean; error?: 
 
   try {
     // Gather data
-    const [clients, appointments, portfolio, leads, sessions, posTx, invoices, commLog] = await Promise.all([
+    const [clients, projects, appointments, portfolio, leads, sessions, posTx, invoices, commLog] = await Promise.all([
       db.clients.where('artistId').equals(artistId).toArray(),
+      db.projects.where('artistId').equals(artistId).toArray(),
       db.appointments.where('artistId').equals(artistId).toArray(),
       db.portfolio.where('artistId').equals(artistId).toArray(),
       db.leads.where('artistId').equals(artistId).toArray(),
@@ -95,6 +97,18 @@ export async function syncAll(user: UserRecord): Promise<{ ok: boolean; error?: 
     await syncArtistData({
       artistId,
       appointments: filterAppointmentsForSync(appointments, artistId),
+      projects: projects.map(p => ({
+        id: p.id,
+        clientId: p.clientId,
+        title: p.title,
+        status: p.status,
+        bodyPart: p.bodyPart,
+        style: p.style,
+        plannedSessions: p.plannedSessions,
+        completedSessions: p.completedSessions,
+        createdAt: p.createdAt,
+        updatedAt: p.updatedAt,
+      })),
       clients: clients.map(c => ({
         id: c.id,
         name: c.name,
@@ -120,7 +134,7 @@ export async function syncAll(user: UserRecord): Promise<{ ok: boolean; error?: 
         createdAt: l.createdAt,
       })),
       sessions: sessions.map(s => ({
-        id: s.id, appointmentId: s.appointmentId, status: s.status,
+        id: s.id, projectId: s.projectId, appointmentId: s.appointmentId, status: s.status,
         startedAt: s.startedAt, finishedAt: s.finishedAt,
         actualDuration: s.actualDuration, photos: s.photos,
         createdAt: s.startedAt,

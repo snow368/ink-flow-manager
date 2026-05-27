@@ -497,6 +497,44 @@ export class InkFlowDB extends Dexie {
       reviews: 'id, artistId, appointmentId, clientId, createdAt',
       clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
     });
+    this.version(25).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+    }).upgrade(async (tx) => {
+      try {
+        const { runTattooOsV25Migration } = await import('./lib/migrations/tattooOsV25');
+        await runTattooOsV25Migration(tx);
+        localStorage.setItem('inkflow_migration_v25_done', '1');
+        localStorage.setItem('inkflow_schema_version', '25');
+      } catch (err) {
+        console.error('[InkFlow] Dexie v25 upgrade failed; dual-read fallbacks active', err);
+      }
+    });
   }
 }
 
@@ -513,6 +551,9 @@ db.appointments.hook('deleting').subscribe(markSyncPending);
 db.portfolio.hook('creating').subscribe(markSyncPending);
 db.portfolio.hook('updating').subscribe(markSyncPending);
 db.portfolio.hook('deleting').subscribe(markSyncPending);
+db.projects.hook('creating').subscribe(markSyncPending);
+db.projects.hook('updating').subscribe(markSyncPending);
+db.projects.hook('deleting').subscribe(markSyncPending);
 
 export interface UserRecord {
   id: string;
@@ -592,12 +633,46 @@ export interface ClientRecord {
   createdAt: number;
 }
 
+export type ProjectStatus =
+  | 'inquiry'
+  | 'consultation'
+  | 'design'
+  | 'approved'
+  | 'scheduled'
+  | 'in_progress'
+  | 'completed'
+  | 'on_hold'
+  | 'cancelled';
+
+/** Legacy appointment fields (pre–Tattoo OS); may remain on disk until migration compacts rows */
+export type LegacyAppointmentFields = {
+  seriesId?: string;
+  bodyPart?: string;
+  designNotes?: string;
+  depositAmount?: number;
+};
+
 export interface AppointmentRecord {
-  id: string; clientId: string; projectId?: string; artistId: string; date: string;
-  time: string; duration: number; type?: string;
-  status: 'unconfirmed'|'deposit_paid'|'ready'|'attention'|'blocked'|'done'|'cancelled';
-  waiverCompleted: boolean; depositAmount?: number; bodyPart?: string; designNotes?: string;
-  station?: string; seriesId?: string;
+  id: string;
+  /** Required for new writes; optional on disk until v25 migration */
+  projectId?: string;
+  clientId: string;
+  artistId: string;
+  date: string;
+  time: string;
+  duration: number;
+  type?: string;
+  status:
+    | 'draft'
+    | 'unconfirmed'
+    | 'deposit_paid'
+    | 'ready'
+    | 'attention'
+    | 'blocked'
+    | 'done'
+    | 'cancelled';
+  waiverCompleted: boolean;
+  station?: string;
   walkIn?: boolean;
   rescheduleRequest?: { proposedDate: string; proposedTime: string; requestedAt: number };
   reviewInvitedAt?: number;
@@ -606,14 +681,37 @@ export interface AppointmentRecord {
   createdAt: number;
 }
 
+/** Raw IndexedDB row (includes legacy fields). Prefer resolve via projectAccess. */
+export type StoredAppointmentRecord = AppointmentRecord & LegacyAppointmentFields;
+
 export interface ProjectRecord {
-  id: string; clientId: string; artistId: string; title: string; style?: string;
-  bodyPart?: string; status: 'consultation'|'in_progress'|'completed'|'on_hold';
-  totalSessions: number; completedSessions: number; createdAt: number;
+  id: string;
+  artistId: string;
+  clientId: string;
+  sourceLeadId?: string;
+  title: string;
+  style?: string;
+  bodyPart?: string;
+  designNotes?: string;
+  referenceImages?: string[];
+  status: ProjectStatus;
+  plannedSessions?: number;
+  /** @deprecated use plannedSessions */
+  totalSessions?: number;
+  completedSessions: number;
+  depositAmount?: number;
+  depositStatus?: 'none' | 'pending' | 'paid' | 'refunded';
+  budget?: string;
+  paymentStatus?: LeadRecord['paymentStatus'];
+  paymentMethod?: LeadRecord['paymentMethod'];
+  referrerCode?: string;
+  createdAt: number;
+  updatedAt: number;
+  completedAt?: number;
 }
 
 export interface WaiverRecord {
-  id: string; appointmentId: string; clientId: string; type: string;
+  id: string; appointmentId: string; projectId?: string; clientId: string; type: string;
   content: string; signature?: string; status: 'missing'|'signed';
   signedAt?: number; createdAt: number;
   auditDevice?: string;
@@ -625,8 +723,15 @@ export interface WaiverRecord {
   clientDob?: string;
 }
 
+export type StoredSessionRecord = SessionRecord & { projectId?: string };
+
 export interface SessionRecord {
-  id: string; appointmentId: string; artistId: string;
+  id: string;
+  /** Required for new writes; optional on disk until v25 migration */
+  projectId?: string;
+  appointmentId?: string;
+  clientId?: string;
+  artistId: string;
   status: 'active'|'paused'|'completed'|'stopped';
   startedAt: number; pausedAt?: number; finishedAt?: number;
   actualDuration: number; timeline: TimelineEvent[];
@@ -664,6 +769,7 @@ export interface PosTransactionRecord {
   clientId?: string;
   walkInName?: string;
   appointmentId?: string;
+  projectId?: string;
   items: PosLineItem[];
   subtotal: number;
   depositApplied?: number;
@@ -702,6 +808,7 @@ export interface ReviewRecord {
   clientId: string;
   clientName?: string;
   appointmentId?: string;
+  projectId?: string;
   rating: number; // 1-5
   text?: string;
   source: 'inkflow' | 'google';
@@ -760,6 +867,8 @@ export interface LeadRecord {
   finalRevisionId?: string;
   finalRevisionVersion?: number;
   nextFollowUpAt?: number;
+  convertedProjectId?: string;
+  convertedAt?: number;
   createdAt: number;
 }
 
@@ -882,6 +991,7 @@ export interface InvoiceRecord {
   paymentStatus: 'pending' | 'paid' | 'cancelled' | 'refunded';
   posTransactionId?: string;
   appointmentId?: string;
+  projectId?: string;
   notes?: string;
   locationId?: string;
   sentAt?: number;
@@ -941,6 +1051,7 @@ export interface CommunicationLogRecord {
   artistId: string;
   clientId?: string;
   appointmentId?: string;
+  projectId?: string;
   channel: 'whatsapp' | 'instagram' | 'phone' | 'email' | 'sms' | 'app_note' | 'reminder_sent';
   direction: 'outbound' | 'inbound' | 'auto';
   message?: string;

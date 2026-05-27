@@ -1,0 +1,154 @@
+
+--- 2026-05-21T07:25:22.812Z debug
+🪵  Writing logs to "D:\ink-flow-manager\.wrangler\logs\wrangler-2026-05-21_07-25-22_500.log"
+---
+
+--- 2026-05-21T07:25:22.812Z debug
+.env file not found at "D:\ink-flow-manager\.env.local". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+---
+
+--- 2026-05-21T07:25:22.831Z log
+
+ ⛅️ wrangler 4.93.0
+───────────────────
+---
+
+--- 2026-05-21T07:25:22.836Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command started","timestamp":1779348322836,"properties":{"amplitude_session_id":1779348322833,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":["projectName"],"argsCombination":"projectName","sanitizedCommand":"pages deployment list","sanitizedArgs":{}}}
+---
+
+--- 2026-05-21T07:25:22.881Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/accounts
+---
+
+--- 2026-05-21T07:25:22.881Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.882Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.883Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.883Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:22.885Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/memberships
+---
+
+--- 2026-05-21T07:25:22.886Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.886Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.886Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:22.886Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:23.867Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:23.867Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.867Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.867Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:23.877Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:23.878Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.878Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.878Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:23.880Z debug
+Saving to cache: {"account":{"id":"76a99ad37a968c6e5f743d8bb27825b3","name":"Snow368@gmail.com's Account"}}
+---
+
+--- 2026-05-21T07:25:23.883Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/accounts/76a99ad37a968c6e5f743d8bb27825b3/pages/projects/ink-flow/deployments
+---
+
+--- 2026-05-21T07:25:23.883Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.883Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.883Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:23.883Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:24.273Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:24.273Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:24.273Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:24.273Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:24.276Z debug
+Saving to cache: {"account_id":"76a99ad37a968c6e5f743d8bb27825b3"}
+---
+
+--- 2026-05-21T07:25:24.286Z log
+┌──────────────────────────────────────┬─────────────┬────────┬─────────┬─────────────────────────────────────┬───────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Id                                   │ Environment │ Branch │ Source  │ Deployment                          │ Status    │ Build                                                                                                                 │
+├──────────────────────────────────────┼─────────────┼────────┼─────────┼─────────────────────────────────────┼───────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 4f8ab819-2e85-4d24-af6f-9140122d3e39 │ Production  │ main   │ 9b0826d │ https://4f8ab819.ink-flow.pages.dev │ 1 day ago │ https://dash.cloudflare.com/76a99ad37a968c6e5f743d8bb27825b3/pages/view/ink-flow/4f8ab819-2e85-4d24-af6f-9140122d3e39 │
+├──────────────────────────────────────┼─────────────┼────────┼─────────┼─────────────────────────────────────┼───────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 5be75541-1d92-4fa8-80eb-b9ed504f4ba2 │ Production  │ main   │ 9b0826d │ https://5be75541.ink-flow.pages.dev │ 1 day ago │ https://dash.cloudflare.com/76a99ad37a968c6e5f743d8bb27825b3/pages/view/ink-flow/5be75541-1d92-4fa8-80eb-b9ed504f4ba2 │
+├──────────────────────────────────────┼─────────────┼────────┼─────────┼─────────────────────────────────────┼───────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ 409a7ddf-a1ee-4c5f-a6fe-f0b40abbd70c │ Production  │ main   │ 9b0826d │ https://409a7ddf.ink-flow.pages.dev │ 1 day ago │ https://dash.cloudflare.com/76a99ad37a968c6e5f743d8bb27825b3/pages/view/ink-flow/409a7ddf-a1ee-4c5f-a6fe-f0b40abbd70c │
+└──────────────────────────────────────┴─────────────┴────────┴─────────┴─────────────────────────────────────┴───────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+---
+
+--- 2026-05-21T07:25:24.288Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"list pages deployments","timestamp":1779348324288,"properties":{"amplitude_session_id":1779348324287,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","category":"Workers","os":"win32:x64"}}
+---
+
+--- 2026-05-21T07:25:24.291Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command completed","timestamp":1779348324291,"properties":{"amplitude_session_id":1779348322833,"amplitude_event_id":1,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":["projectName"],"argsCombination":"projectName","sanitizedCommand":"pages deployment list","sanitizedArgs":{},"durationMs":1472}}
+---

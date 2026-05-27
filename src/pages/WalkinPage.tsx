@@ -121,14 +121,22 @@ export default function WalkinPage() {
       // Create appointment for today
       const today = new Date().toISOString().slice(0, 10);
       const nowTime = new Date().toTimeString().slice(0, 5);
-      const apptId = 'apt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 4);
-      await db.appointments.add({
-        id: apptId, clientId, artistId,
-        date: today, time: nowTime, duration: 60,
-        status: 'ready', waiverCompleted: true,
-        walkIn: true, createdAt: Date.now(),
+      const { createProjectWithAppointment } = await import('../lib/projectLogic');
+      const { appointment } = await createProjectWithAppointment({
+        artistId,
+        clientId,
+        title: 'Walk-in',
         designNotes: 'Walk-in',
+        projectStatus: 'in_progress',
+        date: today,
+        time: nowTime,
+        duration: 60,
+        appointmentType: 'new_tattoo',
+        appointmentStatus: 'ready',
+        waiverCompleted: true,
+        walkIn: true,
       });
+      const apptId = appointment.id;
 
       // Sync to backend
       const backendUrl = getBackendUrl();

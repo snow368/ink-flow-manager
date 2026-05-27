@@ -1,6 +1,7 @@
 import type { AppointmentRecord } from '../db';
+import type { EnrichedAppointment } from './projectLogic';
 
-export function getGoogleCalendarUrl(appointment: AppointmentRecord & { clientName?: string }): string {
+export function getGoogleCalendarUrl(appointment: EnrichedAppointment): string {
   const startDate = new Date(appointment.date + 'T' + appointment.time + ':00');
   const endDate = new Date(startDate.getTime() + (appointment.duration || 60) * 60 * 1000);
 
@@ -8,16 +9,17 @@ export function getGoogleCalendarUrl(appointment: AppointmentRecord & { clientNa
   const title = encodeURIComponent(`Tattoo Appointment${appointment.clientName ? ' - ' + appointment.clientName : ''}`);
   const details = encodeURIComponent(
     `Client: ${appointment.clientName || 'N/A'}\n` +
-    `Body Part: ${appointment.bodyPart || 'N/A'}\n` +
-    `Design: ${appointment.designNotes || 'N/A'}\n` +
-    `Deposit: ${appointment.depositAmount ? '$' + appointment.depositAmount : 'N/A'}`
+    `Project: ${appointment.projectTitle || 'N/A'}\n` +
+    `Body Part: ${appointment.projectBodyPart || 'N/A'}\n` +
+    `Design: ${appointment.projectDesignNotes || 'N/A'}\n` +
+    `Deposit: ${appointment.projectDepositAmount ? '$' + (appointment.projectDepositAmount / 100).toFixed(2) : 'N/A'}`
   );
   const location = encodeURIComponent('Tattoo Studio');
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${fmt(startDate)}/${fmt(endDate)}&details=${details}&location=${location}`;
 }
 
-export function generateIcsFile(appointment: AppointmentRecord & { clientName?: string }): string {
+export function generateIcsFile(appointment: EnrichedAppointment): string {
   const startDate = new Date(appointment.date + 'T' + appointment.time + ':00');
   const endDate = new Date(startDate.getTime() + (appointment.duration || 60) * 60 * 1000);
 
@@ -35,14 +37,14 @@ export function generateIcsFile(appointment: AppointmentRecord & { clientName?: 
     `DTSTART:${fmt(startDate)}`,
     `DTEND:${fmt(endDate)}`,
     `SUMMARY:Tattoo Appointment - ${appointment.clientName || 'Client'}`,
-    `DESCRIPTION:Client: ${appointment.clientName || 'N/A'}\\nBody Part: ${appointment.bodyPart || 'N/A'}\\nDesign: ${appointment.designNotes || 'N/A'}`,
+    `DESCRIPTION:Client: ${appointment.clientName || 'N/A'}\\nProject: ${appointment.projectTitle || 'N/A'}\\nBody Part: ${appointment.projectBodyPart || 'N/A'}\\nDesign: ${appointment.projectDesignNotes || 'N/A'}`,
     `LOCATION:Tattoo Studio`,
     'END:VEVENT',
     'END:VCALENDAR',
   ].join('\r\n');
 }
 
-export function generateFullDayIcs(appointments: (AppointmentRecord & { clientName?: string })[]): string {
+export function generateFullDayIcs(appointments: EnrichedAppointment[]): string {
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -61,7 +63,7 @@ export function generateFullDayIcs(appointments: (AppointmentRecord & { clientNa
       `DTSTART:${fmt(startDate)}`,
       `DTEND:${fmt(endDate)}`,
       `SUMMARY:Tattoo - ${appt.clientName || 'Client'}`,
-      `DESCRIPTION:Client: ${appt.clientName || 'N/A'}\\nBody Part: ${appt.bodyPart || 'N/A'}\\nDesign: ${appt.designNotes || 'N/A'}`,
+      `DESCRIPTION:Client: ${appt.clientName || 'N/A'}\\nProject: ${appt.projectTitle || 'N/A'}\\nBody Part: ${appt.projectBodyPart || 'N/A'}\\nDesign: ${appt.projectDesignNotes || 'N/A'}`,
       `LOCATION:Tattoo Studio`,
       'END:VEVENT',
     );
@@ -70,7 +72,7 @@ export function generateFullDayIcs(appointments: (AppointmentRecord & { clientNa
   return lines.join('\r\n');
 }
 
-export function downloadTodayIcs(appointments: (AppointmentRecord & { clientName?: string })[]): void {
+export function downloadTodayIcs(appointments: EnrichedAppointment[]): void {
   const ics = generateFullDayIcs(appointments);
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -83,7 +85,7 @@ export function downloadTodayIcs(appointments: (AppointmentRecord & { clientName
   URL.revokeObjectURL(url);
 }
 
-export function downloadIcsFile(appointment: AppointmentRecord & { clientName?: string }): void {
+export function downloadIcsFile(appointment: EnrichedAppointment): void {
   const ics = generateIcsFile(appointment);
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
@@ -96,7 +98,7 @@ export function downloadIcsFile(appointment: AppointmentRecord & { clientName?: 
   URL.revokeObjectURL(url);
 }
 
-export function getAppleCalendarUrl(appointment: AppointmentRecord & { clientName?: string }): string {
+export function getAppleCalendarUrl(appointment: EnrichedAppointment): string {
   const ics = generateIcsFile(appointment);
   return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
 }

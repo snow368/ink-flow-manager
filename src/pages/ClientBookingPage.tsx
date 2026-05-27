@@ -54,12 +54,21 @@ export default function ClientBookingPage() {
     const apptId = searchParams.get('appointment');
     const leadId = searchParams.get('lead');
     if (paid === '1' && apptId && leadId) {
-      db.appointments.update(apptId, { status: 'deposit_paid', depositAmount: Math.round(bookingDeposit * 100) });
-      setCreatedLeadId(leadId);
-      setCreatedAppointmentId(apptId);
-      setStep('confirmed');
-      // Clean URL
-      navigate(`/book/${artistId}`, { replace: true });
+      void (async () => {
+        const appt = await db.appointments.get(apptId);
+        await db.appointments.update(apptId, { status: 'deposit_paid' });
+        if (appt?.projectId) {
+          await db.projects.update(appt.projectId, {
+            depositAmount: Math.round(bookingDeposit * 100),
+            depositStatus: 'paid',
+            updatedAt: Date.now(),
+          });
+        }
+        setCreatedLeadId(leadId);
+        setCreatedAppointmentId(apptId);
+        setStep('confirmed');
+        navigate(`/book/${artistId}`, { replace: true });
+      })();
       return;
     }
     if (searchParams.get('canceled') === '1') {
@@ -176,19 +185,25 @@ export default function ClientBookingPage() {
         trackClientReferral(refCode, leadId).catch(() => {});
       }
 
-      const apptId = 'appt_' + now + '_' + Math.random().toString(36).slice(2, 8);
-      await db.appointments.add({
-        id: apptId,
-        clientId,
+      const { createProjectWithAppointment } = await import('../lib/projectLogic');
+      const { appointment } = await createProjectWithAppointment({
         artistId,
+        clientId,
+        title: bodyPart.trim() ? `${bodyPart.trim()} tattoo` : `${name.trim()} consultation`,
+        sourceLeadId: leadId,
+        style: style.trim() || undefined,
+        bodyPart: bodyPart.trim() || undefined,
+        designNotes: note.trim() || undefined,
+        projectStatus: 'scheduled',
         date: selectedDate,
         time: selectedTime,
         duration: 60,
-        type: 'consultation',
-        status: 'unconfirmed',
-        waiverCompleted: false,
-        createdAt: now,
+        appointmentType: 'consultation',
+        appointmentStatus: 'unconfirmed',
+        referrerCode: refCode || undefined,
       });
+      const apptId = appointment.id;
+      await db.leads.update(leadId, { convertedProjectId: appointment.projectId, convertedAt: now });
 
       // Notify backend (async, non-blocking)
       const bu = getBackendUrl();
@@ -515,13 +530,12 @@ export default function ClientBookingPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button onClick={() => {
-              const calUrl = getGoogleCalendarUrl({
-                id: createdAppointmentId || '',
-                clientId: '', artistId: artistId || '', date: selectedDate, time: selectedTime,
-                duration: 60, status: 'deposit_paid', waiverCompleted: false, createdAt: Date.now(),
-                clientName: name,
-              });
+            <button onClick={async () => {
+              if (!createdAppointmentId) return;
+              const appt = await db.appointments.get(createdAppointmentId);
+              if (!appt) return;
+              const { enrichAppointment } = await import('../lib/projectLogic');
+              const calUrl = getGoogleCalendarUrl(await enrichAppointment(appt));
               window.open(calUrl, '_blank', 'noopener,noreferrer');
             }} style={{
               width: '100%', padding: 14, borderRadius: 12, border: '1px solid #334155',
@@ -529,13 +543,12 @@ export default function ClientBookingPage() {
             }}>
               📅 Add to Calendar
             </button>
-            <button onClick={() => {
-              downloadIcsFile({
-                id: createdAppointmentId || '',
-                clientId: '', artistId: artistId || '', date: selectedDate, time: selectedTime,
-                duration: 60, status: 'deposit_paid', waiverCompleted: false, createdAt: Date.now(),
-                clientName: name,
-              });
+            <button onClick={async () => {
+              if (!createdAppointmentId) return;
+              const appt = await db.appointments.get(createdAppointmentId);
+              if (!appt) return;
+              const { enrichAppointment } = await import('../lib/projectLogic');
+              downloadIcsFile(await enrichAppointment(appt));
             }} style={{
               width: '100%', padding: 10, borderRadius: 12, border: '1px solid #334155',
               background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer',

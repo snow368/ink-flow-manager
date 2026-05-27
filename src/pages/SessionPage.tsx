@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, type UserRecord, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord } from '../db';
+import { db, type UserRecord, type AppointmentRecord, type SessionRecord, type ClientRecord, type InventoryRecord, type ProjectRecord } from '../db';
 import {
-  createSession, addTimelineEvent, addConsumable, addPhoto,
+  createSessionForAppointment, addTimelineEvent, addConsumable, addPhoto,
   addVideo, addNote, finishSession, getElapsedMinutes, generateSummary,
 } from '../lib/sessionManager';
 import { getCommandsForLocale } from '../lib/voiceCommands';
@@ -16,6 +16,7 @@ export default function SessionPage() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const navigate = useNavigate();
   const [appointment, setAppointment] = useState<AppointmentRecord | null>(null);
+  const [project, setProject] = useState<ProjectRecord | null>(null);
   const [client, setClient] = useState<ClientRecord | null>(null);
   const [session, setSession] = useState<SessionRecord | null>(null);
   const [elapsed, setElapsed] = useState(0);
@@ -54,13 +55,43 @@ export default function SessionPage() {
     if (!appointmentId) return;
     const current = localStorage.getItem('inkflow_current_user');
     if (current) db.users.get(current).then(u => setUser(u || null));
-    db.appointments.get(appointmentId).then(a => {
+    db.appointments.get(appointmentId).then(async a => {
       if (!a) { setError(t(lang, 'session_not_found')); return; }
       setAppointment(a);
+      const { getAppointmentProjectView } = await import('../lib/projectAccess');
+      const view = await getAppointmentProjectView(a.id);
+      if (!view?.projectId) {
+        setError(t(lang, 'session_not_found'));
+        return;
+      }
+      if (view.project) {
+        const stored = await db.projects.get(view.project.id);
+        if (stored) {
+          setProject(stored);
+        } else {
+          setProject({
+            id: view.project.id,
+            artistId: view.project.artistId,
+            clientId: view.project.clientId,
+            title: view.project.title,
+            bodyPart: view.project.bodyPart,
+            designNotes: view.project.designNotes,
+            style: view.project.style,
+            status: view.project.status,
+            completedSessions: 0,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          });
+        }
+      }
       db.clients.get(a.clientId).then(c => setClient(c || null));
-      const s = createSession(a);
-      setSession(s);
-      tryStartCamera();
+      try {
+        const s = await createSessionForAppointment(a);
+        setSession(s);
+        tryStartCamera();
+      } catch {
+        setError(t(lang, 'session_not_found'));
+      }
     });
     db.inventory.orderBy('name').toArray().then(setInventoryItems);
     return () => {
@@ -389,8 +420,8 @@ export default function SessionPage() {
       {client && (
         <div style={{ padding: '0 16px' }}>
           <p style={{ color: '#94a3b8', fontSize: 13 }}>{client.name} - {appointment?.type?.replace('_', ' ')}</p>
-          {appointment?.bodyPart && <p style={{ color: '#93c5fd', fontSize: 12, marginTop: 2 }}>{t(lang, 'session_body')} {appointment.bodyPart}</p>}
-          {appointment?.designNotes && <p style={{ color: '#94a3b8', fontSize: 11, marginTop: 2, fontStyle: 'italic' }}>"{appointment.designNotes.slice(0, 80)}{(appointment.designNotes?.length || 0) > 80 ? '...' : ''}"</p>}
+          {project?.bodyPart && <p style={{ color: '#93c5fd', fontSize: 12, marginTop: 2 }}>{t(lang, 'session_body')} {project.bodyPart}</p>}
+          {project?.designNotes && <p style={{ color: '#94a3b8', fontSize: 11, marginTop: 2, fontStyle: 'italic' }}>"{project.designNotes.slice(0, 80)}{(project.designNotes.length) > 80 ? '...' : ''}"</p>}
           {client.allergies && client.allergies.length > 0 && (
             <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginTop: 4 }}>
               {client.allergies.map((a: string, i: number) => (
@@ -543,7 +574,7 @@ export default function SessionPage() {
             ) : (
               <button onClick={() => {
                 const typeName = (appointment?.type || 'tattoo').replace(/_/g, ' ');
-                const bodyPart = appointment?.bodyPart || 'body';
+                const bodyPart = project?.bodyPart || 'body';
                 const artistName = user?.name || 'artist';
                 const opts = generateCaptionOptions({
                   clientName: client?.name || 'client',

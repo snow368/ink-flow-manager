@@ -140,6 +140,9 @@ export default function App() {
       setIsLoggedIn(true);
       initAuditLogging();
       rebuildConsumableProfiles();
+      import('./lib/projectAccess').then(({ ensureDomainMigration }) => {
+        void ensureDomainMigration();
+      });
       db.users.get(stored).then(u => { if (u?.roles?.includes('dev')) setIsDev(true); });
     }
     if (location.pathname === '/') {

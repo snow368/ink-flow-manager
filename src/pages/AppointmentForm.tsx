@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { db, type ClientRecord, type AppointmentRecord, type LeadRecord, type LeadRevisionRecord } from '../db';
+import { db, type ClientRecord, type LeadRecord, type LeadRevisionRecord, type ProjectRecord } from '../db';
+import { createAppointmentForProject, createProject, projectTitleFromClient } from '../lib/projectLogic';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability } from '../lib/availability';
@@ -39,10 +40,10 @@ export default function AppointmentForm() {
   const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const [station, setStation] = useState('');
   const [userStations, setUserStations] = useState<{ name: string; color: string }[]>([]);
-  const [seriesEnabled, setSeriesEnabled] = useState(false);
-  const [seriesName, setSeriesName] = useState('');
-  const [existingSeries, setExistingSeries] = useState<{ name: string; seriesId: string }[]>([]);
-  const [selectedExistingSeriesId, setSelectedExistingSeriesId] = useState('');
+  const [existingProjects, setExistingProjects] = useState<ProjectRecord[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [newProjectTitle, setNewProjectTitle] = useState('');
+  const [createNewProject, setCreateNewProject] = useState(false);
   const lang = detectInitialLanguage();
 
   const durationPresets = [
@@ -83,8 +84,10 @@ export default function AppointmentForm() {
   }, [estimatedPrice, depositPercent]);
   useEffect(() => {
     const clientId = searchParams.get('clientId');
+    const projectId = searchParams.get('projectId');
     const leadId = searchParams.get('leadId');
     if (clientId) setSelectedClient(clientId);
+    if (projectId) setSelectedProjectId(projectId);
     if (!leadId) return;
     db.leads.get(leadId).then((lead) => {
       if (!lead) return;
@@ -104,18 +107,17 @@ export default function AppointmentForm() {
   }, [date, time, duration, customDuration, selectedClient]);
 
   useEffect(() => {
-    if (!selectedClient) { setClientAllergies([]); setExistingSeries([]); return; }
+    if (!selectedClient) {
+      setClientAllergies([]);
+      setExistingProjects([]);
+      setSelectedProjectId('');
+      return;
+    }
     db.clients.get(selectedClient).then(c => setClientAllergies(c?.allergies || []));
-    // Load existing series for this client
-    db.appointments.where('clientId').equals(selectedClient).toArray().then(apps => {
-      const seen = new Map<string, { name: string; seriesId: string }>();
-      for (const a of apps) {
-        if (!a.seriesId) continue;
-        const idx = a.seriesId.indexOf('_', 7); // skip "series_" prefix
-        const name = idx > 0 ? decodeURIComponent(a.seriesId.slice(idx + 1)) : a.seriesId;
-        if (!seen.has(name)) seen.set(name, { name, seriesId: a.seriesId });
-      }
-      setExistingSeries([...seen.values()]);
+    db.projects.where('clientId').equals(selectedClient).toArray().then(projects => {
+      const open = projects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
+      setExistingProjects(open);
+      if (!selectedProjectId && open.length === 1) setSelectedProjectId(open[0].id);
     });
   }, [selectedClient]);
 
@@ -202,26 +204,70 @@ export default function AppointmentForm() {
     setSaving(true); setError('');
     try {
       const artistId = localStorage.getItem('inkflow_current_user') || 'demo_artist';
-      const id = 'appt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const dAmount = initialStatus === 'deposit_paid' ? Math.round(parseFloat(depositAmount || '0') * 100) : undefined;
-      let seriesId: string | undefined;
-      if (seriesEnabled) {
-        if (selectedExistingSeriesId) {
-          seriesId = selectedExistingSeriesId;
-        } else if (seriesName.trim()) {
-          seriesId = 'series_' + Date.now() + '_' + encodeURIComponent(seriesName.trim());
-        }
+      const client = await db.clients.get(selectedClient);
+      let projectId = selectedProjectId;
+      if (!projectId && createNewProject && newProjectTitle.trim()) {
+        const created = await createProject({
+          artistId,
+          clientId: selectedClient,
+          title: newProjectTitle.trim(),
+          bodyPart: bodyPart || undefined,
+          designNotes: designNotes || undefined,
+          style: fromLead?.style,
+          sourceLeadId: fromLead?.id,
+          status: 'scheduled',
+        });
+        projectId = created.id;
       }
-      await db.appointments.add({ id, clientId: selectedClient, artistId, date, time, duration: finalDuration, type, bodyPart: bodyPart || undefined, designNotes: designNotes || undefined, station: station || undefined, seriesId, status: initialStatus, depositAmount: dAmount, waiverCompleted: false, createdAt: Date.now() });
+      if (!projectId) {
+        const created = await createProject({
+          artistId,
+          clientId: selectedClient,
+          title: client ? projectTitleFromClient(client, bodyPart || undefined) : 'Tattoo project',
+          bodyPart: bodyPart || fromLead?.bodyPart,
+          designNotes: designNotes || fromLead?.note,
+          style: fromLead?.style,
+          sourceLeadId: fromLead?.id,
+          status: 'scheduled',
+        });
+        projectId = created.id;
+      } else if (bodyPart || designNotes) {
+        await db.projects.update(projectId, {
+          bodyPart: bodyPart || undefined,
+          designNotes: designNotes || undefined,
+          updatedAt: Date.now(),
+        });
+      }
+      const dAmount = initialStatus === 'deposit_paid' ? Math.round(parseFloat(depositAmount || '0') * 100) : undefined;
+      if (dAmount) {
+        await db.projects.update(projectId, {
+          depositAmount: dAmount,
+          depositStatus: 'paid',
+          updatedAt: Date.now(),
+        });
+      }
+      const appointment = await createAppointmentForProject({
+        projectId,
+        artistId,
+        clientId: selectedClient,
+        date,
+        time,
+        duration: finalDuration,
+        type,
+        status: initialStatus,
+        station: station || undefined,
+        waiverCompleted: false,
+      });
+      const id = appointment.id;
       logCommunication(artistId, 'app_note', 'auto', {
         clientId: selectedClient,
         appointmentId: id,
+        projectId,
         message: `${type ? type.replace(/_/g, ' ') : 'Appointment'} confirmed for ${date} at ${time} — ${finalDuration}min`,
         templateType: 'appointment_confirmed',
       });
       // Notify backend (async)
       const bu = getBackendUrl();
-      const client = await db.clients.get(selectedClient);
       if (bu && artistId) {
         fetch(`${bu}/api/booking/${artistId}`, {
           method: 'POST',
@@ -334,48 +380,62 @@ export default function AppointmentForm() {
             </select>
           )}
 
-          {/* Series */}
+          {/* Tattoo project */}
           <div style={{ marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 6 }}>Tattoo project</p>
+            {existingProjects.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                {existingProjects.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={async () => {
+                      setSelectedProjectId(p.id);
+                      setCreateNewProject(false);
+                      if (p.bodyPart) setBodyPart(p.bodyPart);
+                      if (p.designNotes && !designNotes) setDesignNotes(p.designNotes);
+                      const lastAppt = await db.appointments
+                        .where('projectId')
+                        .equals(p.id)
+                        .reverse()
+                        .sortBy('createdAt')
+                        .then(rows => rows[0]);
+                      if (lastAppt?.type) setType(lastAppt.type);
+                    }}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: 8,
+                      border: '1px solid',
+                      borderColor: selectedProjectId === p.id ? '#a855f7' : '#334155',
+                      background: selectedProjectId === p.id ? '#a855f722' : '#1e293b',
+                      color: selectedProjectId === p.id ? '#c084fc' : '#94a3b8',
+                      fontSize: 12,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {p.title}
+                  </button>
+                ))}
+              </div>
+            )}
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', cursor: 'pointer', marginBottom: 8 }}>
-              <input type="checkbox" checked={seriesEnabled} onChange={e => { setSeriesEnabled(e.target.checked); if (!e.target.checked) { setSeriesName(''); setSelectedExistingSeriesId(''); } }} />
-              {t(lang, 'series_part_of')}
+              <input
+                type="checkbox"
+                checked={createNewProject}
+                onChange={e => {
+                  setCreateNewProject(e.target.checked);
+                  if (e.target.checked) setSelectedProjectId('');
+                }}
+              />
+              New project
             </label>
-            {seriesEnabled && (
-              <>
-                {existingSeries.length > 0 && (
-                  <div style={{ marginBottom: 8 }}>
-                    <p style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>{t(lang, 'series_existing')}</p>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {existingSeries.map(s => (
-                        <button key={s.seriesId} onClick={async () => {
-                          setSelectedExistingSeriesId(s.seriesId);
-                          setSeriesName('');
-                          // Auto-fill body part and type from last session in this series
-                          const lastAppt = await db.appointments
-                            .where('seriesId').equals(s.seriesId)
-                            .reverse().sortBy('createdAt').then(a => a[0]);
-                          if (lastAppt) {
-                            if (lastAppt.bodyPart) setBodyPart(lastAppt.bodyPart);
-                            if (lastAppt.type) setType(lastAppt.type);
-                            if (lastAppt.designNotes && !designNotes) setDesignNotes(lastAppt.designNotes);
-                          }
-                        }}
-                          style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid', borderColor: selectedExistingSeriesId === s.seriesId ? '#a855f7' : '#334155', background: selectedExistingSeriesId === s.seriesId ? '#a855f722' : '#1e293b', color: selectedExistingSeriesId === s.seriesId ? '#c084fc' : '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
-                          {s.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {!selectedExistingSeriesId && (
-                  <input
-                    placeholder={t(lang, 'series_name')}
-                    value={seriesName}
-                    onChange={e => setSeriesName(e.target.value)}
-                    style={{ ...inputStyle, marginBottom: 0 }}
-                  />
-                )}
-              </>
+            {createNewProject && (
+              <input
+                placeholder="Project name (e.g. Full sleeve)"
+                value={newProjectTitle}
+                onChange={e => setNewProjectTitle(e.target.value)}
+                style={{ ...inputStyle, marginBottom: 0 }}
+              />
             )}
           </div>
 

@@ -301,29 +301,12 @@ export default function LeadsPage() {
   };
 
   const toClient = async (lead: LeadRecord) => {
-    const now = Date.now();
-    const clientId = 'client_' + now + '_' + Math.random().toString(36).slice(2, 6);
-    const revisionNotes = (revisionsByLead.get(lead.id) || [])
-      .slice()
-      .reverse()
-      .map(r => [r.note, r.changeRequest].filter(Boolean).join(' | '))
-      .filter(Boolean)
-      .join('\n');
-
-    await db.clients.add({
-      id: clientId,
-      name: lead.name,
-      phone: lead.phone,
-      email: lead.email,
-      allergies: lead.allergies,
-      notes: [lead.note, lead.changeRequest, lead.allergyNote, revisionNotes].filter(Boolean).join('\n'),
-      artistId: lead.artistId,
-      leadSource: lead.source,
-      createdAt: now,
-    });
-    await db.leads.update(lead.id, { status: 'won' });
+    const { convertLeadToProject } = await import('../lib/projectLogic');
+    const project = await convertLeadToProject(lead.id);
     await refresh();
-    navigate(`/appointment/new?clientId=${encodeURIComponent(clientId)}&leadId=${encodeURIComponent(lead.id)}`);
+    navigate(
+      `/appointment/new?clientId=${encodeURIComponent(project.clientId)}&projectId=${encodeURIComponent(project.id)}&leadId=${encodeURIComponent(lead.id)}`,
+    );
   };
 
   const updateStatus = async (id: string, status: LeadRecord['status']) => {
@@ -401,30 +384,10 @@ export default function LeadsPage() {
     return out;
   };
 
-  const createDraftAppointmentIfMissing = async (lead: LeadRecord, slots?: string[]) => {
-    const exists = await db.appointments.where('projectId').equals(lead.id).toArray();
-    if (exists.length > 0) return;
-    const first = slots?.[0];
-    const date = first ? first.slice(0, 10) : (lead.preferredDate || new Date().toISOString().slice(0, 10));
-    const time = first ? first.slice(11, 16) : (lead.preferredTime || '14:00');
-    await db.appointments.add({
-      id: `app_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      clientId: '',
-      projectId: lead.id,
-      artistId: lead.artistId,
-      date,
-      time,
-      duration: 120,
-      type: 'deposit_locked_draft',
-      status: 'deposit_paid',
-      waiverCompleted: false,
-      createdAt: Date.now(),
-    });
-  };
-
   const automateAfterPaid = async (lead: LeadRecord) => {
     const slots = await suggestRealSlots(lead);
-    await createDraftAppointmentIfMissing(lead, slots);
+    const { ensureDraftAppointmentForLead } = await import('../lib/projectLogic');
+    await ensureDraftAppointmentForLead(lead, slots);
   };
 
   const runUnpaidReminders = async () => {

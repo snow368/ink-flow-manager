@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { db, type AppointmentRecord, type ClientRecord } from '../db';
+import { db, type AppointmentRecord, type ClientRecord, type ProjectRecord } from '../db';
 import { canCheckIn } from '../lib/qrCheckin';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
@@ -16,6 +16,7 @@ export default function CheckinPage() {
   const { appointmentId } = useParams<{ appointmentId: string }>();
   const [state, setState] = useState<State>('loading');
   const [appointment, setAppointment] = useState<AppointmentRecord | null>(null);
+  const [project, setProject] = useState<ProjectRecord | null>(null);
   const [client, setClient] = useState<ClientRecord | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
   const lang = detectInitialLanguage();
@@ -25,6 +26,10 @@ export default function CheckinPage() {
     db.appointments.get(appointmentId).then(async appt => {
       if (!appt) { setState('not_found'); return; }
       setAppointment(appt);
+      if (appt.projectId) {
+        const p = await db.projects.get(appt.projectId);
+        setProject(p || null);
+      }
       if (appt.clientId) {
         const c = await db.clients.get(appt.clientId);
         setClient(c || null);
@@ -114,7 +119,7 @@ export default function CheckinPage() {
         <p style={{ fontSize: 15, color: '#e2e8f0', marginBottom: 4 }}>{dateStr}</p>
         <p style={{ fontSize: 18, fontWeight: 700, color: '#22c55e' }}>{appointment?.time}</p>
         {appointment?.type && <p style={{ fontSize: 13, color: '#94a3b8', marginTop: 6 }}>{appointment.type} — {appointment.duration}min</p>}
-        {appointment?.bodyPart && <p style={{ fontSize: 13, color: '#93c5fd', marginTop: 2 }}>{t(lang, 'checkin_body')} {appointment.bodyPart}</p>}
+        {project?.bodyPart && <p style={{ fontSize: 13, color: '#93c5fd', marginTop: 2 }}>{t(lang, 'checkin_body')} {project.bodyPart}</p>}
       </div>
       <button
         onClick={handleCheckIn}

@@ -184,14 +184,15 @@ export default function Today() {
     const artistId = user.artistId || user.id;
     const data = appointments.map(a => ({
       id: a.id,
+      projectId: a.projectId,
       artistId,
+      clientId: a.clientId,
       clientName: a.clientName || '',
       date: a.date,
       time: a.time,
       duration: a.duration,
-      bodyPart: a.bodyPart,
-      designNotes: a.designNotes,
       status: a.status,
+      type: a.type,
     }));
     syncArtistData({ artistId, appointments: data });
   }, [appointments.length, user]);
@@ -257,13 +258,18 @@ export default function Today() {
     const existingAppt = await db.appointments.where('date').equals(b.date).toArray();
     const dup = existingAppt.find(a => a.time === b.time && a.clientId === clientId);
     if (!dup) {
-      await db.appointments.add({
-        id: 'apt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 4),
-        clientId, artistId,
-        date: b.date, time: b.time, duration: 60,
-        status: b.status === 'paid' ? 'deposit_paid' : 'unconfirmed',
-        waiverCompleted: false,
-        designNotes: b.idea || '', createdAt: Date.now(),
+      const { createProjectWithAppointment } = await import('../lib/projectLogic');
+      await createProjectWithAppointment({
+        artistId,
+        clientId,
+        title: b.idea ? `${b.idea.slice(0, 40)}` : `${b.clientName} booking`,
+        designNotes: b.idea || undefined,
+        projectStatus: 'scheduled',
+        date: b.date,
+        time: b.time,
+        duration: 60,
+        appointmentType: 'consultation',
+        appointmentStatus: b.status === 'paid' ? 'deposit_paid' : 'unconfirmed',
       });
     }
     // Remove from KV (mark as processed)
@@ -523,8 +529,21 @@ export default function Today() {
     }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
-      const client = await db.clients.get(a.clientId);
-      return { ...a, clientName: client?.name || 'Unknown', clientPhone: client?.phone, clientAllergies: client?.allergies, clientNoShowCount: client?.noShowCount };
+      const [client, project] = await Promise.all([
+        db.clients.get(a.clientId),
+        db.projects.get(a.projectId),
+      ]);
+      return {
+        ...a,
+        clientName: client?.name || 'Unknown',
+        clientPhone: client?.phone,
+        clientAllergies: client?.allergies,
+        clientNoShowCount: client?.noShowCount,
+        projectTitle: project?.title,
+        projectBodyPart: project?.bodyPart,
+        projectDesignNotes: project?.designNotes,
+        projectDepositAmount: project?.depositAmount,
+      };
     }));
     const sorted = enriched.sort((a, b) => a.time.localeCompare(b.time));
     setAppointments(sorted);
@@ -563,11 +582,21 @@ export default function Today() {
     }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
-      const client = await db.clients.get(a.clientId);
-      return { ...a, clientName: client?.name || 'Unknown', clientPhone: client?.phone, clientAllergies: client?.allergies, clientNoShowCount: client?.noShowCount };
+      const [client, project] = await Promise.all([
+        db.clients.get(a.clientId),
+        db.projects.get(a.projectId),
+      ]);
+      return {
+        ...a,
+        clientName: client?.name || 'Unknown',
+        clientPhone: client?.phone,
+        clientAllergies: client?.allergies,
+        clientNoShowCount: client?.noShowCount,
+        projectTitle: project?.title,
+      };
     }));
 
-    const grouped = new Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>();
+    const grouped = new Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[]; projectTitle?: string })[]>();
     for (const a of enriched.sort((x, y) => (x.date + x.time).localeCompare(y.date + y.time))) {
       const list = grouped.get(a.date) || [];
       list.push(a);
@@ -590,8 +619,17 @@ export default function Today() {
     }
     const apps = await query.toArray();
     const enriched = await Promise.all(apps.map(async a => {
-      const client = await db.clients.get(a.clientId);
-      return { ...a, clientName: client?.name || 'Unknown', clientPhone: client?.phone, clientAllergies: client?.allergies };
+      const [client, project] = await Promise.all([
+        db.clients.get(a.clientId),
+        db.projects.get(a.projectId),
+      ]);
+      return {
+        ...a,
+        clientName: client?.name || 'Unknown',
+        clientPhone: client?.phone,
+        clientAllergies: client?.allergies,
+        projectTitle: project?.title,
+      };
     }));
 
     const grouped = new Map<string, typeof enriched>();
@@ -815,7 +853,7 @@ export default function Today() {
             setWalkinQrUrl(await generateWalkinQR(artistId));
             setShowWalkinQR(true);
           }} title="Walk-in QR"
-            style={{ width: 44, height: 44, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            style={{ width: 44, height: 44, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             ✋
           </button>
         </div>
@@ -824,47 +862,47 @@ export default function Today() {
       {/* KPI Cards */}
       {todayKpi && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginBottom: 14 }}>
-          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_revenue')}</p>
+          <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_revenue')}</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: '#4ade80' }}>${todayKpi.revenue.toFixed(0)}</p>
           </div>
-          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_upcoming')}</p>
+          <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_upcoming')}</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: '#60a5fa' }}>{todayKpi.upcoming}</p>
           </div>
-          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_pending_deposits')}</p>
+          <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_pending_deposits')}</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: '#fbbf24' }}>{todayKpi.pendingDeposits}</p>
           </div>
-          <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #334155', cursor: 'pointer' }} onClick={() => navigate('/tasks')}>
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_overdue_tasks')}</p>
-            <p style={{ fontSize: 20, fontWeight: 700, color: todayKpi.overdueTasks > 0 ? '#ef4444' : '#64748b' }}>{todayKpi.overdueTasks}</p>
+          <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #334155', cursor: 'pointer' }} onClick={() => navigate('/tasks')}>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_overdue_tasks')}</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: todayKpi.overdueTasks > 0 ? '#ef4444' : THEME.text.subtle }}>{todayKpi.overdueTasks}</p>
           </div>
           {lowStockCount > 0 && (
-            <div style={{ background: '#1e293b', padding: '10px 14px', borderRadius: 12, border: '1px solid #f59e0b44', cursor: 'pointer' }} onClick={() => navigate('/inventory?filter=low')}>
-              <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>{t(lang, 'today_low_stock')}</p>
+            <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #f59e0b44', cursor: 'pointer' }} onClick={() => navigate('/inventory?filter=low')}>
+              <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_low_stock')}</p>
               <p style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{lowStockCount}</p>
             </div>
           )}
         </div>
       )}
 
-      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+      <div style={{ background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 13, color: '#fca5a5', fontWeight: 700 }}>Must Follow Up Now: {dueLeads.length}</p>
           <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 10, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Open Leads</button>
         </div>
         {dueLeads.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#94a3b8' }}>No overdue follow-ups right now.</p>
+          <p style={{ fontSize: 12, color: THEME.text.muted }}>No overdue follow-ups right now.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {dueLeads.slice(0, 5).map(lead => (
-              <div key={lead.id} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
+              <div key={lead.id} style={{ background: THEME.bg.panelAlt, border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <p style={{ fontSize: 13, fontWeight: 700 }}>{lead.name}</p>
                   <span style={{ fontSize: 11, color: '#fca5a5' }}>{lead.nextFollowUpAt ? new Date(lead.nextFollowUpAt).toLocaleString() : ''}</span>
                 </div>
-                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>{lead.note || lead.changeRequest || 'No detail'}</p>
+                <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 6 }}>{lead.note || lead.changeRequest || 'No detail'}</p>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <button onClick={() => void postponeLeadFollowUp(lead.id, 24 * 60)} style={smallBtn}>Done +1d</button>
                   <button onClick={() => void postponeLeadFollowUp(lead.id, 3 * 24 * 60)} style={smallBtn}>Done +3d</button>
@@ -878,7 +916,7 @@ export default function Today() {
 
       {/* Review Invites */}
       {(reviewInvites.length > 0 || reviewFollowUps.length > 0) && (
-        <div style={{ background: '#1e293b', border: '1px solid #f59e0b44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ background: THEME.bg.panel, border: '1px solid #f59e0b44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: reviewInvites.length + reviewFollowUps.length > 0 ? 8 : 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <p style={{ fontSize: 13, color: '#fbbf24', fontWeight: 700, margin: 0 }}>Review Invites</p>
@@ -895,7 +933,7 @@ export default function Today() {
           )}
 
           {reviewInvites.map(a => (
-            <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b1220', borderRadius: 8, padding: '8px 10px', marginBottom: 6 }}>
+            <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px', marginBottom: 6 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{a.clientName || 'Client'}</span>
@@ -903,7 +941,7 @@ export default function Today() {
                     <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: a.clientTier === 'vip' ? '#fbbf2422' : '#60a5fa22', color: a.clientTier === 'vip' ? '#fbbf24' : '#60a5fa', fontWeight: 600 }}>{a.clientTier.toUpperCase()}</span>
                   )}
                 </div>
-                <p style={{ fontSize: 10, color: '#64748b' }}>{a.date} · {a.type || 'Tattoo'}</p>
+                <p style={{ fontSize: 10, color: THEME.text.subtle }}>{a.date} · {a.type || 'Tattoo'}</p>
               </div>
               <button
                 onClick={async () => {
@@ -927,18 +965,18 @@ export default function Today() {
           ))}
 
           {reviewFollowUps.map(a => (
-            <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b1220', borderRadius: 8, padding: '8px 10px', marginBottom: 6 }}>
+            <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px', marginBottom: 6 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 12, fontWeight: 600 }}>{a.clientName || 'Client'}</span>
                   {a.clientTier && (
-                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: a.clientTier === 'vip' ? '#fbbf2422' : a.clientTier === 'regular' ? '#60a5fa22' : '#94a3b822', color: a.clientTier === 'vip' ? '#fbbf24' : a.clientTier === 'regular' ? '#60a5fa' : '#94a3b8', fontWeight: 600 }}>{a.clientTier.toUpperCase()}</span>
+                    <span style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, background: a.clientTier === 'vip' ? '#fbbf2422' : a.clientTier === 'regular' ? '#60a5fa22' : '#94a3b822', color: a.clientTier === 'vip' ? '#fbbf24' : a.clientTier === 'regular' ? '#60a5fa' : THEME.text.muted, fontWeight: 600 }}>{a.clientTier.toUpperCase()}</span>
                   )}
                   {a.remainingFollowUps != null && (
                     <span style={{ fontSize: 9, color: '#fbbf24' }}>{a.remainingFollowUps} left</span>
                   )}
                 </div>
-                <p style={{ fontSize: 10, color: '#64748b' }}>{a.date} · {a.reviewInvitedAt ? Math.floor((Date.now() - a.reviewInvitedAt) / 86400000) : '?'}d since invite</p>
+                <p style={{ fontSize: 10, color: THEME.text.subtle }}>{a.date} · {a.reviewInvitedAt ? Math.floor((Date.now() - a.reviewInvitedAt) / 86400000) : '?'}d since invite</p>
               </div>
               <button
                 onClick={async () => {
@@ -959,17 +997,17 @@ export default function Today() {
 
       {waitlistCount > 0 && (
         <div onClick={() => navigate('/leads')}
-          style={{ background: '#1e293b', border: '1px solid #a855f744', borderRadius: 12, padding: 12, marginBottom: 14, cursor: 'pointer' }}>
+          style={{ background: THEME.bg.panel, border: '1px solid #a855f744', borderRadius: 12, padding: 12, marginBottom: 14, cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p style={{ fontSize: 13, color: '#c084fc', fontWeight: 700 }}>Waiting List: {waitlistCount} client{waitlistCount > 1 ? 's' : ''}</p>
             <span style={{ fontSize: 12, color: '#93c5fd' }}>View →</span>
           </div>
-          <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>Offer open slots to waiting clients when appointments cancel.</p>
+          <p style={{ fontSize: 11, color: THEME.text.muted, marginTop: 4 }}>Offer open slots to waiting clients when appointments cancel.</p>
         </div>
       )}
 
       {reminders.length > 0 && (
-        <div style={{ background: '#1e293b', border: '1px solid #4338ca', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ background: THEME.bg.panel, border: '1px solid #4338ca', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <p style={{ fontSize: 13, color: '#c084fc', fontWeight: 700 }}>Reminders ({reminders.length})</p>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -977,7 +1015,7 @@ export default function Today() {
                 <span style={{ fontSize: 10, color: '#4ade80', background: '#166534', padding: '2px 6px', borderRadius: 4 }}>Auto-sent {autoSentCount}</span>
               )}
               {!!getTwilioConfig() && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: '#94a3b8', cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, color: THEME.text.muted, cursor: 'pointer' }}>
                   <input type="checkbox" checked={autoSend} onChange={toggleAutoSend} style={{ width: 12, height: 12 }} />
                   Auto
                 </label>
@@ -1000,16 +1038,16 @@ export default function Today() {
               const waUrl = getWhatsAppReminderUrl(r.appointment, r.stage, user?.whatsappPhone);
               const msg = getReminderMessage(r.appointment, r.stage);
               return (
-                <div key={r.appointment.id + r.stage} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                <div key={r.appointment.id + r.stage} style={{ background: THEME.bg.panelAlt, border: '1px solid #243244', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 2 }}>
                       <span style={{ fontSize: 13, fontWeight: 700 }}>{r.appointment.clientName}</span>
                       <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, background: isDeposit ? '#7f1d1d' : '#312e81', color: isDeposit ? '#fca5a5' : '#a5b4fc' }}>{stageLabel}</span>
                     </div>
-                    <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 2 }}>
+                    <p style={{ fontSize: 11, color: THEME.text.muted, marginBottom: 2 }}>
                       {r.appointment.date} at {r.appointment.time}
                     </p>
-                    <p style={{ fontSize: 11, color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg}</p>
+                    <p style={{ fontSize: 11, color: THEME.text.subtle, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{msg}</p>
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                     <button onClick={() => {
@@ -1018,13 +1056,13 @@ export default function Today() {
                       else navigator.clipboard.writeText(msg);
                       markReminderSent(r.appointment.id, r.stage);
                       setReminders(prev => prev.filter(x => !(x.appointment.id === r.appointment.id && x.stage === r.stage)));
-                    }} style={{ padding: '6px 10px', borderRadius: 8, border: 'none', background: user?.whatsappPhone ? '#075e54' : '#334155', color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    }} style={{ padding: '6px 10px', borderRadius: 8, border: 'none', background: user?.whatsappPhone ? '#075e54' : THEME.border.default, color: 'white', fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                       {user?.whatsappPhone ? 'WhatsApp' : 'Copy'}
                     </button>
                     <button onClick={() => {
                       markReminderSent(r.appointment.id, r.stage);
                       setReminders(prev => prev.filter(x => !(x.appointment.id === r.appointment.id && x.stage === r.stage)));
-                    }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    }} style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 11, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                       Dismiss
                     </button>
                     {/* SMS button */}
@@ -1084,14 +1122,14 @@ export default function Today() {
 
       {/* New bookings from booking page */}
       {pendingBookings.length > 0 && (
-        <div style={{ background: '#1e293b', border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ background: THEME.bg.panel, border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <p style={{ fontSize: 13, color: '#4ade80', fontWeight: 700 }}>New Bookings ({pendingBookings.length})</p>
             <button onClick={async () => {
               const artistId = user?.artistId || user?.id || '';
               const bookings = await pollPendingBookings(artistId);
               setPendingBookings(bookings);
-            }} style={{ padding: '2px 8px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 10, cursor: 'pointer' }}>
+            }} style={{ padding: '2px 8px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 10, cursor: 'pointer' }}>
               ↻ Refresh
             </button>
           </div>
@@ -1101,14 +1139,14 @@ export default function Today() {
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 700 }}>{b.clientName}</p>
                   <p style={{ fontSize: 11, color: '#86efac' }}>{b.date} at {b.time}</p>
-                  {b.idea && <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>"{b.idea}"</p>}
-                  <p style={{ fontSize: 10, color: '#64748b', marginTop: 2 }}>Phone: {b.clientPhone}</p>
+                  {b.idea && <p style={{ fontSize: 11, color: THEME.text.muted, marginTop: 2 }}>"{b.idea}"</p>}
+                  <p style={{ fontSize: 10, color: THEME.text.subtle, marginTop: 2 }}>Phone: {b.clientPhone}</p>
                 </div>
               <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                   <span style={{ padding: '4px 8px', borderRadius: 6, background: '#a855f722', color: '#c084fc', fontSize: 10, fontWeight: 600, whiteSpace: 'nowrap' }}>
                     Awaiting confirmation
                   </span>
-                  <button onClick={() => acceptBooking(b)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+                  <button onClick={() => acceptBooking(b)} style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 11, cursor: 'pointer' }}>
                     Force Accept
                   </button>
                 </div>
@@ -1120,10 +1158,10 @@ export default function Today() {
 
       {/* Low stock is shown in KPI cards above — single source of truth */}
       {recentlyCompleted && (
-        <div style={{ background: '#1e293b', border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+        <div style={{ background: THEME.bg.panel, border: '1px solid #22c55e44', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <p style={{ fontSize: 13, color: '#4ade80', fontWeight: 700 }}>{recentlyCompleted.clientName}'s appointment completed</p>
-            <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: '#64748b', fontSize: 14, cursor: 'pointer' }}>X</button>
+            <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: THEME.text.subtle, fontSize: 14, cursor: 'pointer' }}>X</button>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
@@ -1145,29 +1183,29 @@ export default function Today() {
               ) : null;
             })()}
             <button onClick={() => setRecentlyCompleted(null)}
-              style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              style={{ padding: '10px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
               Dismiss
             </button>
           </div>
         </div>
       )}
 
-      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+      <div style={{ background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <p style={{ fontSize: 13, color: '#fcd34d', fontWeight: 700 }}>Deposit Reminders: {paymentReminders.length}</p>
           <button onClick={() => navigate('/leads')} style={{ border: '1px solid #334155', background: 'transparent', color: '#93c5fd', borderRadius: 10, padding: '10px 16px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Open Leads</button>
         </div>
         {paymentReminders.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#94a3b8' }}>No pending 24h/48h payment reminders.</p>
+          <p style={{ fontSize: 12, color: THEME.text.muted }}>No pending 24h/48h payment reminders.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {paymentReminders.map(item => (
-              <div key={`${item.lead.id}_${item.stage}`} style={{ background: '#0b1220', border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
+              <div key={`${item.lead.id}_${item.stage}`} style={{ background: THEME.bg.panelAlt, border: '1px solid #243244', borderRadius: 10, padding: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <p style={{ fontSize: 13, fontWeight: 700 }}>{item.lead.name}</p>
                   <span style={{ fontSize: 11, color: item.stage === '48h' ? '#fca5a5' : '#fcd34d' }}>{item.stage} reminder</span>
                 </div>
-                <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>{item.lead.paymentAmount || '-'} {item.lead.paymentCurrency || ''} | {item.lead.paymentStatus || 'unpaid'}</p>
+                <p style={{ fontSize: 12, color: THEME.text.muted, marginBottom: 6 }}>{item.lead.paymentAmount || '-'} {item.lead.paymentCurrency || ''} | {item.lead.paymentStatus || 'unpaid'}</p>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <button onClick={() => copyPaymentReminderMessage(item.lead, item.stage)} style={smallBtn}>Copy Reminder</button>
                   <button onClick={() => void markReminderDone(item.lead.id, item.stage)} style={smallBtn}>Done +1d</button>
@@ -1180,12 +1218,12 @@ export default function Today() {
 
       {/* Client Outreach */}
       {(birthdayClients.length > 0 || upcomingBirthdays.length > 0 || yearAwayClients.length > 0) && (
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: 12, marginBottom: 14, border: '1px solid #334155' }}>
+        <div style={{ background: THEME.bg.panel, borderRadius: 12, padding: 12, marginBottom: 14, border: '1px solid #334155' }}>
           <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>Client Outreach</p>
 
           {/* Birthday Today */}
           {birthdayClients.map(c => (
-            <div key={'bd_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #fbbf24', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+            <div key={'bd_' + c.id} style={{ background: THEME.bg.panelAlt, borderLeft: '3px solid #fbbf24', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
@@ -1201,7 +1239,7 @@ export default function Today() {
 
           {/* Upcoming Birthdays (next 7 days, excluding today) */}
           {upcomingBirthdays.slice(0, 3).map(c => (
-            <div key={'upbd_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #fcd34d', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+            <div key={'upbd_' + c.id} style={{ background: THEME.bg.panelAlt, borderLeft: '3px solid #fcd34d', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
@@ -1217,7 +1255,7 @@ export default function Today() {
 
           {/* Year-away — gentle re-engage */}
           {yearAwayClients.slice(0, 3).map(({ client: c, monthsAway: m }) => (
-            <div key={'ya_' + c.id} style={{ background: '#0b1220', borderLeft: '3px solid #a78bfa', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
+            <div key={'ya_' + c.id} style={{ background: THEME.bg.panelAlt, borderLeft: '3px solid #a78bfa', borderRadius: 8, padding: '8px 12px', marginBottom: 6 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <p style={{ fontSize: 13, fontWeight: 600 }}>{c.name}</p>
@@ -1232,7 +1270,7 @@ export default function Today() {
           ))}
 
           {birthdayClients.length === 0 && upcomingBirthdays.length === 0 && yearAwayClients.length === 0 && (
-            <p style={{ fontSize: 12, color: '#64748b' }}>No outreach needed today.</p>
+            <p style={{ fontSize: 12, color: THEME.text.subtle }}>No outreach needed today.</p>
           )}
         </div>
       )}
@@ -1256,8 +1294,8 @@ export default function Today() {
               style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
               padding: '8px 10px', borderRadius: 14, border: 'none',
-              background: selected ? '#e11d48' : dragOverDate === day.dateStr ? '#334155' : 'transparent',
-              color: selected ? 'white' : count > 0 ? '#e2e8f0' : '#64748b',
+              background: selected ? THEME.brand.primary : dragOverDate === day.dateStr ? THEME.border.default : 'transparent',
+              color: selected ? 'white' : count > 0 ? '#e2e8f0' : THEME.text.subtle,
               fontSize: 12, fontWeight: 500, cursor: 'pointer', minWidth: 50, transition: 'background 0.15s', position: 'relative',
             }}>
               <span style={{ fontSize: 10, opacity: 0.6 }}>{day.label}</span>
@@ -1279,7 +1317,7 @@ export default function Today() {
       {viewMode === 'day' && appointments.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: 60 }}>
           <p style={{ fontSize: 48, marginBottom: 16 }}>{t(lang, 'no_appointments')}</p>
-          <p style={{ fontSize: 16, color: '#94a3b8' }}>{t(lang, 'no_appointments_day')}</p>
+          <p style={{ fontSize: 16, color: THEME.text.muted }}>{t(lang, 'no_appointments_day')}</p>
         </div>
       ) : viewMode === 'day' ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -1311,7 +1349,7 @@ export default function Today() {
                   if (appointmentId) await handleDropToDate(day.dateStr, appointmentId);
                 }}
                 style={{
-                  background: selected ? '#182234' : '#0b1220',
+                  background: selected ? '#182234' : THEME.bg.panelAlt,
                   border: dragOverDate === day.dateStr ? '1px solid #f43f5e' : selected ? '1px solid #475569' : '1px solid #243244',
                   boxShadow: dragOverDate === day.dateStr ? '0 0 0 1px rgba(244,63,94,0.35) inset' : 'none',
                   borderRadius: 12,
@@ -1320,7 +1358,7 @@ export default function Today() {
                 }}
               >
                 <button onClick={() => { setSelectedDate(day.dateStr); setViewMode('day'); }} style={{ width: '100%', border: 'none', background: 'transparent', color: 'white', textAlign: 'left', cursor: 'pointer', marginBottom: 8 }}>
-                  <div style={{ fontSize: 12, color: '#94a3b8' }}>{day.label}</div>
+                  <div style={{ fontSize: 12, color: THEME.text.muted }}>{day.label}</div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>{day.date.getDate()}</div>
                     <span style={{ fontSize: 11, color: '#93c5fd', background: '#1e3a5f', borderRadius: 999, padding: '2px 7px' }}>{list.length}</span>
@@ -1328,7 +1366,7 @@ export default function Today() {
                 </button>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {list.length === 0 ? (
-                    <p style={{ fontSize: 12, color: '#64748b' }}>No appointments</p>
+                    <p style={{ fontSize: 12, color: THEME.text.subtle }}>No appointments</p>
                   ) : list.map(item => (
                     <div
                       key={item.id}
@@ -1351,18 +1389,18 @@ export default function Today() {
                       {item.station && (() => { const sc = userStations.find(s => s.name === item.station)?.color; return (
                         <div style={{ fontSize: 9, marginTop: 1, display: 'flex', alignItems: 'center', gap: 3 }}>
                           {sc && <span style={{ width: 6, height: 6, borderRadius: 2, background: sc, flexShrink: 0 }} />}
-                          <span style={{ color: sc || '#94a3b8' }}>{item.station}</span>
+                          <span style={{ color: sc || THEME.text.muted }}>{item.station}</span>
                         </div>
                       );})()}
-                      {item.seriesId && (
+                      {(item as { projectTitle?: string }).projectTitle && (
                         <div style={{ fontSize: 9, color: '#c084fc', marginTop: 1 }}>
-                          🔗 {(() => { const idx = item.seriesId!.indexOf('_', 7); return idx > 0 ? decodeURIComponent(item.seriesId!.slice(idx + 1)) : item.seriesId; })()}
+                          {(item as { projectTitle?: string }).projectTitle}
                         </div>
                       )}
                       {(item.clientAllergies && item.clientAllergies.length > 0) && (
                         <div style={{ fontSize: 9, color: '#fca5a5', marginTop: 1 }}>Allergies: {item.clientAllergies.join(', ')}</div>
                       )}
-                      <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2 }}>{STATUS_LABELS[item.status] || item.status}</div>
+                      <div style={{ fontSize: 10, color: THEME.text.muted, marginTop: 2 }}>{STATUS_LABELS[item.status] || item.status}</div>
                       {item.rescheduleRequest && (
                         <div style={{ fontSize: 10, color: '#fbbf24', marginTop: 2, fontStyle: 'italic' }}>
                           Reschedule requested
@@ -1404,7 +1442,7 @@ export default function Today() {
         };
 
         if (multiArtists.length === 0) {
-          return <p style={{ color: '#64748b', fontSize: 14, padding: 20 }}>No artists found for this location.</p>;
+          return <p style={{ color: THEME.text.subtle, fontSize: 14, padding: 20 }}>No artists found for this location.</p>;
         }
 
         return (
@@ -1414,20 +1452,20 @@ export default function Today() {
               gridTemplateColumns: `55px repeat(${multiArtists.length}, minmax(140px, 1fr))`,
               gridTemplateRows: `auto repeat(${slots}, ${ROW_H}px)`,
               gap: '1px',
-              background: '#243244',
+              background: THEME.border.soft,
               border: '1px solid #243244',
               borderRadius: 10,
               overflow: 'hidden',
               minWidth: multiArtists.length * 160 + 55,
             }}>
               {/* Header row: time label + artist names */}
-              <div style={{ background: '#1e293b', padding: '8px 4px', textAlign: 'center', fontWeight: 700, fontSize: 11, color: '#64748b' }}>Time</div>
+              <div style={{ background: THEME.bg.panel, padding: '8px 4px', textAlign: 'center', fontWeight: 700, fontSize: 11, color: THEME.text.subtle }}>Time</div>
               {multiArtists.map(artist => {
                 const count = (multiAppointments.get(artist.id) || []).length;
                 return (
-                  <div key={artist.id} style={{ background: '#1e293b', padding: '8px 4px', textAlign: 'center' }}>
+                  <div key={artist.id} style={{ background: THEME.bg.panel, padding: '8px 4px', textAlign: 'center' }}>
                     <p style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{artist.name}</p>
-                    <p style={{ fontSize: 9, color: '#64748b', margin: 0 }}>{count} appt{count !== 1 ? 's' : ''}</p>
+                    <p style={{ fontSize: 9, color: THEME.text.subtle, margin: 0 }}>{count} appt{count !== 1 ? 's' : ''}</p>
                   </div>
                 );
               })}
@@ -1444,7 +1482,7 @@ export default function Today() {
                       alignItems: 'center',
                       justifyContent: 'flex-end',
                       fontSize: 10,
-                      color: s % 2 === 0 ? '#475569' : '#1e293b',
+                      color: s % 2 === 0 ? '#475569' : THEME.bg.panel,
                       borderTop: s % 2 === 0 ? '1px solid #1e293b' : 'none',
                     }}>
                       {s % 2 === 0 ? timeLabel : ''}
@@ -1467,7 +1505,7 @@ export default function Today() {
                             }
                           }}
                           style={{
-                            background: s % 2 === 0 ? '#0b1220' : '#0f172a',
+                            background: s % 2 === 0 ? THEME.bg.panelAlt : '#0f172a',
                             position: 'relative',
                             borderTop: s % 2 === 0 ? '1px solid #1e293b' : '1px solid transparent',
                           }}
@@ -1483,7 +1521,7 @@ export default function Today() {
                                   position: 'absolute',
                                   top: 1, left: 2, right: 2,
                                   height: info.span * ROW_H - 4,
-                                  background: '#1e293b',
+                                  background: THEME.bg.panel,
                                   borderLeft: `3px solid ${STATUS_COLORS[app.status] || '#9ca3af'}`,
                                   borderRadius: 6,
                                   padding: '3px 6px',
@@ -1498,7 +1536,7 @@ export default function Today() {
                                 </div>
                                 <p style={{ fontSize: 10, color: '#cbd5e1', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{app.clientName}</p>
                                 {info.span >= 2 && (
-                                  <p style={{ fontSize: 9, color: '#64748b', margin: 0 }}>{app.duration}min{app.type ? ' · ' + app.type.replace('_', ' ') : ''}</p>
+                                  <p style={{ fontSize: 9, color: THEME.text.subtle, margin: 0 }}>{app.duration}min{app.type ? ' · ' + app.type.replace('_', ' ') : ''}</p>
                                 )}
                               </div>
                             );
@@ -1516,12 +1554,12 @@ export default function Today() {
 
       {conflictModal.open && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 16 }}>
-          <div style={{ width: '100%', maxWidth: 380, background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 14 }}>
+          <div style={{ width: '100%', maxWidth: 380, background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 12, padding: 14 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Time Conflict</h3>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>
+            <p style={{ fontSize: 13, color: THEME.text.muted, marginBottom: 8 }}>
               Conflicts with: <span style={{ color: '#e2e8f0' }}>{conflictModal.conflictWith}</span>
             </p>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 10 }}>
+            <p style={{ fontSize: 13, color: THEME.text.muted, marginBottom: 10 }}>
               Choose a suggested slot for {conflictModal.targetDate}:
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -1532,7 +1570,7 @@ export default function Today() {
                     await applyMove(conflictModal.appointmentId, conflictModal.targetDate, option);
                     setConflictModal({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] });
                   }}
-                  style={{ border: 'none', borderRadius: 8, padding: '10px 12px', background: '#334155', color: 'white', textAlign: 'left', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}
+                  style={{ border: 'none', borderRadius: 8, padding: '10px 12px', background: THEME.border.default, color: 'white', textAlign: 'left', cursor: 'pointer', fontSize: 14, fontWeight: 600 }}
                 >
                   {option}
                 </button>
@@ -1540,7 +1578,7 @@ export default function Today() {
             </div>
             <button
               onClick={() => setConflictModal({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] })}
-              style={{ width: '100%', border: '1px solid #475569', borderRadius: 8, padding: '9px 10px', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}
+              style={{ width: '100%', border: '1px solid #475569', borderRadius: 8, padding: '9px 10px', background: 'transparent', color: THEME.text.muted, cursor: 'pointer' }}
             >
               Cancel
             </button>
@@ -1551,7 +1589,7 @@ export default function Today() {
       {/* Walk-in QR Modal */}
       {showWalkinQR && (
         <div onClick={() => setShowWalkinQR(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 380, background: '#1e293b', border: '1px solid #334155', borderRadius: 16, padding: 24, textAlign: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 380, background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 16, padding: 24, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>✋</div>
             <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>Walk-in QR</h3>
             <p style={{ fontSize: 12, color: '#fbbf24', background: '#422006', borderRadius: 8, padding: '8px 12px', marginBottom: 16 }}>
@@ -1560,23 +1598,23 @@ export default function Today() {
             {walkinQrUrl ? (
               <img src={walkinQrUrl} alt="Walk-in QR" style={{ width: 200, height: 200, borderRadius: 8, marginBottom: 12 }} />
             ) : (
-              <div style={{ width: 200, height: 200, borderRadius: 8, background: '#0f172a', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#64748b' }}>Loading...</div>
+              <div style={{ width: 200, height: 200, borderRadius: 8, background: '#0f172a', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: THEME.text.subtle }}>Loading...</div>
             )}
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 12, wordBreak: 'break-all' }}>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 12, wordBreak: 'break-all' }}>
               {getWalkinUrl(user?.artistId || user?.id || '')}
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => { navigator.clipboard.writeText(getWalkinUrl(user?.artistId || user?.id || '')); }}
-                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
                 Copy URL
               </button>
               <button onClick={() => { window.open(walkinQrUrl, '_blank'); }}
-                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none', background: '#e11d48', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                style={{ flex: 1, padding: '10px 12px', borderRadius: 8, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 Print QR
               </button>
             </div>
             <button onClick={() => setShowWalkinQR(false)}
-              style={{ marginTop: 8, padding: '8px 16px', borderRadius: 8, border: 'none', background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer' }}>
+              style={{ marginTop: 8, padding: '8px 16px', borderRadius: 8, border: 'none', background: 'transparent', color: THEME.text.subtle, fontSize: 12, cursor: 'pointer' }}>
               Close
             </button>
           </div>
@@ -1586,9 +1624,9 @@ export default function Today() {
       {/* Referral Verification Modal */}
       {referralVerifyOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, padding: 20 }}>
-          <div style={{ width: '100%', maxWidth: 400, background: '#1e293b', border: '1px solid #334155', borderRadius: 16, padding: 24 }}>
+          <div style={{ width: '100%', maxWidth: 400, background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 16, padding: 24 }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 6, color: '#fbbf24' }}>🎉 Welcome! You were invited!</h3>
-            <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: THEME.text.muted, marginBottom: 16, lineHeight: 1.5 }}>
               Someone invited you to InkFlow. Enter your Instagram to verify you're a tattoo artist —
               <strong style={{ color: '#e2e8f0' }}> both you and the inviter get {getRewardMonths()} month{getRewardMonths() > 1 ? 's' : ''} of Pro free!</strong>
             </p>
@@ -1597,7 +1635,7 @@ export default function Today() {
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <p style={{ fontSize: 40, marginBottom: 8 }}>✅</p>
                 <p style={{ fontSize: 16, fontWeight: 700, color: '#4ade80', marginBottom: 4 }}>Verified!</p>
-                <p style={{ fontSize: 13, color: '#94a3b8' }}>Your Pro days have been added. Enjoy!</p>
+                <p style={{ fontSize: 13, color: THEME.text.muted }}>Your Pro days have been added. Enjoy!</p>
                 <button onClick={() => { setReferralVerifyOpen(false); window.history.replaceState({}, '', '/today'); }}
                   style={{ marginTop: 16, padding: '10px 24px', borderRadius: 10, border: 'none', background: '#22c55e', color: '#0f172a', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                   Done
@@ -1606,7 +1644,7 @@ export default function Today() {
             ) : (
               <>
                 <div style={{ background: '#0f172a', borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                  <p style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>Instagram handle or URL</p>
+                  <p style={{ fontSize: 12, color: THEME.text.subtle, marginBottom: 8 }}>Instagram handle or URL</p>
                   <input
                     placeholder="@your_handle or https://instagram.com/..."
                     value={referralIgHandle}
@@ -1614,7 +1652,7 @@ export default function Today() {
                     disabled={referralVerifyState === 'verifying'}
                     style={{
                       width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid #334155',
-                      background: '#1e293b', color: 'white', fontSize: 14, outline: 'none',
+                      background: THEME.bg.panel, color: 'white', fontSize: 14, outline: 'none',
                       boxSizing: 'border-box',
                     }}
                   />
@@ -1647,17 +1685,17 @@ export default function Today() {
                     }
                   }} style={{
                     flex: 1, padding: '12px 16px', borderRadius: 10, border: 'none',
-                    background: referralVerifyState === 'verifying' ? '#4b5563' : '#e11d48',
+                    background: referralVerifyState === 'verifying' ? '#4b5563' : THEME.brand.primary,
                     color: 'white', fontSize: 14, fontWeight: 600, cursor: referralVerifyState === 'verifying' ? 'not-allowed' : 'pointer',
                   }}>
                     {referralVerifyState === 'verifying' ? 'Verifying...' : 'Verify'}
                   </button>
                   <button onClick={() => { setReferralVerifyOpen(false); window.history.replaceState({}, '', '/today'); }}
-                    style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
+                    style={{ padding: '12px 16px', borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 14, cursor: 'pointer' }}>
                     Skip
                   </button>
                 </div>
-                <p style={{ fontSize: 10, color: '#64748b', marginTop: 12, textAlign: 'center' }}>
+                <p style={{ fontSize: 10, color: THEME.text.subtle, marginTop: 12, textAlign: 'center' }}>
                   We check your Instagram bio &amp; posts to confirm you're a tattoo artist. Your data stays private.
                 </p>
               </>
@@ -1729,7 +1767,7 @@ function AppointmentCard({
             <button
               disabled={rrResponding}
               onClick={async () => { setRrResponding(true); await onRejectReschedule(appointment.id); setRrResponding(false); }}
-              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #475569', background: 'transparent', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '8px 12px', borderRadius: 8, border: '1px solid #475569', background: 'transparent', color: THEME.text.muted, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
             >
               Reject
             </button>
@@ -1742,7 +1780,7 @@ function AppointmentCard({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
           <div>
             <p style={{ fontSize: 16, fontWeight: 600 }}>
-              <span style={{ color: '#64748b', marginRight: 6 }}>{appointment.time}</span>
+              <span style={{ color: THEME.text.subtle, marginRight: 6 }}>{appointment.time}</span>
               {appointment.clientName}
             </p>
           </div>
@@ -1752,28 +1790,34 @@ function AppointmentCard({
         </div>
         {/* Details */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px 14px', marginBottom: 10 }}>
-          <span style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.duration}min</span>
-          {appointment.type && <span style={{ fontSize: 13, color: '#94a3b8' }}>{appointment.type.replace(/_/g, ' ')}</span>}
+          <span style={{ fontSize: 13, color: THEME.text.muted }}>{appointment.duration}min</span>
+          {appointment.type && <span style={{ fontSize: 13, color: THEME.text.muted }}>{appointment.type.replace(/_/g, ' ')}</span>}
           {appointment.station && stationColor && (
             <span style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 3, color: stationColor }}>
               <span style={{ width: 8, height: 8, borderRadius: 2, background: stationColor, display: 'inline-block' }} />
               {appointment.station}
             </span>
           )}
-          {appointment.bodyPart && <span style={{ fontSize: 13, color: '#93c5fd' }}>{appointment.bodyPart}</span>}
-          {appointment.clientPhone && <span style={{ fontSize: 13, color: '#64748b' }}>{appointment.clientPhone}</span>}
-          {appointment.seriesId && (
+          {(appointment as { projectBodyPart?: string }).projectBodyPart && (
+            <span style={{ fontSize: 13, color: '#93c5fd' }}>{(appointment as { projectBodyPart?: string }).projectBodyPart}</span>
+          )}
+          {appointment.clientPhone && <span style={{ fontSize: 13, color: THEME.text.subtle }}>{appointment.clientPhone}</span>}
+          {(appointment as { projectTitle?: string }).projectTitle && (
             <span style={{ fontSize: 13, color: '#c084fc' }}>
-              Series: {(() => { const idx = appointment.seriesId!.indexOf('_', 7); return idx > 0 ? decodeURIComponent(appointment.seriesId!.slice(idx + 1)) : appointment.seriesId; })()}
+              {(appointment as { projectTitle?: string }).projectTitle}
             </span>
           )}
-          {appointment.depositAmount != null && appointment.depositAmount > 0 && (
-            <span style={{ fontSize: 13, color: '#fbbf24' }}>Deposit: ${(appointment.depositAmount / 100).toFixed(0)}</span>
+          {(appointment as { projectDepositAmount?: number }).projectDepositAmount != null &&
+            (appointment as { projectDepositAmount?: number }).projectDepositAmount! > 0 && (
+            <span style={{ fontSize: 13, color: '#fbbf24' }}>
+              Deposit: ${(((appointment as { projectDepositAmount?: number }).projectDepositAmount || 0) / 100).toFixed(0)}
+            </span>
           )}
         </div>
-        {appointment.designNotes && (
-          <p style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic', marginBottom: 8 }}>
-            "{appointment.designNotes.slice(0, 80)}{appointment.designNotes.length > 80 ? '...' : ''}"
+        {(appointment as { projectDesignNotes?: string }).projectDesignNotes && (
+          <p style={{ fontSize: 13, color: THEME.text.muted, fontStyle: 'italic', marginBottom: 8 }}>
+            "{(appointment as { projectDesignNotes?: string }).projectDesignNotes!.slice(0, 80)}
+            {(appointment as { projectDesignNotes?: string }).projectDesignNotes!.length > 80 ? '...' : ''}"
           </p>
         )}
         {(appointment.clientAllergies && appointment.clientAllergies.length > 0) && (
@@ -1806,18 +1850,18 @@ function AppointmentCard({
           {/* Secondary actions */}
           <button onClick={() => window.open(getGoogleCalendarUrl({ ...appointment, clientName: appointment.clientName }), '_blank', 'noopener,noreferrer')}
             title="Add to Google Calendar"
-            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
             Calendar
           </button>
           {appointment.status !== 'cancelled' && (
             <button onClick={async () => { setQrUrl(await generateQRDataUrl(appointment.id)); setShowQR(true); }}
-              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
               QR
             </button>
           )}
           {appointment.status !== 'done' && appointment.status !== 'cancelled' && (
             <button disabled={updating} onClick={() => updateStatus('cancelled')}
-              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+              style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
               Cancel
             </button>
           )}
@@ -1835,15 +1879,15 @@ function AppointmentCard({
 
       {showQR && (
         <div onClick={() => setShowQR(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1e293b', borderRadius: 16, padding: 24, textAlign: 'center', maxWidth: 320, width: '100%' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: THEME.bg.panel, borderRadius: 16, padding: 24, textAlign: 'center', maxWidth: 320, width: '100%' }}>
             <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{appointment.clientName} — Check-in</p>
-            <p style={{ fontSize: 11, color: '#64748b', marginBottom: 16 }}>{appointment.date} at {appointment.time}</p>
+            <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 16 }}>{appointment.date} at {appointment.time}</p>
             {qrUrl ? (
               <img src={qrUrl} alt="QR Code" style={{ width: 200, height: 200, borderRadius: 8, background: '#0f172a' }} />
             ) : (
-              <p style={{ color: '#64748b' }}>Loading QR...</p>
+              <p style={{ color: THEME.text.subtle }}>Loading QR...</p>
             )}
-            <button onClick={() => setShowQR(false)} style={{ marginTop: 16, padding: '8px 24px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+            <button onClick={() => setShowQR(false)} style={{ marginTop: 16, padding: '8px 24px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 13, cursor: 'pointer' }}>
               Close
             </button>
           </div>
@@ -1854,7 +1898,7 @@ function AppointmentCard({
 }
 
 const outreachBtn: React.CSSProperties = {
-  border: 'none', background: '#334155', color: '#e2e8f0',
+  border: 'none', background: THEME.border.default, color: '#e2e8f0',
   fontSize: 13, padding: '8px 14px', borderRadius: 6, cursor: 'pointer', fontWeight: 600,
 };
 const smallBtn: React.CSSProperties = {

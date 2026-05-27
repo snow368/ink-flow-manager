@@ -108,7 +108,13 @@ export default function ClientDetail() {
 
     // Design drafts from projects that have status consultation/in_progress
     for (const proj of projects) {
-      if (proj.status === 'consultation' || proj.status === 'in_progress') {
+      if (
+        proj.status === 'consultation' ||
+        proj.status === 'design' ||
+        proj.status === 'in_progress' ||
+        proj.status === 'scheduled' ||
+        proj.status === 'approved'
+      ) {
         // Use project itself as design reference
         entries.push({
           type: 'design',

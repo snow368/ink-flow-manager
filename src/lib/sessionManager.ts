@@ -1,11 +1,18 @@
 import { db } from '../db';
-import type { AppointmentRecord, SessionRecord, TimelineEvent, ConsumableUsage } from '../db';
+import type { AppointmentRecord, SessionRecord, StoredAppointmentRecord, TimelineEvent, ConsumableUsage } from '../db';
+import { incrementProjectSessionCount } from './projectLogic';
+import { resolveProjectId } from './projectAccess';
 
-export function createSession(appointment: AppointmentRecord): SessionRecord {
+export function createSession(
+  projectId: string,
+  appointment: AppointmentRecord,
+): SessionRecord {
   const now = Date.now();
   return {
     id: 'session_' + now + '_' + Math.random().toString(36).slice(2, 6),
+    projectId,
     appointmentId: appointment.id,
+    clientId: appointment.clientId,
     artistId: appointment.artistId,
     status: 'active',
     startedAt: now,
@@ -16,6 +23,16 @@ export function createSession(appointment: AppointmentRecord): SessionRecord {
     notes: [],
     consumables: [],
   };
+}
+
+export async function createSessionForAppointment(
+  appointment: StoredAppointmentRecord,
+): Promise<SessionRecord> {
+  const projectId = (await resolveProjectId(appointment)) ?? appointment.projectId ?? null;
+  if (!projectId) {
+    throw new Error('Cannot start session: appointment has no resolvable project');
+  }
+  return createSession(projectId, { ...appointment, projectId });
 }
 
 export function addTimelineEvent(
@@ -94,9 +111,18 @@ export async function finishSession(session: SessionRecord): Promise<SessionReco
   };
 
   await db.sessions.add(finished);
-  await db.appointments.update(session.appointmentId, { status: 'done' });
 
-  // 扣减库存
+  if (session.appointmentId) {
+    await db.appointments.update(session.appointmentId, { status: 'done' });
+  }
+
+  let projectId = session.projectId;
+  if (!projectId) {
+    const { resolveSessionProjectId } = await import('./projectAccess');
+    projectId = (await resolveSessionProjectId(session)) ?? undefined;
+  }
+  if (projectId) await incrementProjectSessionCount(projectId);
+
   for (const c of session.consumables) {
     const item = await db.inventory.get(c.itemId);
     if (item) {

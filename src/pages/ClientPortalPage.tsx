@@ -20,7 +20,10 @@ export default function ClientPortalPage() {
   useEffect(() => {
     if (!clientId) return;
     db.clients.get(clientId).then(setClient);
-    db.appointments.where('clientId').equals(clientId).reverse().sortBy('createdAt').then(setAppointments);
+    db.appointments.where('clientId').equals(clientId).reverse().sortBy('createdAt').then(async rows => {
+      const { enrichAppointment } = await import('../lib/projectLogic');
+      setAppointments(await Promise.all(rows.map(a => enrichAppointment(a))));
+    });
     getClientTimeline(clientId).then(setTimeline);
   }, [clientId]);
 
@@ -117,7 +120,7 @@ export default function ClientPortalPage() {
   );
 }
 
-function AppointmentCard({ appointment, lang }: { appointment: AppointmentRecord; lang: AppLanguage }) {
+function AppointmentCard({ appointment, lang }: { appointment: AppointmentRecord & { projectBodyPart?: string; projectDepositAmount?: number }; lang: AppLanguage }) {
   const color = STATUS_COLORS[appointment.status] || '#9ca3af';
   const dateStr = new Date(appointment.date + 'T00:00:00').toLocaleDateString(lang === 'jp' ? 'ja' : lang, { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -127,9 +130,9 @@ function AppointmentCard({ appointment, lang }: { appointment: AppointmentRecord
         <div>
           <div style={{ fontSize: 15, fontWeight: 600 }}>{dateStr} at {appointment.time}</div>
           <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{appointment.duration}min{appointment.type ? ' — ' + appointment.type : ''}</div>
-          {appointment.bodyPart && <div style={{ fontSize: 11, color: '#93c5fd', marginTop: 2 }}>{t(lang, 'portal_body').replace('{part}', appointment.bodyPart)}</div>}
-          {appointment.depositAmount != null && appointment.depositAmount > 0 && (
-            <div style={{ fontSize: 11, color: '#fbbf24', marginTop: 2 }}>{t(lang, 'portal_deposit').replace('${amount}', (appointment.depositAmount / 100).toFixed(2))}</div>
+          {appointment.projectBodyPart && <div style={{ fontSize: 11, color: '#93c5fd', marginTop: 2 }}>{t(lang, 'portal_body').replace('{part}', appointment.projectBodyPart)}</div>}
+          {appointment.projectDepositAmount != null && appointment.projectDepositAmount > 0 && (
+            <div style={{ fontSize: 11, color: '#fbbf24', marginTop: 2 }}>{t(lang, 'portal_deposit').replace('${amount}', (appointment.projectDepositAmount / 100).toFixed(2))}</div>
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>

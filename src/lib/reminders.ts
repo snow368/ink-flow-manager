@@ -96,11 +96,13 @@ export async function checkDepositReminders(artistId: string): Promise<Appointme
   const now = Date.now();
   const all = await db.appointments
     .where('artistId').equals(artistId)
-    .filter(a => a.status === 'unconfirmed' && !a.depositAmount)
+    .filter(a => a.status === 'unconfirmed')
     .toArray();
 
   const out: AppointmentReminder[] = [];
   for (const appt of all) {
+    const project = await db.projects.get(appt.projectId);
+    if (project?.depositAmount || project?.depositStatus === 'paid') continue;
     const ageHours = (now - appt.createdAt) / (60 * 60 * 1000);
     const client = await db.clients.get(appt.clientId);
     const enriched = { ...appt, clientName: client?.name || 'Unknown' };

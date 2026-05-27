@@ -64,8 +64,12 @@ export async function rebuildConsumableProfiles(): Promise<void> {
     if (!s.consumables || s.consumables.length === 0) continue;
     let appType = 'general';
     try {
-      const app = await db.appointments.get(s.appointmentId);
-      if (app?.type) appType = app.type;
+      const project = await db.projects.get(s.projectId);
+      if (project?.style) appType = project.style;
+      else if (s.appointmentId) {
+        const app = await db.appointments.get(s.appointmentId);
+        if (app?.type) appType = app.type;
+      }
     } catch { /* use default */ }
 
     const key = typeKey(appType);

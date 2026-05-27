@@ -1,4 +1,5 @@
 import { db } from '../db';
+import { createProjectWithAppointment } from './projectLogic';
 
 const DEMO_CLIENTS = [
   { name: 'Alice Johnson', phone: '555-0101', email: 'alice@example.com', allergies: ['Latex gloves'] },
@@ -25,7 +26,6 @@ function randomTime(): string {
 export async function seedDemoData(): Promise<string> {
   const clientIds: string[] = [];
 
-  // 创建示例客户
   for (const c of DEMO_CLIENTS) {
     const id = 'client_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
     await db.clients.add({
@@ -36,18 +36,22 @@ export async function seedDemoData(): Promise<string> {
     clientIds.push(id);
   }
 
-  // 创建示例预约（分布在未来 30 天）
   for (let i = 0; i < 15; i++) {
     const clientId = clientIds[Math.floor(Math.random() * clientIds.length)];
     const type = APPOINTMENT_TYPES[Math.floor(Math.random() * APPOINTMENT_TYPES.length)];
-    const id = 'appt_' + Date.now() + '_' + i;
     const date = randomDate(30);
     const status = Math.random() > 0.3 ? (Math.random() > 0.5 ? 'ready' : 'unconfirmed') : 'done';
-    await db.appointments.add({
-      id, clientId, artistId: 'demo_artist', date, time: randomTime(),
+    await createProjectWithAppointment({
+      artistId: 'demo_artist',
+      clientId,
+      title: `${type.replace(/_/g, ' ')} project`,
+      projectStatus: status === 'done' ? 'completed' : 'scheduled',
+      date,
+      time: randomTime(),
       duration: [30, 60, 90, 120, 180][Math.floor(Math.random() * 5)],
-      type, status, waiverCompleted: status === 'ready' || status === 'done',
-      createdAt: Date.now(),
+      appointmentType: type,
+      appointmentStatus: status as 'ready' | 'unconfirmed' | 'done',
+      waiverCompleted: status === 'ready' || status === 'done',
     });
   }
 
@@ -56,6 +60,7 @@ export async function seedDemoData(): Promise<string> {
 
 export async function resetDatabase(): Promise<string> {
   await db.clients.clear();
+  await db.projects.clear();
   await db.appointments.clear();
   await db.waivers.clear();
   await db.sessions.clear();

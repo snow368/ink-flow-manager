@@ -25,7 +25,8 @@ export default function AppointmentRespondPage() {
     if (!id) return;
     db.appointments.get(id).then(async appt => {
       if (!appt) { setStatus('ready'); return; }
-      setAppointment(appt);
+      const { enrichAppointment } = await import('../lib/projectLogic');
+      setAppointment(await enrichAppointment(appt));
       const c = await db.clients.get(appt.clientId);
       setClient(c);
       setStatus('ready');
@@ -212,9 +213,13 @@ export default function AppointmentRespondPage() {
         <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{appointment.time}</div>
         <div style={{ fontSize: 14, color: '#94a3b8', marginBottom: 4 }}>{appointment.duration} min</div>
         {client && <div style={{ fontSize: 14, color: '#e2e8f0', marginTop: 8 }}>{t(lang, 'respond_name')} {client.name}</div>}
-        {appointment.bodyPart && <div style={{ fontSize: 13, color: '#93c5fd' }}>{t(lang, 'respond_body')} {appointment.bodyPart}</div>}
-        {appointment.designNotes && <div style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>{t(lang, 'respond_design')} {appointment.designNotes}</div>}
-        {appointment.depositAmount > 0 && <div style={{ fontSize: 13, color: '#fbbf24', marginTop: 4 }}>{t(lang, 'respond_deposit')} ${(appointment.depositAmount / 100).toFixed(2)}</div>}
+        {appointment.projectBodyPart && <div style={{ fontSize: 13, color: '#93c5fd' }}>{t(lang, 'respond_body')} {appointment.projectBodyPart}</div>}
+        {appointment.projectDesignNotes && <div style={{ fontSize: 13, color: '#94a3b8', fontStyle: 'italic' }}>{t(lang, 'respond_design')} {appointment.projectDesignNotes}</div>}
+        {appointment.projectDepositAmount != null && appointment.projectDepositAmount > 0 && (
+          <div style={{ fontSize: 13, color: '#fbbf24', marginTop: 4 }}>
+            {t(lang, 'respond_deposit')} ${(appointment.projectDepositAmount / 100).toFixed(2)}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 400 }}>
