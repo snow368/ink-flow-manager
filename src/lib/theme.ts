@@ -1,8 +1,9 @@
 export const THEME = {
   bg: {
-    app: '#000000',
-    panel: '#0a0a0a',
-    panelAlt: '#050505',
+    app: '#0c0c0c',
+    panel: '#141416',
+    panelAlt: '#1a1a1e',
+    hover: '#222226',
   },
   text: {
     primary: '#ffffff',
@@ -10,15 +11,17 @@ export const THEME = {
     subtle: '#525252',
   },
   brand: {
-    primary: '#dc2626',
+    primary: '#a33a3a',
     info: '#fbbf24',
     success: '#22c55e',
     warning: '#f59e0b',
-    danger: '#b91c1c',
+    danger: '#8b1a1a',
+    accent: '#a33a3a',
   },
   border: {
-    default: '#1f1f1f',
-    soft: '#141414',
+    default: '#2a2a2e',
+    soft: '#1a1a1e',
+    subtle: '#222226',
   },
   radius: {
     sm: 4,

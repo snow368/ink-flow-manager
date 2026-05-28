@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord, type LeadRecord, type ClientRecord, type ConsumableUsage } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
+import StatusBadge from '../components/StatusBadge';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getAppointmentsNeedingReviewInvite, getAppointmentsNeedingFollowUp, getReviewInviteMessage, getReviewFollowUpMessage, markReviewInvited, markReviewFollowedUp, type EnhancedAppointment } from '../lib/reviewInvite';
@@ -34,7 +35,8 @@ export default function Today() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
   const [dateAppointmentCounts, setDateAppointmentCounts] = useState<Map<string, number>>(new Map());
   const [dragOverDate, setDragOverDate] = useState('');
-  const [viewMode, setViewMode] = useState<'day' | 'week' | 'multi'>('day');
+  const [viewMode, setViewMode] = useState<'pipeline' | 'day' | 'week' | 'multi'>('pipeline');
+  const [pipelineCollapsed, setPipelineCollapsed] = useState<Record<string, boolean>>({});
   const [weekAppointments, setWeekAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>>(new Map());
   const [multiArtists, setMultiArtists] = useState<{ id: string; name: string }[]>([]);
   const [multiAppointments, setMultiAppointments] = useState<Map<string, (AppointmentRecord & { clientName?: string; clientPhone?: string; clientAllergies?: string[] })[]>>(new Map());
@@ -840,12 +842,18 @@ export default function Today() {
   return (
     <div style={{ padding: 20, color: THEME.text.primary, paddingBottom: 12, maxWidth: 1180, margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{isToday ? t(lang, 'today') : new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' })}</h2>
+        <div>
+          <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em', margin: 0 }}>{viewMode === 'pipeline' ? 'Studio Control' : (isToday ? t(lang, 'today') : new Date(selectedDate).toLocaleDateString('en', { month: 'long', day: 'numeric' }))}</h2>
+          {viewMode === 'pipeline' && (
+            <p style={{ fontSize: 10, color: THEME.text.subtle, marginTop: 1, letterSpacing: '0.03em' }}>Control Panel</p>
+          )}
+        </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
-            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'day')}</button>
-            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'week')}</button>
-            <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
+            <button onClick={() => setViewMode('pipeline')} style={{ border: 'none', background: viewMode === 'pipeline' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: viewMode === 'pipeline' ? 700 : 500, cursor: 'pointer' }}>Panel</button>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: viewMode === 'day' ? 700 : 500, cursor: 'pointer' }}>{t(lang, 'day')}</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: viewMode === 'week' ? 700 : 500, cursor: 'pointer' }}>{t(lang, 'week')}</button>
+            <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: viewMode === 'multi' ? 700 : 500, cursor: 'pointer' }}>{t(lang, 'multi')}</button>
           </div>
           <button onClick={() => navigate('/appointment/new')} style={{ width: 44, height: 44, borderRadius: 22, border: 'none', background: THEME.brand.primary, color: 'white', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
           <button onClick={async () => {
@@ -853,7 +861,7 @@ export default function Today() {
             setWalkinQrUrl(await generateWalkinQR(artistId));
             setShowWalkinQR(true);
           }} title="Walk-in QR"
-            style={{ width: 44, height: 44, borderRadius: 12, border: '1px solid #334155', background: 'transparent', color: THEME.text.muted, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            style={{ width: 44, height: 44, borderRadius: 12, border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             ✋
           </button>
         </div>
@@ -886,6 +894,7 @@ export default function Today() {
           )}
         </div>
       )}
+      {viewMode !== "pipeline" && (<>
 
       <div style={{ background: THEME.bg.panel, border: '1px solid #334155', borderRadius: 12, padding: 12, marginBottom: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -1275,6 +1284,226 @@ export default function Today() {
         </div>
       )}
 
+      </>)}
+      {/* ===== STUDIO CONTROL PANEL (pipeline view) ===== */}
+      {viewMode === 'pipeline' && (
+        <>
+          {/* Pipeline Kanban — appointments grouped by status */}
+          <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginBottom: 14, scrollbarWidth: 'thin' }}>
+            {(['unconfirmed', 'deposit_paid', 'ready', 'attention'] as const).map(status => {
+              const items = appointments.filter(a => a.status === status);
+              const statusColor = STATUS_COLORS[status] || '#9ca3af';
+              const collapsed = pipelineCollapsed[status];
+              return (
+                <div key={status} style={{ minWidth: 220, maxWidth: 260, flexShrink: 0 }}>
+                  <div
+                    onClick={() => setPipelineCollapsed(prev => ({ ...prev, [status]: !prev[status] }))}
+                    style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}
+                  >
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusColor }} />
+                    <span style={{ fontSize: 11, fontWeight: 700, color: statusColor, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      {STATUS_LABELS[status] || status}
+                    </span>
+                    <span style={{ fontSize: 10, color: THEME.text.subtle, background: THEME.bg.panelAlt, borderRadius: 999, padding: '1px 7px', fontWeight: 700 }}>
+                      {items.length}
+                    </span>
+                  </div>
+                  {!collapsed && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {items.length === 0 ? (
+                        <p style={{ fontSize: 11, color: THEME.text.subtle, padding: '8px 0' }}>Empty</p>
+                      ) : items.slice(0, 6).map(app => (
+                        <div
+                          key={app.id}
+                          onClick={() => navigate(`/appointment/${app.id}`)}
+                          style={{
+                            background: THEME.bg.panelAlt,
+                            border: `1px solid ${THEME.border.soft}`,
+                            borderLeft: `3px solid ${statusColor}`,
+                            borderRadius: 8,
+                            padding: '8px 10px',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: THEME.text.primary }}>{app.clientName}</span>
+                            <span style={{ fontSize: 10, color: THEME.text.subtle }}>{app.time}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <span style={{ fontSize: 10, color: THEME.text.muted }}>{app.duration}min</span>
+                            {app.type && <span style={{ fontSize: 10, color: THEME.text.subtle }}>{app.type.replace(/_/g, ' ')}</span>}
+                          </div>
+                          {(app as { projectTitle?: string }).projectTitle && (
+                            <p style={{ fontSize: 9, color: THEME.text.subtle, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {(app as { projectTitle?: string }).projectTitle}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                      {items.length > 6 && (
+                        <p style={{ fontSize: 10, color: THEME.text.subtle, textAlign: 'center' }}>+{items.length - 6} more</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Active Sessions */}
+          {(appointments.filter(a => a.status === 'ready').length > 0 || appointments.filter(a => a.status === 'attention').length > 0) && (
+            <div style={{ background: THEME.bg.panel, border: `1px solid ${THEME.border.default}`, borderRadius: 12, padding: 12, marginBottom: 14 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: THEME.text.subtle, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Active Sessions
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {appointments.filter(a => a.status === 'ready' || a.status === 'attention').map(app => (
+                  <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px' }}>
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 600 }}>{app.clientName}</span>
+                      <span style={{ fontSize: 11, color: THEME.text.muted, marginLeft: 8 }}>{app.time} · {app.duration}min</span>
+                    </div>
+                    <StatusBadge status={app.status} size="sm" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pending Review — compact */}
+          {(reviewInvites.length > 0 || reviewFollowUps.length > 0 || dueLeads.length > 0) && (
+            <div style={{ background: THEME.bg.panel, border: `1px solid ${THEME.border.default}`, borderRadius: 12, padding: 12, marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: THEME.text.subtle, textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
+                  Pending Review
+                </p>
+                <button onClick={() => navigate('/review-invites')} style={{ border: 'none', background: 'transparent', color: THEME.text.muted, fontSize: 10, cursor: 'pointer' }}>
+                  View All →
+                </button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {dueLeads.length > 0 && (
+                  <div onClick={() => navigate('/leads')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px', cursor: 'pointer' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>Follow-ups Due</span>
+                    <span style={{ fontSize: 10, color: THEME.brand.info, fontWeight: 700 }}>{dueLeads.length} lead{dueLeads.length > 1 ? 's' : ''}</span>
+                  </div>
+                )}
+                {reviewInvites.slice(0, 2).map(a => (
+                  <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px' }}>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 600 }}>{a.clientName}</span>
+                      <p style={{ fontSize: 10, color: THEME.text.subtle }}>Review invite ready</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!user?.reviewLinks?.google && !user?.reviewLinks?.platform2Url && !user?.reviewLinks?.platform3Url) return;
+                        const { getReviewInviteMessage } = await import('../lib/reviewInvite');
+                        const msg = getReviewInviteMessage(lang, user?.studioName || user?.name || 'the studio', user?.reviewLinks);
+                        await navigator.clipboard.writeText(`${msg.subject}\n\n${msg.body}`);
+                        await markReviewInvited(a.id);
+                        setTimeout(() => loadReviewInvites(user!.id), 500);
+                      }}
+                      style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, fontSize: 10, cursor: 'pointer' }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                ))}
+                {reviewFollowUps.slice(0, 2).map(a => (
+                  <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: THEME.bg.panelAlt, borderRadius: 8, padding: '8px 10px' }}>
+                    <div>
+                      <span style={{ fontSize: 12, fontWeight: 600 }}>{a.clientName}</span>
+                      <p style={{ fontSize: 10, color: THEME.text.subtle }}>Follow-up needed</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        const { getReviewFollowUpMessage } = await import('../lib/reviewInvite');
+                        const msg = getReviewFollowUpMessage(lang, user?.studioName || user?.name || 'the studio', user?.reviewLinks);
+                        await navigator.clipboard.writeText(`${msg.subject}\n\n${msg.body}`);
+                        await markReviewFollowedUp(a.id);
+                        setTimeout(() => loadReviewInvites(user!.id), 500);
+                      }}
+                      style={{ padding: '4px 8px', borderRadius: 6, border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.muted, fontSize: 10, cursor: 'pointer' }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Compact Reminders */}
+          {(reminders.length > 0 || paymentReminders.length > 0 || waitlistCount > 0) && (
+            <div style={{ background: THEME.bg.panel, border: `1px solid ${THEME.border.default}`, borderRadius: 12, padding: '8px 12px', marginBottom: 14 }}>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {reminders.length > 0 && (
+                  <button onClick={() => setViewMode('day')} style={{ background: 'none', border: 'none', color: '#c084fc', fontSize: 11, cursor: 'pointer', padding: 0 }}>
+                    {reminders.length} reminder{reminders.length > 1 ? 's' : ''} →
+                  </button>
+                )}
+                {paymentReminders.length > 0 && (
+                  <span style={{ fontSize: 11, color: '#fca5a5' }}>{paymentReminders.length} deposit reminder{paymentReminders.length > 1 ? 's' : ''}</span>
+                )}
+                {waitlistCount > 0 && (
+                  <span style={{ fontSize: 11, color: '#c084fc' }}>{waitlistCount} waiting</span>
+                )}
+                {lowStockCount > 0 && (
+                  <span style={{ fontSize: 11, color: '#f97316' }}>{lowStockCount} low stock</span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Recently completed banner */}
+          {recentlyCompleted && (
+            <div style={{ background: THEME.bg.panel, border: `1px solid ${THEME.border.soft}`, borderRadius: 12, padding: 12, marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>{recentlyCompleted.clientName} — Session Complete</p>
+                <button onClick={() => setRecentlyCompleted(null)} style={{ background: 'none', border: 'none', color: THEME.text.subtle, fontSize: 14, cursor: 'pointer' }}>✕</button>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
+                  const aftercareUrl = getAftercareWhatsAppUrl(recentlyCompleted.clientName || '', recentlyCompleted.type, user.whatsappPhone);
+                  return aftercareUrl ? (
+                    <button onClick={() => window.open(aftercareUrl, '_blank', 'noopener,noreferrer')}
+                      style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#0f766e', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                      Send Aftercare
+                    </button>
+                  ) : null;
+                })()}
+                {recentlyCompleted.clientPhone && user?.whatsappPhone && (() => {
+                  const reviewUrl = getReviewRequestWhatsAppUrl(recentlyCompleted.clientName || '', user.whatsappPhone, 'google');
+                  return reviewUrl ? (
+                    <button onClick={() => window.open(reviewUrl, '_blank', 'noopener,noreferrer')}
+                      style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: '#2563eb', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                      Request Review
+                    </button>
+                  ) : null;
+                })()}
+                <button onClick={() => setRecentlyCompleted(null)}
+                  style={{ padding: '8px 14px', borderRadius: 8, border: `1px solid ${THEME.border.default}`, background: 'transparent', color: THEME.text.subtle, fontSize: 12, cursor: 'pointer' }}>
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* View mode toggle + date selector — only for timeline views */}
+      {viewMode !== 'pipeline' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+          <div style={{ display: 'flex', background: THEME.bg.panel, borderRadius: 10, padding: 2 }}>
+            <button onClick={() => setViewMode('day')} style={{ border: 'none', background: viewMode === 'day' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Day</button>
+            <button onClick={() => setViewMode('week')} style={{ border: 'none', background: viewMode === 'week' ? THEME.brand.primary : 'transparent', color: 'white', borderRadius: 10, padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Week</button>
+            <button onClick={() => setViewMode('multi')} style={{ border: 'none', background: viewMode === 'multi' ? '#a855f7' : 'transparent', color: 'white', borderRadius: 10, padding: '8px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Multi</button>
+          </div>
+        </div>
+      )}
+
+      {/* Date selector — shown in all views */}
       <div style={{ display: 'flex', gap: 8, paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid #1e293b', overflowX: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {weekDays.map(day => {
           const selected = day.dateStr === selectedDate;
@@ -1784,9 +2013,7 @@ function AppointmentCard({
               {appointment.clientName}
             </p>
           </div>
-          <span style={{ fontSize: 13, padding: '4px 12px', borderRadius: 6, background: color + '33', color, fontWeight: 600, whiteSpace: 'nowrap' }}>
-            {STATUS_LABELS[appointment.status] || appointment.status}
-          </span>
+          <StatusBadge status={appointment.status} />
         </div>
         {/* Details */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px 14px', marginBottom: 10 }}>
