@@ -64,6 +64,8 @@ const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
 const WalkinPage = lazy(() => import('./pages/WalkinPage'));
+const LeadConfirmationPage = lazy(() => import('./pages/LeadConfirmationPage'));
+const LeadInbox = lazy(() => import('./pages/LeadInbox'));
 const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
@@ -266,6 +268,8 @@ export default function App() {
             <Route path="/referral" element={<Referral />} />
             <Route path="/outreach" element={<Outreach />} />
             <Route path="/leads" element={<LeadsPage />} />
+            <Route path="/leads/inbox" element={<LeadInbox />} />
+            <Route path="/lead-confirm/:token" element={<LeadConfirmationPage />} />
             <Route path="/intake/:artistId" element={<IntakePage />} />
             <Route path="/intake/revise/:leadId" element={<LeadRevisePage />} />
             <Route path="/deposit-policy" element={<DepositPolicyPage />} />

@@ -789,6 +789,7 @@ export default function LeadsPage() {
         <h2 style={{ fontSize: 24, fontWeight: 800, letterSpacing: '-0.01em' }}>{t(lang, 'leads')}</h2>
         <div style={{ display: 'flex', gap: 6 }}>
           <button disabled={syncingPayments} onClick={() => void syncPayments(artistId)} style={{ border: '1px solid #334155', background: 'transparent', color: syncingPayments ? '#64748b' : '#86efac', borderRadius: 10, padding: '8px 12px', cursor: syncingPayments ? 'not-allowed' : 'pointer' }}>{syncingPayments ? 'Syncing...' : 'Sync Payments'}</button>
+          <button onClick={() => navigate('/leads/inbox')} style={{ border: '1px solid #334155', background: '#a33a3a', color: 'white', borderRadius: 10, padding: '8px 12px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>Pipeline</button>
           <button onClick={() => navigate('/me')} style={{ border: '1px solid #334155', background: 'transparent', color: '#94a3b8', borderRadius: 10, padding: '8px 12px', cursor: 'pointer' }}>{t(lang, 'back')}</button>
         </div>
       </div>

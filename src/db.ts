@@ -28,6 +28,7 @@ export class InkFlowDB extends Dexie {
   tasks!: Table<TaskRecord>;
   reviews!: Table<ReviewRecord>;
   clientReferrals!: Table<ClientReferralRecord>;
+  leadConfirmations!: Table<LeadConfirmationRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -535,6 +536,36 @@ export class InkFlowDB extends Dexie {
         console.error('[InkFlow] Dexie v25 upgrade failed; dual-read fallbacks active', err);
       }
     });
+    this.version(26).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+    });
   }
 }
 
@@ -867,6 +898,9 @@ export interface LeadRecord {
   finalRevisionId?: string;
   finalRevisionVersion?: number;
   nextFollowUpAt?: number;
+  leadPipelineStatus?: 'new_inquiry' | 'waiting_info' | 'waiting_references' | 'reviewing' | 'revision' | 'deposit_requested' | 'deposit_paid' | 'scheduled' | 'completed' | 'ghosted';
+  lastContactedAt?: number;
+  lastMessage?: string;
   convertedProjectId?: string;
   convertedAt?: number;
   createdAt: number;
@@ -882,6 +916,29 @@ export interface LeadRevisionRecord {
   changeRequest?: string;
   referenceImages?: string[];
   createdAt: number;
+}
+
+export interface LeadConfirmationRecord {
+  id: string;
+  artistId: string;
+  leadId?: string;
+  projectId?: string;
+  extractedData: {
+    placement?: string;
+    style?: string;
+    size?: string;
+    budget?: string;
+    references?: string[];
+    requestedChanges?: string[];
+    availability?: string;
+  };
+  missingFields: string[];
+  status: 'draft' | 'sent' | 'viewed' | 'submitted' | 'deposit_requested' | 'completed';
+  confirmationToken: string;
+  createdAt: number;
+  updatedAt: number;
+  submittedAt?: number;
+  viewedAt?: number;
 }
 
 export interface SupplyProduct {
