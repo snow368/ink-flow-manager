@@ -66,6 +66,9 @@ const PricingPage = lazy(() => import('./pages/PricingPage'));
 const WalkinPage = lazy(() => import('./pages/WalkinPage'));
 const LeadConfirmationPage = lazy(() => import('./pages/LeadConfirmationPage'));
 const LeadInbox = lazy(() => import('./pages/LeadInbox'));
+const ProjectReferences = lazy(() => import('./pages/ProjectReferences'));
+const ProjectApprovePage = lazy(() => import('./pages/ProjectApprovePage'));
+const DesignReviewPage = lazy(() => import('./pages/DesignReviewPage'));
 const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
@@ -201,7 +204,7 @@ export default function App() {
   ];
   const activeTab = tabs.find((t) => location.pathname.startsWith(t.path))?.path || '/today';
 
-  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings', '/shifts', '/close-out', '/communication-log', '/tasks', '/owner-dashboard', '/staff-management', '/audit-log', '/studio-settings', '/business-settings', '/account-settings', '/pro-plus-setup'];
+  const protectedPaths = ['/today', '/clients', '/me', '/client/', '/appointment/', '/waiver/', '/session/', '/inventory', '/referral', '/leads', '/deposit-policy', '/payment-settings', '/payment-history', '/supply-brands', '/supply-reviews', '/competitors', '/content-strategy', '/availability-settings', '/pos', '/invoices', '/invoice/', '/review-invites', '/notification-settings', '/shifts', '/close-out', '/communication-log', '/tasks', '/owner-dashboard', '/staff-management', '/audit-log', '/studio-settings', '/business-settings', '/account-settings', '/pro-plus-setup', '/project-assets/'];
   if (!isLoggedIn && protectedPaths.some(p => location.pathname.startsWith(p))) {
     navigate('/register', { replace: true });
   }
@@ -270,6 +273,9 @@ export default function App() {
             <Route path="/leads" element={<LeadsPage />} />
             <Route path="/leads/inbox" element={<LeadInbox />} />
             <Route path="/lead-confirm/:token" element={<LeadConfirmationPage />} />
+            <Route path="/project-assets/:projectId" element={<ProjectReferences />} />
+            <Route path="/project-approve/:token" element={<ProjectApprovePage />} />
+            <Route path="/design-review/:token" element={<DesignReviewPage />} />
             <Route path="/intake/:artistId" element={<IntakePage />} />
             <Route path="/intake/revise/:leadId" element={<LeadRevisePage />} />
             <Route path="/deposit-policy" element={<DepositPolicyPage />} />

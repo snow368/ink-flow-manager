@@ -101,6 +101,7 @@ export async function checkDepositReminders(artistId: string): Promise<Appointme
 
   const out: AppointmentReminder[] = [];
   for (const appt of all) {
+    if (!appt.projectId) continue;
     const project = await db.projects.get(appt.projectId);
     if (project?.depositAmount || project?.depositStatus === 'paid') continue;
     const ageHours = (now - appt.createdAt) / (60 * 60 * 1000);

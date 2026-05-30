@@ -5,9 +5,17 @@ import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { formatInvoiceCurrency, getCountryConfig } from '../lib/invoiceConfig';
 import { checkAndSuggestMerge, mergeClients } from '../lib/clientMerge';
-import { getClientTimeline, getChannelIcon, getDirectionBadge } from '../lib/communicationLog';
+import { getChannelIcon, getDirectionBadge, getClientTimeline } from '../lib/communicationLog';
 import type { CommunicationLogRecord } from '../db';
 import { logCommunication } from '../lib/communicationLog';
+import { buildClientTimeline, getClientTimelineSummary, calculateEngagementScore, getSmartInsights, TIMELINE_EVENT_CONFIG } from '../lib/clientTimeline';
+import type { ClientTimelineItem, EngagementScoreResult, SmartInsight } from '../lib/clientTimeline';
+import { getAftercareStatus, type AftercareStatus } from '../lib/aftercareEngine';
+import { detectTouchUpNeed, type TouchUpRisk } from '../lib/touchupDetector';
+import { getRepeatBookingSignals, type RepeatBookingSignal } from '../lib/repeatBookingEngine';
+import { getReferralOpportunity, type ReferralOpportunity } from '../lib/referralEngine';
+import { getClientRiskProfile, type ClientRiskProfile } from '../lib/clientRiskEngine';
+import { getNextBestAction, type NextBestAction } from '../lib/nextBestAction';
 
 interface ImageEntry {
   type: 'design' | 'progress' | 'finished';
@@ -43,6 +51,7 @@ export default function ClientDetail() {
   const [editingContact, setEditingContact] = useState(false);
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
+  const [editInstagram, setEditInstagram] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [message, setMessage] = useState('');
   const [potentialDuplicates, setPotentialDuplicates] = useState<ClientRecord[]>([]);
@@ -52,6 +61,16 @@ export default function ClientDetail() {
   const [showDmLog, setShowDmLog] = useState(false);
   const [dmTopic, setDmTopic] = useState('design_change');
   const [dmNote, setDmNote] = useState('');
+  const [timeline, setTimeline] = useState<ClientTimelineItem[]>([]);
+  const [engagementScore, setEngagementScore] = useState<EngagementScoreResult | null>(null);
+  const [insights, setInsights] = useState<SmartInsight[]>([]);
+  const [timelineFilter, setTimelineFilter] = useState<'all' | 'key' | 'messages'>('all');
+  const [aftercareStatuses, setAftercareStatuses] = useState<Map<string, AftercareStatus>>(new Map());
+  const [touchupRisks, setTouchupRisks] = useState<Map<string, TouchUpRisk>>(new Map());
+  const [repeatSignal, setRepeatSignal] = useState<RepeatBookingSignal | null>(null);
+  const [referralOpportunity, setReferralOpportunity] = useState<ReferralOpportunity | null>(null);
+  const [riskProfile, setRiskProfile] = useState<ClientRiskProfile | null>(null);
+  const [nextAction, setNextAction] = useState<NextBestAction | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -61,6 +80,45 @@ export default function ClientDetail() {
     db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
     loadImages(id);
     getClientTimeline(id).then(logs => setCommLogs(logs.slice(0, 30)));
+    // Load full client timeline
+    buildClientTimeline(id).then(items => {
+      setTimeline(items);
+      setEngagementScore(calculateEngagementScore(items));
+      setInsights(getSmartInsights(items));
+    });
+    // Load aftercare + retention data
+    (async () => {
+      const sessions = await db.sessions.where('clientId').equals(id).toArray();
+      const completedSessions = sessions.filter(s => s.sessionState === 'completed');
+      // Aftercare status per session
+      const statusMap = new Map<string, AftercareStatus>();
+      for (const s of completedSessions) {
+        const st = await getAftercareStatus(s.id);
+        statusMap.set(s.id, st);
+      }
+      setAftercareStatuses(statusMap);
+      // Touch-up risk per project
+      const projects = await db.projects.where('clientId').equals(id).toArray();
+      const riskMap = new Map<string, TouchUpRisk>();
+      for (const p of projects) {
+        const risk = await detectTouchUpNeed(p.id);
+        riskMap.set(p.id, risk);
+      }
+      setTouchupRisks(riskMap);
+      // Repeat booking signal
+      const rep = await getRepeatBookingSignals(id);
+      setRepeatSignal(rep);
+      // Referral opportunity
+      const ref = await getReferralOpportunity(id);
+      setReferralOpportunity(ref);
+      // Risk profile + next best action for first project
+      const clientProjects = await db.projects.where('clientId').equals(id).toArray();
+      if (clientProjects.length > 0) {
+        const firstPid = clientProjects[0].id;
+        getClientRiskProfile(firstPid).then(setRiskProfile);
+        getNextBestAction(firstPid).then(setNextAction);
+      }
+    })();
     db.users.where('roles').anyOf(['artist', 'owner']).toArray().then(users => {
       setArtists(users.map(u => ({ id: u.id, name: u.name })));
     });
@@ -187,6 +245,7 @@ export default function ClientDetail() {
     await db.clients.update(client.id, {
       phone: editPhone || undefined,
       email: editEmail || undefined,
+      instagram: editInstagram || undefined,
       notes: editNotes || undefined,
     });
     setEditingContact(false);
@@ -242,10 +301,12 @@ export default function ClientDetail() {
         <p style={{ fontSize: 20, fontWeight: 'bold' }}>{client.name}</p>
         <p style={{ fontSize: 14, color: '#94a3b8', marginTop: 4 }}>
           {client.phone || 'No phone'} — {client.email || 'No email'}
+          {client.instagram && <span> — @{client.instagram}</span>}
           <button onClick={() => {
             if (!editingContact) {
               setEditPhone(client.phone || '');
               setEditEmail(client.email || '');
+              setEditInstagram(client.instagram || '');
               setEditNotes(client.notes || '');
             }
             setEditingContact(!editingContact);
@@ -253,9 +314,10 @@ export default function ClientDetail() {
             style={{ ...editIcon, marginLeft: 6 }}>{editingContact ? 'Cancel' : 'Edit'}</button>
         </p>
         {editingContact && (
-          <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+          <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
             <input value={editPhone} onChange={e => setEditPhone(e.target.value)} placeholder="Phone" style={miniInput} />
             <input value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="Email" style={miniInput} />
+            <input value={editInstagram} onChange={e => setEditInstagram(e.target.value)} placeholder="Instagram" style={miniInput} />
             <input value={editNotes} onChange={e => setEditNotes(e.target.value)} placeholder="Notes" style={{ ...miniInput, flex: 2 }} />
             <button onClick={handleSaveContact} style={qaBtn('#22c55e')}>Save</button>
           </div>
@@ -268,6 +330,10 @@ export default function ClientDetail() {
           {client.phone && (
             <button onClick={() => window.open(`https://wa.me/${client.phone!.replace(/\D/g, '')}`, '_blank')}
               style={qaBtn('#075e54')}>WhatsApp</button>
+          )}
+          {client.instagram && (
+            <button onClick={() => window.open(`https://instagram.com/${client.instagram}`, '_blank')}
+              style={qaBtn('#a855f7')}>Instagram</button>
           )}
           <button onClick={() => navigate(`/invoices?clientId=${client.id}`)}
             style={qaBtn('#7e22ce')}>Invoice</button>
@@ -442,53 +508,133 @@ export default function ClientDetail() {
         </div>
       )}
 
-      {/* Communication Timeline */}
+      {/* ── Client Timeline ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, marginBottom: 10 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600 }}>Communication Timeline</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Client Timeline</h3>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {/* Timeline filter */}
+          {(['all', 'key', 'messages'] as const).map(f => (
+            <button key={f} onClick={() => setTimelineFilter(f)}
+              style={{
+                padding: '3px 10px', borderRadius: 6, border: 'none',
+                background: timelineFilter === f ? '#60a5fa' : '#334155',
+                color: timelineFilter === f ? '#000' : '#94a3b8',
+                fontSize: 10, fontWeight: 600, cursor: 'pointer',
+              }}>
+              {f === 'all' ? 'All' : f === 'key' ? 'Key Events' : 'Messages'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Engagement Score + Insights */}
+      {engagementScore && (
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 14, marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            {/* Score ring */}
+            <div style={{
+              width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
+              background: `conic-gradient(${engagementScore.score >= 80 ? '#22c55e' : engagementScore.score >= 60 ? '#f59e0b' : engagementScore.score >= 40 ? '#f97316' : '#64748b'} ${engagementScore.score}%, #334155 ${engagementScore.score}%)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{
+                width: 38, height: 38, borderRadius: '50%', background: '#1e293b',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column',
+              }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', lineHeight: 1 }}>{engagementScore.score}</span>
+              </div>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>{engagementScore.label}</span>
+                <span style={{ fontSize: 11, color: '#64748b' }}>Engagement</span>
+              </div>
+              <p style={{ fontSize: 11, color: '#94a3b8', margin: '2px 0 0' }}>
+                {timeline.length} events · {engagementScore.riskFlags.length > 0 ? engagementScore.riskFlags[0] : 'No flags'}
+              </p>
+            </div>
+          </div>
+
+          {/* Insights */}
+          {insights.length > 0 && (
+            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {insights.slice(0, 3).map((ins, i) => (
+                <div key={i} style={{
+                  padding: '8px 10px', borderRadius: 8,
+                  background: ins.severity === 'positive' ? '#14532d' : ins.severity === 'warning' ? '#451a03' : '#7f1d1d',
+                  border: `1px solid ${ins.severity === 'positive' ? '#22c55e30' : ins.severity === 'warning' ? '#f59e0b30' : '#ef444430'}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+                      color: ins.severity === 'positive' ? '#4ade80' : ins.severity === 'warning' ? '#fbbf24' : '#f87171',
+                    }}>
+                      {ins.label}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 11, color: '#cbd5e1', margin: '3px 0 0', lineHeight: 1.4 }}>{ins.detail}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Timeline event list */}
+      <div style={{ marginBottom: 16 }}>
+        {timeline.length === 0 ? (
+          <p style={{ fontSize: 12, color: '#64748b', textAlign: 'center', padding: '20px 0' }}>
+            No timeline events yet.
+          </p>
+        ) : (
+          timeline
+            .filter(item => {
+              if (timelineFilter === 'messages') return item.type === 'message_sent' || item.type === 'message_received';
+              if (timelineFilter === 'key') return !['message_sent', 'message_received', 'note', 'session_break', 'session_resumed'].includes(item.type);
+              return true;
+            })
+            .slice(0, 50)
+            .map(item => {
+              const cfg = TIMELINE_EVENT_CONFIG[item.type];
+              return (
+                <div key={item.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderLeft: `2px solid ${cfg.color}40`, paddingLeft: 12, position: 'relative', marginLeft: 6 }}>
+                  <div style={{ position: 'absolute', left: -5, top: 12, width: 8, height: 8, borderRadius: 4, background: cfg.color }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
+                      <span style={{ fontSize: 10, color: cfg.color, fontWeight: 700 }}>{cfg.label}</span>
+                      {item.projectTitle && (
+                        <span style={{ fontSize: 9, color: '#475569' }}>{item.projectTitle}</span>
+                      )}
+                      <span style={{ fontSize: 9, color: '#475569', marginLeft: 'auto' }}>
+                        {new Date(item.timestamp).toLocaleDateString()} {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 12, fontWeight: 500, color: '#e2e8f0', margin: 0 }}>
+                      {item.title}
+                    </p>
+                    {item.description && (
+                      <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4, margin: '2px 0 0', whiteSpace: 'pre-wrap' }}>
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+        )}
+        {timeline.length > 50 && (
+          <p style={{ fontSize: 11, color: '#64748b', textAlign: 'center', padding: '8px 0' }}>
+            Showing 50 of {timeline.length} events
+          </p>
+        )}
+      </div>
+
+      {/* Log DM button (below timeline) */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
         <button onClick={() => setShowDmLog(true)}
           style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #475569', background: '#1e293b', color: '#60a5fa', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
           + Log DM
         </button>
-      </div>
-      <div style={{ marginBottom: 16 }}>
-        {commLogs.length === 0 ? (
-          <p style={{ fontSize: 12, color: '#64748b', textAlign: 'center', padding: '20px 0' }}>
-            No communication history yet. Click "+ Log DM" to record a conversation.
-          </p>
-        ) : (
-          commLogs.map(log => {
-            const badge = getDirectionBadge(log.direction);
-            return (
-              <div key={log.id} style={{ display: 'flex', gap: 10, padding: '8px 0', borderLeft: '2px solid #334155', paddingLeft: 12, position: 'relative', marginLeft: 6 }}>
-                <div style={{
-                  position: 'absolute', left: -5, top: 12, width: 8, height: 8, borderRadius: 4,
-                  background: badge.color,
-                }} />
-                <div style={{ width: 28, flexShrink: 0 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: badge.color, background: badge.color + '22', padding: '1px 4px', borderRadius: 3 }}>
-                    {getChannelIcon(log.channel)}
-                  </span>
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
-                    <span style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>{badge.label}</span>
-                    {log.templateType && (
-                      <span style={{ fontSize: 9, color: '#64748b' }}>{log.templateType.replace(/_/g, ' ')}</span>
-                    )}
-                    <span style={{ fontSize: 9, color: '#475569', marginLeft: 'auto' }}>
-                      {new Date(log.createdAt).toLocaleDateString()} {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  {log.message && (
-                    <p style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>
-                      {log.message.length > 120 ? log.message.slice(0, 120) + '...' : log.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
       </div>
 
       <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>Appointment History</h3>
@@ -580,7 +726,181 @@ export default function ClientDetail() {
         )}
       </div>
 
-      {/* DM Log Modal */}
+      {/* ── Aftercare & Retention ── */}
+      {aftercareStatuses.size > 0 && (
+        <div style={{ background: '#1e293b', borderRadius: 12, padding: 16, marginBottom: 12 }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0', marginBottom: 10 }}>Aftercare & Retention</p>
+
+          {/* Aftercare Progress */}
+          {Array.from(aftercareStatuses.entries()).map(([sessionId, status]) => {
+            const allDays = [1, 3, 7, 30];
+            const sentSet = new Set(status.sentDays.map(d => d.day));
+            return (
+              <div key={sessionId} style={{ marginBottom: 10, padding: 10, background: '#0f172a', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>Aftercare Schedule</span>
+                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: status.allSent ? '#22c55e20' : '#f59e0b20', color: status.allSent ? '#4ade80' : '#fbbf24', fontWeight: 600 }}>
+                    {status.allSent ? 'Complete' : `${status.pendingDays.length} pending`}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {allDays.map(day => {
+                    const sent = sentSet.has(day);
+                    return (
+                      <div key={day} style={{
+                        flex: 1, padding: '6px 0', borderRadius: 6, textAlign: 'center',
+                        background: sent ? '#22c55e20' : '#33415540',
+                        border: `1px solid ${sent ? '#22c55e40' : '#334155'}`,
+                        fontSize: 11, fontWeight: 600, color: sent ? '#4ade80' : '#64748b',
+                      }}>
+                        D{day}{sent ? ' ✓' : ''}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Healing Status */}
+          {Array.from(aftercareStatuses.keys()).length > 0 && (
+            <div style={{ marginBottom: 10, padding: 10, background: '#0f172a', borderRadius: 8 }}>
+              <span style={{ fontSize: 11, color: '#94a3b8' }}>Healing Status</span>
+              <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
+                {(['healing', 'stable', 'fully_healed', 'needs_touchup'] as const).map(st => (
+                  <button key={st} onClick={async () => {
+                    const sId = Array.from(aftercareStatuses.keys())[0];
+                    await db.sessions.update(sId, { healingStatus: st });
+                    // Refresh
+                    const statusMap = new Map(aftercareStatuses);
+                    const newStatus = await getAftercareStatus(sId);
+                    statusMap.set(sId, newStatus);
+                    setAftercareStatuses(new Map(statusMap));
+                  }} style={{
+                    padding: '4px 10px', borderRadius: 6, border: '1px solid #334155',
+                    background: 'transparent', fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                    color: st === 'needs_touchup' ? '#ef4444' : st === 'fully_healed' ? '#22c55e' : st === 'stable' ? '#60a5fa' : '#f59e0b',
+                  }}>
+                    {st.replace('_', ' ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Touch-up Risk */}
+          {Array.from(touchupRisks.entries()).length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+              {Array.from(touchupRisks.entries()).map(([projectId, risk]) => {
+                const riskColors = { low: '#64748b', medium: '#f59e0b', high: '#ef4444' };
+                return (
+                  <div key={projectId} style={{
+                    padding: '8px 12px', borderRadius: 8,
+                    background: `${riskColors[risk.risk]}15`,
+                    border: `1px solid ${riskColors[risk.risk]}30`,
+                    fontSize: 11, flex: 1, minWidth: 0,
+                  }}>
+                    <span style={{ fontWeight: 700, color: riskColors[risk.risk] }}>
+                      Touch-up Risk: {risk.risk.toUpperCase()}
+                    </span>
+                    <p style={{ color: '#94a3b8', margin: '2px 0 0', fontSize: 10 }}>{risk.suggestedAction}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Repeat Booking Suggestion */}
+          {repeatSignal && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 8, marginBottom: 6,
+              background: repeatSignal.likelihood === 'high' ? '#14532d' : repeatSignal.likelihood === 'medium' ? '#451a03' : '#1e293b',
+              border: `1px solid ${repeatSignal.likelihood === 'high' ? '#22c55e30' : repeatSignal.likelihood === 'medium' ? '#f59e0b30' : '#334155'}`,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: repeatSignal.likelihood === 'high' ? '#4ade80' : repeatSignal.likelihood === 'medium' ? '#fbbf24' : '#94a3b8' }}>
+                  Repeat Booking: {repeatSignal.likelihood}
+                </span>
+                <span style={{ fontSize: 9, color: '#64748b' }}>
+                  Timing: {repeatSignal.timing.replace('_', ' ')}
+                </span>
+              </div>
+              <p style={{ fontSize: 11, color: '#cbd5e1', margin: '3px 0 0', fontStyle: 'italic' }}>
+                "{repeatSignal.suggestedMessage}"
+              </p>
+            </div>
+          )}
+
+          {/* Referral Suggestion */}
+          {referralOpportunity && referralOpportunity.ready && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 8,
+              background: '#312e81',
+              border: '1px solid #4338ca30',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#a5b4fc' }}>
+                  Referral Ready
+                </span>
+                <span style={{ fontSize: 9, color: '#64748b' }}>
+                  Timing: {referralOpportunity.timing.replace('_', ' ')}
+                </span>
+              </div>
+              <p style={{ fontSize: 11, color: '#cbd5e1', margin: '3px 0 0', fontStyle: 'italic' }}>
+                "{referralOpportunity.promptMessage}"
+              </p>
+            </div>
+          )}
+
+          {/* Risk Profile */}
+          {riskProfile && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 8, marginBottom: 6,
+              background: riskProfile.risk === 'high' ? '#7f1d1d' : riskProfile.risk === 'medium' ? '#451a03' : '#14532d',
+              border: `1px solid ${riskProfile.risk === 'high' ? '#ef444430' : riskProfile.risk === 'medium' ? '#f59e0b30' : '#22c55e30'}`,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                  color: riskProfile.risk === 'high' ? '#f87171' : riskProfile.risk === 'medium' ? '#fbbf24' : '#4ade80' }}>
+                  Risk: {riskProfile.risk.toUpperCase()}
+                </span>
+              </div>
+              {riskProfile.reasons.length > 0 && (
+                <p style={{ fontSize: 10, color: '#94a3b8', margin: '2px 0 0' }}>
+                  {riskProfile.reasons.join('; ')}
+                </p>
+              )}
+              <p style={{ fontSize: 11, color: '#cbd5e1', margin: '3px 0 0' }}>
+                {riskProfile.suggestedAction}
+              </p>
+            </div>
+          )}
+
+          {/* Next Best Action */}
+          {nextAction && nextAction.priority < 9 && (
+            <div style={{
+              padding: '8px 12px', borderRadius: 8,
+              background: '#1e3a5f',
+              border: '1px solid #60a5fa30',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#93c5fd' }}>
+                  Next: {nextAction.action}
+                </span>
+                <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3,
+                  background: nextAction.category === 'revenue' ? '#22c55e20' : nextAction.category === 'conversion' ? '#f59e0b20' : '#60a5fa20',
+                  color: nextAction.category === 'revenue' ? '#4ade80' : nextAction.category === 'conversion' ? '#fbbf24' : '#93c5fd',
+                  fontWeight: 600 }}>
+                  {nextAction.category}
+                </span>
+              </div>
+              <p style={{ fontSize: 11, color: '#cbd5e1', margin: '3px 0 0' }}>
+                {nextAction.reason}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       {showDmLog && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'flex-end', zIndex: 1000 }}>
           <div style={{ width: '100%', background: '#1e293b', borderRadius: '16px 16px 0 0', padding: 24 }}>

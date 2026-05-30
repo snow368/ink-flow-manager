@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, Fragment, useRef } from 'react';
+﻿import { useState, useEffect, Fragment, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type AppointmentRecord, type LeadRecord, type ClientRecord, type ConsumableUsage } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
@@ -20,6 +20,14 @@ import { syncArtistData, getBackendUrl } from '../lib/backendApi';
 import { pollPendingBookings, ackBooking, acceptBookingApi, getBookingShareUrl, getBookingStatusUrl, type PendingBooking } from '../lib/bookingPoll';
 import { getWaitingListCount } from '../lib/waitingList';
 import { getMyPendingReferral, verifyInstagramTattooArtist, completeMyReferral, getRewardMonths } from '../lib/referralLogic';
+import { getActiveSessionsForToday } from '../lib/sessionExecution';
+import ActiveSessionPanel from '../components/ActiveSessionPanel';
+import { getStudioRevenueInsights, type RevenueInsights } from '../lib/revenueInsights';
+import { aggregateWorkspace, type WorkspaceItem } from '../lib/workspaceAggregator';
+import { generateWorkspacePresentation } from '../lib/workspacePresentation';
+import WorkspaceActionCard from '../components/WorkspaceActionCard';
+import TodaySummaryHeader from '../components/TodaySummaryHeader';
+import TodayEmptyState from '../components/TodayEmptyState';
 
 type PaymentReminderItem = { lead: LeadRecord; stage: '24h' | '48h' };
 
@@ -68,6 +76,19 @@ export default function Today() {
     conflictWith: string;
     options: string[];
   }>({ open: false, appointmentId: '', targetDate: '', conflictWith: '', options: [] });
+  const [activeSessions, setActiveSessions] = useState<any[]>([]);
+  const [revenueInsights, setRevenueInsights] = useState<RevenueInsights | null>(null);
+  const [workspaceItems, setWorkspaceItems] = useState<WorkspaceItem[]>([]);
+  const [workspaceDismissed, setWorkspaceDismissed] = useState<Set<string>>(new Set());
+  const activeWorkspaceItems = useMemo(() => workspaceItems.filter(i => !workspaceDismissed.has(i.id)), [workspaceItems, workspaceDismissed]);
+
+  const presentationMap = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof generateWorkspacePresentation>>();
+    for (const item of workspaceItems) {
+      map.set(item.id, generateWorkspacePresentation(item));
+    }
+    return map;
+  }, [workspaceItems]);
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
@@ -88,6 +109,12 @@ export default function Today() {
       loadAppointmentsForMulti(u);
       loadTodayKPIs(u);
       getWaitingListCount(u.id).then(setWaitlistCount);
+      const artistId = u.artistId || u.id;
+      getActiveSessionsForToday(artistId).then(setActiveSessions);
+      getStudioRevenueInsights(artistId).then(setRevenueInsights);
+      getCurrentArtistIds(u).then(ids => {
+        aggregateWorkspace(ids).then(items => setWorkspaceItems(items));
+      });
     });
   }, [navigate, selectedDate]);
 
@@ -869,7 +896,7 @@ export default function Today() {
 
       {/* KPI Cards */}
       {todayKpi && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8, marginBottom: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: 8, marginBottom: 14 }}>
           <div style={{ background: THEME.bg.panel, padding: '10px 14px', borderRadius: 12, border: '1px solid #334155' }}>
             <p style={{ fontSize: 11, color: THEME.text.subtle, marginBottom: 2 }}>{t(lang, 'today_revenue')}</p>
             <p style={{ fontSize: 20, fontWeight: 700, color: '#4ade80' }}>${todayKpi.revenue.toFixed(0)}</p>
@@ -892,6 +919,90 @@ export default function Today() {
               <p style={{ fontSize: 20, fontWeight: 700, color: '#f97316' }}>{lowStockCount}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Smart Actions */}
+      {revenueInsights && (
+        <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 0, padding: '8px 12px', borderRadius: 10, background: '#1e293b', border: '1px solid #334155' }}>
+            <p style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Deposit Conversion</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: revenueInsights.depositConversionRate >= 50 ? '#4ade80' : '#fbbf24' }}>
+              {revenueInsights.depositConversionRate}%
+            </p>
+          </div>
+          <div style={{ flex: 1, minWidth: 0, padding: '8px 12px', borderRadius: 10, background: '#1e293b', border: '1px solid #334155' }}>
+            <p style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ghost Rate</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: revenueInsights.ghostRate <= 20 ? '#4ade80' : '#f87171' }}>
+              {revenueInsights.ghostRate}%
+            </p>
+          </div>
+          <div style={{ flex: 1, minWidth: 0, padding: '8px 12px', borderRadius: 10, background: '#1e293b', border: '1px solid #334155' }}>
+            <p style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Avg Session</p>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#60a5fa' }}>${revenueInsights.averageSessionValue}</p>
+          </div>
+          {revenueInsights.topStyle && (
+            <div style={{ flex: 1, minWidth: 0, padding: '8px 12px', borderRadius: 10, background: '#1e293b', border: '1px solid #334155' }}>
+              <p style={{ fontSize: 9, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Top Style</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: '#a78bfa' }}>{revenueInsights.topStyle}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Today Summary Header */}
+      <TodaySummaryHeader items={activeWorkspaceItems} />
+
+      {/* Front Desk — workspace action cards */}
+      {(() => {
+        const handleDismiss = (id: string) => {
+          setWorkspaceDismissed(prev => { const next = new Set(prev); next.add(id); return next; });
+        };
+        const handleIgSaved = (clientId: string, handle: string) => {
+          setWorkspaceItems(prev => prev.map(i =>
+            i.clientId === clientId ? { ...i, instagramHandle: handle } : i
+          ));
+        };
+        if (activeWorkspaceItems.length === 0) {
+          return (
+            <TodayEmptyState
+              completedSessions={appointments.filter(a => a.status === 'done').length}
+              depositsCollected={todayKpi?.revenue ?? 0}
+            />
+          );
+        }
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            {activeWorkspaceItems.map(item => (
+              <WorkspaceActionCard
+                key={item.id}
+                item={item}
+                navigate={navigate}
+                onDismiss={handleDismiss}
+                onIgSaved={handleIgSaved}
+                presentation={presentationMap.get(item.id)}
+              />
+            ))}
+          </div>
+        );
+      })()}
+
+      {/* Active Sessions */}
+      {activeSessions.length > 0 && (
+        <div style={{ marginBottom: 14 }}>
+          <p style={{ fontSize: THEME.fontSize.base, fontWeight: THEME.fontWeight.semibold, color: THEME.text.primary, marginBottom: 8 }}>
+            Active Sessions ({activeSessions.length})
+          </p>
+          {activeSessions.map(s => (
+            <ActiveSessionPanel
+              key={s.id}
+              session={s}
+              onUpdate={async () => {
+                const artistId = (user?.artistId || user?.id || '');
+                setActiveSessions(await getActiveSessionsForToday(artistId));
+              }}
+            />
+          ))}
         </div>
       )}
       {viewMode !== "pipeline" && (<>
@@ -1177,7 +1288,7 @@ export default function Today() {
               const aftercareUrl = getAftercareWhatsAppUrl(recentlyCompleted.clientName || '', recentlyCompleted.type, user.whatsappPhone);
               return aftercareUrl ? (
                 <button onClick={() => window.open(aftercareUrl, '_blank', 'noopener,noreferrer')}
-                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#0f766e', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 140 }}>
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#0f766e', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 100 }}>
                   Send Aftercare
                 </button>
               ) : null;
@@ -1186,7 +1297,7 @@ export default function Today() {
               const reviewUrl = getReviewRequestWhatsAppUrl(recentlyCompleted.clientName || '', user.whatsappPhone, 'google');
               return reviewUrl ? (
                 <button onClick={() => window.open(reviewUrl, '_blank', 'noopener,noreferrer')}
-                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 140 }}>
+                  style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', minWidth: 100 }}>
                   Request Google Review
                 </button>
               ) : null;
@@ -1295,7 +1406,7 @@ export default function Today() {
               const statusColor = STATUS_COLORS[status] || '#9ca3af';
               const collapsed = pipelineCollapsed[status];
               return (
-                <div key={status} style={{ minWidth: 220, maxWidth: 260, flexShrink: 0 }}>
+                <div key={status} style={{ minWidth: 180, flex: '1 1 0', flexShrink: 0 }}>
                   <div
                     onClick={() => setPipelineCollapsed(prev => ({ ...prev, [status]: !prev[status] }))}
                     style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}

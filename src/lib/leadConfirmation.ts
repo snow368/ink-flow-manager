@@ -229,6 +229,60 @@ export function detectMissingTattooInfoStructured(
     warnings.push({ severity: 'medium', type: 'many_changes', message: 'Many requested changes — may need a revision call' });
   }
 
+  // ── Budget/scope reality heuristics ──
+  const placement = (data.placement || '').toLowerCase();
+  const styleText = (data.style || '').toLowerCase();
+  const sizeText = (data.size || '').toLowerCase();
+  const budgetRaw = String(data.budget || '');
+  const budgetNum = Number(budgetRaw.replace(/[^0-9.]/g, ''));
+
+  const isLargeArea =
+    /full sleeve|half sleeve|full back|back piece|chest piece|full chest|full leg|whole thigh|full arm|sleeve|large piece|大片|大臂|整条/.test(placement + ' ' + sizeText);
+
+  const isDetailedStyle =
+    /realism|photoreal|hyper.real|portrait|ornamental|mandala|bio.mech|dotwork|stipple|black.?and.?grey/.test(styleText);
+
+  const isLargeSize =
+    /large|sleeve|full|whole|entire|大片|大臂/.test(sizeText) || isLargeArea;
+
+  if (budgetNum > 0 && isLargeArea && budgetNum < 300) {
+    warnings.push({
+      severity: 'high',
+      type: 'budget_scope_mismatch',
+      message: `${data.placement || 'Large piece'} with $${budgetNum} budget — may need a smaller design or simplified detail`,
+    });
+  } else if (budgetNum > 0 && isLargeArea && budgetNum < 600) {
+    warnings.push({
+      severity: 'medium',
+      type: 'budget_scope_mismatch',
+      message: `${data.placement || 'Large piece'} with $${budgetNum} — realistic? Consider a simpler approach`,
+    });
+  }
+
+  if (budgetNum > 0 && isLargeSize && budgetNum < 150) {
+    warnings.push({
+      severity: 'high',
+      type: 'budget_scope_mismatch',
+      message: `Size seems large but budget is only $${budgetNum} — that might be too tight`,
+    });
+  }
+
+  if (budgetNum > 0 && isDetailedStyle && budgetNum < 200) {
+    warnings.push({
+      severity: 'medium',
+      type: 'budget_style_mismatch',
+      message: `${data.style || 'Detailed style'} typically runs higher than $${budgetNum} — adjust expectations early`,
+    });
+  }
+
+  if (budgetNum > 0 && budgetNum < 50) {
+    warnings.push({
+      severity: 'high',
+      type: 'budget_too_low',
+      message: `$${budgetNum} is very low for any tattoo — minimums may apply`,
+    });
+  }
+
   return warnings;
 }
 

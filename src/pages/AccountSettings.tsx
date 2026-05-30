@@ -138,6 +138,42 @@ export default function AccountSettings() {
         </div>
       </div>
 
+      {/* Auto Aftercare */}
+      <div style={{ background: THEME.bg.card, padding: 14, borderRadius: 10, marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: THEME.text.primary }}>Auto Aftercare</p>
+            <p style={{ fontSize: 11, color: THEME.text.muted, marginTop: 2 }}>
+              Auto-send D1 & D3 aftercare messages via WhatsApp (safety only, never marketing)
+            </p>
+          </div>
+          <label style={{ position: 'relative', display: 'inline-block', width: 44, height: 24, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={user?.autoAftercare ?? false}
+              onChange={async () => {
+                if (!user) return;
+                const next = !user.autoAftercare;
+                await db.users.update(user.id, { autoAftercare: next });
+                setUser(prev => prev ? { ...prev, autoAftercare: next } : prev);
+              }}
+              style={{ opacity: 0, width: 0, height: 0 }}
+            />
+            <span style={{
+              position: 'absolute', inset: 0, borderRadius: 12,
+              background: user?.autoAftercare ? '#22c55e' : '#334155',
+              transition: 'background 0.2s',
+            }}>
+              <span style={{
+                position: 'absolute', left: user?.autoAftercare ? 22 : 2, top: 2,
+                width: 20, height: 20, borderRadius: '50%', background: '#fff',
+                transition: 'left 0.2s',
+              }} />
+            </span>
+          </label>
+        </div>
+      </div>
+
       {/* Plan */}
       <div style={{ background: THEME.bg.card, padding: 14, borderRadius: 10, marginBottom: 12 }}>
         <p style={{ fontSize: 11, color: THEME.text.muted, marginBottom: 4 }}>Plan</p>

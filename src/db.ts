@@ -29,6 +29,10 @@ export class InkFlowDB extends Dexie {
   reviews!: Table<ReviewRecord>;
   clientReferrals!: Table<ClientReferralRecord>;
   leadConfirmations!: Table<LeadConfirmationRecord>;
+  projectAssets!: Table<ProjectAssetRecord>;
+  projectApprovalTokens!: Table<ProjectApprovalTokenRecord>;
+  depositFlow!: Table<DepositFlowRecord>;
+  projectRevisions!: Table<ProjectRevisionRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -566,10 +570,146 @@ export class InkFlowDB extends Dexie {
       clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
       leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
     });
+    this.version(27).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+      projectAssets: 'id, projectId, artistId, type, createdAt',
+      projectApprovalTokens: 'token, projectId, assetId, artistId, createdAt',
+    });
+    this.version(28).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+      projectAssets: 'id, projectId, artistId, type, createdAt',
+      projectApprovalTokens: 'token, projectId, assetId, artistId, createdAt',
+      depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
+    });
+    this.version(29).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+      projectAssets: 'id, projectId, artistId, type, createdAt',
+      projectApprovalTokens: 'token, projectId, assetId, artistId, createdAt',
+      depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
+      projectRevisions: 'id, projectId, artistId, status, approvalToken, createdAt',
+    });
+    this.version(30).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, sessionState, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+      projectAssets: 'id, projectId, artistId, type, createdAt',
+      projectApprovalTokens: 'token, projectId, assetId, artistId, createdAt',
+      depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
+      projectRevisions: 'id, projectId, artistId, status, approvalToken, createdAt',
+    });
   }
 }
 
 export const db = new InkFlowDB();
+
+// Expose for console debugging & seed scripts
+(window as any).__db = db;
 
 // Auto-mark pending sync when data changes (avoids circular import with syncManager)
 const markSyncPending = () => localStorage.setItem('inkflow_pending_sync', '1');
@@ -619,6 +759,7 @@ export interface UserRecord {
   daysOff?: string[];
   instagramHandle?: string;
   whatsappPhone?: string;
+  autoAftercare?: boolean;
   appointmentRemindersEnabled?: boolean;
   smsEnabled?: boolean;
   smsCredits?: number;
@@ -768,6 +909,41 @@ export interface SessionRecord {
   actualDuration: number; timeline: TimelineEvent[];
   photos: string[]; notes: string[]; consumables: ConsumableUsage[];
   videos?: string[];
+
+  /** v30+ extended session fields */
+  sessionState?: 'scheduled' | 'checked_in' | 'stencil_ready' | 'tattooing' | 'break' | 'completed';
+  timerStartedAt?: number;
+  timerPausedAt?: number;
+  accumulatedDurationMs?: number;
+  breakCount?: number;
+  stencilReadyAt?: number;
+  completedAt?: number;
+  aftercareSentAt?: number;
+  progressPhotos?: {
+    id: string;
+    url: string;
+    label?: string;
+    createdAt: number;
+  }[];
+  sessionNotes?: {
+    id: string;
+    note: string;
+    createdAt: number;
+  }[];
+
+  /** v31+ Aftercare & Healing fields */
+  aftercareSchedule?: {
+    day: number;
+    sentAt: number;
+  }[];
+  healingPhotos?: {
+    id: string;
+    url: string;
+    day?: number;
+    note?: string;
+    createdAt: number;
+  }[];
+  healingStatus?: 'healing' | 'stable' | 'fully_healed' | 'needs_touchup';
 }
 
 export interface TimelineEvent {
@@ -939,6 +1115,79 @@ export interface LeadConfirmationRecord {
   updatedAt: number;
   submittedAt?: number;
   viewedAt?: number;
+}
+
+export type ProjectAssetType =
+  | 'client_reference'
+  | 'artist_draft'
+  | 'revision'
+  | 'final_design'
+  | 'stencil'
+  | 'healed_photo';
+
+export interface ProjectAssetRecord {
+  id: string;
+  projectId: string;
+  artistId: string;
+  type: ProjectAssetType;
+  imageUrl: string;
+  note?: string;
+  uploadedBy: 'artist' | 'client';
+  revisionNumber?: number;
+  approved?: boolean;
+  approvedAt?: number;
+  createdAt: number;
+}
+
+export interface ProjectApprovalTokenRecord {
+  token: string;
+  projectId: string;
+  assetId: string;
+  artistId: string;
+  expiresAt: number;
+  viewedAt?: number;
+  approvedAt?: number;
+  revisionRequestedAt?: number;
+  feedback?: string;
+  createdAt: number;
+}
+
+export interface ProjectRevisionRecord {
+  id: string;
+  projectId: string;
+  artistId: string;
+  clientId?: string;
+  version: number;
+  imageUrls: string[];
+  note?: string;
+  status: 'draft' | 'sent' | 'viewed' | 'revision_requested' | 'approved';
+  approvalToken?: string;
+  requestedChanges?: {
+    category: 'placement' | 'size' | 'style' | 'detail' | 'linework' | 'shading' | 'color' | 'wording' | 'other';
+    note?: string;
+  }[];
+  viewedAt?: number;
+  approvedAt?: number;
+  revisionRequestedAt?: number;
+  createdAt: number;
+  sentAt?: number;
+}
+
+export interface DepositFlowRecord {
+  id: string;
+  leadId: string;
+  artistId: string;
+  quoteRange?: string;
+  estimatedSessions?: number;
+  depositAmount?: number;
+  depositStatus: 'not_requested' | 'requested' | 'viewed' | 'paid' | 'expired' | 'declined';
+  requestedAt?: number;
+  viewedAt?: number;
+  paidAt?: number;
+  reminderCount: number;
+  notes?: string;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface SupplyProduct {
