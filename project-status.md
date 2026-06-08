@@ -29,6 +29,14 @@
 - 竞对均无 Session 分组和 Timeline 视图
 - 差距项：嵌入代码(iframe)、图片编辑（已补齐）
 
+## 免费建站/落地页 (2026-06-08)
+- `/tattoo/:slug` SEO 落地页上线
+- LocalBusiness JSON-LD Schema 自动生成
+- Portfolio 展示 + Reviews + Booking CTA
+- 动态 meta title/description
+- 数据来自 User.bioProfile、Portfolio、Reviews
+- 下一步：自定义颜色/字体、自定义域名绑定、程序化城市页
+
 ## InkFlow Outreach (F:\inkflow app\InkFlow_Project\inkflow_harvests)
 - server.ts: 3 tables (inkflow_candidates, inkflow_targets, inkflow_outreach_logs)
 - InkFlowOutreach.tsx: stats, DM funnel, target detail, paid conversion
