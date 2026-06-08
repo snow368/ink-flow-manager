@@ -10,7 +10,7 @@ const TAGS = ['japanese', 'realism', 'traditional', 'neo-traditional', 'blackwor
   'geometric', 'watercolor', 'tribal', 'minimalist', 'sketch', 'portrait',
   'lettering', 'cover-up', 'arm', 'leg', 'back', 'chest', 'sleeve', 'hand', 'neck'];
 
-type GroupView = 'grid' | 'session' | 'client';
+type GroupView = 'grid' | 'session' | 'client' | 'timeline';
 
 export default function Portfolio() {
   const navigate = useNavigate();
@@ -31,6 +31,7 @@ export default function Portfolio() {
   // Grouped view data
   const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
   const [clientGroups, setClientGroups] = useState<{ clientId: string; clientName: string; photos: PortfolioRecord[] }[]>([]);
+  const [timelineGroups, setTimelineGroups] = useState<{ label: string; key: string; photos: PortfolioRecord[] }[]>([]);
   const [orphanPhotos, setOrphanPhotos] = useState<PortfolioRecord[]>([]);
 
   useEffect(() => {
@@ -55,6 +56,25 @@ export default function Portfolio() {
         setClientGroups(r.grouped);
         setOrphanPhotos(r.noClient);
       });
+    } else if (groupView === 'timeline') {
+      // Group by month/year
+      const groups: Record<string, PortfolioRecord[]> = {};
+      for (const item of items) {
+        const d = new Date(item.createdAt);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(item);
+      }
+      const sorted = Object.entries(groups)
+        .sort(([a], [b]) => b.localeCompare(a)) // newest first
+        .map(([key, photos]) => {
+          const [y, m] = key.split('-');
+          const date = new Date(Number(y), Number(m) - 1);
+          const label = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+          return { label, key, photos };
+        });
+      setTimelineGroups(sorted);
+      setOrphanPhotos([]);
     }
   }, [groupView, items, user]);
 
@@ -278,58 +298,52 @@ export default function Portfolio() {
   );
 
   const renderGroupedView = () => {
-    // Collect all photos for index calculation
-    const allFiltered = groupView === 'session'
-      ? [...sessionGroups.flatMap(g => g.photos), ...orphanPhotos]
-      : [...clientGroups.flatMap(g => g.photos), ...orphanPhotos];
-    const filteredSet = new Set(allFiltered.map(p => p.id));
+    const isTimeline = groupView === 'timeline';
+    const groups: any[] = isTimeline ? timelineGroups : (groupView === 'session' ? sessionGroups : clientGroups);
+    const hasOrphans = !isTimeline && orphanPhotos.length > 0;
+
+    if (groups.length === 0 && !hasOrphans) {
+      return (
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+          <p style={{ fontSize: 16, color: '#94a3b8' }}>
+            {items.length === 0 ? 'No portfolio photos yet' : 'No photos match your filters'}
+          </p>
+        </div>
+      );
+    }
 
     let offset = 0;
-    const groups = groupView === 'session' ? sessionGroups : clientGroups;
-
     return (
       <div>
-        {groups.length === 0 && orphanPhotos.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <p style={{ fontSize: 16, color: '#94a3b8' }}>
-              {items.length === 0 ? 'No portfolio photos yet' : 'No photos match your filters'}
-            </p>
-          </div>
-        ) : (
-          <>
-            {groups.map((g: any) => {
-              const sessionDate = g.session?.startedAt
-                ? new Date(g.session.startedAt).toLocaleDateString()
-                : null;
-              const label = groupView === 'session'
-                ? (g.session ? `Session — ${sessionDate}` : 'Unknown Session')
-                : g.clientName;
-              const photoCount = g.photos.filter((p: PortfolioRecord) => filteredSet.has(p.id)).length;
-              if (photoCount === 0) return null;
-              const localOffset = offset;
-              offset += g.photos.length;
-              return (
-                <div key={g.sessionId || g.clientId} style={{ marginBottom: 24 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>{label}</span>
-                    <span style={{ fontSize: 11, color: '#64748b' }}>{photoCount} photos</span>
-                  </div>
-                  {renderPhotoGrid(g.photos, localOffset)}
-                </div>
-              );
-            })}
-            {orphanPhotos.length > 0 && (
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>
-                    {groupView === 'session' ? 'Direct Uploads' : 'Unlinked'}
-                  </span>
-                  <span style={{ fontSize: 11, color: '#64748b' }}>{orphanPhotos.length} photos</span>
-                </div>
-                {renderPhotoGrid(orphanPhotos, offset)}
+        {groups.map((g: any) => {
+          const label = isTimeline
+            ? g.label
+            : groupView === 'session'
+              ? (g.session ? `Session — ${new Date(g.session.startedAt).toLocaleDateString()}` : 'Unknown Session')
+              : g.clientName;
+          const count = g.photos.length;
+          const localOffset = offset;
+          offset += count;
+          return (
+            <div key={g.sessionId || g.clientId || g.key} style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>{label}</span>
+                <span style={{ fontSize: 11, color: '#64748b' }}>{count} photos</span>
               </div>
-            )}
-          </>
+              {renderPhotoGrid(g.photos, localOffset)}
+            </div>
+          );
+        })}
+        {hasOrphans && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>
+                {groupView === 'session' ? 'Direct Uploads' : 'Unlinked'}
+              </span>
+              <span style={{ fontSize: 11, color: '#64748b' }}>{orphanPhotos.length} photos</span>
+            </div>
+            {renderPhotoGrid(orphanPhotos, offset)}
+          </div>
         )}
       </div>
     );
@@ -378,8 +392,8 @@ export default function Portfolio() {
       )}
 
       {/* View mode tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
-        {(['grid', 'session', 'client'] as const).map(v => (
+      <div style={{ display: 'flex', gap: 4, marginBottom: 12, flexWrap: 'wrap' }}>
+        {(['grid', 'timeline', 'session', 'client'] as const).map(v => (
           <button key={v} onClick={() => setGroupView(v)}
             style={{
               padding: '6px 14px', borderRadius: 8, border: 'none',
@@ -388,7 +402,7 @@ export default function Portfolio() {
               fontSize: 12, fontWeight: 500, cursor: 'pointer',
               textTransform: 'capitalize',
             }}>
-            {v === 'grid' ? 'All Photos' : v === 'session' ? 'By Session' : 'By Client'}
+            {v === 'grid' ? 'All Photos' : v === 'timeline' ? '📅 Timeline' : v === 'session' ? 'By Session' : 'By Client'}
           </button>
         ))}
       </div>
