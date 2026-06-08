@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { db, type UserRecord, type AppointmentRecord } from '../db';
+import { db, type UserRecord, type AppointmentRecord, type PortfolioRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getArtistAvailability, isDayOff, toMinutes, toTimeString, findMultipleAvailableTimes } from '../lib/availability';
 import { createWaitingListEntry } from '../lib/waitingList';
@@ -47,6 +47,8 @@ export default function ClientBookingPage() {
   const [paying, setPaying] = useState(false);
   const [showWaitlist, setShowWaitlist] = useState(false);
   const [wlSubmitted, setWlSubmitted] = useState(false);
+  const [portfolioPhotos, setPortfolioPhotos] = useState<PortfolioRecord[]>([]);
+  const [showPortfolio, setShowPortfolio] = useState(false);
   const bookingDeposit = getBookingDeposit();
 
   useEffect(() => {
@@ -80,6 +82,9 @@ export default function ClientBookingPage() {
 
   useEffect(() => {
     if (!artistId) return;
+    // Pre-fill style from URL param
+    const styleParam = searchParams.get('style');
+    if (styleParam) { setStyle(styleParam); }
     db.users.get(artistId).then(async u => {
       if (!u) { setLoading(false); return; }
       setArtist(u);
@@ -95,6 +100,13 @@ export default function ClientBookingPage() {
       const today = new Date().toISOString().slice(0, 10);
       setSelectedDate(today);
       loadSlots(today, apps, avail.start, avail.end);
+      // Load public portfolio
+      const photos = await db.portfolio
+        .where('artistId').equals(artistId)
+        .filter(p => p.isPublic)
+        .reverse()
+        .sortBy('createdAt');
+      setPortfolioPhotos(photos);
       setLoading(false);
     });
   }, [artistId]);
@@ -293,6 +305,32 @@ export default function ClientBookingPage() {
           {artist?.studioName && <p style={{ color: '#94a3b8', marginBottom: 4, fontSize: 14 }}>{artist.studioName}</p>}
           {artist?.instagramHandle && (
             <p style={{ color: '#f43f5e', marginBottom: 12, fontSize: 13 }}>@{artist.instagramHandle.replace(/^@/, '')}</p>
+          )}
+
+          {/* Portfolio gallery */}
+          {portfolioPhotos.length > 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <button onClick={() => setShowPortfolio(!showPortfolio)}
+                style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: 8, fontWeight: 600 }}>
+                {showPortfolio ? 'Hide portfolio' : `View portfolio (${portfolioPhotos.length} works)`}
+              </button>
+              {showPortfolio && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+                  {portfolioPhotos.slice(0, 9).map(photo => (
+                    <div key={photo.id}
+                      style={{ aspectRatio: '1/1', overflow: 'hidden', borderRadius: 8, background: '#0f172a' }}>
+                      <img src={photo.thumbnailUrl || photo.imageUrl} alt=""
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ))}
+                  {portfolioPhotos.length > 9 && (
+                    <div style={{ aspectRatio: '1/1', borderRadius: 8, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#64748b' }}>
+                      +{portfolioPhotos.length - 9}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 8 }}>{t(lang, 'select_date')}</p>
