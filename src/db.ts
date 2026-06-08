@@ -864,6 +864,7 @@ export interface UserRecord {
   autoAftercare?: boolean;
   appointmentRemindersEnabled?: boolean;
   smsEnabled?: boolean;
+  whatsappEnabled?: boolean;
   smsCredits?: number;
   smsFreeUntil?: number;
   smsUsedToday?: number;

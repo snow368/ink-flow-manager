@@ -4,6 +4,7 @@ import { db, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { getTwilioConfig, setTwilioConfig, testSmsConnection, addSmsCredits, getSmsConfig, getCachedSmsConfig, type SmsPack } from '../lib/smsService';
 import { getSendGridConfig, setSendGridConfig, testEmailConnection } from '../lib/emailService';
+import { getYCloudConfig, setYCloudConfig, testWhatsAppConnection, clearYCloudConfig, isWhatsAppConfigured } from '../lib/whatsappService';
 import { getBackendUrl, setBackendConfig, getCalendarSubscriptionUrl } from '../lib/backendApi';
 import { subscribe, unsubscribe, isSubscribed } from '../lib/push';
 
@@ -12,6 +13,8 @@ export default function NotificationSettings() {
   const lang = detectInitialLanguage();
   const [user, setUser] = useState<UserRecord | null>(null);
   const [smsEnabled, setSmsEnabled] = useState(false);
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [whatsappPhone, setWhatsappPhone] = useState('');
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
 
@@ -19,6 +22,10 @@ export default function NotificationSettings() {
   const [twilioSid, setTwilioSid] = useState('');
   const [twilioToken, setTwilioToken] = useState('');
   const [twilioFrom, setTwilioFrom] = useState('');
+
+  // YCloud state
+  const [whatsappApiKey, setWhatsappApiKey] = useState('');
+  const [whatsappFromNumber, setWhatsappFromNumber] = useState('');
 
   // Global SendGrid state (owner only, from localStorage)
   const [sendgridKey, setSendgridKey] = useState('');
@@ -28,7 +35,8 @@ export default function NotificationSettings() {
   const [showEmail, setShowEmail] = useState(false);
   const [showOwnerSms, setShowOwnerSms] = useState(false);
   const [showOwnerEmail, setShowOwnerEmail] = useState(false);
-  const [testing, setTesting] = useState<'sms' | 'email' | null>(null);
+  const [showWhatsAppConfig, setShowWhatsAppConfig] = useState(false);
+  const [testing, setTesting] = useState<'sms' | 'email' | 'whatsapp' | null>(null);
   const [message, setMessage] = useState('');
   const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushSubscribing, setPushSubscribing] = useState(false);
@@ -52,6 +60,8 @@ export default function NotificationSettings() {
       if (!u) { navigate('/register'); return; }
       setUser(u);
       setSmsEnabled(u.smsEnabled || false);
+      setWhatsappEnabled(!!(u as any).whatsappEnabled);
+      setWhatsappPhone(u.whatsappPhone || '');
       setEmailEnabled(u.emailEnabled || false);
       setEmailAddress(u.emailAddress || '');
     });
@@ -118,6 +128,24 @@ export default function NotificationSettings() {
     setTesting('email');
     const r = await testEmailConnection(emailAddress || sendgridFrom);
     setMessage(r.ok ? t(lang, 'sent') : `Email failed: ${r.error}`);
+    setTesting(null);
+  };
+
+  const saveYCloudGlobal = () => {
+    setYCloudConfig(whatsappApiKey, whatsappFromNumber);
+    setMessage('YCloud config saved.');
+    setTimeout(() => setMessage(''), 2000);
+  };
+
+  const handleTestWhatsApp = async () => {
+    if (!whatsappApiKey || !whatsappFromNumber) {
+      setMessage('Configure YCloud first');
+      return;
+    }
+    saveYCloudGlobal();
+    setTesting('whatsapp');
+    const r = await testWhatsAppConnection();
+    setMessage(r.ok ? 'WhatsApp connection OK' : `WhatsApp failed: ${r.error}`);
     setTesting(null);
   };
 
@@ -273,6 +301,61 @@ export default function NotificationSettings() {
           <p style={{ fontSize: 10, color: '#475569', marginTop: 8 }}>Payment integration coming soon. Credits added instantly for now.</p>
         </div>
       )}
+
+      {/* ---- WhatsApp Section ---- */}
+      <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <p style={{ fontWeight: 700, fontSize: 15 }}>💬 WhatsApp</p>
+          {isOwner && (
+            <button onClick={async () => {
+              const config = getYCloudConfig();
+              setShowWhatsAppConfig(!showWhatsAppConfig);
+              if (config) {
+                setWhatsappApiKey(config.apiKey);
+                setWhatsappFromNumber(config.fromNumber);
+              }
+            }} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: 12, cursor: 'pointer' }}>
+              {showWhatsAppConfig ? 'Hide' : 'YCloud Config'}
+            </button>
+          )}
+        </div>
+        <p style={{ fontSize: 11, color: '#64748b', marginBottom: 8 }}>
+          Send appointment reminders and booking confirmations via WhatsApp (requires YCloud API).
+        </p>
+
+        {isOwner && showWhatsAppConfig && (
+          <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: 8, padding: 12, marginBottom: 12 }}>
+            <p style={{ fontSize: 11, color: '#f59e0b', fontWeight: 600, marginBottom: 6 }}>OWNER — YCloud API</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <input placeholder="YCloud API Key" value={whatsappApiKey} onChange={e => setWhatsappApiKey(e.target.value)} style={inputStyle} type="password" />
+              <input placeholder="From number (+1234567890)" value={whatsappFromNumber} onChange={e => setWhatsappFromNumber(e.target.value)} style={inputStyle} />
+              <div style={{ display: 'flex', gap: 6 }}>
+                <button onClick={saveYCloudGlobal} style={{ ...saveBtnStyle, flex: 1 }}>Save YCloud Config</button>
+                <button onClick={handleTestWhatsApp} disabled={testing === 'whatsapp' || !whatsappApiKey}
+                  style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: testing === 'whatsapp' || !whatsappApiKey ? '#4b5563' : '#2563eb', color: 'white', fontSize: 12, fontWeight: 600, cursor: whatsappApiKey ? 'pointer' : 'not-allowed' }}>
+                  {testing === 'whatsapp' ? '...' : 'Test'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#94a3b8', cursor: 'pointer' }}>
+          <input type="checkbox" checked={whatsappEnabled}
+            onChange={e => { setWhatsappEnabled(e.target.checked); saveUser({ whatsappEnabled: e.target.checked } as any); }}
+            disabled={!isWhatsAppConfigured()} />
+          Enable WhatsApp reminders
+        </label>
+        {whatsappEnabled && (
+          <div style={{ marginTop: 8 }}>
+            <input placeholder="Your WhatsApp number (+1234567890)" value={whatsappPhone}
+              onChange={e => setWhatsappPhone(e.target.value)}
+              onBlur={() => saveUser({ whatsappPhone } as any)}
+              style={{ ...inputStyle, marginBottom: 0 }} />
+            <p style={{ fontSize: 10, color: '#475569', marginTop: 4 }}>This is the number your clients will see as the sender.</p>
+          </div>
+        )}
+      </div>
 
       {/* ---- Email Section (collapsed by default) ---- */}
       <details style={{ background: '#1e293b', padding: 12, borderRadius: 12, marginBottom: 16, fontSize: 12, color: '#64748b' }}>
