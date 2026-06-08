@@ -368,7 +368,10 @@ export default function ArtistProfilePage() {
         {saving ? 'Saving...' : 'Save & Sync'}
       </button>
       {msg && <div style={S.msg}>{msg}</div>}
-      <div style={S.preview}>Public page: {window.location.origin}{previewUrl}</div>
+      <div style={S.preview}>Bio page: {window.location.origin}{previewUrl}</div>
+      {slug && (
+        <div style={S.preview}>Landing page: {window.location.origin}/tattoo/{slug}</div>
+      )}
     </div>
   );
 }

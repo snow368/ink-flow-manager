@@ -72,6 +72,7 @@ const ProjectApprovePage = lazy(() => import('./pages/ProjectApprovePage'));
 const DesignReviewPage = lazy(() => import('./pages/DesignReviewPage'));
 const PublicPortfolioPage = lazy(() => import('./pages/PublicPortfolioPage'));
 const EmbedPortfolioPage = lazy(() => import('./pages/EmbedPortfolioPage'));
+const ArtistLandingPage = lazy(() => import('./pages/ArtistLandingPage'));
 const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
@@ -309,6 +310,7 @@ export default function App() {
             <Route path="/respond/:id" element={<AppointmentRespondPage />} />
             <Route path="/embed/:artistId" element={<EmbedBookingPage />} />
             <Route path="/embed/portfolio/:artistId" element={<EmbedPortfolioPage />} />
+            <Route path="/tattoo/:slug" element={<ArtistLandingPage />} />
             <Route path="/portfolio/:artistId" element={<PublicPortfolioPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/artist-profile" element={<ArtistProfilePage />} />
