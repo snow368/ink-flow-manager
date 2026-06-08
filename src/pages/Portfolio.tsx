@@ -27,6 +27,8 @@ export default function Portfolio() {
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [groupView, setGroupView] = useState<GroupView>('grid');
+  const [reorderMode, setReorderMode] = useState(false);
+  const [dragIdx, setDragIdx] = useState(-1);
 
   // Grouped view data
   const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
@@ -79,7 +81,10 @@ export default function Portfolio() {
   }, [groupView, items, user]);
 
   const loadItems = (uid: string) => {
-    db.portfolio.where('artistId').equals(uid).reverse().sortBy('createdAt').then(setItems);
+    db.portfolio.where('artistId').equals(uid).toArray().then(all => {
+      all.sort((a, b) => (b.sortOrder || b.createdAt) - (a.sortOrder || a.createdAt));
+      setItems(all);
+    });
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,8 +100,9 @@ export default function Portfolio() {
       if (!file.type.startsWith('image/')) continue;
       try {
         const imageUrl = await uploadImage(user.id, file);
+        const now = Date.now();
         await db.portfolio.add({
-          id: 'pf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+          id: 'pf_' + now + '_' + Math.random().toString(36).slice(2, 6),
           artistId: user.id,
           imageUrl,
           thumbnailUrl: imageUrl,
@@ -105,7 +111,8 @@ export default function Portfolio() {
           consentForSocial: false,
           consentForPromotion: false,
           source: 'upload',
-          createdAt: Date.now(),
+          sortOrder: now,
+          createdAt: now,
         });
         count++;
       } catch {
@@ -249,6 +256,38 @@ export default function Portfolio() {
     setTimeout(() => setMessage(''), 2000);
   };
 
+  const copyShareLink = async () => {
+    const shareUrl = `${window.location.origin}/portfolio/${user?.id}`;
+    await navigator.clipboard.writeText(shareUrl);
+    setMessage('Public portfolio link copied!');
+    setTimeout(() => setMessage(''), 2500);
+  };
+
+  // ── Drag & drop reorder ──
+  const handleDragStart = (idx: number) => { setDragIdx(idx); };
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (dragIdx === -1 || dragIdx === idx) return;
+    const reordered = [...items];
+    const [moved] = reordered.splice(dragIdx, 1);
+    reordered.splice(idx, 0, moved);
+    setItems(reordered);
+    setDragIdx(idx);
+  };
+  const handleDragEnd = async () => {
+    setDragIdx(-1);
+    // Persist new sort order
+    const now = Date.now();
+    for (let i = 0; i < items.length; i++) {
+      const sortOrder = now - i; // newest first
+      if (items[i].sortOrder !== sortOrder) {
+        await db.portfolio.update(items[i].id, { sortOrder });
+      }
+    }
+    setMessage('Order saved');
+    setTimeout(() => setMessage(''), 2000);
+  };
+
   const activeTags = [...new Set(items.flatMap(i => i.tags))].sort();
   const publicCount = items.filter(i => i.isPublic).length;
 
@@ -257,15 +296,30 @@ export default function Portfolio() {
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6 }}>
       {photoList.map((item, i) => (
         <div key={item.id}
-          onClick={() => openDetail(item, startIdx + i)}
+          draggable={reorderMode}
+          onClick={() => { if (!reorderMode) openDetail(item, startIdx + i); }}
+          onDragStart={() => handleDragStart(startIdx + i)}
+          onDragOver={(e) => handleDragOver(e, startIdx + i)}
+          onDragEnd={handleDragEnd}
           style={{
-            borderRadius: 10, overflow: 'hidden', aspectRatio: '1/1', cursor: 'pointer',
+            borderRadius: 10, overflow: 'hidden', aspectRatio: '1/1', cursor: reorderMode ? 'grab' : 'pointer',
             position: 'relative', background: '#0f172a',
             border: selectedIds.has(item.id) ? '2px solid #c084fc' : '1px solid #1e293b',
+            opacity: dragIdx === startIdx + i ? 0.4 : 1,
+            transition: 'opacity 0.15s',
           }}>
           <img src={item.thumbnailUrl || item.imageUrl} alt=""
             loading="lazy"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {reorderMode && (
+            <div style={{
+              position: 'absolute', top: 4, left: 4,
+              background: 'rgba(0,0,0,0.6)', borderRadius: 4, padding: '2px 6px',
+              fontSize: 14, color: '#94a3b8', cursor: 'grab',
+            }}>
+              ⠿
+            </div>
+          )}
           {selectMode && (
             <div style={{
               position: 'absolute', top: 4, left: 4,
@@ -277,7 +331,7 @@ export default function Portfolio() {
               {selectedIds.has(item.id) ? '✓' : ''}
             </div>
           )}
-          {!item.isPublic && !selectMode && (
+          {!item.isPublic && !reorderMode && !selectMode && (
             <div style={{ position: 'absolute', top: 4, right: 4, background: '#7f1d1d', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#fca5a5' }}>
               Private
             </div>
@@ -360,10 +414,16 @@ export default function Portfolio() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          {items.length > 0 && (
+          {items.length > 0 && !reorderMode && (
             <button onClick={() => { setSelectMode(!selectMode); setSelectedIds(new Set()); }}
               style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid #334155', background: selectMode ? '#7e22ce20' : 'transparent', color: selectMode ? '#c084fc' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               {selectMode ? 'Cancel' : 'Select'}
+            </button>
+          )}
+          {items.length > 0 && !selectMode && (
+            <button onClick={() => { setReorderMode(!reorderMode); if (reorderMode) handleDragEnd(); }}
+              style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid #334155', background: reorderMode ? '#2563eb20' : 'transparent', color: reorderMode ? '#60a5fa' : '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              {reorderMode ? 'Done' : 'Reorder'}
             </button>
           )}
           <label style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: '#e11d48', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -373,6 +433,14 @@ export default function Portfolio() {
           </label>
         </div>
       </div>
+
+      {/* Share link */}
+      {user && publicCount > 0 && (
+        <button onClick={copyShareLink}
+          style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          🔗 Copy public portfolio link
+        </button>
+      )}
 
       {/* Bulk actions */}
       {selectMode && selectedIds.size > 0 && (

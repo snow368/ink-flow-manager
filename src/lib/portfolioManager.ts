@@ -32,6 +32,7 @@ export async function addSessionPhotosToPortfolio(
       consentForSocial: false,
       consentForPromotion: false,
       source: 'session',
+      sortOrder: now + i,
       createdAt: now + i,
     });
     added++;
@@ -43,8 +44,8 @@ export async function getPortfolioGroupedBySession(artistId: string) {
   const items = await db.portfolio
     .where('artistId')
     .equals(artistId)
-    .reverse()
-    .sortBy('createdAt');
+    .toArray();
+  items.sort((a, b) => (b.sortOrder || b.createdAt) - (a.sortOrder || a.createdAt));
 
   // Get all referenced sessions
   const sessionIds = [...new Set(items.filter(i => i.sessionId).map(i => i.sessionId!))];
@@ -80,8 +81,8 @@ export async function getPortfolioGroupedByClient(artistId: string) {
   const items = await db.portfolio
     .where('artistId')
     .equals(artistId)
-    .reverse()
-    .sortBy('createdAt');
+    .toArray();
+  items.sort((a, b) => (b.sortOrder || b.createdAt) - (a.sortOrder || a.createdAt));
 
   // Get all referenced clients
   const clientIds = [...new Set(items.filter(i => i.clientId).map(i => i.clientId!))];
