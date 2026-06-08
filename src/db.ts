@@ -771,6 +771,40 @@ export class InkFlowDB extends Dexie {
       depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
       projectRevisions: 'id, projectId, artistId, status, approvalToken, createdAt',
     });
+    this.version(33).stores({
+      users: 'id, email, role, artistId, deviceId, createdAt',
+      clients: 'id, name, artistId, createdAt',
+      appointments: 'id, projectId, clientId, artistId, date, status, createdAt',
+      projects: 'id, clientId, artistId, status, sourceLeadId, createdAt, updatedAt',
+      waivers: 'id, appointmentId, projectId, clientId, status, createdAt',
+      sessions: 'id, projectId, appointmentId, artistId, status, sessionState, startedAt',
+      inventory: 'id, name, category, locationId',
+      portfolio: 'id, artistId, projectId, clientId, sessionId, sortOrder, createdAt',
+      socialDrafts: 'id, platform, status, createdAt',
+      referrals: 'id, inviterId, inviteeId, status, createdAt',
+      leads: 'id, artistId, status, source, createdAt, nextFollowUpAt, paymentStatus, paymentMethod, paymentUpdatedAt, convertedProjectId, leadPipelineStatus, lastContactedAt',
+      leadRevisions: 'id, leadId, version, actor, createdAt',
+      supplyBrands: 'id, category, active, sortOrder',
+      posTransactions: 'id, artistId, clientId, projectId, paymentStatus, createdAt',
+      studioLocations: 'id, ownerId, managerId',
+      invoices: 'id, invoiceNumber, artistId, clientId, projectId, paymentStatus, createdAt',
+      competitors: 'id, category, status, nextCheckAt',
+      supplyReviews: 'id, artistId, category, createdAt',
+      waitingList: 'id, artistId, status, preferredDate, createdAt',
+      healthChecklists: 'id, artistId, locationId, lastInspectionAt, createdAt',
+      communicationLog: 'id, clientId, appointmentId, projectId, artistId, createdAt',
+      affiliateClicks: 'id, userId, brandId, clickedAt',
+      auditLog: 'id, actorId, action, tableName, recordId, artistId, createdAt',
+      shifts: 'id, artistId, staffId, locationId, date, createdAt',
+      tasks: 'id, artistId, assigneeId, locationId, status, dueDate, priority, createdAt',
+      reviews: 'id, artistId, appointmentId, projectId, clientId, createdAt',
+      clientReferrals: 'id, artistId, clientId, code, slug, createdAt',
+      leadConfirmations: 'id, artistId, leadId, status, confirmationToken, createdAt',
+      projectAssets: 'id, projectId, artistId, type, createdAt',
+      projectApprovalTokens: 'token, projectId, assetId, artistId, createdAt',
+      depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
+      projectRevisions: 'id, projectId, artistId, status, approvalToken, createdAt',
+    });
   }
 }
 
@@ -1064,6 +1098,7 @@ export interface PortfolioRecord {
   sessionId?: string; imageUrl: string; thumbnailUrl?: string; tags: string[];
   isPublic: boolean; consentForSocial: boolean; consentForPromotion: boolean;
   source: 'upload' | 'session'; sortOrder: number; createdAt: number;
+  serviceType?: string; isFlash?: boolean; isSold?: boolean;
 }
 
 export interface SocialDraftRecord {

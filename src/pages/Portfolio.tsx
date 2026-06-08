@@ -348,6 +348,11 @@ export default function Portfolio() {
               Session
             </div>
           )}
+          {item.isFlash && !selectMode && (
+            <div style={{ position: 'absolute', top: 4, left: reorderMode ? 26 : 4, background: '#a855f7', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#f3e8ff' }}>
+              {item.isSold ? 'Sold' : 'Flash'}
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -590,7 +595,7 @@ export default function Portfolio() {
 
             {/* Tags */}
             <p style={{ fontSize: 12, color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tags</p>
-            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 16 }}>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
               {TAGS.map(tag => (
                 <button key={tag} onClick={() => toggleTag(selected, tag)}
                   style={{
@@ -603,6 +608,55 @@ export default function Portfolio() {
                   {tag}
                 </button>
               ))}
+            </div>
+
+            {/* Service type */}
+            <p style={{ fontSize: 12, color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Service Type</p>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
+              {['Tattoo', 'Piercing', 'Consultation', 'Touch-up', 'Cover-up', 'Design', 'Flash'].map(s => {
+                const active = selected.serviceType === s;
+                return (
+                  <button key={s} onClick={async () => {
+                    const val = active ? '' : s;
+                    await db.portfolio.update(selected.id, { serviceType: val || undefined });
+                    setSelected({ ...selected, serviceType: val || undefined });
+                    setItems(prev => prev.map(i => i.id === selected.id ? { ...i, serviceType: val || undefined } : i));
+                  }}
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, border: '1px solid',
+                      borderColor: active ? '#2563eb' : '#334155',
+                      background: active ? '#2563eb20' : 'transparent',
+                      color: active ? '#60a5fa' : '#94a3b8',
+                      fontSize: 11, cursor: 'pointer',
+                    }}>
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Flash / Sold toggles */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+              <button onClick={async () => {
+                const val = !selected.isFlash;
+                await db.portfolio.update(selected.id, { isFlash: val || undefined });
+                setSelected({ ...selected, isFlash: val || undefined });
+                setItems(prev => prev.map(i => i.id === selected.id ? { ...i, isFlash: val || undefined } : i));
+              }}
+                style={actionBtn(selected.isFlash ? '#a855f7' : '#334155')}>
+                {selected.isFlash ? '⭐ Flash' : 'Mark as Flash'}
+              </button>
+              {selected.isFlash && (
+                <button onClick={async () => {
+                  const val = !selected.isSold;
+                  await db.portfolio.update(selected.id, { isSold: val || undefined });
+                  setSelected({ ...selected, isSold: val || undefined });
+                  setItems(prev => prev.map(i => i.id === selected.id ? { ...i, isSold: val || undefined } : i));
+                }}
+                  style={actionBtn(selected.isSold ? '#ef4444' : '#334155')}>
+                  {selected.isSold ? 'Sold' : 'Available'}
+                </button>
+              )}
             </div>
           </div>
         </div>
