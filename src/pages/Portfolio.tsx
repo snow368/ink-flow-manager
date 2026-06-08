@@ -5,6 +5,7 @@ import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { uploadImage, deleteImage } from '../lib/storageService';
 import { getPortfolioGroupedBySession, getPortfolioGroupedByClient } from '../lib/portfolioManager';
+import ImageEditorModal from '../components/ImageEditorModal';
 
 const TAGS = ['japanese', 'realism', 'traditional', 'neo-traditional', 'blackwork', 'dotwork',
   'geometric', 'watercolor', 'tribal', 'minimalist', 'sketch', 'portrait',
@@ -29,6 +30,7 @@ export default function Portfolio() {
   const [groupView, setGroupView] = useState<GroupView>('grid');
   const [reorderMode, setReorderMode] = useState(false);
   const [dragIdx, setDragIdx] = useState(-1);
+  const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
 
   // Grouped view data
   const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
@@ -568,6 +570,10 @@ export default function Portfolio() {
                 style={{ ...actionBtn('#334155'), color: '#94a3b8' }}>
                 Copy
               </button>
+              <button onClick={() => setEditImageUrl(selected.imageUrl)}
+                style={{ ...actionBtn('#334155'), color: '#94a3b8' }}>
+                Edit
+              </button>
               <button onClick={() => handleDelete(selected)}
                 style={{ ...actionBtn('#7f1d1d'), color: '#f87171', marginLeft: 'auto' }}>
                 Delete
@@ -606,6 +612,23 @@ export default function Portfolio() {
         style={{ marginTop: 24, width: '100%', padding: 12, borderRadius: 10, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 14, cursor: 'pointer' }}>
         Back to Me
       </button>
+
+      {editImageUrl && (
+        <ImageEditorModal
+          imageUrl={editImageUrl}
+          onSave={async (dataUrl) => {
+            if (selected && user) {
+              await db.portfolio.update(selected.id, { imageUrl: dataUrl, thumbnailUrl: dataUrl });
+              setItems(prev => prev.map(i => i.id === selected.id ? { ...i, imageUrl: dataUrl, thumbnailUrl: dataUrl } : i));
+              setSelected({ ...selected, imageUrl: dataUrl, thumbnailUrl: dataUrl });
+              setMessage('Photo updated');
+              setTimeout(() => setMessage(''), 2000);
+            }
+            setEditImageUrl(null);
+          }}
+          onClose={() => setEditImageUrl(null)}
+        />
+      )}
     </div>
   );
 }
