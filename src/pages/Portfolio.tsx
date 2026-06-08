@@ -31,6 +31,7 @@ export default function Portfolio() {
   const [reorderMode, setReorderMode] = useState(false);
   const [dragIdx, setDragIdx] = useState(-1);
   const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
+  const [showEmbed, setShowEmbed] = useState(false);
 
   // Grouped view data
   const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
@@ -441,12 +442,45 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Share link */}
+      {/* Share & Embed */}
       {user && publicCount > 0 && (
-        <button onClick={copyShareLink}
-          style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-          🔗 Copy public portfolio link
-        </button>
+        <>
+          <button onClick={copyShareLink}
+            style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            🔗 Copy public portfolio link
+          </button>
+          <button onClick={() => setShowEmbed(true)}
+            style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            &lt;/&gt; Get embed code
+          </button>
+        </>
+      )}
+
+      {/* Embed dialog */}
+      {showEmbed && (
+        <div onClick={() => setShowEmbed(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: '#1e293b', borderRadius: 14, padding: 20, maxWidth: 500, width: '100%' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 4px', color: 'white' }}>Embed Portfolio</h3>
+            <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12 }}>Copy this iframe code to embed your portfolio on any website.</p>
+            <div style={{ background: '#0f172a', borderRadius: 8, padding: 12, marginBottom: 12 }}>
+              <code style={{ fontSize: 11, color: '#94a3b8', wordBreak: 'break-all', lineHeight: 1.6 }}>
+                {`<iframe src="${window.location.origin}/embed/portfolio/${user?.id}" width="100%" height="600" style="border:none;border-radius:8px" loading="lazy"></iframe>`}
+              </code>
+            </div>
+            <button onClick={async () => {
+              const code = `<iframe src="${window.location.origin}/embed/portfolio/${user?.id}" width="100%" height="600" style="border:none;border-radius:8px" loading="lazy"></iframe>`;
+              await navigator.clipboard.writeText(code);
+              setMessage('Embed code copied!');
+              setTimeout(() => setMessage(''), 2000);
+              setShowEmbed(false);
+            }}
+              style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              Copy embed code
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Bulk actions */}
