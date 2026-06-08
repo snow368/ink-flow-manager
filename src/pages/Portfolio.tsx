@@ -4,10 +4,13 @@ import { db, type PortfolioRecord, type UserRecord } from '../db';
 import { THEME } from '../lib/theme';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { uploadImage, deleteImage } from '../lib/storageService';
+import { getPortfolioGroupedBySession, getPortfolioGroupedByClient } from '../lib/portfolioManager';
 
 const TAGS = ['japanese', 'realism', 'traditional', 'neo-traditional', 'blackwork', 'dotwork',
   'geometric', 'watercolor', 'tribal', 'minimalist', 'sketch', 'portrait',
   'lettering', 'cover-up', 'arm', 'leg', 'back', 'chest', 'sleeve', 'hand', 'neck'];
+
+type GroupView = 'grid' | 'session' | 'client';
 
 export default function Portfolio() {
   const navigate = useNavigate();
@@ -23,7 +26,12 @@ export default function Portfolio() {
   const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'private'>('all');
   const [selectMode, setSelectMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [groupView, setGroupView] = useState<GroupView>('grid');
+
+  // Grouped view data
+  const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
+  const [clientGroups, setClientGroups] = useState<{ clientId: string; clientName: string; photos: PortfolioRecord[] }[]>([]);
+  const [orphanPhotos, setOrphanPhotos] = useState<PortfolioRecord[]>([]);
 
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
@@ -34,6 +42,21 @@ export default function Portfolio() {
       loadItems(u.id);
     });
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    if (groupView === 'session') {
+      getPortfolioGroupedBySession(user.id).then(r => {
+        setSessionGroups(r.grouped);
+        setOrphanPhotos(r.noSession);
+      });
+    } else if (groupView === 'client') {
+      getPortfolioGroupedByClient(user.id).then(r => {
+        setClientGroups(r.grouped);
+        setOrphanPhotos(r.noClient);
+      });
+    }
+  }, [groupView, items, user]);
 
   const loadItems = (uid: string) => {
     db.portfolio.where('artistId').equals(uid).reverse().sortBy('createdAt').then(setItems);
@@ -50,20 +73,18 @@ export default function Portfolio() {
 
     for (const file of fileArr) {
       if (!file.type.startsWith('image/')) continue;
-
       try {
-        // Upload to R2
         const imageUrl = await uploadImage(user.id, file);
-
         await db.portfolio.add({
           id: 'pf_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
           artistId: user.id,
           imageUrl,
-          thumbnailUrl: imageUrl, // R2 CDN is fast — use full image as thumbnail for now
+          thumbnailUrl: imageUrl,
           tags: [],
           isPublic: true,
           consentForSocial: false,
           consentForPromotion: false,
+          source: 'upload',
           createdAt: Date.now(),
         });
         count++;
@@ -101,6 +122,7 @@ export default function Portfolio() {
     } catch { /* silent */ }
   };
 
+  // ── Existing helpers (unchanged) ──
   const toggleTag = async (item: PortfolioRecord, tag: string) => {
     const tags = item.tags.includes(tag)
       ? item.tags.filter(t => t !== tag)
@@ -133,7 +155,6 @@ export default function Portfolio() {
     await db.portfolio.delete(item.id);
     setItems(prev => prev.filter(i => i.id !== item.id));
     if (selected?.id === item.id) setSelected(null);
-    // Clean up R2 if stored there
     void deleteImage(item.imageUrl).catch(() => {});
     if (user) syncPortfolio(user.id);
   };
@@ -207,8 +228,112 @@ export default function Portfolio() {
     setMessage('Image copied to clipboard');
     setTimeout(() => setMessage(''), 2000);
   };
+
   const activeTags = [...new Set(items.flatMap(i => i.tags))].sort();
   const publicCount = items.filter(i => i.isPublic).length;
+
+  // ── Render helpers ──
+  const renderPhotoGrid = (photoList: PortfolioRecord[], startIdx = 0) => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6 }}>
+      {photoList.map((item, i) => (
+        <div key={item.id}
+          onClick={() => openDetail(item, startIdx + i)}
+          style={{
+            borderRadius: 10, overflow: 'hidden', aspectRatio: '1/1', cursor: 'pointer',
+            position: 'relative', background: '#0f172a',
+            border: selectedIds.has(item.id) ? '2px solid #c084fc' : '1px solid #1e293b',
+          }}>
+          <img src={item.thumbnailUrl || item.imageUrl} alt=""
+            loading="lazy"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {selectMode && (
+            <div style={{
+              position: 'absolute', top: 4, left: 4,
+              width: 20, height: 20, borderRadius: 4,
+              border: selectedIds.has(item.id) ? '2px solid #c084fc' : '2px solid #475569',
+              background: selectedIds.has(item.id) ? '#7e22ce' : 'rgba(0,0,0,0.5)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
+            }}>
+              {selectedIds.has(item.id) ? '✓' : ''}
+            </div>
+          )}
+          {!item.isPublic && !selectMode && (
+            <div style={{ position: 'absolute', top: 4, right: 4, background: '#7f1d1d', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#fca5a5' }}>
+              Private
+            </div>
+          )}
+          {item.consentForPromotion && !selectMode && (
+            <div style={{ position: 'absolute', bottom: 4, left: 4, background: '#7e22ce', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#e9d5ff' }}>
+              Promo
+            </div>
+          )}
+          {item.source === 'session' && !selectMode && (
+            <div style={{ position: 'absolute', bottom: 4, right: 4, background: '#0369a1', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#bae6fd' }}>
+              Session
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderGroupedView = () => {
+    // Collect all photos for index calculation
+    const allFiltered = groupView === 'session'
+      ? [...sessionGroups.flatMap(g => g.photos), ...orphanPhotos]
+      : [...clientGroups.flatMap(g => g.photos), ...orphanPhotos];
+    const filteredSet = new Set(allFiltered.map(p => p.id));
+
+    let offset = 0;
+    const groups = groupView === 'session' ? sessionGroups : clientGroups;
+
+    return (
+      <div>
+        {groups.length === 0 && orphanPhotos.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '60px 0' }}>
+            <p style={{ fontSize: 16, color: '#94a3b8' }}>
+              {items.length === 0 ? 'No portfolio photos yet' : 'No photos match your filters'}
+            </p>
+          </div>
+        ) : (
+          <>
+            {groups.map((g: any) => {
+              const sessionDate = g.session?.startedAt
+                ? new Date(g.session.startedAt).toLocaleDateString()
+                : null;
+              const label = groupView === 'session'
+                ? (g.session ? `Session — ${sessionDate}` : 'Unknown Session')
+                : g.clientName;
+              const photoCount = g.photos.filter((p: PortfolioRecord) => filteredSet.has(p.id)).length;
+              if (photoCount === 0) return null;
+              const localOffset = offset;
+              offset += g.photos.length;
+              return (
+                <div key={g.sessionId || g.clientId} style={{ marginBottom: 24 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>{label}</span>
+                    <span style={{ fontSize: 11, color: '#64748b' }}>{photoCount} photos</span>
+                  </div>
+                  {renderPhotoGrid(g.photos, localOffset)}
+                </div>
+              );
+            })}
+            {orphanPhotos.length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, padding: '0 4px' }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: THEME.text.primary }}>
+                    {groupView === 'session' ? 'Direct Uploads' : 'Unlinked'}
+                  </span>
+                  <span style={{ fontSize: 11, color: '#64748b' }}>{orphanPhotos.length} photos</span>
+                </div>
+                {renderPhotoGrid(orphanPhotos, offset)}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={{ padding: 16, color: THEME.text.primary, paddingBottom: 100, minHeight: '100dvh', maxWidth: 1024, margin: '0 auto' }}>
@@ -252,79 +377,63 @@ export default function Portfolio() {
         </div>
       )}
 
-      {/* Filters row */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-        <div style={{ display: 'flex', background: '#1e293b', borderRadius: 8, padding: 3, gap: 2 }}>
-          {(['all', 'public', 'private'] as const).map(f => (
-            <button key={f} onClick={() => setVisibilityFilter(f)}
-              style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: visibilityFilter === f ? '#334155' : 'transparent', color: visibilityFilter === f ? 'white' : '#94a3b8', fontSize: 11, fontWeight: 500, cursor: 'pointer', textTransform: 'capitalize' }}>
-              {f}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {activeTags.map(tag => (
-            <button key={tag} onClick={() => setFilterTag(tag === filterTag ? '' : tag)}
-              style={{
-                padding: '4px 8px', borderRadius: 6, border: '1px solid',
-                borderColor: filterTag === tag ? '#e11d48' : '#334155',
-                background: filterTag === tag ? '#e11d4820' : 'transparent',
-                color: filterTag === tag ? '#f87171' : '#94a3b8', fontSize: 10, cursor: 'pointer',
-              }}>
-              {tag}
-            </button>
-          ))}
-        </div>
+      {/* View mode tabs */}
+      <div style={{ display: 'flex', gap: 4, marginBottom: 12 }}>
+        {(['grid', 'session', 'client'] as const).map(v => (
+          <button key={v} onClick={() => setGroupView(v)}
+            style={{
+              padding: '6px 14px', borderRadius: 8, border: 'none',
+              background: groupView === v ? '#334155' : 'transparent',
+              color: groupView === v ? 'white' : '#94a3b8',
+              fontSize: 12, fontWeight: 500, cursor: 'pointer',
+              textTransform: 'capitalize',
+            }}>
+            {v === 'grid' ? 'All Photos' : v === 'session' ? 'By Session' : 'By Client'}
+          </button>
+        ))}
       </div>
 
-      {/* Empty state */}
-      {filtered.length === 0 ? (
+      {/* Filters row (grid view only) */}
+      {groupView === 'grid' && (
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
+          <div style={{ display: 'flex', background: '#1e293b', borderRadius: 8, padding: 3, gap: 2 }}>
+            {(['all', 'public', 'private'] as const).map(f => (
+              <button key={f} onClick={() => setVisibilityFilter(f)}
+                style={{ padding: '4px 10px', borderRadius: 6, border: 'none', background: visibilityFilter === f ? '#334155' : 'transparent', color: visibilityFilter === f ? 'white' : '#94a3b8', fontSize: 11, fontWeight: 500, cursor: 'pointer', textTransform: 'capitalize' }}>
+                {f}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+            {activeTags.map(tag => (
+              <button key={tag} onClick={() => setFilterTag(tag === filterTag ? '' : tag)}
+                style={{
+                  padding: '4px 8px', borderRadius: 6, border: '1px solid',
+                  borderColor: filterTag === tag ? '#e11d48' : '#334155',
+                  background: filterTag === tag ? '#e11d4820' : 'transparent',
+                  color: filterTag === tag ? '#f87171' : '#94a3b8', fontSize: 10, cursor: 'pointer',
+                }}>
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Content */}
+      {groupView !== 'grid' ? (
+        renderGroupedView()
+      ) : filtered.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '60px 0' }}>
           <p style={{ fontSize: 16, color: '#94a3b8', marginBottom: 4 }}>
             {items.length === 0 ? 'No portfolio photos yet' : 'No photos match your filters'}
           </p>
           <p style={{ fontSize: 13, color: '#64748b' }}>
-            {items.length === 0 ? 'Upload from your phone gallery to start building your portfolio' : 'Try a different tag or visibility filter'}
+            {items.length === 0 ? 'Upload from your phone gallery or add photos from a session' : 'Try a different tag or visibility filter'}
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6 }}>
-          {filtered.map((item, idx) => (
-            <div key={item.id}
-              onClick={() => openDetail(item, idx)}
-              style={{
-                borderRadius: 10, overflow: 'hidden', aspectRatio: '1/1', cursor: 'pointer',
-                position: 'relative', background: '#0f172a',
-                border: selectedIds.has(item.id) ? '2px solid #c084fc' : '1px solid #1e293b',
-              }}>
-              <img src={item.thumbnailUrl || item.imageUrl} alt=""
-                loading="lazy"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              {/* Overlays */}
-              {selectMode && (
-                <div style={{
-                  position: 'absolute', top: 4, left: 4,
-                  width: 20, height: 20, borderRadius: 4,
-                  border: selectedIds.has(item.id) ? '2px solid #c084fc' : '2px solid #475569',
-                  background: selectedIds.has(item.id) ? '#7e22ce' : 'rgba(0,0,0,0.5)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11,
-                }}>
-                  {selectedIds.has(item.id) ? '✓' : ''}
-                </div>
-              )}
-              {!item.isPublic && !selectMode && (
-                <div style={{ position: 'absolute', top: 4, right: 4, background: '#7f1d1d', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#fca5a5' }}>
-                  Private
-                </div>
-              )}
-              {item.consentForPromotion && !selectMode && (
-                <div style={{ position: 'absolute', bottom: 4, left: 4, background: '#7e22ce', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: '#e9d5ff' }}>
-                  Promo
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        renderPhotoGrid(filtered, 0)
       )}
 
       {/* Detail modal */}
@@ -383,6 +492,14 @@ export default function Portfolio() {
               </button>
             </div>
 
+            {/* Meta info */}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12, fontSize: 11, color: '#64748b' }}>
+              <span>{new Date(selected.createdAt).toLocaleDateString()}</span>
+              {selected.source === 'session' && <span style={{ color: '#38bdf8' }}>From Session</span>}
+              {selected.clientId && <span>Linked to Client</span>}
+              {selected.tags.length > 0 && <span>{selected.tags.length} tags</span>}
+            </div>
+
             {/* Tags */}
             <p style={{ fontSize: 12, color: '#64748b', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tags</p>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 16 }}>
@@ -399,11 +516,6 @@ export default function Portfolio() {
                 </button>
               ))}
             </div>
-
-            {/* Meta */}
-            <p style={{ fontSize: 11, color: '#475569' }}>
-              {new Date(selected.createdAt).toLocaleDateString()} · {selected.tags.length} tags
-            </p>
           </div>
         </div>
       )}

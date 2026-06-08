@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
-import { THEME } from '../lib/theme';
+import { THEME, btn } from '../lib/theme';
 import { ArrowLeft, Star } from 'lucide-react';
 
 const PLANS = [
@@ -233,6 +233,33 @@ export default function PricingPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Bottom section */}
+      <div style={{
+        background: THEME.bg.panelAlt,
+        borderRadius: THEME.radius.lg,
+        padding: 20,
+        marginTop: 24,
+        textAlign: 'center',
+        border: `1px solid ${THEME.border.soft}`,
+      }}>
+        <div style={{ fontSize: THEME.fontSize.md, color: THEME.text.muted, marginBottom: 12 }}>
+          Don't take our word for it — see what tattoo studios are saying about InkFlow.
+        </div>
+        <button
+          onClick={() => navigate('/case-studies')}
+          style={{
+            ...btn.secondary,
+            width: 'auto',
+            display: 'inline-block',
+            padding: '8px 20px',
+            color: THEME.text.primary,
+            border: `1px solid ${THEME.border.default}`,
+          }}
+        >
+          View Case Studies →
+        </button>
       </div>
 
       {/* Bottom back button */}

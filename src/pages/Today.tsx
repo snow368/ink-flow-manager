@@ -22,6 +22,7 @@ import { getWaitingListCount } from '../lib/waitingList';
 import { getMyPendingReferral, verifyInstagramTattooArtist, completeMyReferral, getRewardMonths } from '../lib/referralLogic';
 import { getActiveSessionsForToday } from '../lib/sessionExecution';
 import ActiveSessionPanel from '../components/ActiveSessionPanel';
+import ProjectProgressPanel from '../components/ProjectProgressPanel';
 import { getStudioRevenueInsights, type RevenueInsights } from '../lib/revenueInsights';
 import { aggregateWorkspace, type WorkspaceItem } from '../lib/workspaceAggregator';
 import { generateWorkspacePresentation } from '../lib/workspacePresentation';
@@ -2213,6 +2214,12 @@ function AppointmentCard({
             </button>
           )}
         </div>
+
+        {/* Project progress panel — shows design goal, last session photo, material history */}
+        <ProjectProgressPanel
+          projectId={appointment.projectId}
+          clientId={appointment.clientId}
+        />
       </div>
 
       {showQR && (

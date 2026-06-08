@@ -63,12 +63,14 @@ const OwnerDashboard = lazy(() => import('./pages/OwnerDashboard'));
 const StaffManagementPage = lazy(() => import('./pages/StaffManagementPage'));
 const AuditLogPage = lazy(() => import('./pages/AuditLogPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
+const CaseStudiesPage = lazy(() => import('./pages/CaseStudiesPage'));
 const WalkinPage = lazy(() => import('./pages/WalkinPage'));
 const LeadConfirmationPage = lazy(() => import('./pages/LeadConfirmationPage'));
 const LeadInbox = lazy(() => import('./pages/LeadInbox'));
 const ProjectReferences = lazy(() => import('./pages/ProjectReferences'));
 const ProjectApprovePage = lazy(() => import('./pages/ProjectApprovePage'));
 const DesignReviewPage = lazy(() => import('./pages/DesignReviewPage'));
+const PublicPortfolioPage = lazy(() => import('./pages/PublicPortfolioPage'));
 const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
@@ -305,6 +307,7 @@ export default function App() {
             <Route path="/portal/:clientId" element={<ClientPortalPage />} />
             <Route path="/respond/:id" element={<AppointmentRespondPage />} />
             <Route path="/embed/:artistId" element={<EmbedBookingPage />} />
+            <Route path="/portfolio/:artistId" element={<PublicPortfolioPage />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/artist-profile" element={<ArtistProfilePage />} />
             <Route path="/confirm/:artistId/:bookingId" element={<ConfirmBookingPage />} />
@@ -319,6 +322,7 @@ export default function App() {
             <Route path="/staff-management" element={<StaffManagementPage />} />
             <Route path="/audit-log" element={<AuditLogPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/case-studies" element={<CaseStudiesPage />} />
             <Route path="/walkin/:artistId" element={<WalkinPage />} />
             <Route path="/studio-settings" element={<StudioSettings />} />
             <Route path="/business-settings" element={<BusinessSettings />} />

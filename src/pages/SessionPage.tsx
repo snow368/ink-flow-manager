@@ -10,6 +10,7 @@ import { THEME } from '../lib/theme';
 import { logCommunication } from '../lib/communicationLog';
 import { detectInitialLanguage, t, type AppLanguage } from '../lib/i18n';
 import { generateCaptionOptions, type CaptionOption } from '../lib/captionTemplates';
+import { addSessionPhotosToPortfolio } from '../lib/portfolioManager';
 import { SessionCompleteModal } from '../components/SessionCompleteModal';
 
 export default function SessionPage() {
@@ -591,6 +592,25 @@ export default function SessionPage() {
                 {sharingPhoto ? 'Sharing...' : `📸 Share to Instagram (${session.photos.length} photos${session.videos?.length ? ' + ' + session.videos.length + ' videos' : ''})`}
               </button>
             )}
+            <button onClick={async () => {
+              if (!session) return;
+              const added = await addSessionPhotosToPortfolio(
+                session.artistId,
+                session.clientId,
+                session.id,
+                session.projectId,
+                session.photos,
+                false,
+              );
+              if (added > 0) {
+                addMessage(`✅ ${added} photo${added > 1 ? 's' : ''} added to portfolio`);
+              } else {
+                addMessage('All photos already in portfolio');
+              }
+            }}
+              style={{ width: '100%', padding: 10, borderRadius: 14, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 13, fontWeight: 600, marginBottom: 8, cursor: 'pointer' }}>
+              {`🖼️ Add ${session.photos.length} photo${session.photos.length > 1 ? 's' : ''} to Portfolio`}
+            </button>
           </>
         )}
         <button onClick={handleFinishClick} style={{ width: '100%', padding: 16, borderRadius: 16, border: 'none', background: THEME.brand.success, color: 'white', fontSize: 18, fontWeight: 700 }}>
