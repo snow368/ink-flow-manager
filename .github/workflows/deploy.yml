@@ -28,8 +28,16 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy Pages (frontend)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: pages deploy dist/ --project-name ink-flow-manager
+      - name: Install Worker deps
+        run: cd workers && npm ci
+      - name: Deploy Worker (API)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: workers
+          command: deploy
