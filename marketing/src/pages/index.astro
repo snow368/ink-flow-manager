@@ -52,42 +52,8 @@ import Footer from '../components/Footer.astro';
                 <div class="h-3 w-3 rounded-full bg-green-500/60" />
                 <span class="ml-3 text-xs text-gray-600">app.inkflow.com</span>
               </div>
-              <!-- Product screenshot area -->
-              <div class="aspect-[16/10] bg-gradient-to-br from-ink-800 via-ink-850 to-ink-900 flex items-center justify-center p-6">
-                <div class="w-full h-full rounded-lg border border-ink-700 bg-ink-800/50 grid grid-cols-3 gap-3 p-3">
-                  <!-- Mock calendar UI -->
-                  <div class="col-span-2 space-y-3">
-                    <div class="h-3 w-24 rounded bg-ink-700" />
-                    <div class="grid grid-cols-7 gap-1">
-                      {Array.from({length: 28}).map((_,i) => (
-                        <div key={i} class={`aspect-square rounded ${i > 3 && i < 10 ? 'bg-accent-500/20 border border-accent-500/30' : 'bg-ink-700/50'} ${i === 7 ? 'ring-2 ring-accent-500' : ''}`} />
-                      ))}
-                    </div>
-                    <div class="flex gap-2">
-                      <div class="h-8 flex-1 rounded bg-accent-500/10 border border-accent-500/20 flex items-center justify-center">
-                        <span class="text-xs text-accent-400">2:00 PM — Sarah</span>
-                      </div>
-                      <div class="h-8 flex-1 rounded bg-ink-700/50 flex items-center justify-center">
-                        <span class="text-xs text-gray-600">4:00 PM</span>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Sidebar mock -->
-                  <div class="space-y-4">
-                    <div class="h-3 w-16 rounded bg-ink-700" />
-                    <div class="space-y-3">
-                      {[1,2,3,4].map(i => (
-                        <div key={i} class="flex items-center gap-2">
-                          <div class="h-6 w-6 rounded-full bg-ink-700" />
-                          <div class="h-2 flex-1 rounded bg-ink-700/50" />
-                        </div>
-                      ))}
-                    </div>
-                    <div class="h-px bg-ink-700" />
-                    <div class="h-2 w-20 rounded bg-accent-500/30" />
-                  </div>
-                </div>
-              </div>
+              <!-- Real product screenshot -->
+              <img src="/images/hero-screenshot.png" alt="InkFlow booking calendar and dashboard interface" class="w-full aspect-[16/10] object-cover" />
             </div>
             <!-- Glowing accent behind -->
             <div class="absolute -bottom-6 -right-6 h-48 w-48 rounded-full bg-accent-500/10 blur-2xl pointer-events-none -z-10" />
