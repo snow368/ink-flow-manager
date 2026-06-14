@@ -1,7 +1,7 @@
-import { getBackendUrl } from './backendApi';
+import { getApiBaseUrl } from './backendApi';
 
 function getBaseUrl(): string {
-  return getBackendUrl() || 'http://localhost:8787';
+  return getApiBaseUrl();
 }
 
 function getApiSecret(): string {

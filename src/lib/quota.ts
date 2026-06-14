@@ -1,5 +1,5 @@
 import { db, type UserRecord } from '../db';
-import { getBackendUrl } from './backendApi';
+import { getApiBaseUrl } from './backendApi';
 
 type PlanKey = 'free' | 'solo' | 'pro' | 'pro_plus';
 
@@ -32,7 +32,7 @@ function getApiSecret(): string {
 }
 
 function getBaseUrl(): string {
-  return getBackendUrl() || 'http://localhost:8787';
+  return getApiBaseUrl();
 }
 
 // ── Local fallback: estimate storage from IndexedDB ──

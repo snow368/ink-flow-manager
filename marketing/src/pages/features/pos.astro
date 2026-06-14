@@ -1,7 +1,7 @@
 ---
-# Redirect from old /features/pos to /features/payments
-import type { APIRoute } from 'astro';
-export const GET: APIRoute = ({ redirect }) => {
-  return redirect('/features/payments', 301);
-};
 ---
+<script>
+  window.location.replace('/features/payments');
+</script>
+<meta http-equiv="refresh" content="0;url=/features/payments">
+<p style="text-align:center;padding:2rem;color:#9ca3af">Redirecting to <a href="/features/payments" style="color:#06b6d4">Payments</a>...</p>

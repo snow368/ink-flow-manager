@@ -2,7 +2,12 @@ const BACKEND_URL_KEY = 'inkflow_backend_url';
 const API_SECRET_KEY = 'inkflow_backend_secret';
 
 export function getBackendUrl(): string | null {
-  return localStorage.getItem(BACKEND_URL_KEY);
+  return localStorage.getItem(BACKEND_URL_KEY) || (import.meta.env.VITE_API_URL as string) || null;
+}
+
+/** Returns the API base URL, or empty string if not configured (callers handle silently). */
+export function getApiBaseUrl(): string {
+  return getBackendUrl() || '';
 }
 
 export function setBackendConfig(url: string, secret: string) {

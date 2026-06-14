@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
@@ -27,14 +28,7 @@ const related = designs.filter(d => d.slug !== design.slug);
 ---
 
 <BaseLayout>
-  <head>
-    <title>{design.name} Tattoo Meaning & Symbolism — InkFlow</title>
-    <meta name="description" content={`${design.name} tattoo meaning: ${design.meaning}. Learn about the history, symbolism, and popular placements for ${design.name.toLowerCase()} tattoos.`} />
-    <link rel="canonical" href={`https://inkflow.com/meaning/${design.slug}`} />
-    <meta property="og:title" content={`${design.name} Tattoo Meaning — InkFlow`} />
-    <meta property="og:description" content={`${design.name} tattoos symbolize ${design.meaning.toLowerCase()}. Discover the meaning and find inspiration.`} />
-  </head>
-
+  <SEOHead slot="head" title={`${design.name} Tattoo Meaning & Symbolism — InkFlow`} description={`${design.name} tattoo meaning: ${design.meaning}. Learn about the history, symbolism, and popular placements for ${design.name.toLowerCase()} tattoos.`} />
   <Navbar />
 
   <section class="pt-28 pb-12">

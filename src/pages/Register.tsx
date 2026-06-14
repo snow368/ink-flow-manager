@@ -172,7 +172,7 @@ export default function Register() {
         await processReferralOnRegister(userId, refCode);
       }
 
-      const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
+      const backendUrl = getBackendUrl() || '';
       const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
       if (roles.includes('artist')) {
         try {
