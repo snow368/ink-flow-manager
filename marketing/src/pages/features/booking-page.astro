@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Free Tattoo Artist Booking Page — InkFlow" description="Get a free professional booking page for your tattoo studio. Share on Instagram or use your own domain. Clients book in one click." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32 sm:pb-28">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl text-center">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
+          Free for Pro users
+        </div>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Your Studio, One Link</h1>
+        <p class="mt-6 text-lg text-gray-400">Get a free, professional booking page for your studio. Share on Instagram, embed on your website, or use your own domain. No coding needed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-md rounded-xl border border-ink-700 bg-ink-900 p-8">
+        <div class="mb-6 text-center">
+          <div class="mx-auto mb-4 h-20 w-20 rounded-full bg-ink-700" />
+          <h3 class="text-xl font-bold text-white">Your Name</h3>
+          <p class="text-sm text-gray-400">Artist at Your Studio</p>
+        </div>
+        <div class="mb-6 space-y-2 text-sm text-gray-400">
+          <p>📍 City, State</p>
+          <p>⭐ 4.9 (127 reviews)</p>
+          <p>💉 Tattoo since 2015</p>
+        </div>
+        <div class="mb-6 border-t border-ink-800 pt-6">
+          <h4 class="mb-3 text-sm font-semibold text-white">Specialties</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Black & Grey</span>
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Realism</span>
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Traditional</span>
+          </div>
+        </div>
+        <a href="https://app.inkflow.com/register" class="block w-full rounded-lg bg-accent-500 py-3 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+          Book an Appointment
+        </a>
+        <p class="mt-4 text-center text-xs text-gray-600">Powered by <a href="/" class="text-accent-400 hover:underline">InkFlow</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-3">
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Your Own Domain</h3>
+          <p class="text-sm text-gray-400">Use inkflow.com/your-name or connect your own domain. Looks professional.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Portfolio Showcase</h3>
+          <p class="text-sm text-gray-400">Display your best work. Clients see your style before they book.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Instant Booking</h3>
+          <p class="text-sm text-gray-400">Clients see real-time availability and book with deposit. No phone tag.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white sm:text-3xl">Get Your Free Booking Page</h2>
+      <p class="mt-4 text-gray-400">Upgrade to Pro and get your page in minutes.</p>
+      <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+        Start Free Trial
+      </a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

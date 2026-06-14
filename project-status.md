@@ -1,5 +1,28 @@
 # InkFlow Project Status
-# Last updated: 2026-06-08
+# Last updated: 2026-06-10
+
+## P0.6 ✅ — i18n Italian 补齐 (2026-06-10)
+- Italian 从 570→717 keys，与 English 完全对齐
+- 补齐 147 个缺失 key：session/checkin/respond/review/referral/outreach/lead_revise/new_client
+- 所有语言（en/es/pt/fr/de/it/jp）统一 717 keys
+- `npx tsc --noEmit` ✅
+
+## P0.3 ✅ — Quota 移到后端 (2026-06-10)
+- **后端** `server/index.mjs`:
+  - 新增 `quotas.json` 持久化存储（plan, storageLimitMb, storageUsedMb）
+  - `GET /api/quota/:artistId` — 查询配额/用量
+  - `POST /api/quota/check` — 检查是否超限（requireAuth）
+  - `POST /api/quota/report` — 上报存储用量变更
+  - `POST /api/quota/set-plan` — 管理员改 plan
+- **前端** `src/lib/quota.ts`:
+  - 重写为优先走后端 API，离线 fallback 本地 Dexie 估算
+  - `canAddStorage()`: 先调 `POST /api/quota/check`，不可用则本地算
+  - 新增 `reportStorageDelta(artistId, plan, deltaBytes)`: 上传/删除图片后上报
+  - 新增 `getStorageUsage(user, artistId)`: 从服务端获取用量
+- **调用点更新**:
+  - `IntakePage.tsx` — 上传后调用 `reportStorageDelta`
+  - `ClientPaymentPage.tsx` — 上传后调用 `reportStorageDelta`
+- **测试**: `npx tsc --noEmit` ✅ 0 error, `node -c server/index.mjs` ✅
 
 ## Portfolio / Image Management (完整方案)
 - DB v31~v33: PortfolioRecord 加 clientId, sessionId, source, sortOrder, serviceType, isFlash, isSold

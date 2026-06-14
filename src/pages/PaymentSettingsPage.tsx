@@ -5,8 +5,8 @@ import { db, type UserRecord } from '../db';
 export default function PaymentSettingsPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserRecord | null>(null);
-  const [provider, setProvider] = useState<UserRecord['paymentProvider']>('stripe_connect');
-  const [enabledMethods, setEnabledMethods] = useState<Array<'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal'>>(['stripe_connect', 'manual_link', 'bank_transfer', 'cash', 'paypal']);
+  const [provider, setProvider] = useState<UserRecord['paymentProvider']>('manual');
+  const [enabledMethods, setEnabledMethods] = useState<Array<'manual_link' | 'bank_transfer' | 'cash' | 'paypal'>>(['manual_link', 'bank_transfer', 'cash']);
   const [currency, setCurrency] = useState('USD');
   const [defaultDeposit, setDefaultDeposit] = useState('');
   const [template, setTemplate] = useState('');
@@ -21,8 +21,8 @@ export default function PaymentSettingsPage() {
     db.users.get(current).then((u) => {
       if (!u) return;
       setUser(u);
-      setProvider(u.paymentProvider || 'stripe_connect');
-      setEnabledMethods(u.enabledPaymentMethods?.length ? u.enabledPaymentMethods : ['stripe_connect', 'manual_link', 'bank_transfer', 'cash']);
+      setProvider(u.paymentProvider || 'manual');
+      setEnabledMethods(((u.enabledPaymentMethods || []).filter((m: string) => m !== 'stripe_connect') as Array<'manual_link' | 'bank_transfer' | 'cash' | 'paypal'>));
       setCurrency((u.paymentCurrency || 'USD').toUpperCase());
       setDefaultDeposit(u.paymentDefaultDeposit || '');
       setTemplate(
@@ -103,7 +103,7 @@ export default function PaymentSettingsPage() {
 
   if (!user) return <div style={{ padding: 20, color: 'white' }}>Please log in</div>;
 
-  const toggleMethod = (method: 'stripe_connect' | 'manual_link' | 'bank_transfer' | 'cash' | 'paypal') => {
+  const toggleMethod = (method: 'manual_link' | 'bank_transfer' | 'cash' | 'paypal') => {
     setEnabledMethods(prev => prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method]);
   };
 
@@ -117,28 +117,27 @@ export default function PaymentSettingsPage() {
       <div style={card}>
         <p style={label}>Provider</p>
         <select value={provider} onChange={e => setProvider(e.target.value as UserRecord['paymentProvider'])} style={input}>
-          <option value="stripe_connect">Stripe Connect Express</option>
+          <option value="manual">Payment Link (PayPal / Stripe / Square / etc.)</option>
           <option value="square">Square</option>
-          <option value="manual">Manual Link</option>
         </select>
       </div>
 
       <div style={card}>
         <p style={label}>Accepted Methods</p>
-        <label style={row}><input type="checkbox" checked={enabledMethods.includes('stripe_connect')} onChange={() => toggleMethod('stripe_connect')} /> Stripe Connect</label>
-        <label style={row}><input type="checkbox" checked={enabledMethods.includes('manual_link')} onChange={() => toggleMethod('manual_link')} /> Manual Link</label>
+        <label style={row}><input type="checkbox" checked={enabledMethods.includes('manual_link')} onChange={() => toggleMethod('manual_link')} /> Stripe Link / Payment Link</label>
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('bank_transfer')} onChange={() => toggleMethod('bank_transfer')} /> Bank Transfer</label>
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('cash')} onChange={() => toggleMethod('cash')} /> Cash (In Studio)</label>
         <label style={row}><input type="checkbox" checked={enabledMethods.includes('paypal')} onChange={() => toggleMethod('paypal')} /> PayPal</label>
       </div>
 
-      {provider === 'stripe_connect' && (
-        <div style={card}>
-          <p style={label}>Stripe connected account</p>
-          <input value={stripeAccountId} onChange={e => setStripeAccountId(e.target.value)} placeholder="acct_xxx" style={input} />
-          <button onClick={connectStripe} style={{ ...saveBtn, marginTop: 8 }}>Connect Stripe Express</button>
-        </div>
-      )}
+      {/* Stripe Connect disabled — requires platform Stripe account (Stripe Atlas ~$500).
+           Uncomment when ready:
+           <div style={card}>
+             <p style={label}>Stripe connected account</p>
+             <input value={stripeAccountId} onChange={e => setStripeAccountId(e.target.value)} placeholder="acct_xxx" style={input} />
+             <button onClick={connectStripe} style={{ ...saveBtn, marginTop: 8 }}>Connect Stripe Express</button>
+           </div>
+      */}
 
       {enabledMethods.includes('paypal') && (
         <div style={{ ...card, border: '1px solid #3b82f680' }}>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+}
+
+const { title, description, canonical, ogImage } = Astro.props;
+const site = 'https://inkflow.com';
+---
+
+<slot name="head" />
+<title>{title} | InkFlow</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical || Astro.url.href} />
+<meta property="og:title" content={`${title} | InkFlow`} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical || Astro.url.href} />
+<meta property="og:site_name" content="InkFlow" />
+<meta property="og:type" content="website" />
+{ogImage && <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={`${title} | InkFlow`} />
+<meta name="twitter:description" content={description} />
+{ogImage && <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />}
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web, iOS, Android",
+  "description": "Complete tattoo studio management platform. Booking, POS, CRM, inventory, waivers, and aftercare in one app.",
+  "url": "https://inkflow.com",
+})} />

@@ -44,6 +44,7 @@ const files = {
   webhookEvents: path.join(dataDir, 'webhook_events.json'),
   pushSubscriptions: path.join(dataDir, 'push_subscriptions.json'),
   waivers: path.join(dataDir, 'waivers.json'),
+  quotas: path.join(dataDir, 'quotas.json'),
 };
 
 if (!stripeSecretKey) {
@@ -93,7 +94,7 @@ function upsertLedgerByPaymentIntent(entry) {
 function requireAuth(req, res, next) {
   if (!requireApiKey) return next();
   if (!serverApiKey) return res.status(500).json({ error: 'SERVER_API_KEY missing on server' });
-  const header = req.headers['x-api-key'];
+  const header = req.headers['x-api-secret'];
   if (!header || String(header) !== serverApiKey) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -710,6 +711,119 @@ app.post('/api/waiver/send-link', requireAuth, requireRole('owner', 'staff', 'ar
   appendJsonItem(files.notifications, ntfItem);
   audit('waiver_link_sent', { appointmentId, artistId });
   res.json({ ok: true, id: ntfItem.id, waiverUrl });
+});
+
+// =============================================
+// Quota API Endpoints
+// =============================================
+
+const QUOTA_LIMITS = {
+  free: 0,
+  solo: 10 * 1024,
+  pro: 50 * 1024,
+  pro_plus: 200 * 1024,
+};
+
+function getQuotaRecord(artistId) {
+  const all = readJsonArray(files.quotas);
+  return all.find(q => q.artistId === artistId) || null;
+}
+
+function upsertQuotaRecord(artistId, plan, deltaBytes) {
+  const all = readJsonArray(files.quotas);
+  const idx = all.findIndex(q => q.artistId === artistId);
+  const limitMb = QUOTA_LIMITS[plan] || 0;
+  const now = Date.now();
+  if (idx >= 0) {
+    all[idx] = {
+      ...all[idx],
+      plan,
+      storageLimitMb: limitMb,
+      storageUsedMb: Math.max(0, (all[idx].storageUsedMb || 0) + deltaBytes / (1024 * 1024)),
+      updatedAt: now,
+    };
+  } else {
+    all.push({
+      artistId,
+      plan,
+      storageLimitMb: limitMb,
+      storageUsedMb: Math.max(0, deltaBytes / (1024 * 1024)),
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+  writeJsonArray(files.quotas, all);
+}
+
+// GET quota info for artist
+app.get('/api/quota/:artistId', (req, res) => {
+  const { artistId } = req.params;
+  const record = getQuotaRecord(artistId);
+  if (!record) {
+    return res.json({
+      artistId,
+      plan: 'free',
+      storageLimitMb: 0,
+      storageUsedMb: 0,
+      ok: true,
+    });
+  }
+  res.json({
+    artistId: record.artistId,
+    plan: record.plan,
+    storageLimitMb: record.storageLimitMb,
+    storageUsedMb: record.storageUsedMb,
+    ok: true,
+  });
+});
+
+// POST check quota before adding storage
+app.post('/api/quota/check', requireAuth, (req, res) => {
+  const { artistId, incomingBytes = 0 } = req.body || {};
+  if (!artistId) return res.status(400).json({ error: 'artistId required' });
+  const record = getQuotaRecord(artistId);
+  const plan = record?.plan || 'free';
+  const limitMb = QUOTA_LIMITS[plan] || 0;
+  const usedMb = record?.storageUsedMb || 0;
+  const incomingMb = incomingBytes / (1024 * 1024);
+  if (limitMb <= 0) {
+    return res.json({ ok: false, quotaMb: limitMb, usedMb, plan });
+  }
+  res.json({
+    ok: usedMb + incomingMb <= limitMb,
+    quotaMb: limitMb,
+    usedMb,
+    plan,
+  });
+});
+
+// POST report storage usage change (call after adding/removing images)
+app.post('/api/quota/report', requireAuth, (req, res) => {
+  const { artistId, plan, deltaBytes = 0 } = req.body || {};
+  if (!artistId) return res.status(400).json({ error: 'artistId required' });
+  upsertQuotaRecord(artistId, plan || 'free', deltaBytes);
+  const record = getQuotaRecord(artistId);
+  audit('quota_reported', { artistId, deltaBytes, plan });
+  res.json({
+    ok: true,
+    storageUsedMb: record?.storageUsedMb || 0,
+    storageLimitMb: record?.storageLimitMb || 0,
+  });
+});
+
+// POST set/change plan for an artist
+app.post('/api/quota/set-plan', requireAuth, requireRole('owner'), (req, res) => {
+  const { artistId, plan } = req.body || {};
+  if (!artistId || !plan) return res.status(400).json({ error: 'artistId and plan required' });
+  if (!QUOTA_LIMITS[plan]) return res.status(400).json({ error: `Invalid plan: ${plan}` });
+  const record = getQuotaRecord(artistId);
+  if (record) {
+    upsertQuotaRecord(artistId, plan, 0);
+  } else {
+    upsertQuotaRecord(artistId, plan, 0);
+  }
+  audit('quota_plan_set', { artistId, plan });
+  res.json({ ok: true, plan, storageLimitMb: QUOTA_LIMITS[plan] });
 });
 
 // =============================================

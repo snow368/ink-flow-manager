@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Meaning Finder — Free Symbolism Guide | InkFlow" description="Discover the meaning behind popular tattoo designs. Search rose, wolf, dragon, butterfly and more. Free tattoo symbolism guide." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Meaning Finder</h1>
+      <p class="mt-4 text-lg text-gray-400">What does that tattoo really mean? Search any design to find out.</p>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
+      <TattooMeaningFinder />
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

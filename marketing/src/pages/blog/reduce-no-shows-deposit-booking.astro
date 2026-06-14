@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import NoShowCalculator from '../../components/NoShowCalculator.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="How to Reduce No-Shows in Your Tattoo Studio — 7 Strategies | InkFlow" description="Cut no-shows by up to 80% with deposit booking and automated reminders. 7 proven strategies for tattoo studio owners." />
+  <Navbar />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm text-accent-400 mb-4">May 28, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">How to Reduce No-Shows in Your Tattoo Studio</h1>
+      <p class="mt-4 text-lg text-gray-400">No-shows cost tattoo studios an average of $12,000 per year. Here are 7 proven strategies to protect your time and revenue.</p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+      <h2>1. Require Deposits at Booking</h2>
+      <p>This is the single most effective strategy. Requiring a deposit at the time of booking reduces no-shows by up to 80%. Set a flat fee or percentage — InkFlow's <a href="/features/booking" class="text-accent-400 hover:underline">booking system</a> collects deposits automatically through Stripe.</p>
+
+      <h2>2. Send Automated Reminders</h2>
+      <p>SMS reminders have a 98% open rate. Send them at 3 days, 1 day, and 1 hour before each appointment. Include a link to confirm, reschedule, or cancel. Most no-shows happen because clients simply forget.</p>
+
+      <h2>3. Set a Clear Cancellation Policy</h2>
+      <p>Make your policy visible at the time of booking. Deposits are non-refundable within 24 hours of the appointment. Clients who know the rules are less likely to break them.</p>
+
+      <h2>4. Use a Waitlist</h2>
+      <p>When a client cancels, the next person on the waitlist gets notified automatically. Fill the slot within minutes instead of leaving it empty.</p>
+
+      <h2>5. Confirm Appointments 48 Hours Before</h2>
+      <p>A simple "Are you still coming?" text gives clients an easy way to cancel early, giving you time to fill the slot. No-shows drop by 40% with this single step.</p>
+
+      <h2>6. Track Your No-Show Rate</h2>
+      <p>If a client no-shows twice, flag them. Require a full deposit upfront for future bookings. Most <a href="/features/crm" class="text-accent-400 hover:underline">CRM systems</a> can automate this.</p>
+
+      <h2>7. Offer Rebooking Incentives</h2>
+      <p>When a client cancels, offer a small discount on their next booking if they reschedule immediately. This turns a lost appointment into a confirmed future booking.</p>
+    </div>
+  </section>
+
+  
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-6 text-2xl font-bold text-white text-center">How Much Are No-Shows Costing You?</h2>
+      <NoShowCalculator />
+    </div>
+  </section>
+<section class="py-12 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Reduce No-Shows with InkFlow</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

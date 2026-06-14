@@ -8,6 +8,8 @@ export function getBackendUrl(): string | null {
 export function setBackendConfig(url: string, secret: string) {
   localStorage.setItem(BACKEND_URL_KEY, url);
   localStorage.setItem(API_SECRET_KEY, secret);
+  // Also write to inkflow_api_secret for backward compat
+  localStorage.setItem('inkflow_api_secret', secret);
 }
 
 function authHeaders(): Record<string, string> {

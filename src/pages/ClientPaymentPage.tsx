@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { db, type LeadRecord, type UserRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
-import { canAddStorage } from '../lib/quota';
+import { canAddStorage, reportStorageDelta } from '../lib/quota';
 
 function methodLabel(method?: LeadRecord['paymentMethod']) {
   if (method === 'stripe_connect') return 'Stripe';
@@ -23,6 +23,7 @@ export default function ClientPaymentPage() {
   const [note, setNote] = useState('');
   const [proofImages, setProofImages] = useState<string[]>([]);
   const [msg, setMsg] = useState('');
+  const pendingBytes = useRef(0);
 
   useEffect(() => {
     if (!leadId) return;
@@ -46,6 +47,7 @@ export default function ClientPaymentPage() {
     if (!lead || !artist) return;
     let incomingBytes = 0;
     for (let i = 0; i < files.length; i++) incomingBytes += files[i].size || 0;
+    pendingBytes.current += incomingBytes;
     const quotaCheck = await canAddStorage(artist, lead.artistId, incomingBytes);
     if (!quotaCheck.ok) {
       setMsg(`Storage quota exceeded (${quotaCheck.usedMb.toFixed(1)}MB / ${quotaCheck.quotaMb}MB). Please contact studio to upgrade.`);
@@ -106,6 +108,10 @@ export default function ClientPaymentPage() {
         paymentStatus: method === 'cash' ? 'pending_verify' : 'pending_verify',
         paymentUpdatedAt: Date.now(),
       });
+      if (pendingBytes.current > 0) {
+        reportStorageDelta(lead.artistId, artist?.plan || 'free', pendingBytes.current).catch(() => {});
+        pendingBytes.current = 0;
+      }
       setMsg('Submitted. Studio will verify your payment.');
     } catch (e: any) {
       setMsg(e?.message || 'Submit failed');

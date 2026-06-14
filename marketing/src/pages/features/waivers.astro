@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Consent Form App — Digital Waivers | InkFlow" description="Go paperless with a digital tattoo consent form app. E-signatures, QR check-in, medical history tracking. Clients sign on their phone before arrival." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Digital Waivers for Tattoo Studios</h1>
+      <p class="mt-6 text-lg text-gray-400">Replace paper consent forms with a digital workflow. Clients sign on their phone before arrival. No more lost forms or illegible handwriting.</p>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Why Go Digital?</h2>
+          <p class="mt-4 text-gray-400">Paper waivers are slow, easy to lose, and hard to organize. Digital waivers reduce check-in time from 5 minutes to 30 seconds. Every signed form is stored securely and searchable in seconds.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: Waiver signing on iPad]</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: QR code check-in]</p>
+        </div>
+        <div class="order-1 md:order-2">
+          <h3 class="text-xl font-bold text-white">QR Code Check-In</h3>
+          <p class="mt-3 text-gray-400">Clients scan a QR code at the front desk, fill out the waiver on their phone, and you're ready to go. No shared devices, no cleaning tablets between clients.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h3 class="text-xl font-bold text-white">Medical History Tracking</h3>
+          <p class="mt-3 text-gray-400">Each client's medical history is stored and updated with every visit. Conditional logic shows relevant questions based on previous answers. Flag allergies, medications, and health conditions instantly.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: Medical history form]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-4 text-2xl font-bold text-white">What to Look For in a Digital Waiver App</h2>
+      <ul class="space-y-3 text-gray-400">
+        <li class="flex items-start gap-2"><span class="mt-1 text-accent-400">✓</span> Legally binding e-signatures with timestamps</li>
+        <li class="flex items-start gap-2"><span class="mt-1 text-accent-400">✓</span> Conditional logic for medical history</li>
+        <li class="flex items-start gap-2"><span class="mt-1 text-accent-400">✓</span> PDF export for backup and legal records</li>
+        <li class="flex items-start gap-2"><span class="mt-1 text-accent-400">✓</span> QR code check-in for touchless intake</li>
+        <li class="flex items-start gap-2"><span class="mt-1 text-accent-400">✓</span> Parental consent workflows for minors</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+      <h2 class="text-2xl font-bold text-white text-center">FAQ</h2>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Are digital waivers legally binding?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. E-signatures with timestamps and IP logging are legally binding under ESIGN and UETA laws in the US.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can clients sign on their own phone?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. Send a link or display a QR code. Clients complete the waiver before arrival.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Start Free Trial</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

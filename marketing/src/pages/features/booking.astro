@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Booking Software — InkFlow" description="Reduce no-shows by 80% with deposit-based tattoo booking software. Automated reminders, multi-artist scheduling, online booking widget. Start free." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Smart Booking Software for Tattoo Studios</h1>
+        <p class="mt-6 text-lg text-gray-400">Reduce no-shows with deposit-based scheduling. Automated reminders, multi-artist calendars, and an online booking widget that works 24/7.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Deposit-Required Scheduling</h2>
+          <p class="mt-4 text-gray-400">Require a deposit at the time of booking. Clients commit, no-shows drop by 80%. Set any amount — flat fee or percentage. Refunds are automatic based on your cancellation policy.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: Deposit settings]</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: Reminder templates]</p>
+        </div>
+        <div class="order-1 md:order-2">
+          <h2 class="text-2xl font-bold text-white">Automated Reminders</h2>
+          <p class="mt-4 text-gray-400">SMS and email reminders send automatically — 48 hours, 24 hours, and 1 hour before each appointment. Customize the templates to match your studio's voice. Clients can confirm, reschedule, or cancel with one tap.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Multi-Artist Calendar</h2>
+          <p class="mt-4 text-gray-400">See every artist's schedule at a glance. Color-coded by artist, drag-and-drop to reschedule. Block out time for breaks, walk-ins, and guest artists.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-500">[Screenshot: Calendar view]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can clients book online without creating an account?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Clients can book using the public booking link. They only need to provide their name, email, and phone.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I set different deposits for different services?</summary>
+          <p class="mt-2 text-sm text-gray-400">Absolutely. You can set deposit amounts per service, per artist, or a global default.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does the booking widget work on my website?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Embed a booking button on any website with one line of code. It works with Squarespace, Wix, WordPress, and custom sites.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Ready to Simplify Your Booking?</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

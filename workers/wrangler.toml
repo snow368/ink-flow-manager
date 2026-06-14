@@ -1,0 +1,19 @@
+name = "ink-flow-api"
+compatibility_date = "2025-12-01"
+main = "src/index.ts"
+
+# R2 bucket for image storage
+[[r2_buckets]]
+binding = "INKFLOW_IMAGES"
+bucket_name = "inkflow-images"
+
+# D1 database (replaces JSON files)
+[[d1_databases]]
+binding = "DB"
+database_name = "inkflow-db"
+database_id = "5e462ed0-9613-4e16-85c4-8bb0494c5f4a"
+
+# Environment variables
+[vars]
+STRIPE_PLATFORM_FEE_PERCENT = "0"
+VAPID_SUBJECT = "mailto:admin@inkflow.app"

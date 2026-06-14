@@ -2,7 +2,7 @@
 import { useLocation, useParams } from 'react-router-dom';
 import { db } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
-import { canAddStorage } from '../lib/quota';
+import { canAddStorage, reportStorageDelta } from '../lib/quota';
 import { trackClientReferral } from '../lib/clientReferral';
 
 const ALLERGY_OPTIONS = [
@@ -30,6 +30,7 @@ export default function IntakePage() {
     [location.search]
   );
   const refCode = useRef(new URLSearchParams(location.search).get('ref') || '');
+  const pendingBytes = useRef(0); // tracks incoming file bytes for quota reporting
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -61,6 +62,7 @@ export default function IntakePage() {
     const artist = await db.users.get(artistId);
     let incomingBytes = 0;
     for (let i = 0; i < files.length; i++) incomingBytes += files[i].size || 0;
+    pendingBytes.current += incomingBytes;
     const quotaCheck = await canAddStorage(artist || null, artistId, incomingBytes);
     if (!quotaCheck.ok) {
       alert(`Storage quota exceeded (${quotaCheck.usedMb.toFixed(1)}MB / ${quotaCheck.quotaMb}MB). Please ask studio to upgrade plan.`);
@@ -121,6 +123,11 @@ export default function IntakePage() {
         allergyNote: allergyNote.trim() || undefined,
         createdAt: now,
       });
+      if (pendingBytes.current > 0) {
+        const artistRecord = await db.users.get(artistId);
+        reportStorageDelta(artistId, artistRecord?.plan || 'free', pendingBytes.current).catch(() => {});
+        pendingBytes.current = 0;
+      }
       if (refCode.current) {
         trackClientReferral(refCode.current, leadId).catch(() => {});
       }

@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo CRM Software — Client Management | InkFlow" description="Tattoo client management software with 360° history, smart tags, follow-ups, and referral tracking. Know every client." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Client Management Software</h1>
+      <p class="mt-6 text-lg text-gray-400">Know every client — their history, preferences, past work, and upcoming appointments. All in one place.</p>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+        <h3 class="text-lg font-semibold text-white">Client History</h3>
+        <p class="mt-2 text-sm text-gray-400">Every appointment, waiver, photo, and payment — linked to the client. Search by name, phone, or email. Never ask a returning client for their information again.</p>
+      </div>
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+        <h3 class="text-lg font-semibold text-white">Smart Tags & Segmentation</h3>
+        <p class="mt-2 text-sm text-gray-400">Tag clients by style, frequency, value. Filter and message specific groups — send a flash sale to everyone who loves traditional work.</p>
+      </div>
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+        <h3 class="text-lg font-semibold text-white">Referral Tracking</h3>
+        <p class="mt-2 text-sm text-gray-400">See which clients refer the most business. Reward your best advocates automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-2 text-2xl font-bold text-white text-center">How Healthy Is Your Studio?</h2>
+      <p class="mb-8 text-center text-gray-400">Answer 5 quick questions and get your personalized score.</p>
+      <StudioHealthQuiz />
+    </div>
+  </section>
+<section class="py-16 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Know Your Clients Better</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  </section>
+  <Footer />
+</BaseLayout>

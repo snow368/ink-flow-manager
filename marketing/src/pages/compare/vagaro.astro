@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="InkFlow vs Vagaro for Tattoo Studios — Comparison 2026" description="Compare InkFlow vs Vagaro for tattoo studios. Vagaro charges per staff — InkFlow includes up to 10 artists at $29/mo flat. Built for tattoo, not salons." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Vagaro</h1>
+      <p class="mt-4 text-lg text-gray-400">Vagaro is a solid platform for salons and spas. But tattoo studios have different needs.</p>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
+        <p class="text-sm text-gray-400">Vagaro charges per staff member, which adds up fast for multi-artist studios. InkFlow includes up to 10 artists on the Pro plan at a flat $29/month. InkFlow also includes tattoo-specific features like digital waivers, ink inventory tracking, and aftercare automation that Vagaro doesn't offer.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Try InkFlow Free</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
+  </section>
+  <Footer />
+</BaseLayout>

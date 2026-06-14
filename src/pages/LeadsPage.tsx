@@ -278,7 +278,7 @@ export default function LeadsPage() {
           await db.leads.update(item.leadId, {
             status: 'booked',
             paymentStatus: 'paid',
-            paymentMethod: 'stripe_connect',
+            paymentMethod: 'manual_link',
             paymentIntentId: item.paymentIntentId || undefined,
             paymentUpdatedAt: Date.now(),
           });

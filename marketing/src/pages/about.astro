@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="About InkFlow — Tattoo Studio Software" description="InkFlow helps tattoo studios run better. All-in-one platform for booking, POS, CRM, waivers, and aftercare. Built by studio veterans." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">About InkFlow</h1>
+      <p class="mt-6 text-lg text-gray-400">We built InkFlow because we saw tattoo studios struggling with outdated tools. Our mission is to give every studio — from solo artists to multi-location shops — the technology they need to thrive.</p>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white">Our Mission</h2>
+          <p class="mt-2 text-sm text-gray-400">To make studio management effortless, so artists can focus on what they do best — creating art.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white">Our Story</h2>
+          <p class="mt-2 text-sm text-gray-400">InkFlow started when we watched a studio owner juggle five different apps to run their business. We knew there had to be a better way.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

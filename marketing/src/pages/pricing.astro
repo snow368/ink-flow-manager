@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Studio Software Pricing — Free & Paid Plans | InkFlow" description="Free for solo artists. Pro $29/mo for full features with waivers, POS, and aftercare. Plus $49/mo for custom domain. Start free, upgrade anytime." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Simple Pricing</h1>
+      <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you grow.</p>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8">
+          <h2 class="text-lg font-semibold text-white">Free</h2>
+          <p class="mt-2 text-4xl font-bold text-white">$0</p>
+          <p class="mt-1 text-sm text-gray-400">Forever free for solo artists</p>
+          <ul class="mt-8 space-y-3 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1 artist</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Basic booking</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Client management</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Unlimited appointments</li>
+          </ul>
+          <a href="https://app.inkflow.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
+        </div>
+
+        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 relative">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
+          <h2 class="text-lg font-semibold text-white">Pro</h2>
+          <p class="mt-2 text-4xl font-bold text-white">$29</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <ul class="mt-8 space-y-3 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Up to 10 artists</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Digital waivers</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> POS & payments</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> SMS reminders</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Inventory tracking</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Aftercare automation</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking page (inkflow.com/you)</li>
+          </ul>
+          <a href="https://app.inkflow.com/register" class="mt-8 block w-full rounded-lg bg-accent-500 py-2.5 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start Pro Trial</a>
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8">
+          <h2 class="text-lg font-semibold text-white">Plus</h2>
+          <p class="mt-2 text-4xl font-bold text-white">$49</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <ul class="mt-8 space-y-3 text-sm text-gray-400">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Pro</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain (booking.yourstudio.com)</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Priority support</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Analytics dashboard</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
+          </ul>
+          <a href="https://app.inkflow.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Start Plus Trial</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

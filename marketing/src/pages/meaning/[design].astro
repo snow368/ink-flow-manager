@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// SVG icon generator for common tattoo designs
+const svgIcons = {
+  rose: `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="40" r="22" stroke="currentColor" stroke-width="2"/><path d="M50 18 C45 8 38 5 35 10 C32 15 38 25 50 28" stroke="currentColor" stroke-width="1.5"/><path d="M50 18 C55 8 62 5 65 10 C68 15 62 25 50 28" stroke="currentColor" stroke-width="1.5"/><path d="M40 30 C35 22 28 22 26 28 C24 34 32 42 44 40" stroke="currentColor" stroke-width="1.5"/><path d="M60 30 C65 22 72 22 74 28 C76 34 68 42 56 40" stroke="currentColor" stroke-width="1.5"/><ellipse cx="50" cy="45" rx="8" ry="6" fill="currentColor" opacity="0.3"/><path d="M50 62 L48 85 L52 85 Z" fill="currentColor" opacity="0.6"/><path d="M48 65 C42 68 36 66 38 62 C40 58 46 60 48 65Z" fill="currentColor" opacity="0.4"/><path d="M52 65 C58 68 64 66 62 62 C60 58 54 60 52 65Z" fill="currentColor" opacity="0.4"/></svg>`,
+  butterfly: `<svg viewBox="0 0 100 100" fill="none"><ellipse cx="50" cy="55" rx="6" ry="20" stroke="currentColor" stroke-width="2"/><path d="M44 50 C35 35 20 30 18 38 C16 46 28 50 44 50Z" stroke="currentColor" stroke-width="1.5"/><path d="M56 50 C65 35 80 30 82 38 C84 46 72 50 56 50Z" stroke="currentColor" stroke-width="1.5"/><path d="M44 58 C35 70 22 68 20 60 C18 52 30 54 44 58Z" stroke="currentColor" stroke-width="1.5"/><path d="M56 58 C65 70 78 68 80 60 C82 52 70 54 56 58Z" stroke="currentColor" stroke-width="1.5"/><circle cx="50" cy="50" r="3" fill="currentColor"/></svg>`,
+  wolf: `<svg viewBox="0 0 100 100" fill="none"><path d="M50 75 C35 75 20 65 15 50 C10 35 20 20 30 25 C35 28 40 35 45 35 H55 C60 35 65 28 70 25 C80 20 90 35 85 50 C80 65 65 75 50 75Z" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="38" cy="48" r="3" fill="currentColor"/><circle cx="62" cy="48" r="3" fill="currentColor"/><path d="M45 55 Q50 60 55 55" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`,
+};
+
+const designs = [
+  { slug: 'rose', name: 'Rose', meaning: 'Love, beauty, passion, balance', desc: 'The rose is the most popular tattoo design worldwide. Red roses symbolize romantic love, black roses represent loss or rebellion, and a rose with thorns shows beauty with hardship.' },
+  { slug: 'butterfly', name: 'Butterfly', meaning: 'Transformation, freedom, rebirth', desc: 'Butterfly tattoos mark major life changes or personal growth. They represent transformation from one stage of life to another.' },
+  { slug: 'wolf', name: 'Wolf', meaning: 'Loyalty, family, instinct, freedom', desc: 'Wolf tattoos represent pack loyalty and protection. A lone wolf symbolizes independence and survival instinct.' },
+];
+---
+
+export async function getStaticPaths() {
+  return designs.map(d => ({ params: { design: d.slug }, props: { design: d } }));
+}
+
+const { design } = Astro.props;
+const svg = svgIcons[design.slug] || '';
+const related = designs.filter(d => d.slug !== design.slug);
+---
+
+<BaseLayout>
+  <head>
+    <title>{design.name} Tattoo Meaning & Symbolism — InkFlow</title>
+    <meta name="description" content={`${design.name} tattoo meaning: ${design.meaning}. Learn about the history, symbolism, and popular placements for ${design.name.toLowerCase()} tattoos.`} />
+    <link rel="canonical" href={`https://inkflow.com/meaning/${design.slug}`} />
+    <meta property="og:title" content={`${design.name} Tattoo Meaning — InkFlow`} />
+    <meta property="og:description" content={`${design.name} tattoos symbolize ${design.meaning.toLowerCase()}. Discover the meaning and find inspiration.`} />
+  </head>
+
+  <Navbar />
+
+  <section class="pt-28 pb-12">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-10 md:grid-cols-2 md:items-center">
+        <div class="flex justify-center">
+          <div class="h-48 w-48 text-accent-400/80" set:html={svg}></div>
+        </div>
+        <div>
+          <h1 class="text-4xl font-extrabold text-white">{design.name} Tattoo Meaning</h1>
+          <p class="mt-2 text-lg text-accent-400">{design.meaning}</p>
+          <p class="mt-4 text-gray-400 leading-relaxed">{design.desc}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- More details -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">{design.name} Tattoo — History & Symbolism</h2>
+      <p class="mt-3 text-gray-400">The {design.name.toLowerCase()} has been a popular tattoo choice for centuries. Different cultures and styles interpret it in various ways, making it a versatile design that works in traditional, realism, watercolor, and neo-traditional styles.</p>
+      <p class="mt-3 text-gray-400">Popular placements include forearm, shoulder, thigh, and back. The size can range from small minimalist to large detailed pieces that cover significant areas.</p>
+    </div>
+  </section>
+
+  <!-- Quiz Hook -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8 text-center">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
+        <h3 class="text-lg font-bold text-white">Not sure what tattoo to get?</h3>
+        <p class="mt-2 text-sm text-gray-400">Take our 30-second quiz and find the perfect design for your personality.</p>
+        <button class="mt-4 rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Find My Style</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-6 text-2xl font-bold text-white">Explore More Meanings</h2>
+      <div class="grid gap-4 sm:grid-cols-2">
+        {related.map(r => (
+          <a href={`/meaning/${r.slug}`} class="flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
+            <div class="h-14 w-14 shrink-0 text-gray-400" set:html={svgIcons[r.slug] || ''}></div>
+            <div>
+              <p class="font-semibold text-white">{r.name}</p>
+              <p class="text-sm text-gray-400">{r.meaning}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Email -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 text-center">
+      <h3 class="text-lg font-bold text-white">Get Tattoo Meaning of the Day</h3>
+      <p class="mt-2 text-sm text-gray-400">One design, its meaning, and inspiration. Sent daily.</p>
+      <div class="mt-4 flex gap-3">
+        <input type="email" placeholder="your@email.com" class="flex-1 rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+        <button class="rounded-lg bg-accent-500 px-5 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

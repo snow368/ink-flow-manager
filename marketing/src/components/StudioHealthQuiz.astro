@@ -1,0 +1,159 @@
+---
+<div class="rounded-xl border border-ink-700 bg-ink-900 p-6 sm:p-8">
+  <h3 class="text-xl font-bold text-white mb-2">Studio Health Score</h3>
+  <p class="text-sm text-gray-400 mb-6">Answer 5 quick questions to see how your studio is running.</p>
+
+  <div id="quiz-container" class="space-y-6">
+
+    <div class="quiz-q" data-q="0">
+      <p class="text-sm font-medium text-white mb-3">1. How do you handle booking deposits?</p>
+      <div class="space-y-2">
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q0" value="2" class="accent-accent-500" /> <span class="text-sm text-gray-300">Automated deposits at booking</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q0" value="1" class="accent-accent-500" /> <span class="text-sm text-gray-300">Manual deposit requests</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q0" value="0" class="accent-accent-500" /> <span class="text-sm text-gray-300">No deposits</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="quiz-q hidden" data-q="1">
+      <p class="text-sm font-medium text-white mb-3">2. How do you send appointment reminders?</p>
+      <div class="space-y-2">
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q1" value="2" class="accent-accent-500" /> <span class="text-sm text-gray-300">Automated SMS + email reminders</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q1" value="1" class="accent-accent-500" /> <span class="text-sm text-gray-300">Manual texts or calls</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q1" value="0" class="accent-accent-500" /> <span class="text-sm text-gray-300">No reminders</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="quiz-q hidden" data-q="2">
+      <p class="text-sm font-medium text-white mb-3">3. How do you manage client aftercare?</p>
+      <div class="space-y-2">
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q2" value="2" class="accent-accent-500" /> <span class="text-sm text-gray-300">Automated aftercare sequences</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q2" value="1" class="accent-accent-500" /> <span class="text-sm text-gray-300">Manual follow-ups</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q2" value="0" class="accent-accent-500" /> <span class="text-sm text-gray-300">No aftercare follow-up</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="quiz-q hidden" data-q="3">
+      <p class="text-sm font-medium text-white mb-3">4. How do you track client information?</p>
+      <div class="space-y-2">
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q3" value="2" class="accent-accent-500" /> <span class="text-sm text-gray-300">Centralized CRM software</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q3" value="1" class="accent-accent-500" /> <span class="text-sm text-gray-300">Spreadsheets or notes</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q3" value="0" class="accent-accent-500" /> <span class="text-sm text-gray-300">Paper files or nothing</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="quiz-q hidden" data-q="4">
+      <p class="text-sm font-medium text-white mb-3">5. How do you collect client reviews?</p>
+      <div class="space-y-2">
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q4" value="2" class="accent-accent-500" /> <span class="text-sm text-gray-300">Automated review requests</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q4" value="1" class="accent-accent-500" /> <span class="text-sm text-gray-300">Ask clients in person</span>
+        </label>
+        <label class="quiz-opt flex items-center gap-3 rounded-lg border border-ink-700 p-3 cursor-pointer hover:border-accent-500/30">
+          <input type="radio" name="q4" value="0" class="accent-accent-500" /> <span class="text-sm text-gray-300">No review collection</span>
+        </label>
+      </div>
+    </div>
+
+    <div id="quiz-nav" class="flex justify-between">
+      <button id="quiz-prev" class="rounded-lg border border-ink-700 px-5 py-2 text-sm text-gray-300 hover:border-ink-500 hover:text-white transition-colors hidden">Back</button>
+      <button id="quiz-next" class="rounded-lg bg-accent-500 px-6 py-2 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Next</button>
+      <button id="quiz-submit" class="rounded-lg bg-accent-500 px-6 py-2 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors hidden">See My Score</button>
+    </div>
+  </div>
+
+  <div id="quiz-result" class="hidden text-center">
+    <div class="mb-4">
+      <p class="text-sm text-gray-400">Your Studio Health Score</p>
+      <p id="quiz-score" class="text-5xl font-bold text-accent-400 mt-2">0</p>
+      <p id="quiz-max" class="text-sm text-gray-500">out of 10</p>
+    </div>
+    <p id="quiz-label" class="text-white font-semibold"></p>
+    <p id="quiz-desc" class="text-sm text-gray-400 mt-2"></p>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+      Improve Your Score with InkFlow
+    </a>
+    <button id="quiz-retake" class="mt-3 block w-full text-center text-sm text-gray-500 hover:text-gray-300 transition-colors">Retake Quiz</button>
+  </div>
+</div>
+
+<script>
+  let currentQ = 0;
+  const totalQ = 5;
+
+  function showQ(n) {
+    document.querySelectorAll('.quiz-q').forEach((el, i) => {
+      el.classList.toggle('hidden', i !== n);
+    });
+    document.getElementById('quiz-prev').classList.toggle('hidden', n === 0);
+    document.getElementById('quiz-next').classList.toggle('hidden', n === totalQ - 1);
+    document.getElementById('quiz-submit').classList.toggle('hidden', n !== totalQ - 1);
+  }
+
+  document.getElementById('quiz-next')?.addEventListener('click', () => {
+    const selected = document.querySelector(`.quiz-q[data-q="${currentQ}"] input:checked`);
+    if (!selected) return;
+    currentQ++;
+    showQ(currentQ);
+  });
+
+  document.getElementById('quiz-prev')?.addEventListener('click', () => {
+    currentQ--;
+    showQ(currentQ);
+  });
+
+  document.getElementById('quiz-submit')?.addEventListener('click', () => {
+    let score = 0;
+    for (let i = 0; i < totalQ; i++) {
+      const selected = document.querySelector(`input[name="q${i}"]:checked`);
+      score += selected ? parseInt(selected.value) : 0;
+    }
+    document.getElementById('quiz-result').classList.remove('hidden');
+    document.getElementById('quiz-container').classList.add('hidden');
+    document.getElementById('quiz-score').textContent = score;
+
+    const labels = ['Needs Work', 'Getting There', 'Running Smooth', 'Studio Optimized'];
+    const descs = [
+      'Your studio could benefit from basic automation. Start with deposits and reminders.',
+      'You\'re on the right track. Add automated aftercare and review requests to level up.',
+      'Your studio is running well. InkFlow can help you automate the remaining manual tasks.',
+      'You\'re running at peak efficiency. Keep it up!'
+    ];
+    const idx = Math.min(Math.floor(score / 3), 3);
+    document.getElementById('quiz-label').textContent = labels[idx];
+    document.getElementById('quiz-desc').textContent = descs[idx];
+  });
+
+  document.getElementById('quiz-retake')?.addEventListener('click', () => {
+    document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+    currentQ = 0;
+    showQ(0);
+    document.getElementById('quiz-result').classList.add('hidden');
+    document.getElementById('quiz-container').classList.remove('hidden');
+  });
+</script>

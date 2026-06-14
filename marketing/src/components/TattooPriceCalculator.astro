@@ -1,0 +1,102 @@
+---
+<div class="rounded-xl border border-ink-700 bg-ink-900 p-6 sm:p-8">
+  <h3 class="text-xl font-bold text-white mb-2">Tattoo Price Calculator</h3>
+  <p class="text-sm text-gray-400 mb-6">Estimate how much your next tattoo might cost.</p>
+
+  <div class="space-y-5">
+    <!-- Size -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Size</label>
+      <select id="tp-size" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+        <option value="1">Tiny (&lt;2" / small text, symbol)</option>
+        <option value="2" selected>Small (2-4" / palm-sized)</option>
+        <option value="3">Medium (4-6" / hand-sized)</option>
+        <option value="4">Large (6-10" / forearm-sized)</option>
+        <option value="5">XL (10"+ / sleeve, back, chest)</option>
+      </select>
+    </div>
+
+    <!-- Detail -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Detail Level</label>
+      <select id="tp-detail" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+        <option value="1">Simple (bold lines, solid shapes, text)</option>
+        <option value="2" selected>Moderate (shading, some color, linework)</option>
+        <option value="3">Detailed (realism, portraits, geometric)</option>
+        <option value="4">Very Detailed (micro-realism, color blending)</option>
+      </select>
+    </div>
+
+    <!-- Placement -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Placement</label>
+      <select id="tp-place" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+        <option value="1">Easy (forearm, outer thigh, calf)</option>
+        <option value="1.2" selected>Moderate (shoulder, back, chest, bicep)</option>
+        <option value="1.4">Hard (ribs, spine, stomach, knee, elbow)</option>
+        <option value="1.6">Expert (hands, fingers, neck, face, feet)</option>
+      </select>
+    </div>
+
+    <!-- Color -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Color</label>
+      <select id="tp-color" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+        <option value="1">Black & Grey</option>
+        <option value="1.6" selected>Color</option>
+      </select>
+    </div>
+
+    <!-- Artist Level -->
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-2">Artist Experience</label>
+      <select id="tp-level" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+        <option value="80">New/Apprentice (1-3 yrs) — ~$80/hr</option>
+        <option value="120" selected>Established (3-7 yrs) — ~$120/hr</option>
+        <option value="180">Experienced (7-15 yrs) — ~$180/hr</option>
+        <option value="280">Top Artist (15+ yrs / specialist) — ~$280/hr</option>
+      </select>
+      <p class="mt-1 text-xs text-gray-500">Rates vary by location and artist. This is a national average.</p>
+    </div>
+  </div>
+
+  <button id="tp-calc" class="mt-6 w-full rounded-lg bg-accent-500 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+    Estimate Price
+  </button>
+
+  <div id="tp-result" class="mt-6 hidden">
+    <div class="rounded-lg bg-ink-800/50 p-4 text-center">
+      <p class="text-sm text-gray-400">Estimated Range</p>
+      <p id="tp-range" class="text-3xl font-bold text-accent-400">$0–$0</p>
+      <p id="tp-hours" class="mt-1 text-sm text-gray-500"></p>
+      <p class="mt-3 text-xs text-gray-600">This is a rough estimate. Get a consultation for an exact quote.</p>
+    </div>
+    <a href="https://app.inkflow.com/register" class="mt-4 block w-full rounded-lg bg-accent-500 py-3 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+      Find a Tattoo Artist Near You
+    </a>
+  </div>
+</div>
+
+<script>
+  const SIZE_HOURS = [0.5, 2, 5, 10, 25];
+  const DETAIL_MULT = [1, 1.8, 3.5, 5.5];
+  const RANGE_LOW = 0.7;
+  const RANGE_HIGH = 1.3;
+
+  document.getElementById('tp-calc')?.addEventListener('click', () => {
+    const size = parseInt(document.getElementById('tp-size').value);
+    const detail = parseFloat(document.getElementById('tp-detail').value);
+    const place = parseFloat(document.getElementById('tp-place').value);
+    const color = parseFloat(document.getElementById('tp-color').value);
+    const rate = parseInt(document.getElementById('tp-rate').value) || 150;
+
+    const baseHours = SIZE_HOURS[size - 1];
+    const totalHours = baseHours * detail * place * color;
+    const low = Math.round(totalHours * RANGE_LOW * rate);
+    const high = Math.round(totalHours * RANGE_HIGH * rate);
+
+    document.getElementById('tp-range').textContent = '$' + low.toLocaleString() + '–$' + high.toLocaleString();
+    document.getElementById('tp-hours').textContent = '~' + (totalHours * RANGE_LOW).toFixed(1) + '–' + (totalHours * RANGE_HIGH).toFixed(1) + ' hours estimated';
+    document.getElementById('tp-result').classList.remove('hidden');
+  });
+</script>

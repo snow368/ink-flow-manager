@@ -12,7 +12,8 @@ describe('i18n', () => {
     expect(t('pt', 'today')).toBe('Hoje');
     expect(t('fr', 'today')).toBe('Aujourd\'hui');
     expect(t('de', 'today')).toBe('Heute');
-    expect(t('th', 'today')).toBe('วันนี้');
+    // Italian uses English placeholders until translation is done
+    expect(t('it', 'today')).toBe('Today');
     expect(t('jp', 'today')).toBe('今日');
   });
 
@@ -33,7 +34,7 @@ describe('i18n', () => {
   });
 
   it('supports all 7 languages for core keys', () => {
-    const langs: AppLanguage[] = ['en', 'es', 'pt', 'fr', 'de', 'th', 'jp'];
+    const langs: AppLanguage[] = ['en', 'es', 'pt', 'fr', 'de', 'it', 'jp'];
     for (const lang of langs) {
       expect(t(lang, 'today')).toBeTruthy();
     }

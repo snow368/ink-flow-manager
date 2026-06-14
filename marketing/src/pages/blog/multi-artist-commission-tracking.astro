@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Multi-Artist Commission Tracking Explained — 2026 | InkFlow Blog" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." />
+  <Navbar />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm text-accent-400 mb-4">May 28, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Multi-Artist Commission Tracking Explained</h1>
+      <p class="mt-4 text-lg text-gray-400">Stop using spreadsheets to calculate artist commissions. InkFlow automates commission splits so everyone gets paid correctly, every time.</p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+      <h2>The Problem with Manual Commission Tracking</h2>
+      <p>If you're using spreadsheets or a notebook to track artist commissions, you know the pain. Different rates for different artists. Tips that need splitting. Retail sales vs service commissions. It adds up fast, and mistakes are common.</p>
+      <p><a href="/features/pos" class="text-accent-400 hover:underline">InkFlow's POS system</a> calculates commissions automatically based on the rates you set for each artist.</p>
+
+      <h2>How It Works</h2>
+      <h3>Set Per-Artist Rates</h3>
+      <p>Each artist can have a different commission rate. Set it once in their profile — InkFlow remembers it for every transaction.</p>
+      <h3>Automatic Calculation</h3>
+      <p>After each appointment, InkFlow calculates the artist's commission, deducts supplies, and adds tips. No manual entry required.</p>
+      <h3>Payout Reports</h3>
+      <p>Run payout reports for any date range. See exactly what each artist earned, what was deducted, and what needs to be paid out.</p>
+
+      <h2>Common Commission Models</h2>
+      <ul>
+        <li>Fixed percentage (60/40, 70/30 split)</li>
+        <li>Tiered rates (higher percentage after reaching a threshold)</li>
+        <li>Different rates for services vs retail sales</li>
+        <li>Graduating rates for apprentices</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="py-12 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Automate Your Commissions</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  </section>
+
+  <Footer />
+</BaseLayout>
