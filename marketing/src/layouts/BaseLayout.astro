@@ -1,5 +1,6 @@
 ---
 import DevGate from "../components/DevGate.astro";
+import PageSchema from "../components/PageSchema.astro";
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -9,6 +10,7 @@ import DevGate from "../components/DevGate.astro";
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+    <PageSchema type="organization" />
     <slot name="head" />
   </head>
   <body class="bg-ink-950 text-gray-100 font-sans antialiased">

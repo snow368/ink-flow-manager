@@ -1,0 +1,102 @@
+---
+export type SchemaType = 'software' | 'organization' | 'article' | 'faq' | 'comparison' | 'breadcrumb';
+
+interface Props {
+  type: SchemaType;
+  data?: Record<string, any>;
+}
+
+const { type, data = {} } = Astro.props;
+
+const site = 'https://inkflow.com';
+
+const schemas: Record<SchemaType, object> = {
+  software: {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "InkFlow",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web, iOS, Android",
+    "description": data.description || "Complete tattoo studio management platform. Booking, deposits, waivers, CRM, and aftercare.",
+    "url": site,
+    ...(data.offers ? {
+      "offers": {
+        "@type": "Offer",
+        "price": data.offers.price || "0",
+        "priceCurrency": data.offers.currency || "USD",
+      }
+    } : {}),
+    ...(data.aggregateRating ? {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": data.aggregateRating.value || "4.8",
+        "ratingCount": data.aggregateRating.count || "127",
+      }
+    } : {}),
+  },
+  organization: {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "InkFlow",
+    "url": site,
+    "logo": `${site}/icons/icon-512.png`,
+    "description": "Tattoo studio management software. Booking, deposits, waivers, CRM, and aftercare.",
+    "foundingDate": "2024",
+    "sameAs": [
+      "https://instagram.com/inkflow",
+      "https://facebook.com/inkflow",
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "email": "hello@inkflow.com",
+    },
+  },
+  article: {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": data.headline || "",
+    "description": data.description || "",
+    "author": data.author ? {
+      "@type": "Person",
+      "name": data.author.name,
+      "description": data.author.bio,
+    } : { "@type": "Organization", "name": "InkFlow" },
+    "datePublished": data.datePublished || "",
+    "dateModified": data.dateModified || data.datePublished || "",
+    "publisher": {
+      "@type": "Organization",
+      "name": "InkFlow",
+      "logo": { "@type": "ImageObject", "url": `${site}/icons/icon-512.png` },
+    },
+  },
+  faq: {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": (data.questions || []).map((q: any) => ({
+      "@type": "Question",
+      "name": q.question,
+      "acceptedAnswer": { "@type": "Answer", "text": q.answer },
+    })),
+  },
+  comparison: {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": data.productName || "InkFlow",
+    "description": data.description || "",
+    "brand": { "@type": "Brand", "name": "InkFlow" },
+  },
+  breadcrumb: {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": (data.items || []).map((item: any, i: number) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": item.label,
+      "item": item.href ? `${site}${item.href}` : undefined,
+    })),
+  },
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schemas[type])} />

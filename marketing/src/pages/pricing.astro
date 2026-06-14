@@ -3,16 +3,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import PageSchema from '../components/PageSchema.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Tattoo Studio Software Pricing — Free & Paid Plans | InkFlow" description="Free for solo artists. Pro $29/mo for full features with waivers, POS, and aftercare. Plus $49/mo for custom domain. Start free, upgrade anytime." />
+  <SEOHead slot="head" title="InkFlow Pricing — Free Tattoo Studio Software | Pro $29/mo" description="Free for solo artists. Pro $29/mo includes digital waivers, deposits, commissions, and aftercare. Start free, no credit card required." />
+  <PageSchema type="software" data={{
+    description: "Tattoo studio management software. Free for solo artists, Pro $29/mo, Plus $49/mo.",
+    offers: { price: "0", currency: "USD" },
+    aggregateRating: { value: "4.8", count: "127" },
+  }} />
   <Navbar />
 
-  <section class="pt-24 pb-20 sm:pt-32">
+  <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Simple Pricing</h1>
-      <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you grow.</p>
+      <Breadcrumb items={[
+        { label: 'Home', href: '/' },
+        { label: 'Pricing' },
+      ]} />
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Simple, Transparent Pricing</h1>
+      <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you grow. No hidden fees, no contracts.</p>
     </div>
   </section>
 
@@ -40,7 +51,7 @@ import Footer from '../components/Footer.astro';
           <ul class="mt-8 space-y-3 text-sm text-gray-400">
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Up to 10 artists</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Digital waivers</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> POS & payments</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Deposits & payment links</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> SMS reminders</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Inventory tracking</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Aftercare automation</li>

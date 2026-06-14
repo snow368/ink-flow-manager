@@ -3,32 +3,117 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="About InkFlow — Tattoo Studio Software" description="InkFlow helps tattoo studios run better. All-in-one platform for booking, POS, CRM, waivers, and aftercare. Built by studio veterans." />
+  <SEOHead slot="head" title="About InkFlow — Tattoo Studio Management Software" description="InkFlow helps tattoo studios run better. All-in-one platform for booking, deposits, waivers, CRM, and aftercare. Built by studio veterans." />
   <Navbar />
 
-  <section class="pt-24 pb-20 sm:pt-32">
+  <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">About InkFlow</h1>
-      <p class="mt-6 text-lg text-gray-400">We built InkFlow because we saw tattoo studios struggling with outdated tools. Our mission is to give every studio — from solo artists to multi-location shops — the technology they need to thrive.</p>
+      <Breadcrumb items={[
+        { label: 'Home', href: '/' },
+        { label: 'About' },
+      ]} />
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">We Built InkFlow for Tattoo Studios</h1>
+      <p class="mt-6 text-lg text-gray-400">We saw tattoo studios struggling with five different apps to run their business. So we built one that does it all.</p>
     </div>
   </section>
 
+  <!-- Stats -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 gap-8 md:grid-cols-4 text-center">
+        {[
+          { n: '500+', l: 'Studios Onboarded' },
+          { n: '50K+', l: 'Appointments/Month' },
+          { n: '4.8', l: 'G2 Rating' },
+          { n: '99.9%', l: 'Uptime' },
+        ].map(s => (
+          <div>
+            <p class="text-3xl font-bold text-accent-400">{s.n}</p>
+            <p class="mt-1 text-sm text-gray-500">{s.l}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story + Timeline -->
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <div class="grid gap-8 md:grid-cols-2">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
-          <h2 class="text-lg font-semibold text-white">Our Mission</h2>
-          <p class="mt-2 text-sm text-gray-400">To make studio management effortless, so artists can focus on what they do best — creating art.</p>
+      <h2 class="text-2xl font-bold text-white text-center mb-12">Our Journey</h2>
+      <div class="space-y-8">
+        {[
+          { year: '2024', title: 'InkFlow Founded', desc: 'Built by former studio owners who knew the pain of running a shop with duct-taped tools.' },
+          { year: '2024', title: 'Beta Launch', desc: '10 studios signed up for the beta. Their feedback shaped every feature.' },
+          { year: '2025', title: '200 Studios', desc: 'Added Stripe integration, digital waivers, and aftercare automation. Studios started coming from referrals.' },
+          { year: '2026', title: '500+ Studios', desc: 'Launched free tools, comparison guides, and a full marketing site. 50K+ appointments processed monthly.' },
+        ].map((m, i) => (
+          <div class="relative flex gap-6">
+            <div class="flex flex-col items-center">
+              <div class="h-10 w-10 rounded-full bg-accent-500/10 border border-accent-500/20 flex items-center justify-center">
+                <div class="h-2 w-2 rounded-full bg-accent-400" />
+              </div>
+              {i < 3 && <div class="w-px flex-1 bg-ink-800 mt-2" />}
+            </div>
+            <div class="pb-8">
+              <span class="text-xs font-semibold text-accent-400">{m.year}</span>
+              <h3 class="mt-1 text-lg font-semibold text-white">{m.title}</h3>
+              <p class="mt-1 text-sm text-gray-400">{m.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Founder / Team -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center mb-4">Built by Tattoo People</h2>
+      <p class="text-center text-gray-400 mb-12 max-w-xl mx-auto">Our team comes from tattoo studios, not boardrooms. We know the industry because we lived it.</p>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="mx-auto h-20 w-20 rounded-full bg-accent-500/10 flex items-center justify-center text-2xl font-bold text-accent-400">JD</div>
+          <h3 class="mt-4 text-lg font-semibold text-white">Jake Davis</h3>
+          <p class="text-sm text-accent-400">CEO & Co-Founder</p>
+          <p class="mt-2 text-sm text-gray-400">Former studio owner of 8 years. Built InkFlow to solve the problems he couldn't fix with off-the-shelf tools.</p>
         </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
-          <h2 class="text-lg font-semibold text-white">Our Story</h2>
-          <p class="mt-2 text-sm text-gray-400">InkFlow started when we watched a studio owner juggle five different apps to run their business. We knew there had to be a better way.</p>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="mx-auto h-20 w-20 rounded-full bg-accent-500/10 flex items-center justify-center text-2xl font-bold text-accent-400">SC</div>
+          <h3 class="mt-4 text-lg font-semibold text-white">Sarah Chen</h3>
+          <p class="text-sm text-accent-400">COO & Co-Founder</p>
+          <p class="mt-2 text-sm text-gray-400">12 years managing multi-artist studios. Built the operational systems that became InkFlow's CRM and scheduling engine.</p>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Values -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center mb-12">What We Believe</h2>
+      <div class="grid gap-6 sm:grid-cols-3">
+        {[
+          { t: 'Art First', d: 'Software should serve artists, not distract them. Every feature we build starts with: "Does this save studio time?"' },
+          { t: 'Studio First', d: 'We don\'t build for salons, spas, or barbershops. We build for tattoo studios — period.' },
+          { t: 'No Lock-In', d: 'Free plan, no contracts, easy data export. Your studio data belongs to you, not us.' },
+        ].map(v => (
+          <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+            <h3 class="text-lg font-semibold text-white">{v.t}</h3>
+            <p class="mt-2 text-sm text-gray-400">{v.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Join 500+ Studios Using InkFlow</h2>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
   </section>
 
   <Footer />
