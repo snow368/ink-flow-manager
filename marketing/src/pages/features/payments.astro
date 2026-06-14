@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Deposit & Payment Software — InkFlow" description="Collect deposits at booking, send payment links after sessions, and split commissions automatically. No POS hardware needed." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Deposit & Payment Management</h1>
+        <p class="mt-6 text-lg text-gray-400">Collect deposits at booking, send payment links after sessions, and split commissions — all integrated with your booking and CRM.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Deposit Collection</h2>
+          <p class="mt-4 text-gray-400">Require a deposit at booking to secure appointments. Set flat fees or percentages. Deposits are tracked as liabilities until the service is completed — no accounting headaches.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-accent-400">
+            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <p class="mt-4 text-3xl font-bold text-white">$0</p>
+          <p class="text-sm text-gray-500">Stripe processing fee only</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1 rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+          <span class="text-4xl">🔗</span>
+          <p class="mt-4 text-sm text-gray-400">Send a payment link via SMS right after the session. Clients pay in one tap.</p>
+        </div>
+        <div class="order-1 md:order-2">
+          <h2 class="text-2xl font-bold text-white">Payment Links</h2>
+          <p class="mt-4 text-gray-400">After a session, send a payment link via SMS or email. Clients pay with credit card, Apple Pay, or Google Pay — no terminal needed. Works for balance collection, tips, and retail sales.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h2 class="text-2xl font-bold text-white">Commission Splitting</h2>
+          <p class="mt-4 text-gray-400">Set different commission rates per artist. InkFlow automatically calculates payouts after each appointment. No more spreadsheet math or awkward conversations.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+          <span class="text-4xl">📊</span>
+          <p class="mt-4 text-sm text-gray-400">Auto-calculated per artist, per appointment</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Start Collecting Deposits Today</h2>
+    <p class="mt-2 text-gray-400">Free plan includes deposit collection and payment links.</p>
+    <a href="https://app.inkflow.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
+  </section>
+  <Footer />
+</BaseLayout>

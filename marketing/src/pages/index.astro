@@ -11,30 +11,89 @@ import Footer from '../components/Footer.astro';
   <Navbar />
 
   <!-- Hero -->
-  <section class="relative overflow-hidden pt-24 pb-20 sm:pt-32 sm:pb-28">
-    <div class="absolute inset-0 bg-gradient-to-b from-accent-500/5 to-transparent pointer-events-none" />
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-3xl pointer-events-none" />
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
-        <span class="h-2 w-2 rounded-full bg-accent-400 animate-pulse" />
-        Trusted by 500+ studios worldwide
+  <section class="relative overflow-hidden pt-20 pb-20 sm:pt-28 sm:pb-28">
+    <div class="absolute inset-0 bg-gradient-to-b from-accent-500/5 via-transparent to-transparent pointer-events-none" />
+    <div class="absolute top-1/4 left-1/3 -translate-x-1/2 w-[800px] h-[800px] bg-accent-500/5 rounded-full blur-3xl pointer-events-none" />
+    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent-500/3 rounded-full blur-3xl pointer-events-none" />
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 lg:gap-12 items-center">
+        <!-- Left: Text -->
+        <div>
+          <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
+            <span class="h-2 w-2 rounded-full bg-accent-400 animate-pulse" />
+            Trusted by 500+ studios worldwide
+          </div>
+          <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            Studio Management,<br />
+            <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Built for Tattoo</span>
+          </h1>
+          <p class="mt-6 text-lg text-gray-400 max-w-xl">
+            Booking, deposits, waivers, CRM, POS, inventory, aftercare — one platform replaces five tools. Built by tattoo artists, for tattoo studios.
+          </p>
+          <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+            <a href="https://app.inkflow.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105 text-center">
+              Start Free Trial
+            </a>
+            <a href="/features/booking" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all text-center">
+              See Features →
+            </a>
+          </div>
+          <p class="mt-4 text-sm text-gray-500">No credit card required · Free plan available · 30-day trial</p>
+        </div>
+        <!-- Right: Product Preview -->
+        <div class="mt-12 lg:mt-0">
+          <div class="relative mx-auto max-w-md lg:max-w-none">
+            <!-- Browser window frame -->
+            <div class="rounded-xl border border-ink-700 bg-ink-900 shadow-2xl shadow-accent-500/10 overflow-hidden">
+              <!-- Browser chrome -->
+              <div class="flex items-center gap-2 border-b border-ink-700 px-4 py-3">
+                <div class="h-3 w-3 rounded-full bg-red-500/60" />
+                <div class="h-3 w-3 rounded-full bg-yellow-500/60" />
+                <div class="h-3 w-3 rounded-full bg-green-500/60" />
+                <span class="ml-3 text-xs text-gray-600">app.inkflow.com</span>
+              </div>
+              <!-- Product screenshot area -->
+              <div class="aspect-[16/10] bg-gradient-to-br from-ink-800 via-ink-850 to-ink-900 flex items-center justify-center p-6">
+                <div class="w-full h-full rounded-lg border border-ink-700 bg-ink-800/50 grid grid-cols-3 gap-3 p-3">
+                  <!-- Mock calendar UI -->
+                  <div class="col-span-2 space-y-3">
+                    <div class="h-3 w-24 rounded bg-ink-700" />
+                    <div class="grid grid-cols-7 gap-1">
+                      {Array.from({length: 28}).map((_,i) => (
+                        <div key={i} class={`aspect-square rounded ${i > 3 && i < 10 ? 'bg-accent-500/20 border border-accent-500/30' : 'bg-ink-700/50'} ${i === 7 ? 'ring-2 ring-accent-500' : ''}`} />
+                      ))}
+                    </div>
+                    <div class="flex gap-2">
+                      <div class="h-8 flex-1 rounded bg-accent-500/10 border border-accent-500/20 flex items-center justify-center">
+                        <span class="text-xs text-accent-400">2:00 PM — Sarah</span>
+                      </div>
+                      <div class="h-8 flex-1 rounded bg-ink-700/50 flex items-center justify-center">
+                        <span class="text-xs text-gray-600">4:00 PM</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Sidebar mock -->
+                  <div class="space-y-4">
+                    <div class="h-3 w-16 rounded bg-ink-700" />
+                    <div class="space-y-3">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} class="flex items-center gap-2">
+                          <div class="h-6 w-6 rounded-full bg-ink-700" />
+                          <div class="h-2 flex-1 rounded bg-ink-700/50" />
+                        </div>
+                      ))}
+                    </div>
+                    <div class="h-px bg-ink-700" />
+                    <div class="h-2 w-20 rounded bg-accent-500/30" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Glowing accent behind -->
+            <div class="absolute -bottom-6 -right-6 h-48 w-48 rounded-full bg-accent-500/10 blur-2xl pointer-events-none -z-10" />
+          </div>
+        </div>
       </div>
-      <h1 class="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
-        The Only Platform Your<br />
-        <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Tattoo Studio</span> Will Ever Need
-      </h1>
-      <p class="mx-auto mt-6 max-w-2xl text-lg text-gray-400">
-        From first booking to healed aftercare — manage every part of your studio in one app. No more juggling 5 different tools.
-      </p>
-      <div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-        <a href="https://app.inkflow.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105">
-          Start Free Trial
-        </a>
-        <a href="/features/booking" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
-          See Features →
-        </a>
-      </div>
-      <p class="mt-4 text-sm text-gray-500">No credit card required · Free plan available · 30-day trial</p>
     </div>
   </section>
 
@@ -52,60 +111,153 @@ import Footer from '../components/Footer.astro';
   </section>
 
   <!-- Features Grid -->
-  <section class="py-20">
+  <section class="py-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
         <h2 class="text-3xl font-bold text-white sm:text-4xl">Everything You Need to Run Your Studio</h2>
-        <p class="mt-4 text-lg text-gray-400">No more piecing together five different tools. InkFlow does it all.</p>
+        <p class="mt-4 text-lg text-gray-400">Purpose-built for tattoo studios. No more duct-taping five different apps together.</p>
       </div>
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Booking -->
-        <a href="/features/booking" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <a href="/features/booking" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Smart Booking</h3>
+            <p class="text-sm text-gray-400">Deposit-based scheduling with automated SMS and email reminders. Studios using InkFlow cut no-shows by 80%.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Smart Booking</h3>
-          <p class="text-sm text-gray-400">Deposit-based scheduling with automated SMS and email reminders. Reduce no-shows by 80%.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full gap-1">
+              {[40,65,45,80,55,70,60].map(h => (
+                <div key={h} class="flex-1 h-16 flex items-end">
+                  <div class="w-full rounded-t bg-accent-500/20" style={`height: ${h}%`} />
+                </div>
+              ))}
+            </div>
+          </div>
         </a>
-        <!-- POS -->
-        <a href="/features/pos" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <!-- Payments / Deposits -->
+        <a href="/features/payments" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Deposits & Payments</h3>
+            <p class="text-sm text-gray-400">Collect deposits at booking, send payment links post-session, and split commissions automatically.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">POS & Payments</h3>
-          <p class="text-sm text-gray-400">Stripe-powered POS, commission splitting, tips, and deposit collection — all in one place.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full items-center justify-center gap-3">
+              <div class="flex flex-col items-center">
+                <div class="h-8 w-12 rounded border border-accent-500/20 bg-accent-500/5 flex items-center justify-center text-xs text-accent-400">$50</div>
+                <span class="mt-1 text-[10px] text-gray-600">Deposit</span>
+              </div>
+              <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              <div class="flex flex-col items-center">
+                <div class="h-8 w-12 rounded border border-green-500/20 bg-green-500/5 flex items-center justify-center text-xs text-green-400">$200</div>
+                <span class="mt-1 text-[10px] text-gray-600">Balance</span>
+              </div>
+            </div>
+          </div>
         </a>
         <!-- Waivers -->
-        <a href="/features/waivers" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <a href="/features/waivers" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Digital Waivers</h3>
+            <p class="text-sm text-gray-400">Paperless intake with e-signatures, QR check-in, and medical history. Clients sign from their phone before they arrive.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Digital Waivers</h3>
-          <p class="text-sm text-gray-400">Paperless intake with e-signatures, QR check-in, and medical history tracking.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="w-full rounded border border-ink-700 bg-ink-800/50 p-2">
+              <div class="flex items-center gap-2">
+                <div class="h-4 w-4 rounded border-2 border-accent-500 flex items-center justify-center">
+                  <div class="h-2 w-2 rounded-sm bg-accent-500" />
+                </div>
+                <span class="text-[10px] text-gray-500">I understand the risks and consent to the procedure...</span>
+              </div>
+              <div class="mt-1 h-1.5 w-2/3 rounded-full bg-ink-700">
+                <div class="h-full w-full rounded-full bg-accent-500/30" style="width: 65%" />
+              </div>
+            </div>
+          </div>
         </a>
         <!-- CRM -->
-        <a href="/features/crm" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <a href="/features/crm" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Client CRM</h3>
+            <p class="text-sm text-gray-400">360° client history, smart tags, automated follow-ups, referral tracking. Know every client who walks through your door.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Client CRM</h3>
-          <p class="text-sm text-gray-400">360° client history, smart tags, follow-ups, referrals — know every client.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full -space-x-2">
+              {[
+                {c: 'bg-accent-500', i: 'S'},
+                {c: 'bg-blue-500', i: 'M'},
+                {c: 'bg-green-500', i: 'J'},
+                {c: 'bg-purple-500', i: 'A'},
+                {c: 'bg-orange-500', i: 'T'},
+              ].map(p => (
+                <div key={p.i} class={`h-7 w-7 rounded-full ${p.c} flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-ink-900`}>{p.i}</div>
+              ))}
+              <div class="h-7 w-7 rounded-full bg-ink-700 flex items-center justify-center text-[10px] text-gray-500 ring-2 ring-ink-900">+12</div>
+            </div>
+          </div>
         </a>
         <!-- Inventory -->
-        <a href="/features/inventory" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <a href="/features/inventory" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Inventory Tracking</h3>
+            <p class="text-sm text-gray-400">Track ink, needles, and supplies. Low-stock alerts, cost-per-session tracking, and auto-reorder points.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Inventory Tracking</h3>
-          <p class="text-sm text-gray-400">Track ink, needles, and supplies with low-stock alerts and cost-per-session tracking.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full gap-1.5">
+              {[
+                {l: 'Black Ink', v: 80},
+                {l: 'RL #12', v: 30},
+                {l: 'MAG #9', v: 60},
+                {l: 'Gloves M', v: 20},
+              ].map(item => (
+                <div key={item.l} class="flex-1 flex flex-col items-center">
+                  <div class="w-full rounded-t bg-ink-800 flex items-end justify-center" style={`height: ${item.v / 2}px`}>
+                    <div class="w-3/4 rounded-t" style={`height: ${item.v}%; background: ${item.v < 30 ? 'rgb(239 68 68 / 0.3)' : 'rgb(99 102 241 / 0.3)'}`} />
+                  </div>
+                  <span class="mt-1 text-[8px] text-gray-600 truncate w-full text-center">{item.l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </a>
         <!-- Aftercare -->
-        <a href="/features/aftercare" class="group rounded-xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900 transition-all">
-          <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <a href="/features/aftercare" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Aftercare Automation</h3>
+            <p class="text-sm text-gray-400">Automated healing check-ins, review requests, and referral prompts — on autopilot. Your clients feel cared for without you lifting a finger.</p>
           </div>
-          <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Aftercare Automation</h3>
-          <p class="text-sm text-gray-400">Automated healing check-ins, review requests, and referral prompts — on autopilot.</p>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="w-full space-y-1.5">
+              {[
+                {d: 'Day 1', v: 100},
+                {d: 'Day 3', v: 75},
+                {d: 'Day 7', v: 50},
+                {d: 'Day 14', v: 25},
+              ].map((msg, i) => (
+                <div key={msg.d} class="flex items-center gap-2">
+                  <div class="h-1.5 w-1.5 rounded-full" class:list={[i === 0 ? 'bg-accent-500' : 'bg-ink-600']} />
+                  <div class={`h-2 rounded ${i === 0 ? 'bg-accent-500/20 w-3/4' : 'bg-ink-700/50 w-1/2'}`} />
+                </div>
+              ))}
+            </div>
+          </div>
         </a>
       </div>
     </div>
