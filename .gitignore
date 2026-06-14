@@ -7,3 +7,4 @@ server/data/
 test-results/
 playwright-report/
 playwright/.cache/
+workers/.wrangler/

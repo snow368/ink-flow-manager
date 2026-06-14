@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Digital Tattoo Waiver | InkFlow" description="Replace paper waivers with digital consent forms. QR check-in, e-signatures, secure storage." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Digital Tattoo Waivers for Paperless Studios</h1>
+      <p class="mt-6 text-lg text-gray-400 max-w-2xl mx-auto">No more paper forms. Clients sign waivers on their phone.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/pricing" class="rounded-lg bg-accent-600 px-6 py-3 text-sm font-semibold text-white hover:bg-accent-500">Start Free Trial</a>
+        <a href="/contact" class="rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-gray-300 hover:bg-ink-800">Book a Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-8 text-center">Going Digital with Waivers</h2>
+      <div class="grid gap-8 md:grid-cols-3">
+                <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">QR Code Check-In</h3>
+          <p class="mt-3 text-gray-400">Waiver loads instantly on client's phone.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">E-Signatures</h3>
+          <p class="mt-3 text-gray-400">Legal signatures with timestamps and audit trail.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Cloud Storage</h3>
+          <p class="mt-3 text-gray-400">All waivers stored securely. Export anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/30">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white">Go Paperless Today</h2>
+      <p class="mt-4 text-lg text-gray-400">Join studios that have gone fully digital.</p>
+      <div class="mt-8">
+        <a href="/pricing" class="rounded-lg bg-accent-600 px-8 py-4 text-base font-semibold text-white hover:bg-accent-500">Get Started Free</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
