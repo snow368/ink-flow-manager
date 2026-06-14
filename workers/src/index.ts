@@ -65,6 +65,49 @@ app.get('/api/config/check', async (c) => {
 });
 
 // =============================================
+// Auth Routes — register & login via D1
+// =============================================
+
+app.post('/api/auth/register', async (c) => {
+  try {
+    const { email, name, passwordHash, studioName, roles, deviceId } = await c.req.json();
+    if (!email || !passwordHash) { c.status(400); return c.json({ error: 'Email and password required' }); }
+    const existing = await c.env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
+    if (existing) { c.status(409); return c.json({ error: 'Email already registered' }); }
+    const id = generateId('user');
+    const ts = now();
+    await c.env.DB.prepare(
+      'INSERT INTO users (id, email, name, passwordHash, roles, studioName, deviceId, verified, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)'
+    ).bind(id, email, name || '', passwordHash, JSON.stringify(roles || []), studioName || '', deviceId || '', ts, ts).run();
+    return c.json({ ok: true, userId: id });
+  } catch (e: any) {
+    c.status(500);
+    return c.json({ error: e.message || 'Registration failed' });
+  }
+});
+
+app.post('/api/auth/login', async (c) => {
+  try {
+    const { email, passwordHash, deviceId } = await c.req.json();
+    if (!email || !passwordHash) { c.status(400); return c.json({ error: 'Email and password required' }); }
+    const user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
+    if (!user) { c.status(404); return c.json({ error: 'No account found' }); }
+    if (user.passwordHash !== passwordHash) { c.status(401); return c.json({ error: 'Wrong password' }); }
+    if (deviceId) {
+      await c.env.DB.prepare('UPDATE users SET deviceId = ?, updatedAt = ? WHERE id = ?').bind(deviceId, now(), user.id).run();
+    }
+    return c.json({
+      ok: true, userId: user.id, email: user.email, name: user.name,
+      roles: JSON.parse(user.roles || '[]'), plan: user.plan, studioName: user.studioName,
+    });
+  } catch (e: any) {
+    c.status(500);
+    return c.json({ error: e.message || 'Login failed' });
+  }
+});
+
+
+// =============================================
 // Stripe Routes
 // =============================================
 

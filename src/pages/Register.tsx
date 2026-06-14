@@ -5,6 +5,7 @@ import { db, type StudioLocationRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { processReferralOnRegister } from '../lib/referralLogic';
 import { hashPassword } from '../lib/auth';
+import { getBackendUrl } from '../lib/backendApi';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -53,19 +54,68 @@ export default function Register() {
     setSubmitting(true);
     setError('');
     try {
-      const user = await db.users.where('email').equals(email).first();
-      if (!user) { setError('No account found with this email.'); return; }
       const pwHash = await hashPassword(password);
-      if (user.passwordHash && user.passwordHash !== pwHash) { setError('Wrong password.'); return; }
-      if (!user.passwordHash) {
-        // Migrate: no password set yet — set it now
-        await db.users.update(user.id, { passwordHash: pwHash, deviceId });
-      } else {
-        await db.users.update(user.id, { deviceId });
+
+      // Try D1 (Cloudflare) first
+      const backendUrl = getBackendUrl();
+      let loggedInUser: any = null;
+      if (backendUrl) {
+        try {
+          const res = await fetch(`${backendUrl}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, passwordHash: pwHash, deviceId }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            loggedInUser = data;
+          } else if (res.status === 404) {
+            setError('No account found with this email.');
+            setSubmitting(false);
+            return;
+          } else if (res.status === 401) {
+            setError('Wrong password.');
+            setSubmitting(false);
+            return;
+          }
+          // Other statuses = try local fallback
+        } catch {
+          // Backend unreachable, fall through to local
+        }
       }
-      localStorage.setItem('inkflow_current_user', user.id);
+
+      // Fall back to IndexedDB
+      if (!loggedInUser) {
+        const localUser = await db.users.where('email').equals(email).first();
+        if (!localUser) { setError('No account found with this email.'); setSubmitting(false); return; }
+        if (localUser.passwordHash && localUser.passwordHash !== pwHash) { setError('Wrong password.'); setSubmitting(false); return; }
+        if (!localUser.passwordHash) {
+          await db.users.update(localUser.id, { passwordHash: pwHash, deviceId });
+        } else {
+          await db.users.update(localUser.id, { deviceId });
+        }
+        localStorage.setItem('inkflow_current_user', localUser.id);
+        loggedInUser = localUser;
+      } else {
+        localStorage.setItem('inkflow_current_user', loggedInUser.userId);
+        // Also sync to local IndexedDB so offline works
+        const existing = await db.users.where('email').equals(email).first();
+        if (!existing) {
+          await db.users.add({
+            id: loggedInUser.userId,
+            email: loggedInUser.email,
+            name: loggedInUser.name || '',
+            roles: loggedInUser.roles || [],
+            passwordHash: pwHash,
+            deviceId,
+            verified: false,
+            createdAt: Date.now(),
+          } as any);
+        }
+      }
+
       if (upgradePlan === 'pro_plus') {
-        await db.users.update(user.id, { plan: 'pro_plus' });
+        await db.users.update(loggedInUser.id || loggedInUser.userId, { plan: 'pro_plus' as any });
         window.location.href = '/pro-plus-setup';
       } else {
         window.location.href = '/today';
@@ -103,6 +153,20 @@ export default function Register() {
       });
       localStorage.setItem('inkflow_current_user', userId);
       incrementIPRegistrationCount();
+
+      // Sync to Cloudflare D1 (unconditional — all registrations go to cloud)
+      try {
+        const backendUrl = getBackendUrl();
+        if (backendUrl) {
+          await fetch(`${backendUrl}/api/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, name, passwordHash, studioName, roles, deviceId }),
+          });
+        }
+      } catch {
+        // Cloud sync is best-effort during registration
+      }
 
       if (refCode) {
         await processReferralOnRegister(userId, refCode);

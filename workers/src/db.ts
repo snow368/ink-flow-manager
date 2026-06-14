@@ -116,6 +116,21 @@ CREATE TABLE IF NOT EXISTS waivers (
   createdAt INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  email TEXT NOT NULL,
+  name TEXT DEFAULT '',
+  passwordHash TEXT DEFAULT '',
+  roles TEXT DEFAULT '[]',
+  plan TEXT DEFAULT 'free',
+  studioName TEXT DEFAULT '',
+  deviceId TEXT DEFAULT '',
+  verified INTEGER DEFAULT 0,
+  createdAt INTEGER,
+  updatedAt INTEGER
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
 CREATE TABLE IF NOT EXISTS quotas (
   artistId TEXT PRIMARY KEY,
   plan TEXT DEFAULT 'free',
