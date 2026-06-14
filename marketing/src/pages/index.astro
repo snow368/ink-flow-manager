@@ -53,7 +53,18 @@ import Footer from '../components/Footer.astro';
                 <span class="ml-3 text-xs text-gray-600">app.inkflow.com</span>
               </div>
               <!-- Real product screenshot -->
-              <img src="/images/hero-screenshot-2.png" alt="InkFlow booking calendar and dashboard interface" class="w-full aspect-[16/10] object-cover" />
+              <!-- Product preview — polished gradient placeholder -->
+              <div class="aspect-[16/10] bg-gradient-to-br from-accent-500/5 via-ink-900 to-ink-950 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-accent-500/5 to-transparent" />
+                <div class="relative z-10 text-center">
+                  <div class="mx-auto h-20 w-20 rounded-2xl bg-gradient-to-br from-accent-400 to-accent-600 flex items-center justify-center shadow-lg shadow-accent-500/20">
+                    <span class="text-3xl font-bold text-white">IF</span>
+                  </div>
+                  <p class="mt-4 text-sm font-medium text-gray-500">App preview</p>
+                </div>
+                <!-- Decorative grid lines -->
+                <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(rgba(99,102,241,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.3) 1px, transparent 1px); background-size: 40px 40px" />
+              </div>
             </div>
             <!-- Glowing accent behind -->
             <div class="absolute -bottom-6 -right-6 h-48 w-48 rounded-full bg-accent-500/10 blur-2xl pointer-events-none -z-10" />
