@@ -32,7 +32,7 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          command: pages deploy dist/ --project-name ink-flow-manager
+          command: pages deploy dist/ --project-name ink-flow
       - name: Install Worker deps
         run: cd workers && npm ci
       - name: Deploy Worker (API)
