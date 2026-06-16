@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db, type UserRecord } from '../db';
 import { detectInitialLanguage, setStoredLanguage, t, type AppLanguage } from '../lib/i18n';
@@ -289,6 +289,7 @@ export default function AccountSettings() {
             <button onClick={async () => { await seedDemoData(); setDevMessage('Demo data filled'); }} style={{ padding: 14, borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Fill Demo Data</button>
             <button onClick={async () => { await seedMultiLocationTest(); setDevMessage('Multi-location seeded'); }} style={{ padding: 14, borderRadius: 10, border: 'none', background: '#4338ca', color: 'white', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Seed Multi-Location Test</button>
             <button onClick={async () => { await resetDatabase(); setDevMessage('Database reset'); }} style={{ padding: 14, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>Reset All Data</button>
+            <DeleteAccountButton userId={user?.id} />
             {user.roles?.includes('dev') && (
               <div style={{ background: '#0f172a', borderRadius: 10, padding: 14, border: '1px solid #a855f780' }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: '#c084fc', marginBottom: 6 }}>Plan Override</p>
@@ -312,6 +313,57 @@ export default function AccountSettings() {
         {t(lang, 'logout')}
       </button>
     </div>
+  );
+}
+
+function DeleteAccountButton({ userId }: { userId?: string }) {
+  const [step, setStep] = useState<'idle' | 'confirm' | 'done'>('idle');
+  const deleting = useRef(false);
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    if (!userId || deleting.current) return;
+    deleting.current = true;
+    try {
+      const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+      if (apiSecret) {
+        await fetch('/api/auth/unregister', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret, 'x-user-role': 'owner' },
+          body: JSON.stringify({ userId }),
+        }).catch(() => {});
+      }
+      localStorage.removeItem('inkflow_current_user');
+      localStorage.removeItem('inkflow_current_user_data');
+      try { await db.delete(); } catch { /* ignore */ }
+      setStep('done');
+      setTimeout(() => { window.location.href = '/'; }, 1500);
+    } catch { setStep('idle'); }
+  };
+
+  if (step === 'done') return <p style={{ fontSize: 13, color: '#4ade80', textAlign: 'center', marginTop: 8 }}>Account deleted. Redirecting...</p>;
+
+  if (step === 'confirm') return (
+    <div style={{ marginTop: 8 }}>
+      <p style={{ fontSize: 12, color: '#f87171', marginBottom: 6 }}>Delete account permanently? All data will be lost.</p>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <button onClick={handleDelete}
+          style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: '#dc2626', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          Yes, Delete
+        </button>
+        <button onClick={() => setStep('idle')}
+          style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer' }}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <button onClick={() => setStep('confirm')}
+      style={{ width: '100%', padding: 14, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginTop: 8 }}>
+      Delete My Account
+    </button>
   );
 }
 
