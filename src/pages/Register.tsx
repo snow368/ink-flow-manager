@@ -96,23 +96,27 @@ export default function Register() {
           await db.users.update(localUser.id, { deviceId });
         }
         localStorage.setItem('inkflow_current_user', localUser.id);
+        localStorage.setItem('inkflow_current_user_data', JSON.stringify(localUser));
         loggedInUser = localUser;
       } else {
         localStorage.setItem('inkflow_current_user', loggedInUser.userId);
+        localStorage.setItem('inkflow_current_user_data', JSON.stringify(loggedInUser));
         // Also sync to local IndexedDB so offline works
-        const existing = await db.users.where('email').equals(email).first();
-        if (!existing) {
-          await db.users.add({
-            id: loggedInUser.userId,
-            email: loggedInUser.email,
-            name: loggedInUser.name || '',
-            roles: loggedInUser.roles || [],
-            passwordHash: pwHash,
-            deviceId,
-            verified: false,
-            createdAt: Date.now(),
-          } as any);
-        }
+        try {
+          const existing = await db.users.where('email').equals(email).first();
+          if (!existing) {
+            await db.users.add({
+              id: loggedInUser.userId,
+              email: loggedInUser.email,
+              name: loggedInUser.name || '',
+              roles: loggedInUser.roles || [],
+              passwordHash: pwHash,
+              deviceId,
+              verified: false,
+              createdAt: Date.now(),
+            } as any);
+          }
+        } catch { /* IndexedDB may be unavailable (Safari private) — non-critical */ }
       }
 
       if (upgradePlan === 'pro_plus') {
@@ -189,6 +193,13 @@ export default function Register() {
         /* server saved it, we can proceed without local DB */
         localStorage.setItem('inkflow_current_user', userId);
       }
+      /* Cache user data to localStorage (works in Safari private mode) */
+      try {
+        localStorage.setItem('inkflow_current_user_data', JSON.stringify({
+          id: userId, email, name, roles, plan: upgradePlan || 'free',
+          studioName: studioName.trim() || '', createdAt: now,
+        }));
+      } catch { /* ok */ }
 
       if (refCode) {
         try { await processReferralOnRegister(userId, refCode); } catch { /* skip */ }

@@ -356,7 +356,23 @@ function LocationSelectorWrapper() {
   const [user, setUser] = useState<UserRecord | null>(null);
   useEffect(() => {
     const stored = localStorage.getItem('inkflow_current_user');
-    if (stored) { db.users.get(stored).then(u => setUser(u ?? null)); }
+    if (stored) {
+      /* Try IndexedDB first, fall back to localStorage cache (works in Safari private mode) */
+      db.users.get(stored).then(u => {
+        if (u) { setUser(u); return; }
+        /* IndexedDB miss — check localStorage cache */
+        const cached = localStorage.getItem('inkflow_current_user_data');
+        if (cached) {
+          try { setUser(JSON.parse(cached)); } catch { /* ignore */ }
+        }
+      }).catch(() => {
+        /* IndexedDB error (Safari private) — use cache */
+        const cached = localStorage.getItem('inkflow_current_user_data');
+        if (cached) {
+          try { setUser(JSON.parse(cached)); } catch { /* ignore */ }
+        }
+      });
+    }
   }, []);
   return <LocationSelector user={user} />;
 }
