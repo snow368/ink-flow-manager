@@ -95,7 +95,7 @@ export default function PricingPage() {
     if (stored) db.users.get(stored).then(u => setUser(u ?? null));
   }, []);
 
-  const currentPlanId: 'free' | 'solo' | 'pro' | 'pro_plus' = !user?.plan || user.plan === 'free' ? 'free' : user.plan;
+  const currentPlanId: 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus' = !user?.plan || user.plan === 'free' ? 'free' : user.plan;
 
   const handleSelectPlan = (planId: string | null) => {
     if (!planId || planId === currentPlanId) return;

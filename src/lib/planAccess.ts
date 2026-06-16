@@ -1,6 +1,6 @@
 import type { UserRecord } from '../db';
 
-type PlanTier = 'free' | 'solo' | 'pro' | 'pro_plus';
+type PlanTier = 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus';
 type Feature =
   // Solo+
   | 'inventory'

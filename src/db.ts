@@ -837,7 +837,7 @@ export interface UserRecord {
   email: string;
   name: string;
   roles: Array<'artist' | 'owner' | 'staff' | 'dev'>;
-  plan?: 'free' | 'solo' | 'pro' | 'pro_plus';
+  plan?: 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus';
   artistId?: string;
   deviceId?: string;
   verified: boolean;

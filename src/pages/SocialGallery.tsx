@@ -13,6 +13,7 @@ interface PhotoItem {
 }
 
 type SharePlatform = 'instagram' | 'facebook' | 'pinterest';
+type GridLayout = '3x3' | '2x2' | '4x1' | '1xN';
 
 const PLATFORM_CONFIG: Record<SharePlatform, { label: string; icon: string; aspect: number; width: number; height: number; }> = {
   instagram: { label: 'Instagram', icon: '📷', aspect: 1, width: 1080, height: 1080 },
@@ -26,6 +27,7 @@ const HASHTAGS_BY_PLATFORM: Record<SharePlatform, string[]> = {
   pinterest: ['#tattoo', '#tattooideas', '#tattoodesign', '#inked', '#bodyart', '#tattooinspiration', '#tattooart', '#tattoosleeve', '#tattoocommunity', '#tattooflash', '#tattoostudio', '#tattoodesigns', '#tattooartist', '#newtattoo', '#art'],
 };
 
+/** Caption templates by platform */
 const CAPTION_TEMPLATES = [
   { platform: 'instagram', title: 'New piece showcase', text: 'Freshly done for this legend 🤝\n\nSwipe to see the whole process →\n\nBook your session at the link in bio' },
   { platform: 'instagram', title: 'Process/steps', text: 'From blank skin to finished art 🖤\n\nStep 1: Clean & prep\nStep 2: Stencil placement\nStep 3: Lining\nStep 4: Shading\nStep 5: Done ✅\n\nWhich step is your favorite? 👇' },
@@ -35,6 +37,10 @@ const CAPTION_TEMPLATES = [
   { platform: 'tiktok', title: 'Quick process', text: 'Watch this one come together 🎬\n\nFrom start to finish in 15 seconds.\n\nWho\'s next? 👇' },
   { platform: 'tiktok', title: 'Before/after reveal', text: 'The reveal NEVER gets old 😮‍💨\n\nRate this transformation 1-10 👇' },
   { platform: 'tiktok', title: 'Educational', text: 'Answering the #1 question I get:\n\n"How much does a tattoo cost?"\n\nHere\'s the truth 👇' },
+  { platform: 'facebook', title: 'New work showcase', text: 'Fresh ink alert 🖤\n\nJust finished this piece for an amazing client.\n\nBook your session today!' },
+  { platform: 'facebook', title: 'Studio update', text: 'Spots opening up this week!\n\nDM to book your consultation.\n\nFlash designs available first come first served.' },
+  { platform: 'pinterest', title: 'Tattoo inspiration', text: 'Tattoo inspiration for your next piece 🖤\n\nPin this to your tattoo ideas board!' },
+  { platform: 'pinterest', title: 'Design highlight', text: 'Detailed linework and shading this piece came together beautifully.\n\nSave this to your inspiration board.' },
 ];
 
 const GROWTH_TIPS = [
@@ -42,16 +48,41 @@ const GROWTH_TIPS = [
   { platform: 'instagram' as const, tip: 'Stories > Feed. Post process videos to Stories daily. Use polls/questions to boost engagement.' },
   { platform: 'tiktok' as const, tip: 'Hook in first 2 seconds. Show the process, not just the result. Use trending sounds.' },
   { platform: 'tiktok' as const, tip: 'Post 1-2x daily. Reply to comments with video. Cross-post your best TikToks to Reels.' },
+  { platform: 'facebook' as const, tip: 'Post in local tattoo groups. Share process videos. Tag clients (with permission) for reach.' },
+  { platform: 'facebook' as const, tip: 'Facebook Marketplace counts as local SEO — list your flash designs there.' },
+  { platform: 'pinterest' as const, tip: 'Create themed boards (sleeve ideas / fine line / cover-ups). Pin consistently 5-10x/day.' },
+  { platform: 'pinterest' as const, tip: 'Use keyword-rich pin descriptions. Rich pins from your website auto-update.' },
 ];
 
-const DEEP_LINKS: Record<SharePlatform, { app: string; url: string; hint: string }> = {
-  instagram: { app: 'Instagram', url: 'https://www.instagram.com/create/story/', hint: 'Open Instagram → upload the saved image' },
-  facebook: { app: 'Facebook', url: 'https://www.facebook.com/photo/', hint: 'Open Facebook → create a new post with the image' },
-  pinterest: { app: 'Pinterest', url: 'https://www.pinterest.com/pin/create/button/', hint: 'Pinterest pin builder (image URL needed — upload first)' },
+const DEEP_LINKS: Record<SharePlatform, { app: string; url: string }> = {
+  instagram: { app: 'Instagram', url: 'https://www.instagram.com/create/story/' },
+  facebook: { app: 'Facebook', url: 'https://www.facebook.com/photo/' },
+  pinterest: { app: 'Pinterest', url: 'https://www.pinterest.com/pin/create/button/' },
 };
+
+/** Layout options for Pro+ */
+const LAYOUTS: { key: GridLayout; label: string; desc: string }[] = [
+  { key: '3x3', label: '3×3 Grid', desc: 'Classic grid, max 9 photos' },
+  { key: '2x2', label: '2×2 Grid', desc: 'Clean 4-photo layout' },
+  { key: '4x1', label: '4×1 Strip', desc: 'Horizontal strip, 4 photos' },
+  { key: '1xN', label: '1×N Stack', desc: 'Vertical stack' },
+];
+
+const BG_COLORS = ['#000000', '#0f172a', '#1e293b', '#ffffff', '#fef3c7', '#fce7f3', '#dbeafe', '#f0fdf4'];
 
 function getRandomHashtags(platform: SharePlatform): string[] {
   return [...HASHTAGS_BY_PLATFORM[platform]].sort(() => Math.random() - 0.5).slice(0, 10);
+}
+
+function getUserPlan(): 'free' | 'solo' | 'pro' | 'pro_plus' {
+  try {
+    const data = JSON.parse(localStorage.getItem('inkflow_current_user_data') || '{}');
+    return data.plan || 'free';
+  } catch { return 'free'; }
+}
+
+function isPro(plan: string): boolean {
+  return plan === 'pro' || plan === 'pro_plus';
 }
 
 export default function SocialGallery() {
@@ -65,7 +96,7 @@ export default function SocialGallery() {
   const [loading, setLoading] = useState(true);
   const [platform, setPlatform] = useState<SharePlatform>('instagram');
 
-  /* ── Draft / Caption Editor state ── */
+  /* ── Pro features ── */
   const [activeTab, setActiveTab] = useState<'compose' | 'history'>('compose');
   const [editorCaption, setEditorCaption] = useState('');
   const [editorHashtags, setEditorHashtags] = useState<string[]>(() => getRandomHashtags('instagram'));
@@ -73,9 +104,15 @@ export default function SocialGallery() {
   const [draftsLoading, setDraftsLoading] = useState(true);
   const [toast, setToast] = useState('');
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-
-  /* ── Copy feedback ── */
   const [copyFeedback, setCopyFeedback] = useState('');
+
+  /* ── Studio enhancements (Pro+) ── */
+  const [gridLayout, setGridLayout] = useState<GridLayout>('3x3');
+  const [bgColor, setBgColor] = useState('#000000');
+  const [showProUpsell, setShowProUpsell] = useState(false);
+
+  const plan = getUserPlan();
+  const isProUser = isPro(plan);
 
   /* ── Initialize ── */
   useEffect(() => {
@@ -143,9 +180,9 @@ export default function SocialGallery() {
     const text = watermark.trim();
     if (!text) return;
     ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
     const barH = 30;
     const barY = h - barH - 8;
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
     const tw = ctx.measureText(text).width;
     ctx.fillRect((w - tw - 24) / 2, barY, tw + 24, barH);
     ctx.fillStyle = 'rgba(255,255,255,0.85)';
@@ -156,7 +193,7 @@ export default function SocialGallery() {
     ctx.restore();
   };
 
-  /* ── Grid generation + save draft ── */
+  /* ── Grid generation ── */
   const generateGrid = async () => {
     const selectedPhotos = photos.filter(p => selected.has(p.id));
     if (selectedPhotos.length === 0) return;
@@ -168,17 +205,25 @@ export default function SocialGallery() {
     if (!ctx) return;
 
     const cfg = PLATFORM_CONFIG[platform];
-    const cols = platform === 'instagram' ? 3 : 1;
-    const rows = platform === 'instagram' ? Math.ceil(selectedPhotos.length / cols) : selectedPhotos.length;
+
+    /* Resolve cols/rows based on layout */
+    let cols: number, rows: number;
+    switch (gridLayout) {
+      case '2x2': cols = 2; rows = 2; break;
+      case '4x1': cols = 4; rows = 1; break;
+      case '1xN': cols = 1; rows = selectedPhotos.length; break;
+      default: /* 3x3 */ cols = platform === 'instagram' ? 3 : 1; rows = platform === 'instagram' ? Math.ceil(selectedPhotos.length / cols) : selectedPhotos.length;
+    }
+
     const cellSize = cfg.width / cols;
     const padding = 2;
     canvas.width = cfg.width;
-    canvas.height = platform === 'instagram' ? rows * cellSize : cfg.height;
+    canvas.height = gridLayout === '4x1' ? cfg.width / 4 * 2 : gridLayout === '1xN' ? rows * cellSize : platform === 'instagram' ? rows * cellSize : cfg.height;
 
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (let i = 0; i < selectedPhotos.length; i++) {
+    for (let i = 0; i < Math.min(selectedPhotos.length, cols * rows); i++) {
       try {
         const img = await loadImage(selectedPhotos[i].imageUrl);
         const col = i % cols;
@@ -198,7 +243,7 @@ export default function SocialGallery() {
     setPreviewUrl(dataUrl);
     setGenerating(false);
 
-    /* Auto-save draft to IndexedDB */
+    /* Auto-save draft */
     try {
       const draft: SocialDraftRecord = {
         id: crypto.randomUUID?.() || `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -214,7 +259,7 @@ export default function SocialGallery() {
         createdAt: Date.now(),
       };
       await db.socialDrafts.add(draft);
-      showToast('💾 Draft saved!');
+      showToast('Draft saved!');
       loadDrafts();
     } catch (e) {
       console.error('Failed to save draft:', e);
@@ -227,7 +272,7 @@ export default function SocialGallery() {
     setTimeout(() => setToast(''), 2000);
   };
 
-  /* ── Actions on preview ── */
+  /* ── Download ── */
   const handleDownload = () => {
     if (!previewUrl) return;
     const a = document.createElement('a');
@@ -236,6 +281,7 @@ export default function SocialGallery() {
     a.click();
   };
 
+  /* ── Native share ── */
   const handleShare = async () => {
     if (!previewUrl) return;
     const blob = await (await fetch(previewUrl)).blob();
@@ -250,19 +296,34 @@ export default function SocialGallery() {
     }
   };
 
+  /* ── Copy All (Pro+) — image + caption + hashtags to clipboard ── */
+  const handleCopyAll = async () => {
+    if (!previewUrl) return;
+    try {
+      /* Copy image to clipboard */
+      const blob = await (await fetch(previewUrl)).blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob }),
+      ]);
+      /* Also copy text to clipboard */
+      const text = `${editorCaption || ''}\n\n${editorHashtags.join(' ')}`.trim();
+      if (text) {
+        await navigator.clipboard.writeText(text);
+      }
+      showToast('Copied! Image + caption ready to paste');
+    } catch { showToast('Copy failed — try Download instead'); }
+  };
+
   /* ── Deep link ── */
   const handleDeepLink = (p: SharePlatform) => {
     const link = DEEP_LINKS[p];
     window.open(link.url, '_blank');
-    showToast(`📋 Image saved. ${link.hint}`);
+    showToast(`Opening ${link.app} in browser`);
   };
 
-  /* ── Caption: apply template ── */
-  const applyTemplate = (text: string) => {
-    setEditorCaption(text);
-  };
+  /* ── Caption ── */
+  const applyTemplate = (text: string) => setEditorCaption(text);
 
-  /* ── Copy helpers ── */
   const copyToClipboard = async (text: string, label: string) => {
     await navigator.clipboard.writeText(text);
     setCopyFeedback(label);
@@ -273,7 +334,7 @@ export default function SocialGallery() {
   const downloadDraftImage = (dataUrl: string) => {
     const a = document.createElement('a');
     a.href = dataUrl;
-    a.download = `inkflow_draft.png`;
+    a.download = 'inkflow_draft.png';
     a.click();
   };
 
@@ -295,7 +356,7 @@ export default function SocialGallery() {
     try {
       await db.socialDrafts.delete(id);
       setDrafts(prev => prev.filter(d => d.id !== id));
-      showToast('🗑️ Draft deleted');
+      showToast('Draft deleted');
     } catch { showToast('Failed to delete'); }
     setConfirmDeleteId(null);
   };
@@ -309,18 +370,14 @@ export default function SocialGallery() {
     if (draft.caption && draft.caption !== ' ') setEditorCaption(draft.caption);
     if (draft.hashtags) setEditorHashtags(draft.hashtags.split(' ').filter(Boolean));
     if (draft.watermarkText) setWatermark(draft.watermarkText);
-    if (draft.selectedPhotoIds?.length) {
-      setSelected(new Set(draft.selectedPhotoIds));
-    }
+    if (draft.selectedPhotoIds?.length) setSelected(new Set(draft.selectedPhotoIds));
   };
 
-  /* ── Format date ── */
   const fmtDate = (ts: number) => {
     const d = new Date(ts);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
-  /* ── Platform emoji ── */
   const platformEmoji = (p: string) => {
     switch (p) {
       case 'instagram': return '📷';
@@ -336,7 +393,13 @@ export default function SocialGallery() {
     <div style={{ minHeight: '100dvh', background: '#0f172a', color: 'white', padding: 16, paddingBottom: 80 }}>
       {/* ── Header ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Social Gallery</h2>
+        <div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Social Content Studio</h2>
+          <span style={{ fontSize: 11, color: isProUser ? '#22c55e' : '#64748b' }}>
+            {plan === 'free' ? 'Free' : plan === 'solo' ? 'Solo' : plan === 'pro' ? 'Pro' : 'Pro+'}
+            {isProUser ? '' : ' — upgrade to Pro for AI layouts & Copy All'}
+          </span>
+        </div>
         <button onClick={() => navigate(-1)} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>Back</button>
       </div>
 
@@ -357,16 +420,16 @@ export default function SocialGallery() {
               color: activeTab === tab ? 'white' : '#64748b',
               fontSize: 13, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer',
             }}>
-            {tab === 'compose' ? '✍️ Create' : '📂 Drafts'}
+            {tab === 'compose' ? 'Create' : 'Drafts'}
           </button>
         ))}
       </div>
 
-      {/* ═══════════════════════════ COMPOSE TAB ═══════════════════════════ */}
+      {/* ═══════════════════ COMPOSE ═══════════════════ */}
       {activeTab === 'compose' && (
         <>
           <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 12 }}>
-            Select up to 9 completed tattoos. Generate a grid, edit caption, save.
+            Select completed tattoos. Generate a grid, add caption, then copy all or download.
           </p>
 
           {/* ── Platform selector ── */}
@@ -383,6 +446,42 @@ export default function SocialGallery() {
             ))}
           </div>
 
+          {/* ── Layout selector (Pro+) ── */}
+          {isProUser && (
+            <div style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>Layout</p>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {LAYOUTS.map(l => (
+                  <button key={l.key} onClick={() => setGridLayout(l.key)}
+                    style={{
+                      flex: 1, padding: '6px', borderRadius: 6, border: gridLayout === l.key ? '2px solid #22c55e' : '1px solid #334155',
+                      background: gridLayout === l.key ? '#16653420' : '#1e293b',
+                      color: gridLayout === l.key ? '#22c55e' : '#94a3b8', fontSize: 11, cursor: 'pointer',
+                    }}>
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Background color (Pro+) ── */}
+          {isProUser && (
+            <div style={{ marginBottom: 12 }}>
+              <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 4 }}>Background</p>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {BG_COLORS.map(c => (
+                  <div key={c} onClick={() => setBgColor(c)}
+                    style={{
+                      width: 24, height: 24, borderRadius: 12, background: c, cursor: 'pointer',
+                      border: bgColor === c ? '3px solid #22c55e' : '2px solid transparent',
+                      boxShadow: c === '#ffffff' || c === '#fef3c7' ? '0 0 0 1px #334155' : 'none',
+                    }} />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* ── Watermark + counter ── */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
             <input value={watermark} onChange={e => setWatermark(e.target.value)}
@@ -391,11 +490,11 @@ export default function SocialGallery() {
             <span style={{ fontSize: 12, color: '#64748b' }}>{selected.size}/9</span>
           </div>
 
-          {/* ── Generate button ── */}
+          {/* ── Generate ── */}
           {selected.size > 0 && (
             <button onClick={generateGrid} disabled={generating}
               style={{ width: '100%', padding: '10px', borderRadius: 8, border: 'none', background: generating ? '#4b5563' : '#22c55e', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer', marginBottom: 16 }}>
-              {generating ? '🔄 Generating...' : `🎨 Generate Grid (${selected.size})`}
+              {generating ? 'Generating...' : `Generate Grid (${selected.size})`}
             </button>
           )}
 
@@ -406,7 +505,7 @@ export default function SocialGallery() {
             <div style={{ textAlign: 'center', padding: 40 }}>
               <p style={{ fontSize: 40, marginBottom: 8 }}>📸</p>
               <p style={{ color: '#94a3b8' }}>No completed tattoo photos yet.</p>
-              <p style={{ fontSize: 12, color: '#64748b' }}>Take photos with step "完成" in sessions, or import from gallery in client profile.</p>
+              <p style={{ fontSize: 12, color: '#64748b' }}>Take photos with step  Done  in sessions, or import from gallery in client profile.</p>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginBottom: 16 }}>
@@ -432,21 +531,34 @@ export default function SocialGallery() {
             <div style={{ marginBottom: 16, textAlign: 'center' }}>
               <img src={previewUrl} alt="Grid preview" style={{ maxWidth: '100%', borderRadius: 8, border: '1px solid #334155' }} />
               <div style={{ display: 'flex', gap: 6, marginTop: 8, justifyContent: 'center' }}>
-                <button onClick={handleDownload} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1d4ed8', color: 'white', fontSize: 12, cursor: 'pointer' }}>⬇ Download</button>
-                <button onClick={handleShare} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#075e54', color: 'white', fontSize: 12, cursor: 'pointer' }}>📤 Share</button>
+                <button onClick={handleDownload} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#1d4ed8', color: 'white', fontSize: 12, cursor: 'pointer' }}>Download</button>
+                <button onClick={handleShare} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#075e54', color: 'white', fontSize: 12, cursor: 'pointer' }}>Share</button>
                 <button onClick={() => handleDeepLink(platform)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>
-                  🔗 Open {PLATFORM_CONFIG[platform].label}
+                  Open {PLATFORM_CONFIG[platform].label}
                 </button>
+                {isProUser && (
+                  <button onClick={handleCopyAll} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#7c3aed', color: 'white', fontSize: 12, cursor: 'pointer' }}>
+                    Copy All
+                  </button>
+                )}
               </div>
             </div>
           )}
 
-          {/* ── Caption Editor ── */}
+          {/* ── Pro upsell ── */}
+          {!isProUser && previewUrl && (
+            <div style={{ background: '#1e293b', borderRadius: 8, padding: 10, border: '1px solid #7c3aed44', marginBottom: 16, textAlign: 'center' }}>
+              <p style={{ fontSize: 12, color: '#a78bfa', margin: 0 }}>
+                Want more layouts, custom backgrounds, and Copy All? <a href="/pricing" style={{ color: '#22c55e', fontWeight: 600 }}>Upgrade to Pro</a>
+              </p>
+            </div>
+          )}
+
+          {/* ── Caption ── */}
           {selected.size > 0 && (
             <div style={{ borderTop: '1px solid #334155', paddingTop: 16 }}>
-              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>✍️ Caption</h3>
+              <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>Caption</h3>
 
-              {/* Template presets */}
               <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Click a template to start:</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
                 {CAPTION_TEMPLATES.filter(c => c.platform === platform).slice(0, 4).map((c, i) => (
@@ -458,41 +570,39 @@ export default function SocialGallery() {
                 ))}
               </div>
 
-              {/* Editable textarea */}
               <textarea value={editorCaption} onChange={e => setEditorCaption(e.target.value)}
                 placeholder="Write your caption here..."
                 rows={4}
                 style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', marginBottom: 8 }} />
 
-              {/* Copy caption */}
               <button onClick={() => copyToClipboard(editorCaption || ' ', 'caption')}
                 style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 11, cursor: 'pointer', marginBottom: 12 }}>
-                {copyFeedback === 'caption' ? '✓ Copied!' : '📋 Copy Caption'}
+                {copyFeedback === 'caption' ? 'Copied!' : 'Copy Caption'}
               </button>
 
               {/* ── Hashtags ── */}
-              <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>🏷️ Hashtags</h3>
+              <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Hashtags</h3>
               <div style={{ background: '#1e293b', borderRadius: 8, padding: 10, border: '1px solid #334155', marginBottom: 6 }}>
                 <p style={{ fontSize: 12, color: '#60a5fa', lineHeight: 1.6, margin: 0 }}>{editorHashtags.join(' ')}</p>
               </div>
               <button onClick={() => setEditorHashtags(getRandomHashtags(platform))}
                 style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#64748b', fontSize: 11, cursor: 'pointer', marginRight: 6, marginBottom: 12 }}>
-                🔄 Shuffle
+                Shuffle
               </button>
               <button onClick={() => copyToClipboard(editorHashtags.join(' '), 'hashtags')}
                 style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#64748b', fontSize: 11, cursor: 'pointer', marginBottom: 12 }}>
-                {copyFeedback === 'hashtags' ? '✓ Copied!' : '📋 Copy Hashtags'}
+                {copyFeedback === 'hashtags' ? 'Copied!' : 'Copy Hashtags'}
               </button>
 
               {/* ── Growth Tips ── */}
               <details style={{ marginBottom: 16 }}>
                 <summary style={{ fontSize: 12, color: '#94a3b8', cursor: 'pointer', padding: 8, borderRadius: 6, background: '#1e293b', border: '1px solid #334155' }}>
-                  📈 Growth tips for {PLATFORM_CONFIG[platform].label}
+                  Growth tips for {PLATFORM_CONFIG[platform].label}
                 </summary>
                 <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {GROWTH_TIPS.filter(t => t.platform === platform).map((t, i) => (
                     <div key={i} style={{ background: '#1e293b', borderRadius: 6, padding: 8, border: '1px solid #334155' }}>
-                      <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>💡 {t.tip}</p>
+                      <p style={{ fontSize: 12, color: '#cbd5e1', margin: 0 }}>{t.tip}</p>
                     </div>
                   ))}
                 </div>
@@ -500,18 +610,17 @@ export default function SocialGallery() {
             </div>
           )}
 
-          {/* Hidden canvas for grid generation */}
           <canvas ref={canvasRef} style={{ display: 'none' }} />
         </>
       )}
 
-      {/* ═══════════════════════════ HISTORY TAB ═══════════════════════════ */}
+      {/* ═══════════════════ DRAFTS ═══════════════════ */}
       {activeTab === 'history' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Previously saved drafts</p>
+            <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Saved drafts</p>
             <button onClick={loadDrafts} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
-              🔄 Refresh
+              Refresh
             </button>
           </div>
 
@@ -527,41 +636,36 @@ export default function SocialGallery() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {drafts.map(draft => (
                 <div key={draft.id} style={{ background: '#1e293b', borderRadius: 12, overflow: 'hidden', border: '1px solid #334155' }}>
-                  {/* Thumbnail */}
                   {draft.gridDataUrl && (
                     <div style={{ width: '100%', aspectRatio: '1.5', maxHeight: 200, overflow: 'hidden', background: '#0f172a' }}>
                       <img src={draft.gridDataUrl} alt="Draft" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
                   )}
-
-                  {/* Info */}
                   <div style={{ padding: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                       <span>{platformEmoji(draft.platform)}</span>
                       <span style={{ fontSize: 12, fontWeight: 600, color: 'white', textTransform: 'capitalize' }}>{draft.platform}</span>
                       <span style={{ marginLeft: 'auto', fontSize: 11, color: '#64748b' }}>{fmtDate(draft.createdAt)}</span>
                     </div>
-
                     {draft.caption && draft.caption !== ' ' && (
                       <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 8px', lineHeight: 1.3, maxHeight: 36, overflow: 'hidden' }}>
                         {draft.caption.slice(0, 80)}{draft.caption.length > 80 ? '...' : ''}
                       </p>
                     )}
-
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button onClick={() => draft.gridDataUrl && downloadDraftImage(draft.gridDataUrl)}
                         disabled={!draft.gridDataUrl}
                         style={{ flex: 1, padding: '6px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
-                        ⬇ Download
+                        Download
                       </button>
                       <button onClick={() => shareDraft(draft)}
                         disabled={!draft.gridDataUrl}
                         style={{ flex: 1, padding: '6px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
-                        📤 Share
+                        Share
                       </button>
                       <button onClick={() => restoreDraft(draft)}
                         style={{ flex: 1, padding: '6px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>
-                        ✏️ Edit
+                        Edit
                       </button>
                       {confirmDeleteId === draft.id ? (
                         <button onClick={() => deleteDraft(draft.id)}

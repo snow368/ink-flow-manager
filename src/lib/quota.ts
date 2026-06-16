@@ -1,7 +1,7 @@
 import { db, type UserRecord } from '../db';
 import { getApiBaseUrl } from './backendApi';
 
-type PlanKey = 'free' | 'solo' | 'pro' | 'pro_plus';
+type PlanKey = 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus';
 
 type Quota = {
   storageMb: number;
@@ -12,6 +12,7 @@ const QUOTA_BY_PLAN: Record<PlanKey, Quota> = {
   free: { storageMb: 0 },
   solo: { storageMb: 10 * 1024 },
   pro: { storageMb: 50 * 1024 },
+  plus: { storageMb: 50 * 1024 },
   pro_plus: { storageMb: 200 * 1024 },
 };
 

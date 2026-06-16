@@ -116,8 +116,8 @@ export default function Me() {
         />
         <NavCard
           emoji="🎨"
-          title="Social Gallery"
-          desc="Select completed tattoos → 9-grid → share to IG/FB"
+          title="Social Content Studio"
+          desc="Grid layouts, captions, copy all — share to IG/FB/Pin"
           onClick={() => navigate('/social-gallery')}
           color="#ec4899"
         />
