@@ -486,6 +486,45 @@ app.delete('/api/site-config/:slug', async (c) => {
 });
 
 // =============================================
+// Maps → Auto Website Builder (Batch)
+// =============================================
+
+/** Batch create site configs from Maps data — auth via API key only (for server-side scripts) */
+app.post('/api/site-config/batch', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const { businesses } = await c.req.json();
+  if (!Array.isArray(businesses) || businesses.length === 0) {
+    c.status(400); return c.json({ error: 'businesses array required' });
+  }
+  const ts = now();
+  const results: { name: string; slug: string; status: string; error?: string }[] = [];
+
+  for (const b of businesses) {
+    const slug = b.slug || (b.name + '-' + b.city).toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').slice(0, 60);
+    const studioName = b.name || b.studioName || '';
+    const bio = b.bio || `${studioName} — serving ${b.city || b.address || ''}. Call ${b.phone || ''} for appointments.`;
+
+    try {
+      const existing = await c.env.DB.prepare('SELECT id FROM site_configs WHERE slug = ?').bind(slug).first();
+      if (existing) {
+        results.push({ name: studioName, slug, status: 'skipped (already exists)' });
+        continue;
+      }
+      const id = generateId('scfg');
+      await c.env.DB.prepare(
+        `INSERT INTO site_configs (id, artistId, slug, template, theme, bio, studioName, customDomain, locations, publishedAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(id, 'maps_batch', slug, 'portfolio', 'dark', bio, studioName, '', '[]', ts, ts).run();
+      results.push({ name: studioName, slug, status: 'created' });
+    } catch (e: any) {
+      results.push({ name: studioName, slug, status: 'error', error: e.message });
+    }
+  }
+
+  await audit(c.env, 'site_config_batch', { count: businesses.length, created: results.filter(r => r.status === 'created').length });
+  return c.json({ ok: true, results, total: businesses.length, created: results.filter(r => r.status === 'created').length });
+});
+
+// =============================================
 // Waiver Routes
 // =============================================
 
