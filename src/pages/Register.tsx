@@ -24,6 +24,7 @@ export default function Register() {
   const [studioAddress, setStudioAddress] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
+  const navigatedRef = useRef(false);  /* prevent button flash on redirect */
   const lang = detectInitialLanguage();
 
   useEffect(() => {
@@ -131,106 +132,119 @@ export default function Register() {
     if (!email || !name || !password || !studioName.trim() || roles.length === 0 || submittingRef.current) return;
     if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
-    // Check duplicate email
-    const existing = await db.users.where('email').equals(email).first();
-    if (existing) { setError('Email already registered.'); return; }
     submittingRef.current = true;
     setSubmitting(true);
     setError('');
+
+    /* Timeout: if registration takes >20s, unlock the button so user can retry */
+    const timeout = setTimeout(() => {
+      if (!navigatedRef.current) {
+        setError('Registration is taking longer than expected. You can try again.');
+        setSubmitting(false);
+        submittingRef.current = false;
+      }
+    }, 20000);
+
     try {
       const now = Date.now();
-      const userId = 'user_' + now + '_' + Math.random().toString(36).slice(2, 8);
+      let userId = 'user_' + now + '_' + Math.random().toString(36).slice(2, 8);
       const passwordHash = await hashPassword(password);
-      await db.users.add({
-        id: userId,
-        email,
-        name,
-        roles,
-        passwordHash,
-        deviceId,
-        verified: false,
-        createdAt: now,
-      });
-      localStorage.setItem('inkflow_current_user', userId);
-      incrementIPRegistrationCount();
 
-      // Sync to Cloudflare D1 (unconditional — all registrations go to cloud)
-      try {
-        const backendUrl = getBackendUrl();
-        if (backendUrl) {
-          await fetch(`${backendUrl}/api/auth/register`, {
+      /* Try server-side registration first (important for Safari where IndexedDB may be blocked) */
+      const backendUrl = getBackendUrl();
+      let serverOk = false;
+      if (backendUrl) {
+        try {
+          const serverRes = await fetch(`${backendUrl}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, name, passwordHash, studioName, roles, deviceId }),
           });
+          if (serverRes.ok) {
+            serverOk = true;
+            const data = await serverRes.json();
+            /* Use server-assigned userId if returned */
+            if (data?.userId) userId = data.userId;
+          }
+        } catch { /* server unreachable, fall through to local */ }
+      }
+
+      /* Save to IndexedDB (may fail in Safari private mode — non-critical) */
+      try {
+        await db.users.add({
+          id: userId, email, name, roles, passwordHash, deviceId,
+          verified: false, createdAt: now,
+        });
+        localStorage.setItem('inkflow_current_user', userId);
+        incrementIPRegistrationCount();
+      } catch (dbErr) {
+        /* If IndexedDB fails (eg Safari private mode) but server saved it, still proceed */
+        if (!serverOk) {
+          clearTimeout(timeout);
+          setError('Local storage unavailable. Please use a different browser or disable Private Browsing.');
+          setSubmitting(false);
+          submittingRef.current = false;
+          return;
         }
-      } catch {
-        // Cloud sync is best-effort during registration
+        /* server saved it, we can proceed without local DB */
+        localStorage.setItem('inkflow_current_user', userId);
       }
 
       if (refCode) {
-        await processReferralOnRegister(userId, refCode);
+        try { await processReferralOnRegister(userId, refCode); } catch { /* skip */ }
       }
 
-      const backendUrl = getBackendUrl() || '';
-      const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
-      if (roles.includes('artist')) {
-        try {
+      /* Sync settings to server (best-effort) */
+      try {
+        const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+        if (backendUrl && roles.includes('artist')) {
           await fetch(`${backendUrl}/api/sync`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
-            body: JSON.stringify({
-              artistId: userId,
-              settings: {
-                name,
-                email,
-                createdAt: now,
-              },
-            }),
+            body: JSON.stringify({ artistId: userId, settings: { name, email, createdAt: now } }),
           });
-        } catch { /* silent */ }
-      }
-
-      // Auto-join existing studio if name+address match
-      let assignedLocationIds: string[] | undefined;
-      if (studioName.trim()) {
-        const allLocs = await db.studioLocations.toArray();
-        const match = allLocs.find(l =>
-          l.name.toLowerCase() === studioName.trim().toLowerCase() &&
-          (!studioAddress.trim() || l.address?.toLowerCase() === studioAddress.trim().toLowerCase())
-        );
-        if (match) {
-          assignedLocationIds = [match.id];
-        } else if (roles.includes('owner')) {
-          const locId = 'loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-          const newLoc: StudioLocationRecord = {
-            id: locId, ownerId: userId, name: studioName.trim(),
-            address: studioAddress.trim() || undefined,
-            createdAt: Date.now(),
-          };
-          await db.studioLocations.add(newLoc);
-          assignedLocationIds = [locId];
         }
-      }
-      if (assignedLocationIds || studioName.trim()) {
-        await db.users.update(userId, {
-          ...(assignedLocationIds ? { assignedLocationIds } : {}),
-          studioName: studioName.trim() || undefined,
-        });
-      }
+      } catch { /* silent */ }
 
-      // Force full reload so App reads fresh auth state
+      /* Studio location (non-critical, skip if IndexedDB fails) */
+      try {
+        if (studioName.trim()) {
+          const allLocs = await db.studioLocations.toArray();
+          const match = allLocs.find(l =>
+            l.name.toLowerCase() === studioName.trim().toLowerCase() &&
+            (!studioAddress.trim() || l.address?.toLowerCase() === studioAddress.trim().toLowerCase())
+          );
+          if (match) {
+            await db.users.update(userId, { assignedLocationIds: [match.id], studioName: studioName.trim() } as any);
+          } else if (roles.includes('owner')) {
+            const locId = 'loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+            await db.studioLocations.add({
+              id: locId, ownerId: userId, name: studioName.trim(),
+              address: studioAddress.trim() || undefined, createdAt: Date.now(),
+            } as any);
+            await db.users.update(userId, { assignedLocationIds: [locId], studioName: studioName.trim() } as any);
+          } else {
+            await db.users.update(userId, { studioName: studioName.trim() } as any);
+          }
+        }
+      } catch { /* non-critical */ }
+
+      clearTimeout(timeout);
+      navigatedRef.current = true;
       if (upgradePlan === 'pro_plus') {
-        await db.users.update(userId, { plan: 'pro_plus' });
+        try { await db.users.update(userId, { plan: 'pro_plus' } as any); } catch { /* ok */ }
         window.location.href = '/pro-plus-setup';
       } else {
         window.location.href = '/today?welcome=1';
       }
     } catch {
-      setError('Registration failed.');
+      clearTimeout(timeout);
+      setError('Registration failed. Please try again.');
     } finally {
-      setSubmitting(false);
-      submittingRef.current = false;
+      if (!navigatedRef.current) {
+        setSubmitting(false);
+        submittingRef.current = false;
+      }
     }
   };
 
