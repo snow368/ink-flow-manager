@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { InkFlowDB } from '../db';
 
 describe('DB Schema', () => {
-  it('has version 30', () => {
+  it('has version 34', () => {
     const db = new InkFlowDB();
-    expect(db.verno).toBe(30);
+    expect(db.verno).toBe(34);
   });
 
-  it('has 35 tables defined', () => {
+  it('has 36 tables defined', () => {
     const db = new InkFlowDB();
     const tableNames = db.tables.map(t => t.name).sort();
     expect(tableNames).toEqual([
@@ -25,6 +25,7 @@ describe('DB Schema', () => {
       'leadConfirmations',
       'leadRevisions',
       'leads',
+      'photos',
       'portfolio',
       'posTransactions',
       'projectApprovalTokens',
