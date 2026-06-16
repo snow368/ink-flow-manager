@@ -268,15 +268,13 @@ export default function Register() {
           }
         }).catch(() => {});
       }
-    } catch {
+    } catch (err) {
       clearTimeout(timeout);
       setError('Registration failed. Please try again.');
-    } finally {
-      if (!navigatedRef.current) {
-        setSubmitting(false);
-        submittingRef.current = false;
-      }
+      setSubmitting(false);
+      submittingRef.current = false;
     }
+    /* On success try block ends with window.location.href — no reset needed */
   };
 
   return (
