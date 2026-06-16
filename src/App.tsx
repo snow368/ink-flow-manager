@@ -52,6 +52,8 @@ const Portfolio = lazy(() => import('./pages/Portfolio'));
 const ReviewInvitesPage = lazy(() => import('./pages/ReviewInvitesPage'));
 const WaiverManager = lazy(() => import('./pages/WaiverManager'));
 const NotificationSettings = lazy(() => import('./pages/NotificationSettings'));
+const SocialGallery = lazy(() => import('./pages/SocialGallery'));
+const WebsiteWizard = lazy(() => import('./pages/WebsiteWizard'));
 const ArtistProfilePage = lazy(() => import('./pages/ArtistProfilePage'));
 const ConfirmBookingPage = lazy(() => import('./pages/ConfirmBookingPage'));
 const EventsPage = lazy(() => import('./pages/EventsPage'));
@@ -302,6 +304,8 @@ export default function App() {
             <Route path="/invoices" element={<Invoices />} />
             <Route path="/invoice/:id" element={<InvoiceDetail />} />
             <Route path="/invoice-settings" element={<InvoiceSettingsPage />} />
+            <Route path="/social-gallery" element={<SocialGallery />} />
+            <Route path="/website-wizard" element={<WebsiteWizard />} />
             <Route path="/notification-settings" element={<NotificationSettings />} />
             <Route path="/health-checklist" element={<HealthChecklistPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />

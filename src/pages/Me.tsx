@@ -114,6 +114,20 @@ export default function Me() {
           onClick={() => navigate('/account-settings')}
           color="#3b82f6"
         />
+        <NavCard
+          emoji="🎨"
+          title="Social Gallery"
+          desc="Select completed tattoos → 9-grid → share to IG/FB"
+          onClick={() => navigate('/social-gallery')}
+          color="#ec4899"
+        />
+        <NavCard
+          emoji="🌐"
+          title="My Website"
+          desc="Set up your public booking page — ink-flows.com/you"
+          onClick={() => navigate('/website-wizard')}
+          color="#22c55e"
+        />
         {!user.verified && (
           <NavCard
             emoji="✅"

@@ -432,6 +432,60 @@ app.post('/api/booking/:artistId', async (c) => {
 });
 
 // =============================================
+// Site Config Routes (Auto Website Builder)
+// =============================================
+
+/** Public: get site config by slug — no auth needed */
+app.get('/api/site-config/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (!slug) { c.status(400); return c.json({ error: 'slug required' }); }
+  const config = await c.env.DB.prepare(
+    'SELECT * FROM site_configs WHERE slug = ?'
+  ).bind(slug).first();
+  if (!config) { c.status(404); return c.json({ error: 'site_not_found', slug }); }
+  return c.json(config);
+});
+
+/** Auth: upsert site config (create or update by artistId) */
+app.post('/api/site-config', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  if (!requireRole(c, 'owner', 'artist')) return;
+  const { artistId, slug, template, theme, bio, studioName, customDomain, locations } = await c.req.json();
+  if (!artistId || !slug) { c.status(400); return c.json({ error: 'artistId and slug required' }); }
+  const ts = now();
+  const existing = await c.env.DB.prepare(
+    'SELECT id FROM site_configs WHERE artistId = ?'
+  ).bind(artistId).first();
+  if (existing) {
+    await c.env.DB.prepare(
+      `UPDATE site_configs SET slug = ?, template = ?, theme = ?, bio = ?, studioName = ?, customDomain = ?, locations = ?, updatedAt = ? WHERE artistId = ?`
+    ).bind(slug, template || 'portfolio', theme || 'dark', bio || '', studioName || '', customDomain || '', JSON.stringify(locations || []), ts, artistId).run();
+  } else {
+    const id = generateId('scfg');
+    await c.env.DB.prepare(
+      `INSERT INTO site_configs (id, artistId, slug, template, theme, bio, studioName, customDomain, locations, publishedAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(id, artistId, slug, template || 'portfolio', theme || 'dark', bio || '', studioName || '', customDomain || '', JSON.stringify(locations || []), ts, ts).run();
+  }
+  await audit(c.env, 'site_config_upsert', { artistId, slug });
+  return c.json({ ok: true, slug });
+});
+
+/** Auth: delete site config by slug */
+app.delete('/api/site-config/:slug', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  if (!requireRole(c, 'owner', 'artist')) return;
+  const slug = c.req.param('slug');
+  const artistId = c.req.header('x-user-id') || '';
+  const row = await c.env.DB.prepare('SELECT artistId FROM site_configs WHERE slug = ?').bind(slug).first() as any;
+  if (!row) { c.status(404); return c.json({ error: 'not_found' }); }
+  const role = c.req.header('x-user-role') || '';
+  if (role !== 'owner' && row.artistId !== artistId) { c.status(403); return c.json({ error: 'forbidden' }); }
+  await c.env.DB.prepare('DELETE FROM site_configs WHERE slug = ?').bind(slug).run();
+  await audit(c.env, 'site_config_deleted', { slug });
+  return c.json({ ok: true });
+});
+
+// =============================================
 // Waiver Routes
 // =============================================
 
@@ -624,6 +678,50 @@ app.get('/api/media/:key+', async (c) => {
   if (obj.httpMetadata?.contentType) headers.set('Content-Type', obj.httpMetadata.contentType);
   headers.set('Cache-Control', 'public, max-age=31536000');
   return new Response(obj.body, { headers });
+});
+
+// =============================================
+// Photo Metadata API
+// =============================================
+
+app.post('/api/photos', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  try {
+    const { clientId, artistId, imageUrl, bodyPart, step, note, source } = await c.req.json();
+    if (!clientId || !imageUrl) { c.status(400); return c.json({ error: 'clientId and imageUrl required' }); }
+    const id = generateId('photo');
+    const now = Date.now();
+    await c.env.DB.prepare(
+      'INSERT INTO photo_metadata (id, clientId, artistId, imageUrl, bodyPart, step, note, source, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(id, clientId, artistId || '', imageUrl, bodyPart || 'other', step || 5, note || '', source || 'gallery_import', now).run();
+    return c.json({ ok: true, id, imageUrl });
+  } catch (e: any) { c.status(500); return c.json({ error: e.message }); }
+});
+
+app.get('/api/photos/:clientId', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const clientId = c.req.param('clientId');
+  const res = await c.env.DB.prepare('SELECT * FROM photo_metadata WHERE clientId = ? ORDER BY createdAt DESC').bind(clientId).all();
+  return c.json({ photos: res.results });
+});
+
+app.get('/api/photos/artist/:artistId', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const artistId = c.req.param('artistId');
+  const step = c.req.query('step');
+  let sql = 'SELECT * FROM photo_metadata WHERE artistId = ?';
+  const params: any[] = [artistId];
+  if (step) { sql += ' AND step = ?'; params.push(parseInt(step)); }
+  sql += ' ORDER BY createdAt DESC';
+  const res = await c.env.DB.prepare(sql).bind(...params).all();
+  return c.json({ photos: res.results });
+});
+
+app.delete('/api/photos/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const { id } = c.req.param();
+  await c.env.DB.prepare('DELETE FROM photo_metadata WHERE id = ?').bind(id).run();
+  return c.json({ ok: true });
 });
 
 app.get('/api/storage/usage', async (c) => {

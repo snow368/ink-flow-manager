@@ -7,7 +7,17 @@ interface Props {
 }
 
 const { title, description, canonical, ogImage } = Astro.props;
-const site = 'https://inkflow.com';
+const site = 'https://ink-flows.com';
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web, iOS, Android",
+  "description": "Complete tattoo studio management platform. Booking, POS, CRM, inventory, waivers, and aftercare in one app.",
+  "url": "https://ink-flows.com",
+});
+---
 ---
 
 <slot name="head" />
@@ -24,12 +34,4 @@ const site = 'https://inkflow.com';
 <meta name="twitter:title" content={`${title} | InkFlow`} />
 <meta name="twitter:description" content={description} />
 {ogImage && <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />}
-<script type="application/ld+json" set:html={JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "InkFlow",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web, iOS, Android",
-  "description": "Complete tattoo studio management platform. Booking, POS, CRM, inventory, waivers, and aftercare in one app.",
-  "url": "https://inkflow.com",
-})} />
+<script type="application/ld+json" set:html={jsonLd} />

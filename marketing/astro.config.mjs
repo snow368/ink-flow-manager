@@ -3,7 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://inkflow.com',
+  site: 'https://ink-flows.com',
   integrations: [tailwind(), sitemap()],
   output: 'static',
 });

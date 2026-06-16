@@ -718,10 +718,10 @@ app.post('/api/waiver/send-link', requireAuth, requireRole('owner', 'staff', 'ar
 // =============================================
 
 const QUOTA_LIMITS = {
-  free: 0,
-  solo: 10 * 1024,
-  pro: 50 * 1024,
-  pro_plus: 200 * 1024,
+  free: 1024 * 1024,    // ~1 TB — effectively unlimited
+  solo: 1024 * 1024,
+  pro: 1024 * 1024,
+  pro_plus: 1024 * 1024,
 };
 
 function getQuotaRecord(artistId) {

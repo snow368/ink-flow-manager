@@ -1,6 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, type UserRecord, type PortfolioRecord, type ReviewRecord } from '../db';
+import { getApiBaseUrl } from '../lib/backendApi';
+
+/* Minimal site config shape from the API */
+interface SiteConfig {
+  id: string;
+  artistId: string;
+  slug: string;
+  template: string;
+  theme: string;
+  bio: string;
+  studioName: string;
+  customDomain: string;
+  locations: string;
+  publishedAt: number;
+  updatedAt: number;
+}
 
 export default function ArtistLandingPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -10,37 +26,63 @@ export default function ArtistLandingPage() {
   const [reviews, setReviews] = useState<ReviewRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  /* Extra fields from API (when available) */
+  const [apiSite, setApiSite] = useState<SiteConfig | null>(null);
 
   useEffect(() => {
     if (!slug) { setNotFound(true); setLoading(false); return; }
 
-    // Find artist by bioProfile.slug
-    db.users.toArray().then(async all => {
+    let cancelled = false;
+
+    async function load() {
+      /* 1. Try API first (public, no auth needed) */
+      let siteConfig: SiteConfig | null = null;
+      try {
+        const base = getApiBaseUrl();
+        if (base) {
+          const res = await fetch(`${base}/api/site-config/${slug}`, { signal: AbortSignal.timeout(3000) });
+          if (res.ok) {
+            siteConfig = await res.json() as SiteConfig;
+            if (!cancelled) setApiSite(siteConfig);
+          }
+        }
+      } catch { /* API unavailable — fall back to local */ }
+
+      if (cancelled) return;
+
+      /* 2. Try local IndexedDB (artist preview mode) */
+      const all = await db.users.toArray();
       const match = all.find(u => {
         const bp = (u as any).bioProfile as { slug?: string } | undefined;
         return bp?.slug === slug;
       });
-      if (!match) { setNotFound(true); setLoading(false); return; }
-      setArtist(match);
 
-      // Portfolio
-      const imgs = await db.portfolio
-        .where('artistId')
-        .equals(match.id)
-        .filter(p => p.isPublic)
-        .toArray();
-      imgs.sort((a, b) => (b.sortOrder || b.createdAt) - (a.sortOrder || a.createdAt));
-      setPhotos(imgs);
+      if (match) {
+        if (!cancelled) setArtist(match);
+        /* Load portfolio & reviews from local DB */
+        const imgs = await db.portfolio
+          .where('artistId').equals(match.id)
+          .filter(p => p.isPublic)
+          .toArray();
+        imgs.sort((a, b) => (b.sortOrder || b.createdAt) - (a.sortOrder || a.createdAt));
+        if (!cancelled) setPhotos(imgs);
 
-      // Reviews
-      const revs = await db.reviews
-        .where('artistId')
-        .equals(match.id)
-        .toArray();
-      setReviews(revs.filter(r => r.rating >= 4).slice(0, 6));
+        const revs = await db.reviews
+          .where('artistId').equals(match.id)
+          .toArray();
+        if (!cancelled) setReviews(revs.filter(r => r.rating >= 4).slice(0, 6));
+      }
 
-      setLoading(false);
-    });
+      /* 3. If both API and DB failed, show 404 */
+      if (!siteConfig && !match) {
+        if (!cancelled) setNotFound(true);
+      }
+
+      if (!cancelled) setLoading(false);
+    }
+
+    load();
+    return () => { cancelled = true; };
   }, [slug]);
 
   // ── LocalBusiness Schema ──
@@ -90,11 +132,17 @@ export default function ArtistLandingPage() {
       m.name = 'description'; m.content = desc;
       document.head.appendChild(m);
     }
+
+    // Canonical URL (custom domain if set)
+    const canon = document.querySelector('link[rel="canonical"]');
+    if (canon) {
+      canon.setAttribute('href', customDomain ? `https://${customDomain}` : window.location.href);
+    }
   }, [artist]);
 
   if (loading) return <div style={{ minHeight: '100vh', background: '#0c0c0c' }} />;
 
-  if (notFound || !artist) {
+  if (notFound || (!artist && !apiSite)) {
     return (
       <div style={{ minHeight: '100vh', background: '#0c0c0c', color: 'white', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
         <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Artist not found</h2>
@@ -107,14 +155,75 @@ export default function ArtistLandingPage() {
     );
   }
 
-  const name = artist.studioName || artist.name;
-  const bp = (artist as any).bioProfile as { avatarUrl?: string; address?: string; phone?: string } | undefined;
+  /* ── Resolve data from API or local DB ── */
+  const name = apiSite?.studioName || artist?.studioName || artist?.name || 'Your Studio';
+  const bp = (artist as any)?.bioProfile as { avatarUrl?: string; address?: string; phone?: string; bookingEnabled?: boolean } | undefined;
+  const siteTheme = apiSite?.theme || (artist as any)?.siteTheme || 'dark';
+  const siteBio = apiSite?.bio || (artist as any)?.siteBio || '';
+  const siteTemplate = apiSite?.template || (artist as any)?.siteTemplate || 'portfolio';
+  const customDomain = apiSite?.customDomain || (artist as any)?.customDomain || '';
+  const artistId = apiSite?.artistId || artist?.id || '';
+  const THEME: Record<string, any> = {
+    dark: { bg: '#0c0c0c', card: '#1a1a1e', primary: '#e11d48', text: '#ffffff' },
+    minimal: { bg: '#ffffff', card: '#f5f5f5', primary: '#000000', text: '#1a1a1a' },
+    rose: { bg: '#1a0a0a', card: '#2d1414', primary: '#e11d48', text: '#ffe4e6' },
+    forest: { bg: '#0f172a', card: '#1e293b', primary: '#22c55e', text: '#e2e8f0' },
+    ocean: { bg: '#0c1929', card: '#1a2a40', primary: '#3b82f6', text: '#e0f2fe' },
+    gold: { bg: '#1c1917', card: '#292524', primary: '#f59e0b', text: '#fef3c7' },
+    lavender: { bg: '#130c1a', card: '#201530', primary: '#a855f7', text: '#f3e8ff' },
+    teal: { bg: '#0a1414', card: '#142121', primary: '#14b8a6', text: '#ccfbf1' },
+    coral: { bg: '#1a0f0a', card: '#2d1a14', primary: '#f97316', text: '#ffedd5' },
+    slate: { bg: '#0f1117', card: '#1a1d27', primary: '#64748b', text: '#e2e8f0' },
+    cherry: { bg: '#0c0c0c', card: '#1e1018', primary: '#be123c', text: '#ffe4e6' },
+    sky: { bg: '#0c1520', card: '#142130', primary: '#0ea5e9', text: '#e0f2fe' },
+  };
+  const t = THEME[siteTheme] || THEME.dark;
+
+  // ── Minimal template (Linktree-style) ──
+  if (siteTemplate === 'minimal') {
+    return (
+      <div style={{ minHeight: '100vh', background: t.bg, color: t.text, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '40px 20px', fontFamily: 'sans-serif' }}>
+        {bp?.avatarUrl ? (
+          <img src={bp.avatarUrl} alt={name} style={{ width: 80, height: 80, borderRadius: 40, objectFit: 'cover', marginBottom: 12 }} />
+        ) : (
+          <div style={{ width: 80, height: 80, borderRadius: 40, background: t.card, marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 700 }}>{name.charAt(0)}</div>
+        )}
+        <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>{name}</h1>
+        {siteBio && <p style={{ fontSize: 13, color: t.text + '99', marginTop: 6, textAlign: 'center', maxWidth: 280 }}>{siteBio}</p>}
+
+        <div style={{ width: '100%', maxWidth: 320, marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <a href={`/book/${artistId}`}
+            style={{ display: 'block', padding: 14, borderRadius: 12, background: t.primary, color: 'white', textAlign: 'center', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
+            Book an Appointment
+          </a>
+          {photos.length > 0 && (
+            <a href={`/portfolio/${artistId}`}
+              style={{ display: 'block', padding: 14, borderRadius: 12, border: `2px solid ${t.text}22`, color: t.text, textAlign: 'center', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+              View Portfolio ({photos.length})
+            </a>
+          )}
+          {artist?.instagramHandle && (
+            <a href={`https://instagram.com/${artist.instagramHandle.replace('@', '')}`} target="_blank" rel="noopener"
+              style={{ display: 'block', padding: 14, borderRadius: 12, border: `2px solid ${t.text}22`, color: t.text, textAlign: 'center', fontWeight: 600, fontSize: 14, textDecoration: 'none' }}>
+              📷 Instagram
+            </a>
+          )}
+        </div>
+
+        {reviews.length > 0 && (
+          <div style={{ marginTop: 24, width: '100%', maxWidth: 320 }}>
+            <p style={{ fontSize: 12, color: t.text + '77', marginBottom: 8, fontWeight: 600, textAlign: 'center' }}>★★★★★ {reviews.length} reviews</p>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
-    <div style={{ background: '#0c0c0c', color: 'white', fontFamily: 'sans-serif', minHeight: '100vh', paddingBottom: 100 }}>
+    <div style={{ background: t.bg, color: t.text, fontFamily: 'sans-serif', minHeight: '100vh', paddingBottom: 100 }}>
       {/* Hero */}
       <div style={{
-        background: 'linear-gradient(180deg, #1e1e2a 0%, #0c0c0c 100%)',
+        background: `linear-gradient(180deg, ${t.card} 0%, ${t.bg} 100%)`,
         padding: '40px 20px 24px', textAlign: 'center',
       }}>
         {bp?.avatarUrl ? (
@@ -122,21 +231,26 @@ export default function ArtistLandingPage() {
             style={{ width: 80, height: 80, borderRadius: 40, objectFit: 'cover', marginBottom: 12 }} />
         ) : (
           <div style={{
-            width: 80, height: 80, borderRadius: 40, background: '#1e293b',
+            width: 80, height: 80, borderRadius: 40, background: t.card,
             margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 28, fontWeight: 700, color: '#94a3b8',
+            fontSize: 28, fontWeight: 700, color: t.text + '88',
           }}>
             {name.charAt(0).toUpperCase()}
           </div>
         )}
         <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>{name}</h1>
+        {siteBio && (
+          <p style={{ fontSize: 13, color: t.text + '99', marginTop: 6, maxWidth: 300, marginLeft: 'auto', marginRight: 'auto' }}>
+            {siteBio}
+          </p>
+        )}
         {bp?.address && (
-          <p style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
+          <p style={{ fontSize: 13, color: t.text + '77', marginTop: 4 }}>
             📍 {bp.address}
           </p>
         )}
-        {artist.instagramHandle && (
-          <p style={{ fontSize: 13, color: '#60a5fa', marginTop: 2 }}>
+        {artist?.instagramHandle && (
+          <p style={{ fontSize: 13, color: t.primary + 'aa', marginTop: 2 }}>
             @{artist.instagramHandle.replace('@', '')}
           </p>
         )}
@@ -169,7 +283,7 @@ export default function ArtistLandingPage() {
           }}>
             {photos.slice(0, 9).map(p => (
               <div key={p.id}
-                onClick={() => navigate(`/portfolio/${artist.id}`)}
+                onClick={() => navigate(`/portfolio/${artistId}`)}
                 style={{ aspectRatio: '1/1', overflow: 'hidden', cursor: 'pointer', borderRadius: 0 }}>
                 <img src={p.thumbnailUrl || p.imageUrl} alt=""
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -178,7 +292,7 @@ export default function ArtistLandingPage() {
           </div>
           {photos.length > 9 && (
             <p style={{ textAlign: 'center', fontSize: 13, color: '#60a5fa', margin: '8px 0', cursor: 'pointer' }}
-              onClick={() => navigate(`/portfolio/${artist.id}`)}>
+              onClick={() => navigate(`/portfolio/${artistId}`)}>
               View all {photos.length} works →
             </p>
           )}
@@ -192,7 +306,7 @@ export default function ArtistLandingPage() {
           <div style={{ overflowX: 'auto', padding: '0 16px 12px', display: 'flex', gap: 10 }}>
             {reviews.map(r => (
               <div key={r.id} style={{
-                minWidth: 220, maxWidth: 260, background: '#1a1a1e', borderRadius: 12,
+                minWidth: 220, maxWidth: 260, background: t.card, borderRadius: 12,
                 padding: 14, flexShrink: 0,
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -221,12 +335,12 @@ export default function ArtistLandingPage() {
         padding: '12px 16px', paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
         background: 'linear-gradient(to top, #0c0c0c 60%, transparent)',
       }}>
-        <button onClick={() => navigate(`/book/${artist.id}`)}
+        <button onClick={() => navigate(`/book/${artistId}`)}
           style={{
             width: '100%', padding: 14, borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #e11d48, #be123c)',
+            background: t.primary,
             color: 'white', fontSize: 16, fontWeight: 700, cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(225,29,72,0.3)',
+            boxShadow: `0 4px 20px ${t.primary}44`,
           }}>
           Book an Appointment
         </button>

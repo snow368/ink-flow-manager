@@ -33,6 +33,7 @@ export class InkFlowDB extends Dexie {
   projectApprovalTokens!: Table<ProjectApprovalTokenRecord>;
   depositFlow!: Table<DepositFlowRecord>;
   projectRevisions!: Table<ProjectRevisionRecord>;
+  photos!: Table<PhotoRecord>;
 
   constructor() {
     super('InkFlowDB');
@@ -805,6 +806,9 @@ export class InkFlowDB extends Dexie {
       depositFlow: 'id, leadId, artistId, depositStatus, createdAt',
       projectRevisions: 'id, projectId, artistId, status, approvalToken, createdAt',
     });
+    this.version(34).stores({
+      photos: 'id, clientId, projectId, sessionId, artistId, bodyPart, step, date, status',
+    });
   }
 }
 
@@ -1102,9 +1106,13 @@ export interface PortfolioRecord {
 }
 
 export interface SocialDraftRecord {
-  id: string; portfolioId: string; platform: 'instagram'|'youtube';
+  id: string; portfolioId: string;
+  platform: 'instagram'|'youtube'|'facebook'|'pinterest';
   status: 'draft'|'submitted'|'approved'|'published';
   caption: string; hashtags: string; imageUrls: string[]; createdAt: number;
+  gridDataUrl?: string;  /* base64 generated grid preview */
+  selectedPhotoIds?: string[];
+  watermarkText?: string;
 }
 
 export interface ReferralRecord {
@@ -1538,3 +1546,39 @@ export interface PolicyItem {
   canRescheduleOnce: boolean;
   note?: string;
 }
+
+export interface PhotoRecord {
+  id: string;
+  clientId: string;
+  projectId?: string;
+  sessionId?: string;
+  artistId: string;
+  imageUrl: string;
+  bodyPart: BodyPart;
+  step: PhotoStep;
+  date: number;
+  note?: string;
+  source: 'studio_camera' | 'gallery_import';
+}
+
+export type BodyPart = 'arm' | 'leg' | 'chest' | 'back' | 'hand' | 'foot' | 'neck' | 'face' | 'ribs' | 'hip' | 'shoulder' | 'other';
+export type PhotoStep = 1 | 2 | 3 | 4 | 5 | 6;
+
+export const PHOTO_STEPS = [
+  { step: 1, label: '干净皮肤', key: 'before' },
+  { step: 2, label: 'Stencil', key: 'stencil' },
+  { step: 3, label: '刻线', key: 'outline' },
+  { step: 4, label: '上色/打雾', key: 'shading' },
+  { step: 5, label: '完成', key: 'fresh' },
+  { step: 6, label: '包扎', key: 'wrapped' },
+] as const;
+
+export const BODY_PARTS: BodyPart[] = [
+  'arm', 'leg', 'chest', 'back', 'hand', 'foot', 'neck', 'face', 'ribs', 'hip', 'shoulder', 'other'
+];
+
+export const BODY_PART_LABELS: Record<BodyPart, string> = {
+  arm: '手臂', leg: '腿', chest: '胸', back: '背',
+  hand: '手', foot: '脚', neck: '脖子', face: '脸',
+  ribs: '肋骨', hip: '髋部', shoulder: '肩膀', other: '其他',
+};

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, type ClientRecord, type AppointmentRecord, type InvoiceRecord, type SessionRecord, type PortfolioRecord, type ProjectRecord } from '../db';
+import { db, type ClientRecord, type AppointmentRecord, type InvoiceRecord, type SessionRecord, type PortfolioRecord, type ProjectRecord, type PhotoRecord, PHOTO_STEPS, BODY_PART_LABELS, type BodyPart, type PhotoStep } from '../db';
 import { STATUS_COLORS, STATUS_LABELS } from '../lib/appointmentLogic';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { formatInvoiceCurrency, getCountryConfig } from '../lib/invoiceConfig';
@@ -43,6 +43,7 @@ export default function ClientDetail() {
   const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
   const [images, setImages] = useState<ImageEntry[]>([]);
+  const [photos, setPhotos] = useState<PhotoRecord[]>([]);
   const [fullImage, setFullImage] = useState<string | null>(null);
   const [editingBirthday, setEditingBirthday] = useState(false);
   const [birthday, setBirthday] = useState('');
@@ -76,6 +77,7 @@ export default function ClientDetail() {
     if (!id) return;
     loadClient();
     loadDuplicates(id);
+    loadPhotos();
     db.appointments.where('clientId').equals(id).reverse().sortBy('date').then(setAppointments);
     db.invoices.where('clientId').equals(id).reverse().sortBy('createdAt').then(setInvoices);
     loadImages(id);
@@ -186,6 +188,53 @@ export default function ClientDetail() {
 
     entries.sort((a, b) => b.date - a.date);
     setImages(entries);
+  };
+
+  const loadPhotos = async () => {
+    if (!id) return;
+    try {
+      const res = await fetch(`/api/photos/${id}`, {
+        headers: { 'x-api-secret': localStorage.getItem('inkflow_api_secret') || '' },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPhotos((data.photos || []).sort((a: any, b: any) => b.createdAt - a.createdAt));
+      }
+    } catch { /* offline fallback */ }
+  };
+
+  const handleAddPhoto = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e: any) => {
+      const file = e.target?.files?.[0];
+      if (!file || !id) return;
+      const bodyPart = prompt('部位: arm / leg / chest / back / hand / foot / neck / face / ribs / hip / shoulder / other') || 'other';
+      const step = parseInt(prompt('步骤 (1-6):\n1=干净皮肤 2=Stencil 3=刻线 4=上色 5=完成 6=包扎') || '5') as PhotoStep;
+      if (step < 1 || step > 6) return;
+      try {
+        // 1. Upload image to R2
+        const formData = new FormData();
+        formData.append('artistId', '');
+        formData.append('file', file);
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'x-api-secret': localStorage.getItem('inkflow_api_secret') || '' },
+          body: formData,
+        });
+        if (!uploadRes.ok) return;
+        const { url } = await uploadRes.json();
+        // 2. Save metadata to D1
+        await fetch('/api/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': localStorage.getItem('inkflow_api_secret') || '' },
+          body: JSON.stringify({ clientId: id, imageUrl: url, bodyPart, step, source: 'gallery_import' }),
+        });
+      } catch {}
+      loadPhotos();
+    };
+    input.click();
   };
 
   const loadClient = () => {
@@ -493,6 +542,43 @@ export default function ClientDetail() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── Photo Wall (body part grouped) ── */}
+      {photos.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Photo Wall ({photos.length})</h3>
+            <button onClick={handleAddPhoto} style={{ padding: '4px 12px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>+ Add Photo</button>
+          </div>
+          {/* Group by body part */}
+          {[...new Set(photos.map(p => p.bodyPart))].map(bp => {
+            const partPhotos = photos.filter(p => p.bodyPart === bp).sort((a: any, b: any) => a.step - b.step || a.createdAt - b.createdAt);
+            return (
+              <div key={bp} style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#94a3b8', marginBottom: 6 }}>{BODY_PART_LABELS[bp as BodyPart]}</p>
+                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                  {partPhotos.map(p => {
+                    const stepInfo = PHOTO_STEPS.find(s => s.step === p.step);
+                    return (
+                      <div key={p.id} onClick={() => p.imageUrl && setFullImage(p.imageUrl)}
+                        style={{ minWidth: 140, maxWidth: 140, background: '#1e293b', borderRadius: 8, overflow: 'hidden', cursor: 'pointer', flexShrink: 0 }}>
+                        <div style={{ height: 100, background: '#0f172a', overflow: 'hidden' }}>
+                          <img src={p.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} loading="lazy" />
+                        </div>
+                        <div style={{ padding: 6 }}>
+                          <span style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: '#334155', color: '#94a3b8' }}>
+                            {stepInfo?.label || `Step ${p.step}`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

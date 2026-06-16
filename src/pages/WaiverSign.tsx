@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db, type AppointmentRecord, type ClientRecord } from '../db';
 import { generateWaiverContent, getWaiverType, getArtistShopInfo } from '../lib/waiverLogic';
 import { detectInitialLanguage, t } from '../lib/i18n';
+import { jsPDF } from 'jspdf';
 
 interface DrawPoint { x: number; y: number; time: number; }
 
@@ -253,6 +254,52 @@ export default function WaiverSign() {
     finally { setSaving(false); }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const generatePDF = async (): Promise<Blob | null> => {
+    const { default: html2canvas } = await import('html2canvas');
+    const element = document.querySelector('.print-area') as HTMLElement;
+    if (!element) return null;
+    const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    return pdf.output('blob');
+  };
+
+  const handleDownloadPdf = async () => {
+    const blob = await generatePDF();
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `waiver_${appointmentId || 'signed'}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSharePdf = async () => {
+    const blob = await generatePDF();
+    if (!blob) return;
+    const file = new File([blob], `waiver_${appointmentId || 'signed'}.pdf`, { type: 'application/pdf' });
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ title: 'Tattoo Waiver', files: [file] });
+    } else {
+      handleDownloadPdf();
+    }
+  };
+
+  const handlePreviewPdf = async () => {
+    const blob = await generatePDF();
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
   if (error && !appointment) {
     return (
       <div style={{ padding: 24, color: 'white' }}>
@@ -264,8 +311,21 @@ export default function WaiverSign() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', backgroundColor: '#0f172a', color: 'white' }}>
+      <style>{`
+        @media print {
+          .no-print { display: none !important; }
+          .print-area { background: white !important; color: black !important; padding: 20px !important; }
+          .print-area * { color: black !important; }
+          .print-area pre { white-space: pre-wrap !important; font-size: 11px !important; }
+        }
+      `}</style>
       <div style={{ padding: '12px 20px 0' }}>
-        <h2 style={{ fontSize: 19, fontWeight: 'bold', marginBottom: 4 }}>{t(lang, 'waiver')}</h2>
+        <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ fontSize: 19, fontWeight: 'bold', marginBottom: 4 }}>{t(lang, 'waiver')}</h2>
+          <button onClick={handlePreviewPdf} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>👁 Preview</button>
+          <button onClick={handleDownloadPdf} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>⬇ Download</button>
+          <button onClick={handleSharePdf} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer' }}>📤 Share</button>
+        </div>
         {client && (
           <div style={{ background: '#1e293b', borderRadius: 10, padding: '8px 12px', display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: '#94a3b8', fontSize: 13 }}>{t(lang, 'client')}</span>
@@ -274,7 +334,7 @@ export default function WaiverSign() {
         )}
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px' }}>
+      <div className="print-area" style={{ flex: 1, overflowY: 'auto', padding: '0 20px' }}>
         {error && (
           <div style={{ background: '#7f1d1d', padding: 10, borderRadius: 10, margin: '8px 0' }}>
             <p style={{ color: '#fca5a5', fontSize: 13 }}>{error}</p>

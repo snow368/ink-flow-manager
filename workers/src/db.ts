@@ -145,6 +145,35 @@ CREATE INDEX IF NOT EXISTS idx_notifications_artistId ON notifications(artistId)
 CREATE INDEX IF NOT EXISTS idx_payments_artistId ON payments(artistId);
 CREATE INDEX IF NOT EXISTS idx_waivers_appointmentId ON waivers(appointmentId);
 CREATE INDEX IF NOT EXISTS idx_push_subscriptions_artistId ON push_subscriptions(artistId);
+
+CREATE TABLE IF NOT EXISTS site_configs (
+  id TEXT PRIMARY KEY,
+  artistId TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  template TEXT NOT NULL DEFAULT 'portfolio',
+  theme TEXT NOT NULL DEFAULT 'dark',
+  bio TEXT DEFAULT '',
+  studioName TEXT DEFAULT '',
+  customDomain TEXT DEFAULT '',
+  locations TEXT DEFAULT '[]',
+  publishedAt INTEGER,
+  updatedAt INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_site_configs_slug ON site_configs(slug);
+CREATE INDEX IF NOT EXISTS idx_site_configs_artistId ON site_configs(artistId);
+
+CREATE TABLE IF NOT EXISTS photo_metadata (
+  id TEXT PRIMARY KEY,
+  clientId TEXT NOT NULL,
+  artistId TEXT DEFAULT '',
+  imageUrl TEXT NOT NULL,
+  bodyPart TEXT DEFAULT 'other',
+  step INTEGER DEFAULT 5,
+  note TEXT DEFAULT '',
+  source TEXT DEFAULT 'gallery_import',
+  createdAt INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_photos_clientId ON photo_metadata(clientId);
 `;
 
 export async function initDB(env: Env): Promise<void> {

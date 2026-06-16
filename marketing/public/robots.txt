@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://inkflow.com/sitemap-index.xml
+Sitemap: https://ink-flows.com/sitemap-index.xml
 
 # Allow AI search crawlers
 User-agent: OAI-SearchBot
