@@ -106,6 +106,19 @@ app.post('/api/auth/login', async (c) => {
   }
 });
 
+/** Auth: delete user account (unregister) */
+app.delete('/api/auth/unregister', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  if (!requireRole(c, 'owner', 'artist')) return;
+  const { userId } = await c.req.json();
+  if (!userId) { c.status(400); return c.json({ error: 'userId required' }); }
+  const existing = await c.env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(userId).first();
+  if (!existing) { c.status(404); return c.json({ error: 'not_found' }); }
+  await c.env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId).run();
+  await audit(c.env, 'user_unregistered', { userId });
+  return c.json({ ok: true });
+});
+
 
 // =============================================
 // Stripe Routes

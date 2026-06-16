@@ -217,36 +217,56 @@ export default function Register() {
         }
       } catch { /* silent */ }
 
-      /* Studio location (non-critical, skip if IndexedDB fails) */
-      try {
-        if (studioName.trim()) {
-          const allLocs = await db.studioLocations.toArray();
+      /* 🚀 REDIRECT FIRST — before any IndexedDB ops (Safari may hang on IndexedDB) */
+      clearTimeout(timeout);
+      navigatedRef.current = true;
+      const targetUrl = upgradePlan === 'pro_plus' ? '/pro-plus-setup' : '/today?welcome=1';
+      window.location.href = targetUrl;
+
+      /* ── Background: non-critical IndexedDB ops (fire-and-forget, Safari OK if they fail) ── */
+
+      if (refCode) {
+        processReferralOnRegister(userId, refCode).catch(() => {});
+      }
+
+      /* Sync settings to server */
+      if (backendUrl && roles.includes('artist')) {
+        const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+        fetch(`${backendUrl}/api/sync`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
+          body: JSON.stringify({ artistId: userId, settings: { name, email, createdAt: now } }),
+        }).catch(() => {});
+      }
+
+      /* IndexedDB user save (non-critical, fire-and-forget) */
+      db.users.add({
+        id: userId, email, name, roles, passwordHash, deviceId,
+        verified: false, createdAt: now,
+      }).catch(() => {});
+      localStorage.setItem('inkflow_current_user', userId);
+      incrementIPRegistrationCount();
+
+      /* Studio location (fire-and-forget) */
+      if (studioName.trim()) {
+        db.studioLocations.toArray().then(allLocs => {
           const match = allLocs.find(l =>
             l.name.toLowerCase() === studioName.trim().toLowerCase() &&
             (!studioAddress.trim() || l.address?.toLowerCase() === studioAddress.trim().toLowerCase())
           );
           if (match) {
-            await db.users.update(userId, { assignedLocationIds: [match.id], studioName: studioName.trim() } as any);
+            db.users.update(userId, { assignedLocationIds: [match.id], studioName: studioName.trim() } as any).catch(() => {});
           } else if (roles.includes('owner')) {
             const locId = 'loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-            await db.studioLocations.add({
+            db.studioLocations.add({
               id: locId, ownerId: userId, name: studioName.trim(),
               address: studioAddress.trim() || undefined, createdAt: Date.now(),
-            } as any);
-            await db.users.update(userId, { assignedLocationIds: [locId], studioName: studioName.trim() } as any);
+            } as any).catch(() => {});
+            db.users.update(userId, { assignedLocationIds: [locId], studioName: studioName.trim() } as any).catch(() => {});
           } else {
-            await db.users.update(userId, { studioName: studioName.trim() } as any);
+            db.users.update(userId, { studioName: studioName.trim() } as any).catch(() => {});
           }
-        }
-      } catch { /* non-critical */ }
-
-      clearTimeout(timeout);
-      navigatedRef.current = true;
-      if (upgradePlan === 'pro_plus') {
-        try { await db.users.update(userId, { plan: 'pro_plus' } as any); } catch { /* ok */ }
-        window.location.href = '/pro-plus-setup';
-      } else {
-        window.location.href = '/today?welcome=1';
+        }).catch(() => {});
       }
     } catch {
       clearTimeout(timeout);
