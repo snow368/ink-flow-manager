@@ -1,5 +1,7 @@
 ---
+const { currentPath = '' } = Astro.props;
 ---
+
 <nav class="fixed top-0 left-0 right-0 z-50 border-b border-ink-800/50 bg-ink-950/80 backdrop-blur-lg">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
@@ -7,6 +9,8 @@
         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500 text-ink-950 font-bold text-sm">IF</span>
         InkFlow
       </a>
+
+      <!-- Desktop nav -->
       <div class="hidden md:flex items-center gap-8">
         <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
@@ -22,7 +26,7 @@
             <a href="/features/aftercare" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Aftercare</a>
           </div>
         </div>
-                <div class="group relative">
+        <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
             Free Tools
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
@@ -50,9 +54,91 @@
         </div>
         <a href="/blog" class="text-sm text-gray-300 hover:text-white transition-colors">Blog</a>
       </div>
-      <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-5 py-2 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
-        Start Free Trial
-      </a>
+
+      <!-- Right side: mobile hamburger + CTA -->
+      <div class="flex items-center gap-3">
+        <button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 text-gray-300 hover:text-white" aria-label="Toggle menu">
+          <svg id="menuIconOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="menuIconClose" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-5 py-2 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors whitespace-nowrap">
+          Start Free Trial
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="md:hidden hidden border-t border-ink-800/50 bg-ink-950/95 backdrop-blur-lg">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 py-4 space-y-1">
+
+      <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
+        Features
+        <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
+        <a href="/features/booking" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Booking</a>
+        <a href="/features/payments" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Deposits & Payments</a>
+        <a href="/features/waivers" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Digital Waivers</a>
+        <a href="/features/crm" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Client CRM</a>
+        <a href="/features/inventory" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Inventory</a>
+        <a href="/features/aftercare" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Aftercare</a>
+      </div>
+
+      <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
+        Free Tools
+        <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
+        <a href="/free-tools/no-show-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">No-Show Cost Calculator</a>
+        <a href="/free-tools/tattoo-price-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Tattoo Price Calculator</a>
+        <a href="/free-tools/free-waiver-generator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Free Waiver Generator</a>
+        <a href="/free-tools/aftercare-email-generator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Aftercare Email Generator</a>
+        <a href="/free-tools/tattoo-meaning-finder" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Tattoo Meaning Finder</a>
+      </div>
+
+      <a href="/pricing" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Pricing</a>
+
+      <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
+        Compare
+        <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
+        <a href="/compare/tattoo-studio-pro" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Tattoo Studio Pro</a>
+        <a href="/compare/tattoogenda" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Tattoogenda</a>
+        <a href="/compare/booksy" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Booksy</a>
+        <a href="/compare/vagaro" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Vagaro</a>
+      </div>
+
+      <a href="/blog" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Blog</a>
+      <hr class="border-ink-800 my-2">
+      <a href="https://app.ink-flows.com/login" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Sign In</a>
     </div>
   </div>
 </nav>
+
+<script>
+  const btn = document.getElementById('mobileMenuBtn');
+  const menu = document.getElementById('mobileMenu');
+  const openIcon = document.getElementById('menuIconOpen');
+  const closeIcon = document.getElementById('menuIconClose');
+
+  if (btn && menu) {
+    btn.addEventListener('click', function() {
+      const isOpen = !menu.classList.contains('hidden');
+      menu.classList.toggle('hidden', isOpen);
+      openIcon.classList.toggle('hidden', !isOpen);
+      closeIcon.classList.toggle('hidden', isOpen);
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+    });
+  }
+
+  function toggleMobileSub(btn) {
+    const sub = btn.nextElementSibling;
+    const arrow = btn.querySelector('.sub-arrow');
+    if (sub) {
+      sub.classList.toggle('hidden');
+      if (arrow) arrow.classList.toggle('rotate-180');
+    }
+  }
+</script>

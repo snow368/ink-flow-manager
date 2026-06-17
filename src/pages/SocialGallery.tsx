@@ -14,6 +14,33 @@ interface PhotoItem {
 
 type SharePlatform = 'instagram' | 'facebook' | 'pinterest';
 type GridLayout = '3x3' | '2x2' | '4x1' | '1xN';
+type Tone = 'professional' | 'casual' | 'hype' | 'educational';
+type V2Tab = 'compose' | 'history' | 'scheduled' | 'analytics';
+
+interface CloudDraft {
+  id: string;
+  artistId: string;
+  platform: string;
+  caption: string;
+  hashtags: string;
+  imageUrls: string;
+  gridDataUrl: string;
+  watermarkText: string;
+  layout: string;
+  backgroundColor: string;
+  tone: string;
+  status: string;
+  scheduledAt: number | null;
+  publishedAt: number | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+interface AnalyticsData {
+  total: { posts: number; impressions: number; likes: number; comments: number; shares: number; saves: number; clicks: number };
+  byPlatform: Record<string, { posts: number; impressions: number; likes: number }>;
+  items: any[];
+}
 
 const PLATFORM_CONFIG: Record<SharePlatform, { label: string; icon: string; aspect: number; width: number; height: number; }> = {
   instagram: { label: 'Instagram', icon: '📷', aspect: 1, width: 1080, height: 1080 },
@@ -27,7 +54,6 @@ const HASHTAGS_BY_PLATFORM: Record<SharePlatform, string[]> = {
   pinterest: ['#tattoo', '#tattooideas', '#tattoodesign', '#inked', '#bodyart', '#tattooinspiration', '#tattooart', '#tattoosleeve', '#tattoocommunity', '#tattooflash', '#tattoostudio', '#tattoodesigns', '#tattooartist', '#newtattoo', '#art'],
 };
 
-/** Caption templates by platform */
 const CAPTION_TEMPLATES = [
   { platform: 'instagram', title: 'New piece showcase', text: 'Freshly done for this legend 🤝\n\nSwipe to see the whole process →\n\nBook your session at the link in bio' },
   { platform: 'instagram', title: 'Process/steps', text: 'From blank skin to finished art 🖤\n\nStep 1: Clean & prep\nStep 2: Stencil placement\nStep 3: Lining\nStep 4: Shading\nStep 5: Done ✅\n\nWhich step is your favorite? 👇' },
@@ -41,6 +67,15 @@ const CAPTION_TEMPLATES = [
   { platform: 'facebook', title: 'Studio update', text: 'Spots opening up this week!\n\nDM to book your consultation.\n\nFlash designs available first come first served.' },
   { platform: 'pinterest', title: 'Tattoo inspiration', text: 'Tattoo inspiration for your next piece 🖤\n\nPin this to your tattoo ideas board!' },
   { platform: 'pinterest', title: 'Design highlight', text: 'Detailed linework and shading this piece came together beautifully.\n\nSave this to your inspiration board.' },
+];
+
+const LOCAL_SEO_TIPS = [
+  { platform: 'instagram', tip: 'Tag your city/neighborhood in every post. Use local hashtags like #portlandtattoo #seattletattoo.' },
+  { platform: 'instagram', tip: 'Create a "near me" highlight — show clients walking distance from your studio.' },
+  { platform: 'facebook', tip: 'Join local community groups. Share flash day offers there — not just your page.' },
+  { platform: 'facebook', tip: 'Facebook counts local engagement as a ranking signal. Reply to comments within 1hr.' },
+  { platform: 'pinterest', tip: 'Name your boards with service+city: "Fine Line Tattoo Portland | Cover Up NYC".' },
+  { platform: 'pinterest', tip: 'Google Images indexes Pinterest pins. Use city names in pin descriptions for local search.' },
 ];
 
 const GROWTH_TIPS = [
@@ -60,7 +95,6 @@ const DEEP_LINKS: Record<SharePlatform, { app: string; url: string }> = {
   pinterest: { app: 'Pinterest', url: 'https://www.pinterest.com/pin/create/button/' },
 };
 
-/** Layout options for Pro+ */
 const LAYOUTS: { key: GridLayout; label: string; desc: string }[] = [
   { key: '3x3', label: '3×3 Grid', desc: 'Classic grid, max 9 photos' },
   { key: '2x2', label: '2×2 Grid', desc: 'Clean 4-photo layout' },
@@ -69,6 +103,13 @@ const LAYOUTS: { key: GridLayout; label: string; desc: string }[] = [
 ];
 
 const BG_COLORS = ['#000000', '#0f172a', '#1e293b', '#ffffff', '#fef3c7', '#fce7f3', '#dbeafe', '#f0fdf4'];
+
+const TONES: { key: Tone; label: string }[] = [
+  { key: 'professional', label: 'Professional' },
+  { key: 'casual', label: 'Casual' },
+  { key: 'hype', label: 'Hype' },
+  { key: 'educational', label: 'Educational' },
+];
 
 function getRandomHashtags(platform: SharePlatform): string[] {
   return [...HASHTAGS_BY_PLATFORM[platform]].sort(() => Math.random() - 0.5).slice(0, 10);
@@ -81,8 +122,22 @@ function getUserPlan(): 'free' | 'solo' | 'pro' | 'pro_plus' {
   } catch { return 'free'; }
 }
 
+function getUserArtistId(): string {
+  try {
+    const data = JSON.parse(localStorage.getItem('inkflow_current_user_data') || '{}');
+    return data.id || localStorage.getItem('inkflow_current_user') || '';
+  } catch { return localStorage.getItem('inkflow_current_user') || ''; }
+}
+
 function isPro(plan: string): boolean {
   return plan === 'pro' || plan === 'pro_plus';
+}
+
+function apiHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'x-api-secret': localStorage.getItem('inkflow_api_secret') || '',
+  };
 }
 
 export default function SocialGallery() {
@@ -97,7 +152,7 @@ export default function SocialGallery() {
   const [platform, setPlatform] = useState<SharePlatform>('instagram');
 
   /* ── Pro features ── */
-  const [activeTab, setActiveTab] = useState<'compose' | 'history'>('compose');
+  const [activeTab, setActiveTab] = useState<V2Tab>('compose');
   const [editorCaption, setEditorCaption] = useState('');
   const [editorHashtags, setEditorHashtags] = useState<string[]>(() => getRandomHashtags('instagram'));
   const [drafts, setDrafts] = useState<SocialDraftRecord[]>([]);
@@ -106,13 +161,47 @@ export default function SocialGallery() {
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [copyFeedback, setCopyFeedback] = useState('');
 
-  /* ── Studio enhancements (Pro+) ── */
+  /* ── Studio enhancements ── */
   const [gridLayout, setGridLayout] = useState<GridLayout>('3x3');
   const [bgColor, setBgColor] = useState('#000000');
   const [showProUpsell, setShowProUpsell] = useState(false);
 
+  /* ── V2: AI Caption + Local SEO ── */
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [captionTone, setCaptionTone] = useState<Tone>('professional');
+  const [generatingCaption, setGeneratingCaption] = useState(false);
+  const [captionHints, setCaptionHints] = useState('');
+
+  /* ── V2: Cloud drafts ── */
+  const [cloudDrafts, setCloudDrafts] = useState<CloudDraft[]>([]);
+  const [cloudDraftsLoading, setCloudDraftsLoading] = useState(false);
+
+  /* ── V2: Calendar/Schedule ── */
+  const [scheduledPosts, setScheduledPosts] = useState<CloudDraft[]>([]);
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
+
+  /* ── V2: Analytics ── */
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [analyticsPeriod, setAnalyticsPeriod] = useState<'week' | 'month' | 'all'>('week');
+
+  /* ── V2: Location autofill from user data ── */
+  useEffect(() => {
+    try {
+      const data = JSON.parse(localStorage.getItem('inkflow_current_user_data') || '{}');
+      if (data.city) setCity(data.city);
+      if (data.state) setState(data.state);
+    } catch {}
+  }, []);
+
   const plan = getUserPlan();
   const isProUser = isPro(plan);
+  const artistId = getUserArtistId();
 
   /* ── Initialize ── */
   useEffect(() => {
@@ -131,8 +220,8 @@ export default function SocialGallery() {
   const loadPhotos = async () => {
     setLoading(true);
     try {
-      const artistId = localStorage.getItem('inkflow_current_user') || '';
-      const res = await fetch(`/api/photos/artist/${artistId}?step=5`, {
+      const uid = localStorage.getItem('inkflow_current_user') || '';
+      const res = await fetch(`/api/photos/artist/${uid}?step=5`, {
         headers: { 'x-api-secret': localStorage.getItem('inkflow_api_secret') || '' },
       });
       if (res.ok) {
@@ -154,6 +243,141 @@ export default function SocialGallery() {
       setDrafts(all.slice(0, 30));
     } catch { setDrafts([]); }
     setDraftsLoading(false);
+  };
+
+  /* ── V2: Cloud Drafts ── */
+  const loadCloudDrafts = async () => {
+    if (!artistId) return;
+    setCloudDraftsLoading(true);
+    try {
+      const res = await fetch(`/api/content/drafts?artistId=${artistId}&status=draft`, { headers: apiHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setCloudDrafts(data.items || []);
+      }
+    } catch { /* ignore */ }
+    setCloudDraftsLoading(false);
+  };
+
+  const saveToCloud = async () => {
+    if (!artistId) { showToast('Please log in to save to cloud'); return; }
+    if (!previewUrl) { showToast('Generate a grid first'); return; }
+    try {
+      const body = {
+        artistId,
+        platform,
+        caption: editorCaption || '',
+        hashtags: editorHashtags.join(' '),
+        gridDataUrl: previewUrl,
+        watermarkText: watermark,
+        layout: gridLayout,
+        backgroundColor: bgColor,
+        tone: captionTone,
+        status: 'draft',
+      };
+      const res = await fetch('/api/content/drafts', {
+        method: 'POST',
+        headers: apiHeaders(),
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        showToast('Saved to cloud!');
+        loadCloudDrafts();
+      } else {
+        showToast('Cloud save failed');
+      }
+    } catch { showToast('Cloud save failed'); }
+  };
+
+  const deleteCloudDraft = async (id: string) => {
+    try {
+      await fetch(`/api/content/drafts/${id}`, { method: 'DELETE', headers: apiHeaders() });
+      setCloudDrafts(prev => prev.filter(d => d.id !== id));
+      setScheduledPosts(prev => prev.filter(d => d.id !== id));
+      showToast('Deleted');
+    } catch { showToast('Delete failed'); }
+  };
+
+  /* ── V2: AI Caption Generation ── */
+  const generateAICaption = async () => {
+    if (generatingCaption) return;
+    setGeneratingCaption(true);
+    try {
+      const selectedPhotos = photos.filter(p => selected.has(p.id));
+      const body: any = {
+        platform,
+        tone: captionTone,
+        captionHints,
+        imageUrls: selectedPhotos.map(p => p.imageUrl),
+      };
+      if (city) body.city = city;
+      if (state) body.state = state;
+      const userData = JSON.parse(localStorage.getItem('inkflow_current_user_data') || '{}');
+      if (userData.studioName) body.studioName = userData.studioName;
+
+      const res = await fetch('/api/content/generate', {
+        method: 'POST',
+        headers: apiHeaders(),
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.caption) setEditorCaption(data.caption);
+        if (data.hashtags) setEditorHashtags(data.hashtags);
+        showToast('AI caption generated!');
+      } else {
+        showToast('AI generation failed — try template instead');
+      }
+    } catch { showToast('AI generation failed'); }
+    setGeneratingCaption(false);
+  };
+
+  /* ── V2: Schedule ── */
+  const loadScheduledPosts = async () => {
+    if (!artistId) return;
+    setScheduleLoading(true);
+    try {
+      const from = Date.now() - 7 * 86400 * 1000;
+      const to = Date.now() + 30 * 86400 * 1000;
+      const res = await fetch(`/api/content/calendar?artistId=${artistId}&from=${from}&to=${to}`, { headers: apiHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setScheduledPosts(data.items || []);
+      }
+    } catch { /* ignore */ }
+    setScheduleLoading(false);
+  };
+
+  const scheduleDraft = async (draftId: string, dateStr: string) => {
+    if (!draftId || !dateStr) return;
+    const scheduledAt = new Date(dateStr).getTime();
+    if (isNaN(scheduledAt)) { showToast('Invalid date'); return; }
+    try {
+      const res = await fetch(`/api/content/drafts/${draftId}`, {
+        method: 'PUT',
+        headers: apiHeaders(),
+        body: JSON.stringify({ status: 'scheduled', scheduledAt }),
+      });
+      if (res.ok) {
+        showToast('Scheduled!');
+        loadScheduledPosts();
+        loadCloudDrafts();
+      }
+    } catch { showToast('Schedule failed'); }
+  };
+
+  /* ── V2: Analytics ── */
+  const loadAnalytics = async (period = analyticsPeriod) => {
+    if (!artistId) return;
+    setAnalyticsLoading(true);
+    try {
+      const res = await fetch(`/api/content/analytics?artistId=${artistId}&period=${period}`, { headers: apiHeaders() });
+      if (res.ok) {
+        const data = await res.json();
+        setAnalyticsData(data);
+      }
+    } catch { /* ignore */ }
+    setAnalyticsLoading(false);
   };
 
   /* ── Photo selection ── */
@@ -205,14 +429,12 @@ export default function SocialGallery() {
     if (!ctx) return;
 
     const cfg = PLATFORM_CONFIG[platform];
-
-    /* Resolve cols/rows based on layout */
     let cols: number, rows: number;
     switch (gridLayout) {
       case '2x2': cols = 2; rows = 2; break;
       case '4x1': cols = 4; rows = 1; break;
       case '1xN': cols = 1; rows = selectedPhotos.length; break;
-      default: /* 3x3 */ cols = platform === 'instagram' ? 3 : 1; rows = platform === 'instagram' ? Math.ceil(selectedPhotos.length / cols) : selectedPhotos.length;
+      default: cols = platform === 'instagram' ? 3 : 1; rows = platform === 'instagram' ? Math.ceil(selectedPhotos.length / cols) : selectedPhotos.length;
     }
 
     const cellSize = cfg.width / cols;
@@ -235,7 +457,7 @@ export default function SocialGallery() {
         const sw = img.width * scale;
         const sh = img.height * scale;
         ctx.drawImage(img, x + (size - sw) / 2, y + (size - sh) / 2, sw, sh);
-      } catch { /* skip bad image */ }
+      } catch { /* skip */ }
     }
 
     drawWatermark(ctx, canvas.width, canvas.height);
@@ -243,7 +465,7 @@ export default function SocialGallery() {
     setPreviewUrl(dataUrl);
     setGenerating(false);
 
-    /* Auto-save draft */
+    /* Auto-save local draft */
     try {
       const draft: SocialDraftRecord = {
         id: crypto.randomUUID?.() || `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
@@ -261,9 +483,7 @@ export default function SocialGallery() {
       await db.socialDrafts.add(draft);
       showToast('Draft saved!');
       loadDrafts();
-    } catch (e) {
-      console.error('Failed to save draft:', e);
-    }
+    } catch { /* ignore */ }
   };
 
   /* ── Toast ── */
@@ -281,7 +501,7 @@ export default function SocialGallery() {
     a.click();
   };
 
-  /* ── Native share ── */
+  /* ── Share ── */
   const handleShare = async () => {
     if (!previewUrl) return;
     const blob = await (await fetch(previewUrl)).blob();
@@ -296,32 +516,25 @@ export default function SocialGallery() {
     }
   };
 
-  /* ── Copy All (Pro+) — image + caption + hashtags to clipboard ── */
+  /* ── Copy All (Pro+) ── */
   const handleCopyAll = async () => {
     if (!previewUrl) return;
     try {
-      /* Copy image to clipboard */
       const blob = await (await fetch(previewUrl)).blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob }),
-      ]);
-      /* Also copy text to clipboard */
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
       const text = `${editorCaption || ''}\n\n${editorHashtags.join(' ')}`.trim();
-      if (text) {
-        await navigator.clipboard.writeText(text);
-      }
+      if (text) await navigator.clipboard.writeText(text);
       showToast('Copied! Image + caption ready to paste');
     } catch { showToast('Copy failed — try Download instead'); }
   };
 
   /* ── Deep link ── */
   const handleDeepLink = (p: SharePlatform) => {
-    const link = DEEP_LINKS[p];
-    window.open(link.url, '_blank');
-    showToast(`Opening ${link.app} in browser`);
+    window.open(DEEP_LINKS[p].url, '_blank');
+    showToast(`Opening ${DEEP_LINKS[p].app} in browser`);
   };
 
-  /* ── Caption ── */
+  /* ── Caption helpers ── */
   const applyTemplate = (text: string) => setEditorCaption(text);
 
   const copyToClipboard = async (text: string, label: string) => {
@@ -373,9 +586,27 @@ export default function SocialGallery() {
     if (draft.selectedPhotoIds?.length) setSelected(new Set(draft.selectedPhotoIds));
   };
 
+  const restoreCloudDraft = (draft: CloudDraft) => {
+    setActiveTab('compose');
+    if (draft.gridDataUrl) setPreviewUrl(draft.gridDataUrl);
+    if (draft.platform === 'instagram' || draft.platform === 'facebook' || draft.platform === 'pinterest') {
+      setPlatform(draft.platform as SharePlatform);
+    }
+    if (draft.caption) setEditorCaption(draft.caption);
+    if (draft.hashtags) setEditorHashtags(draft.hashtags.split(' ').filter(Boolean));
+    if (draft.watermarkText) setWatermark(draft.watermarkText);
+    if (draft.layout) setGridLayout(draft.layout as GridLayout);
+    if (draft.backgroundColor) setBgColor(draft.backgroundColor);
+  };
+
   const fmtDate = (ts: number) => {
     const d = new Date(ts);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const fmtDateShort = (ts: number) => {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
   const platformEmoji = (p: string) => {
@@ -387,6 +618,9 @@ export default function SocialGallery() {
       default: return '📱';
     }
   };
+
+  /* ── Number format ── */
+  const fmtNum = (n: number) => n.toLocaleString();
 
   /* ════════════════════════════════════════════════ RENDER ════════════════════════════════════════════════ */
   return (
@@ -412,15 +646,20 @@ export default function SocialGallery() {
 
       {/* ── Tabs ── */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 16, background: '#1e293b', borderRadius: 10, padding: 3 }}>
-        {(['compose', 'history'] as const).map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
+        {([['compose', 'Create'], ['history', 'Drafts'], ['scheduled', 'Schedule'], ['analytics', 'Analytics']] as [V2Tab, string][]).map(([key, label]) => (
+          <button key={key} onClick={() => {
+            setActiveTab(key);
+            if (key === 'history') { loadDrafts(); loadCloudDrafts(); }
+            if (key === 'scheduled') loadScheduledPosts();
+            if (key === 'analytics') loadAnalytics();
+          }}
             style={{
-              flex: 1, padding: '8px', borderRadius: 8, border: 'none',
-              background: activeTab === tab ? '#334155' : 'transparent',
-              color: activeTab === tab ? 'white' : '#64748b',
-              fontSize: 13, fontWeight: activeTab === tab ? 600 : 400, cursor: 'pointer',
+              flex: 1, padding: '8px 4px', borderRadius: 8, border: 'none',
+              background: activeTab === key ? '#334155' : 'transparent',
+              color: activeTab === key ? 'white' : '#64748b',
+              fontSize: 12, fontWeight: activeTab === key ? 600 : 400, cursor: 'pointer',
             }}>
-            {tab === 'compose' ? 'Create' : 'Drafts'}
+            {label}
           </button>
         ))}
       </div>
@@ -559,7 +798,51 @@ export default function SocialGallery() {
             <div style={{ borderTop: '1px solid #334155', paddingTop: 16 }}>
               <h3 style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>Caption</h3>
 
-              <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Click a template to start:</p>
+              {/* ── V2: Local SEO Location Input ── */}
+              <details style={{ marginBottom: 10 }}>
+                <summary style={{ fontSize: 12, color: '#60a5fa', cursor: 'pointer', padding: '6px 10px', borderRadius: 6, background: '#1e293b', border: '1px solid #334155' }}>
+                  📍 Local SEO — add your city for better reach
+                </summary>
+                <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+                  <input value={city} onChange={e => setCity(e.target.value)}
+                    placeholder="City e.g. Portland"
+                    style={{ flex: 2, padding: '8px 10px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }} />
+                  <input value={state} onChange={e => setState(e.target.value)}
+                    placeholder="State e.g. OR"
+                    style={{ flex: 1, padding: '8px 10px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 12, outline: 'none' }} />
+                </div>
+              </details>
+
+              {/* ── V2: Tone selector ── */}
+              <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Tone:</p>
+              <div style={{ display: 'flex', gap: 4, marginBottom: 10 }}>
+                {TONES.map(t => (
+                  <button key={t.key} onClick={() => setCaptionTone(t.key)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, border: captionTone === t.key ? '2px solid #22c55e' : '1px solid #334155',
+                      background: captionTone === t.key ? '#16653420' : 'transparent',
+                      color: captionTone === t.key ? '#22c55e' : '#94a3b8', fontSize: 11, cursor: 'pointer',
+                    }}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* ── V2: AI Caption Generation ── */}
+              <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                <button onClick={generateAICaption} disabled={generatingCaption}
+                  style={{ flex: 1, padding: '8px', borderRadius: 8, border: 'none', background: generatingCaption ? '#4b5563' : '#7c3aed', color: 'white', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  {generatingCaption ? 'Generating...' : '🤖 AI Caption'}
+                </button>
+              </div>
+
+              {/* ── Caption hints input ── */}
+              <input value={captionHints} onChange={e => setCaptionHints(e.target.value)}
+                placeholder="Optional: what's special about this work? (e.g. 'fine line cover up, 3hr session')"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#94a3b8', fontSize: 11, outline: 'none', marginBottom: 10, boxSizing: 'border-box' }} />
+
+              {/* ── Templates ── */}
+              <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>Or pick a template:</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
                 {CAPTION_TEMPLATES.filter(c => c.platform === platform).slice(0, 4).map((c, i) => (
                   <button key={i} onClick={() => applyTemplate(c.text)}
@@ -575,10 +858,19 @@ export default function SocialGallery() {
                 rows={4}
                 style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box', marginBottom: 8 }} />
 
-              <button onClick={() => copyToClipboard(editorCaption || ' ', 'caption')}
-                style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 11, cursor: 'pointer', marginBottom: 12 }}>
-                {copyFeedback === 'caption' ? 'Copied!' : 'Copy Caption'}
-              </button>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+                <button onClick={() => copyToClipboard(editorCaption || ' ', 'caption')}
+                  style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+                  {copyFeedback === 'caption' ? 'Copied!' : 'Copy Caption'}
+                </button>
+                {/* ── V2: Cloud Save ── */}
+                {previewUrl && (
+                  <button onClick={saveToCloud}
+                    style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #334155', background: '#1e293b', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>
+                    ☁️ Save to Cloud
+                  </button>
+                )}
+              </div>
 
               {/* ── Hashtags ── */}
               <h3 style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Hashtags</h3>
@@ -593,6 +885,20 @@ export default function SocialGallery() {
                 style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#64748b', fontSize: 11, cursor: 'pointer', marginBottom: 12 }}>
                 {copyFeedback === 'hashtags' ? 'Copied!' : 'Copy Hashtags'}
               </button>
+
+              {/* ── Local SEO Tips ── */}
+              <details style={{ marginBottom: 8 }}>
+                <summary style={{ fontSize: 12, color: '#f59e0b', cursor: 'pointer', padding: 8, borderRadius: 6, background: '#1e293b', border: '1px solid #334155' }}>
+                  📍 Local SEO tips for {PLATFORM_CONFIG[platform].label}
+                </summary>
+                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {LOCAL_SEO_TIPS.filter(t => t.platform === platform).map((t, i) => (
+                    <div key={i} style={{ background: '#1e293b', borderRadius: 6, padding: 8, border: '1px solid #334155' }}>
+                      <p style={{ fontSize: 12, color: '#fde68a', margin: 0 }}>{t.tip}</p>
+                    </div>
+                  ))}
+                </div>
+              </details>
 
               {/* ── Growth Tips ── */}
               <details style={{ marginBottom: 16 }}>
@@ -618,15 +924,64 @@ export default function SocialGallery() {
       {activeTab === 'history' && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Saved drafts</p>
-            <button onClick={loadDrafts} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+            <div>
+              <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Saved drafts</p>
+              <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0' }}>
+                {cloudDrafts.length > 0 ? `☁️ ${cloudDrafts.length} cloud drafts` : ''}
+                {cloudDrafts.length > 0 && drafts.length > 0 ? ' · ' : ''}
+                {drafts.length > 0 ? `💾 ${drafts.length} local drafts` : ''}
+              </p>
+            </div>
+            <button onClick={() => { loadDrafts(); loadCloudDrafts(); }} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
               Refresh
             </button>
           </div>
 
-          {draftsLoading ? (
+          {/* ── Cloud Drafts ── */}
+          {cloudDrafts.length > 0 && (
+            <>
+              <h4 style={{ fontSize: 12, color: '#60a5fa', margin: '0 0 8px' }}>☁️ Cloud Drafts</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+                {cloudDrafts.map(draft => (
+                  <div key={draft.id} style={{ background: '#1e293b', borderRadius: 12, overflow: 'hidden', border: '1px solid #334155' }}>
+                    {draft.gridDataUrl && (
+                      <div style={{ width: '100%', aspectRatio: '1.5', maxHeight: 160, overflow: 'hidden', background: '#0f172a' }}>
+                        <img src={draft.gridDataUrl} alt="Draft" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                    )}
+                    <div style={{ padding: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <span>{platformEmoji(draft.platform)}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'white', textTransform: 'capitalize' }}>{draft.platform}</span>
+                        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#64748b' }}>{fmtDate(draft.createdAt)}</span>
+                      </div>
+                      {draft.caption && (
+                        <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 6px', lineHeight: 1.3, maxHeight: 32, overflow: 'hidden' }}>
+                          {draft.caption.slice(0, 80)}{draft.caption.length > 80 ? '...' : ''}
+                        </p>
+                      )}
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => restoreCloudDraft(draft)}
+                          style={{ flex: 1, padding: '6px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#60a5fa', fontSize: 11, cursor: 'pointer' }}>
+                          Edit
+                        </button>
+                        <button onClick={() => deleteCloudDraft(draft.id)}
+                          style={{ flex: 0, padding: '6px 10px', borderRadius: 6, border: '1px solid #dc262644', background: 'transparent', color: '#f87171', fontSize: 11, cursor: 'pointer' }}>
+                          🗑️
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ── Local Drafts ── */}
+          <h4 style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 8px' }}>💾 Local Drafts</h4>
+          {draftsLoading && cloudDraftsLoading ? (
             <p style={{ textAlign: 'center', color: '#64748b', padding: 20 }}>Loading drafts...</p>
-          ) : drafts.length === 0 ? (
+          ) : drafts.length === 0 && cloudDrafts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 40 }}>
               <p style={{ fontSize: 40, marginBottom: 8 }}>📂</p>
               <p style={{ color: '#94a3b8' }}>No drafts yet</p>
@@ -683,6 +1038,156 @@ export default function SocialGallery() {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      )}
+
+      {/* ═══════════════════ SCHEDULE ═══════════════════ */}
+      {activeTab === 'scheduled' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Scheduled posts</p>
+            <button onClick={loadScheduledPosts} style={{ padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontSize: 11, cursor: 'pointer' }}>
+              Refresh
+            </button>
+          </div>
+
+          {scheduleLoading ? (
+            <p style={{ textAlign: 'center', color: '#64748b', padding: 20 }}>Loading...</p>
+          ) : scheduledPosts.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <p style={{ fontSize: 40, marginBottom: 8 }}>📅</p>
+              <p style={{ color: '#94a3b8' }}>No scheduled posts</p>
+              <p style={{ fontSize: 12, color: '#64748b' }}>Save a draft to cloud, then come back to schedule it.</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {scheduledPosts.map(post => (
+                <div key={post.id} style={{ background: '#1e293b', borderRadius: 12, overflow: 'hidden', border: '1px solid #334155' }}>
+                  <div style={{ padding: 10 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                      <span>{platformEmoji(post.platform)}</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'white', textTransform: 'capitalize' }}>{post.platform}</span>
+                      {post.scheduledAt && (
+                        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#f59e0b' }}>
+                          📅 {fmtDateShort(post.scheduledAt)}
+                        </span>
+                      )}
+                    </div>
+                    {post.caption && (
+                      <p style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 8px', lineHeight: 1.3 }}>{post.caption.slice(0, 100)}</p>
+                    )}
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => scheduleDraft(post.id, scheduleDate)}
+                        style={{ flex: 1, padding: '6px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: '#22c55e', fontSize: 11, cursor: 'pointer' }}>
+                        Reschedule
+                      </button>
+                      <button onClick={() => deleteCloudDraft(post.id)}
+                        style={{ flex: 0, padding: '6px 10px', borderRadius: 6, border: '1px solid #dc262644', background: 'transparent', color: '#f87171', fontSize: 11, cursor: 'pointer' }}>
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Schedule picker ── */}
+          <div style={{ marginTop: 16, background: '#1e293b', borderRadius: 8, padding: 12, border: '1px solid #334155' }}>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Pick a date to schedule/reschedule posts:</p>
+            <input type="date" value={scheduleDate} onChange={e => setScheduleDate(e.target.value)}
+              style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #334155', background: '#0f172a', color: 'white', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+            <p style={{ fontSize: 11, color: '#64748b', marginTop: 8 }}>
+              To schedule a new post: save to cloud in Create tab, then come here to set date.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════ ANALYTICS ═══════════════════ */}
+      {activeTab === 'analytics' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: '#94a3b8', margin: 0 }}>Content Performance</p>
+            <div style={{ display: 'flex', gap: 4 }}>
+              {(['week', 'month', 'all'] as const).map(p => (
+                <button key={p} onClick={() => { setAnalyticsPeriod(p); loadAnalytics(p); }}
+                  style={{
+                    padding: '4px 8px', borderRadius: 4, border: analyticsPeriod === p ? '1px solid #22c55e' : '1px solid #334155',
+                    background: analyticsPeriod === p ? '#16653420' : 'transparent',
+                    color: analyticsPeriod === p ? '#22c55e' : '#64748b', fontSize: 11, cursor: 'pointer',
+                  }}>
+                  {p === 'week' ? 'Week' : p === 'month' ? 'Month' : 'All'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {analyticsLoading ? (
+            <p style={{ textAlign: 'center', color: '#64748b', padding: 20 }}>Loading analytics...</p>
+          ) : !analyticsData || analyticsData.items.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <p style={{ fontSize: 40, marginBottom: 8 }}>📊</p>
+              <p style={{ color: '#94a3b8' }}>No data yet</p>
+              <p style={{ fontSize: 12, color: '#64748b' }}>Analytics will show up after you publish posts and record engagement.</p>
+            </div>
+          ) : (
+            <>
+              {/* ── Summary cards ── */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
+                {[
+                  { label: 'Posts', value: analyticsData.total.posts, color: '#60a5fa' },
+                  { label: 'Impressions', value: analyticsData.total.impressions, color: '#22c55e' },
+                  { label: 'Likes', value: analyticsData.total.likes, color: '#f472b6' },
+                  { label: 'Comments', value: analyticsData.total.comments, color: '#f59e0b' },
+                  { label: 'Shares', value: analyticsData.total.shares, color: '#a78bfa' },
+                  { label: 'Clicks', value: analyticsData.total.clicks, color: '#fb923c' },
+                ].map(card => (
+                  <div key={card.label} style={{ background: '#1e293b', borderRadius: 8, padding: 10, textAlign: 'center', border: '1px solid #334155' }}>
+                    <p style={{ fontSize: 18, fontWeight: 700, color: card.color, margin: 0 }}>{fmtNum(card.value)}</p>
+                    <p style={{ fontSize: 11, color: '#64748b', margin: '4px 0 0' }}>{card.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── By Platform ── */}
+              <h4 style={{ fontSize: 12, color: '#94a3b8', margin: '0 0 8px' }}>By Platform</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {Object.entries(analyticsData.byPlatform).map(([p, data]) => (
+                  <div key={p} style={{ background: '#1e293b', borderRadius: 8, padding: 10, border: '1px solid #334155' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                      <span style={{ fontSize: 16 }}>{platformEmoji(p)}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, textTransform: 'capitalize' }}>{p}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 12, fontSize: 12 }}>
+                      <span>{data.posts} posts</span>
+                      <span style={{ color: '#60a5fa' }}>{fmtNum(data.impressions)} impressions</span>
+                      <span style={{ color: '#f472b6' }}>{fmtNum(data.likes)} likes</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Recent items ── */}
+              <h4 style={{ fontSize: 12, color: '#94a3b8', margin: '12px 0 8px' }}>Recent Activity</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {analyticsData.items.slice(0, 10).map((item: any) => (
+                  <div key={item.id} style={{ background: '#1e293b', borderRadius: 6, padding: 8, border: '1px solid #334155', fontSize: 11 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ color: '#94a3b8' }}>{platformEmoji(item.platform)} {item.caption?.slice(0, 40) || 'No caption'}</span>
+                      <span style={{ color: '#64748b' }}>{item.recordedAt ? fmtDateShort(item.recordedAt) : ''}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, color: '#64748b' }}>
+                      <span>👁 {item.impressionCount || 0}</span>
+                      <span>❤️ {item.likeCount || 0}</span>
+                      <span>💬 {item.commentCount || 0}</span>
+                      <span>↗️ {item.shareCount || 0}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}

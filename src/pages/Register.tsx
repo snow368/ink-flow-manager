@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { collectDeviceFingerprint, checkDeviceBinding, checkIPRegistrationLimit, incrementIPRegistrationCount } from '../lib/fingerprint';
 import { db, type StudioLocationRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
-import { processReferralOnRegister } from '../lib/referralLogic';
 import { hashPassword } from '../lib/auth';
 import { getBackendUrl } from '../lib/backendApi';
 
@@ -173,101 +172,22 @@ export default function Register() {
         } catch { /* server unreachable, fall through to local */ }
       }
 
-      /* Save to IndexedDB (may fail in Safari private mode — non-critical) */
-      try {
-        await db.users.add({
-          id: userId, email, name, roles, passwordHash, deviceId,
-          verified: false, createdAt: now,
-        });
+      /* Use server-recommended userId if available */
+      if (serverOk) {
         localStorage.setItem('inkflow_current_user', userId);
-        incrementIPRegistrationCount();
-      } catch (dbErr) {
-        /* If IndexedDB fails (eg Safari private mode) but server saved it, still proceed */
-        if (!serverOk) {
-          clearTimeout(timeout);
-          setError('Local storage unavailable. Please use a different browser or disable Private Browsing.');
-          setSubmitting(false);
-          submittingRef.current = false;
-          return;
-        }
-        /* server saved it, we can proceed without local DB */
-        localStorage.setItem('inkflow_current_user', userId);
+        try {
+          localStorage.setItem('inkflow_current_user_data', JSON.stringify({
+            id: userId, email, name, roles, plan: upgradePlan || 'free',
+            studioName: studioName.trim() || '', createdAt: now,
+          }));
+        } catch { /* ok */ }
       }
-      /* Cache user data to localStorage (works in Safari private mode) */
-      try {
-        localStorage.setItem('inkflow_current_user_data', JSON.stringify({
-          id: userId, email, name, roles, plan: upgradePlan || 'free',
-          studioName: studioName.trim() || '', createdAt: now,
-        }));
-      } catch { /* ok */ }
-
-      if (refCode) {
-        try { await processReferralOnRegister(userId, refCode); } catch { /* skip */ }
-      }
-
-      /* Sync settings to server (best-effort) */
-      try {
-        const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
-        if (backendUrl && roles.includes('artist')) {
-          await fetch(`${backendUrl}/api/sync`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
-            body: JSON.stringify({ artistId: userId, settings: { name, email, createdAt: now } }),
-          });
-        }
-      } catch { /* silent */ }
 
       /* 🚀 REDIRECT FIRST — before any IndexedDB ops (Safari may hang on IndexedDB) */
       clearTimeout(timeout);
       navigatedRef.current = true;
       const targetUrl = upgradePlan === 'pro_plus' ? '/pro-plus-setup' : '/today?welcome=1';
       window.location.href = targetUrl;
-
-      /* ── Background: non-critical IndexedDB ops (fire-and-forget, Safari OK if they fail) ── */
-
-      if (refCode) {
-        processReferralOnRegister(userId, refCode).catch(() => {});
-      }
-
-      /* Sync settings to server */
-      if (backendUrl && roles.includes('artist')) {
-        const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
-        fetch(`${backendUrl}/api/sync`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret },
-          body: JSON.stringify({ artistId: userId, settings: { name, email, createdAt: now } }),
-        }).catch(() => {});
-      }
-
-      /* IndexedDB user save (non-critical, fire-and-forget) */
-      db.users.add({
-        id: userId, email, name, roles, passwordHash, deviceId,
-        verified: false, createdAt: now,
-      }).catch(() => {});
-      localStorage.setItem('inkflow_current_user', userId);
-      incrementIPRegistrationCount();
-
-      /* Studio location (fire-and-forget) */
-      if (studioName.trim()) {
-        db.studioLocations.toArray().then(allLocs => {
-          const match = allLocs.find(l =>
-            l.name.toLowerCase() === studioName.trim().toLowerCase() &&
-            (!studioAddress.trim() || l.address?.toLowerCase() === studioAddress.trim().toLowerCase())
-          );
-          if (match) {
-            db.users.update(userId, { assignedLocationIds: [match.id], studioName: studioName.trim() } as any).catch(() => {});
-          } else if (roles.includes('owner')) {
-            const locId = 'loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-            db.studioLocations.add({
-              id: locId, ownerId: userId, name: studioName.trim(),
-              address: studioAddress.trim() || undefined, createdAt: Date.now(),
-            } as any).catch(() => {});
-            db.users.update(userId, { assignedLocationIds: [locId], studioName: studioName.trim() } as any).catch(() => {});
-          } else {
-            db.users.update(userId, { studioName: studioName.trim() } as any).catch(() => {});
-          }
-        }).catch(() => {});
-      }
     } catch (err) {
       clearTimeout(timeout);
       setError('Registration failed. Please try again.');

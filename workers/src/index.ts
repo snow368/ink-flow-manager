@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import Stripe from 'stripe';
 import { Env, initDB, generateId, now } from './db';
+import { renderShopPage, guessTemplate, ShopData } from './templates';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -499,6 +500,168 @@ app.delete('/api/site-config/:slug', async (c) => {
 });
 
 // =============================================
+// Sitemap for auto-built tattoo shop pages
+// =============================================
+
+app.get('/sitemap.xml', async (c) => {
+  const baseUrl = c.env.PUBLIC_URL || 'https://app.ink-flows.com';
+  const { results } = await c.env.DB.prepare(
+    'SELECT slug, updatedAt FROM site_configs ORDER BY updatedAt DESC LIMIT 50000'
+  ).all();
+
+  const urls = (results || []).map((r: any) => {
+    const lastmod = r.updatedAt ? new Date(r.updatedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    return `  <url><loc>${baseUrl}/s/${r.slug}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`;
+  }).join('\n');
+
+  return c.body(
+    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>',
+    200,
+    { 'Content-Type': 'application/xml' }
+  );
+});
+
+// =============================================
+// Generic Data API (replaces IndexedDB/Dexie)
+// =============================================
+
+const ALLOWED_TYPES = new Set([
+  'client', 'appointment', 'project', 'waiver', 'session',
+  'inventory', 'portfolio', 'socialDraft', 'referral', 'lead',
+  'leadRevision', 'supplyBrand', 'posTransaction', 'studioLocation',
+  'invoice', 'competitor', 'supplyReview', 'waitingList',
+  'healthChecklist', 'communicationLog', 'affiliateClick',
+  'auditLog', 'shift', 'task', 'review', 'clientReferral',
+  'leadConfirmation', 'projectAsset', 'projectApprovalToken',
+  'depositFlow', 'projectRevision', 'photo',
+]);
+
+/** List records by type */
+app.get('/api/data/:type', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const type = c.req.param('type');
+  if (!ALLOWED_TYPES.has(type)) { c.status(400); return c.json({ error: 'invalid_type' }); }
+
+  const artistId = c.req.query('artistId') || c.req.header('x-user-id') || '';
+  const limit = Math.min(Number(c.req.query('limit')) || 100, 500);
+  const offset = Number(c.req.query('offset')) || 0;
+
+  let sql = 'SELECT * FROM app_data WHERE type = ?';
+  const params: any[] = [type];
+
+  // Auto-filter by artistId if specified
+  if (artistId) {
+    // Artist-level tables filter by artistId
+    const ownerTables = ['client', 'appointment', 'project', 'session', 'lead', 'portfolio', 'socialDraft', 'inventory'];
+    if (ownerTables.includes(type)) {
+      sql += ' AND artistId = ?';
+      params.push(artistId);
+    }
+  }
+
+  // Additional filters from query params (JSON fields)
+  const filterKeys = ['status', 'source', 'category', 'platform'];
+  for (const key of filterKeys) {
+    const val = c.req.query(key);
+    if (val) {
+      sql += ' AND json_extract(data, ?) = ?';
+      params.push('$.' + key, val);
+    }
+  }
+
+  // Date range
+  const startDate = c.req.query('startDate');
+  const endDate = c.req.query('endDate');
+  if (startDate) { sql += ' AND createdAt >= ?'; params.push(Number(startDate)); }
+  if (endDate) { sql += ' AND createdAt <= ?'; params.push(Number(endDate)); }
+
+  sql += ' ORDER BY createdAt DESC LIMIT ? OFFSET ?';
+  params.push(limit, offset);
+
+  const { results } = await c.env.DB.prepare(sql).bind(...params).all();
+  const items = (results || []).map((r: any) => ({ ...JSON.parse(r.data || '{}'), id: r.id, createdAt: r.createdAt, updatedAt: r.updatedAt }));
+  return c.json({ items, total: items.length });
+});
+
+/** Get single record */
+app.get('/api/data/:type/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const type = c.req.param('type');
+  const id = c.req.param('id');
+  if (!ALLOWED_TYPES.has(type)) { c.status(400); return c.json({ error: 'invalid_type' }); }
+
+  const row = await c.env.DB.prepare(
+    'SELECT * FROM app_data WHERE type = ? AND id = ?'
+  ).bind(type, id).first() as any;
+
+  if (!row) { c.status(404); return c.json({ error: 'not_found' }); }
+  return c.json({ id: row.id, ...JSON.parse(row.data || '{}') });
+});
+
+/** Create record */
+app.post('/api/data/:type', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const type = c.req.param('type');
+  if (!ALLOWED_TYPES.has(type)) { c.status(400); return c.json({ error: 'invalid_type' }); }
+
+  const body = await c.req.json();
+  const id = body.id || generateId(type);
+  const artistId = body.artistId || c.req.header('x-user-id') || '';
+  const ts = now();
+
+  // Extract data payload (everything except id/artistId goes into data JSON)
+  const { id: _id, artistId: _a, createdAt: _c, ...rest } = body;
+  const data = JSON.stringify(rest);
+
+  await c.env.DB.prepare(
+    'INSERT OR REPLACE INTO app_data (id, type, artistId, data, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)'
+  ).bind(id, type, artistId, data, ts, ts).run();
+
+  await audit(c.env, 'data_create', { type, id, artistId });
+  return c.json({ ok: true, id });
+});
+
+/** Update record */
+app.put('/api/data/:type/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const type = c.req.param('type');
+  const id = c.req.param('id');
+  if (!ALLOWED_TYPES.has(type)) { c.status(400); return c.json({ error: 'invalid_type' }); }
+
+  const existing = await c.env.DB.prepare(
+    'SELECT * FROM app_data WHERE type = ? AND id = ?'
+  ).bind(type, id).first() as any;
+
+  if (!existing) { c.status(404); return c.json({ error: 'not_found' }); }
+
+  const body = await c.req.json();
+  const { id: _id, artistId: _a, createdAt: _c, ...rest } = body;
+  const data = JSON.stringify(rest);
+  const ts = now();
+
+  await c.env.DB.prepare(
+    'UPDATE app_data SET data = ?, updatedAt = ? WHERE id = ? AND type = ?'
+  ).bind(data, ts, id, type).run();
+
+  return c.json({ ok: true, id });
+});
+
+/** Delete record */
+app.delete('/api/data/:type/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const type = c.req.param('type');
+  const id = c.req.param('id');
+  if (!ALLOWED_TYPES.has(type)) { c.status(400); return c.json({ error: 'invalid_type' }); }
+
+  await c.env.DB.prepare(
+    'DELETE FROM app_data WHERE type = ? AND id = ?'
+  ).bind(type, id).run();
+
+  await audit(c.env, 'data_delete', { type, id });
+  return c.json({ ok: true });
+});
+
+// =============================================
 // Maps → Auto Website Builder (Batch)
 // =============================================
 
@@ -510,12 +673,15 @@ app.post('/api/site-config/batch', async (c) => {
     c.status(400); return c.json({ error: 'businesses array required' });
   }
   const ts = now();
-  const results: { name: string; slug: string; status: string; error?: string }[] = [];
+  const results: { name: string; slug: string; status: string; error?: string; template?: string; claimToken?: string }[] = [];
 
   for (const b of businesses) {
     const slug = b.slug || (b.name + '-' + b.city).toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').slice(0, 60);
     const studioName = b.name || b.studioName || '';
-    const bio = b.bio || `${studioName} — serving ${b.city || b.address || ''}. Call ${b.phone || ''} for appointments.`;
+    const bio = b.bio || `${studioName} — serving ${b.city || ''}, ${b.state || ''}. Call ${b.phone || ''} to book.`;
+    const photos = b.photos || b.photoUrls || [];
+    const template = b.template || guessTemplate(photos, studioName);
+    const claimToken = b.claimToken || generateId('ct');
 
     try {
       const existing = await c.env.DB.prepare('SELECT id FROM site_configs WHERE slug = ?').bind(slug).first();
@@ -525,17 +691,261 @@ app.post('/api/site-config/batch', async (c) => {
       }
       const id = generateId('scfg');
       await c.env.DB.prepare(
-        `INSERT INTO site_configs (id, artistId, slug, template, theme, bio, studioName, customDomain, locations, publishedAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      ).bind(id, 'maps_batch', slug, 'portfolio', 'dark', bio, studioName, '', '[]', ts, ts).run();
-      results.push({ name: studioName, slug, status: 'created' });
+        `INSERT INTO site_configs (id, artistId, slug, template, theme, bio, studioName, phone, address, city, state, rating, reviewCount, photoUrls, services, priceRange, claimToken, data, publishedAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).bind(
+        id, 'maps_batch', slug, template, template, bio, studioName,
+        b.phone || '', b.address || '', b.city || '', b.state || '',
+        b.rating || 0, b.reviewCount || 0,
+        JSON.stringify(photos),
+        JSON.stringify(b.services || []),
+        b.priceRange || '$$',
+        claimToken,
+        JSON.stringify(b.data || {}),
+        ts, ts
+      ).run();
+      results.push({ name: studioName, slug, status: 'created', template, claimToken });
     } catch (e: any) {
       results.push({ name: studioName, slug, status: 'error', error: e.message });
     }
   }
 
+  // Return claim URLs for newly created sites
+  const baseUrl = c.env.PUBLIC_URL || 'https://app.ink-flows.com';
   await audit(c.env, 'site_config_batch', { count: businesses.length, created: results.filter(r => r.status === 'created').length });
-  return c.json({ ok: true, results, total: businesses.length, created: results.filter(r => r.status === 'created').length });
+  return c.json({
+    ok: true,
+    results,
+    total: businesses.length,
+    created: results.filter(r => r.status === 'created').length,
+    claimUrls: results
+      .filter(r => r.status === 'created' && r.claimToken)
+      .map(r => ({ name: r.name, slug: r.slug, claimUrl: `${baseUrl}/claim?slug=${r.slug}&token=${r.claimToken}` })),
+  });
 });
+
+// =============================================
+// Tattoo Shop Landing Pages (Render + Claim)
+// =============================================
+
+/** Render a tattoo shop landing page as full HTML */
+app.get('/s/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (!slug) { c.status(400); return c.html('<h1>Missing slug</h1>', 400); }
+
+  const row = await c.env.DB.prepare(
+    'SELECT * FROM site_configs WHERE slug = ?'
+  ).bind(slug).first() as any;
+
+  if (!row) {
+    return c.html(`<!DOCTYPE html><html><head><title>Not Found</title><meta name="robots" content="noindex"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;"><div style="text-align:center;"><h1>Page Not Found</h1><p>This shop page hasn\'t been created yet.</p></div></body></html>`, 404);
+  }
+
+  const photos = safeJson(row.photoUrls, []);
+  const services = safeJson(row.services, []);
+  const locations = safeJson(row.locations, []);
+
+  const shopData: ShopData = {
+    studioName: row.studioName || row.slug,
+    city: row.city || '',
+    state: row.state || '',
+    phone: row.phone || '',
+    address: row.address || '',
+    rating: row.rating || 0,
+    reviewCount: row.reviewCount || 0,
+    bio: row.bio || '',
+    photos,
+    services,
+    placeId: (safeJson(row.data, {}) as any)?.placeId || '',
+    slug: row.slug,
+    template: (row.template as ShopData['template']) || 'classic',
+    claimToken: row.claimToken || '',
+    claimed: Boolean(row.claimedBy),
+    priceRange: row.priceRange || '$$',
+  };
+
+  const baseUrl = c.env.PUBLIC_URL || 'https://app.ink-flows.com';
+  const html = renderShopPage(shopData, baseUrl);
+  return c.html(html);
+});
+
+/** Claim a shop page — show form */
+app.get('/claim', async (c) => {
+  const slug = c.req.query('slug');
+  const token = c.req.query('token');
+  if (!slug || !token) {
+    return c.html(`<!DOCTYPE html><html><head><title>Invalid Claim Link</title><meta name="robots" content="noindex"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;"><div style="text-align:center;"><h1>Invalid Link</h1><p>This claim link is not valid. Please contact support.</p></div></body></html>`, 400);
+  }
+
+  const row = await c.env.DB.prepare(
+    'SELECT slug, studioName, claimToken, claimedBy FROM site_configs WHERE slug = ?'
+  ).bind(slug).first() as any;
+
+  if (!row || row.claimToken !== token) {
+    return c.html(`<!DOCTYPE html><html><head><title>Invalid Token</title><meta name="robots" content="noindex"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;"><div style="text-align:center;"><h1>Invalid Token</h1><p>This claim link is invalid or expired.</p></div></body></html>`, 400);
+  }
+
+  if (row.claimedBy) {
+    return c.html(`<!DOCTYPE html><html><head><title>Already Claimed</title><meta name="robots" content="noindex"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5;"><div style="text-align:center;"><h1>Already Claimed</h1><p>This page has already been claimed. <a href="/s/${slug}">Back to page</a></p></div></body></html>`);
+  }
+
+  return c.html(claimFormHtml(slug, token, row.studioName));
+});
+
+app.post('/claim', async (c) => {
+  const { slug, token, email, name } = await c.req.json();
+  if (!slug || !token || !email) {
+    return c.json({ error: 'slug, token, and email required' }, 400);
+  }
+
+  const row = await c.env.DB.prepare(
+    'SELECT slug, claimToken, claimedBy FROM site_configs WHERE slug = ?'
+  ).bind(slug).first() as any;
+
+  if (!row) return c.json({ error: 'not_found' }, 404);
+  if (row.claimToken !== token) return c.json({ error: 'invalid_token' }, 400);
+  if (row.claimedBy) return c.json({ error: 'already_claimed' }, 400);
+
+  const ts = now();
+  const claimId = generateId('clm');
+
+  // Record the claim request
+  await c.env.DB.prepare(
+    'INSERT INTO claim_requests (id, slug, email, name, phone, status, token, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(claimId, slug, email, name || '', '', 'pending', token, ts).run();
+
+  // Mark as claimed immediately for V1 (no email verification yet)
+  // In V2, this would send a verification email first
+  await c.env.DB.prepare(
+    'UPDATE site_configs SET claimedBy = ?, claimedAt = ?, updatedAt = ? WHERE slug = ?'
+  ).bind(email, ts, ts, slug).run();
+
+  await audit(c.env, 'site_claimed', { slug, email });
+  return c.json({ ok: true, slug, message: 'Page claimed successfully!' });
+});
+
+// ---- Helpers for template routes ----
+
+function safeJson(val: string | undefined, fallback: any): any {
+  if (!val) return fallback;
+  try { return JSON.parse(val); } catch { return fallback; }
+}
+
+function claimFormHtml(slug: string, token: string, studioName: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim — ${studioName}</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0d0d0d; color: #f0f0f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 2.5rem; max-width: 480px; width: 100%; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p { color: #888; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5; }
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.85rem; font-weight: 600; color: #ccc; margin-bottom: 0.35rem; }
+    input { width: 100%; padding: 0.75rem 1rem; background: #0d0d0d; border: 1px solid #333; border-radius: 8px; color: #f0f0f0; font-size: 1rem; font-family: 'Inter', sans-serif; }
+    input:focus { outline: none; border-color: #c9a84c; }
+    button { width: 100%; padding: 0.85rem; background: #c9a84c; color: #0d0d0d; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 0.5rem; }
+    button:hover { background: #dbb95d; }
+    .error { color: #e63946; font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+    .success { color: #2ecc71; font-size: 0.95rem; text-align: center; display: none; }
+    .spinner { display: none; }
+    button.loading .spinner { display: inline-block; }
+    button.loading .btn-text { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="display:inline-block;background:#c9a84c20;color:#c9a84c;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:0.3rem 0.75rem;border-radius:100px;margin-bottom:1rem;">Free — No credit card needed</div>
+    <h1 style="font-size:1.6rem;font-weight:700;margin-bottom:0.75rem;line-height:1.3;">Claim <span style="color:#c9a84c;">${safe(studioName)}</span></h1>
+    <p style="color:#999;font-size:0.95rem;margin-bottom:1.5rem;line-height:1.6;">It's your shop, you should own your online presence. This page is already on Google — claim it for free in 30 seconds. No tech skills, no hidden fees.</p>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.75rem;">
+      <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+        <span style="flex-shrink:0;">🔓</span>
+        <span style="font-size:0.9rem;color:#ccc;line-height:1.4;"><strong>Free, period.</strong> — No credit card, no trial, no upsell. Yours to keep.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+        <span style="flex-shrink:0;">✏️</span>
+        <span style="font-size:0.9rem;color:#ccc;line-height:1.4;"><strong>No tech skills needed</strong> — Update hours, photos, services in one click. Like Google My Business but better.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+        <span style="flex-shrink:0;">🔍</span>
+        <span style="font-size:0.9rem;color:#ccc;line-height:1.4;"><strong>Get found on Google</strong> — Your page is already indexed. Control what customers see when they search.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+        <span style="flex-shrink:0;">📈</span>
+        <span style="font-size:0.9rem;color:#ccc;line-height:1.4;"><strong>Grow from zero</strong> — Add booking, payments, gallery when you're ready. Upgrade only if you want.</span>
+      </div>
+    </div>
+    <div style="height:1px;background:#2a2a2a;margin:1.5rem 0;"></div>
+    <form id="claimForm">
+      <input type="hidden" name="slug" value="${slug}">
+      <input type="hidden" name="token" value="${token}">
+      <div class="form-group">
+        <label for="email">Your Email *</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="name">Your Name <span style="color:#555;">(optional)</span></label>
+        <input type="text" id="name" name="name" placeholder="e.g. Jake">
+      </div>
+      <button type="submit" id="submitBtn">
+        <span class="btn-text">Claim My Free Page →</span>
+        <span class="spinner">⏳</span>
+      </button>
+      <div class="error" id="errorMsg"></div>
+      <div class="success" id="successMsg">
+        <span style="font-size:2rem;display:block;margin-bottom:0.5rem;">✅</span>
+        <strong>You're all set!</strong><br>
+        <span style="color:#999;font-size:0.85rem;">We'll send you an email to verify and get started.</span>
+      </div>
+    </form>
+    <p style="text-align:center;color:#555;font-size:0.8rem;margin-top:1.25rem;">Powered by <a href="https://ink-flows.com" style="color:#888;">InkFlow</a> — trusted by tattoo studios across the US</p>
+  </div>
+  <p style="text-align:center;margin-top:2rem;color:#555;font-size:0.85rem;">Not ${safe(studioName)}? <a href="https://app.ink-flows.com" style="color:#888;">Learn how InkFlow works</a></p>
+  <script>
+    document.getElementById('claimForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const error = document.getElementById('errorMsg');
+      const success = document.getElementById('successMsg');
+      error.style.display = 'none';
+      success.style.display = 'none';
+      btn.classList.add('loading');
+      btn.disabled = true;
+      try {
+        const data = { slug: '${slug}', token: '${token}', email: document.getElementById('email').value, name: document.getElementById('name').value };
+        const res = await fetch('/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const json = await res.json();
+        if (json.ok) {
+          success.style.display = 'block';
+          btn.style.display = 'none';
+          document.querySelectorAll('.form-group').forEach(el => el.style.display = 'none');
+          document.querySelector('.sub').style.display = 'none';
+          document.querySelector('.benefits').style.display = 'none';
+          document.querySelector('.divider').style.display = 'none';
+        } else {
+          error.textContent = json.error || 'Something went wrong';
+          error.style.display = 'block';
+        }
+      } catch (err) {
+        error.textContent = 'Network error. Please try again.';
+        error.style.display = 'block';
+      } finally {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>`;
+}
 
 // =============================================
 // Waiver Routes
@@ -791,6 +1201,258 @@ app.get('/api/storage/usage', async (c) => {
   } while (cursor);
 
   return c.json({ bytesUsed });
+});
+
+// =============================================
+// Social Content Studio V2 Routes
+// =============================================
+
+/** AI caption + hashtag generation with local SEO */
+app.post('/api/content/generate', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  try {
+    const { imageUrls, platform, tone, captionHints, city, state, studioName } = await c.req.json();
+    const platformLabel: Record<string, string> = { instagram: 'Instagram', facebook: 'Facebook', pinterest: 'Pinterest', tiktok: 'TikTok' };
+    const platformStr = platformLabel[platform as string] || 'Instagram';
+    const toneLabel: Record<string, string> = { professional: 'professional & polished', casual: 'casual & friendly', hype: 'exciting & hype', educational: 'educational & informative' };
+    const toneStr = toneLabel[tone as string] || 'professional';
+
+    // Build location context for local SEO
+    const locationStr = city ? ` in ${city}${state ? `, ${state}` : ''}` : '';
+    const localHashtagHint = city ? `\nInclude local hashtags like #tattoo${city} #[city]tattoo #${city} and general tattoo hashtags.` : '';
+
+    const prompt = `You are a tattoo studio's social media marketing assistant. Write a ${toneStr} caption and 10 relevant hashtags for a ${platformStr} post about tattoo artwork${locationStr}.
+
+The photos show completed tattoo work${imageUrls?.length ? ` (${imageUrls.length} photos)` : ''}.
+${captionHints ? `Additional context: ${captionHints}` : ''}
+${studioName ? `Studio name: ${studioName}` : ''}
+${localHashtagHint}
+
+LOCAL SEO RULES:
+- If a city is provided, naturally mention the city in the caption
+- Use service+city keyword combinations (e.g., "fine line tattoo in ${city || 'your city'}")
+- Include a call-to-action encouraging local bookings
+- ${city ? `Include 3-4 local hashtags like #${city}tattoo #tattoo${city} #${city}` : 'Include location-based hashtags if relevant'}
+
+Respond in JSON format:
+{
+  "caption": "the caption text (2-4 sentences, include emojis)",
+  "hashtags": ["tag1", "tag2", ...]
+}
+
+Keep the caption under 200 characters for ${platformStr}.`;
+
+    let result: { caption: string; hashtags: string[] } | null = null;
+
+    // Try Workers AI
+    if (c.env.AI) {
+      try {
+        const aiResp = await c.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+          messages: [{ role: 'user', content: prompt }],
+          response_format: { type: 'json_object' },
+        });
+        const text = typeof aiResp === 'string' ? aiResp : (aiResp as any).response || '';
+        const parsed = JSON.parse(text);
+        if (parsed.caption) result = parsed;
+      } catch (e: any) {
+        console.error('[AI] Workers AI failed, falling back:', e.message);
+      }
+    }
+
+    // Fallback: template-based generation with local SEO
+    if (!result) {
+      const locTag = city ? ` in ${city}` : '';
+      const localLine = city ? `\n\n📍 Serving ${city}${state ? `, ${state}` : ''} — DM to book!` : '';
+
+      const templates: Record<string, string[]> = {
+        professional: [
+          `Fresh work fresh off the needle 🖤\n\nPrecision linework meets smooth shading in this latest piece${locTag}.${localLine}\n\nBook your consultation today — link in bio.`,
+          `Another satisfied client walking out with art they'll treasure forever${locTag}.\n\nAttention to detail is everything.${localLine}\n\nDM to book your session.`,
+        ],
+        casual: [
+          `New ink alert 🔥\n\nThis one came together so nicely${locTag}. Love when a design just flows.\n\nWhat are you getting next? 👇`,
+          `Friday flash vibes ⚡️\n\nGot some openings next week${locTag}. First come first served.\n\nDrop a 🔥 if you're ready to book.`,
+        ],
+        hype: [
+          `ABSOLUTELY OBSESSED with how this turned out 😮‍💨🔥\n\nThis is why I love what I do.${localLine}\n\nWho's next?! Drop a comment 👇`,
+          `SHEEEESH 🔥🔥🔥\n\nThis piece hit different${locTag}. The details, the shading, everything.\n\nBook your spot NOW.`,
+        ],
+        educational: [
+          `Ever wondered how a tattoo heals? Here's the breakdown 🧵\n\nDay 1-3: Keep clean & moisturized\nDay 4-7: Peeling starts — DON'T pick it\nDay 8-14: Almost healed${locTag}\n\nSave this for later!`,
+          `3 things every first-timer${locTag} should know:\n\n1️⃣ Hydrate before your appointment\n2️⃣ Eat a good meal beforehand\n3️⃣ Trust the process\n\nAnything else? Drop it below 👇`,
+        ],
+      };
+      const pool = templates[tone] || templates.professional;
+      const caption = pool[Math.floor(Math.random() * pool.length)];
+
+      // Local-aware hashtags
+      const cityTag = city ? [`#${city}tattoo`, `#tattoo${city}`, `#${city}`] : [];
+      const coreTags: Record<string, string[]> = {
+        instagram: ['#tattoo', '#inked', '#tattooart', '#tattooartist', '#newtattoo', '#bodyart'],
+        facebook: ['#tattoo', '#tattooartist', '#inked', '#bodyart', '#tattoocommunity', '#tattoodesign'],
+        pinterest: ['#tattoo', '#tattooideas', '#tattoodesign', '#inked', '#bodyart', '#tattooinspiration'],
+      };
+      const tags = [...(coreTags[platform] || coreTags.instagram), ...cityTag].sort(() => Math.random() - 0.5);
+
+      result = { caption, hashtags: tags };
+    }
+
+    return c.json(result);
+  } catch (e: any) {
+    console.error('[content/generate]', e);
+    c.status(500);
+    return c.json({ error: e.message || 'Generation failed' });
+  }
+});
+
+/** List content drafts (cloud) */
+app.get('/api/content/drafts', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const artistId = c.req.query('artistId');
+  const status = c.req.query('status');
+  if (!artistId) { c.status(400); return c.json({ error: 'artistId required' }); }
+  let sql = 'SELECT * FROM content_drafts WHERE artistId = ?';
+  const params: any[] = [artistId];
+  if (status) { sql += ' AND status = ?'; params.push(status); }
+  sql += ' ORDER BY updatedAt DESC';
+  const { results } = await c.env.DB.prepare(sql).bind(...params).all();
+  return c.json({ items: results || [] });
+});
+
+/** Create a content draft */
+app.post('/api/content/drafts', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  try {
+    const { artistId, platform, caption, hashtags, imageUrls, gridDataUrl, watermarkText, layout, backgroundColor, tone, status, scheduledAt } = await c.req.json();
+    if (!artistId) { c.status(400); return c.json({ error: 'artistId required' }); }
+    const id = generateId('cd');
+    const ts = now();
+    await c.env.DB.prepare(
+      `INSERT INTO content_drafts (id, artistId, platform, caption, hashtags, imageUrls, gridDataUrl, watermarkText, layout, backgroundColor, tone, status, scheduledAt, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(id, artistId, platform || 'instagram', caption || '', hashtags || '', JSON.stringify(imageUrls || []), gridDataUrl || '', watermarkText || '', layout || '3x3', backgroundColor || '#000000', tone || 'professional', status || 'draft', scheduledAt || null, ts, ts).run();
+    await audit(c.env, 'content_draft_created', { artistId, draftId: id });
+    return c.json({ ok: true, id });
+  } catch (e: any) { c.status(500); return c.json({ error: e.message }); }
+});
+
+/** Update a content draft */
+app.put('/api/content/drafts/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  try {
+    const id = c.req.param('id');
+    const updates = await c.req.json();
+    const existing = await c.env.DB.prepare('SELECT * FROM content_drafts WHERE id = ?').bind(id).first() as any;
+    if (!existing) { c.status(404); return c.json({ error: 'not_found' }); }
+
+    const fields = ['platform', 'caption', 'hashtags', 'imageUrls', 'gridDataUrl', 'watermarkText', 'layout', 'backgroundColor', 'tone', 'status', 'scheduledAt'];
+    const setClauses: string[] = [];
+    const values: any[] = [];
+    for (const f of fields) {
+      if (updates[f] !== undefined) {
+        setClauses.push(`${f} = ?`);
+        if (f === 'imageUrls') {
+          values.push(JSON.stringify(updates[f]));
+        } else {
+          values.push(updates[f]);
+        }
+      }
+    }
+    if (setClauses.length === 0) { return c.json({ ok: true }); }
+    setClauses.push('updatedAt = ?');
+    values.push(now());
+    values.push(id);
+
+    await c.env.DB.prepare(`UPDATE content_drafts SET ${setClauses.join(', ')} WHERE id = ?`).bind(...values).run();
+    await audit(c.env, 'content_draft_updated', { draftId: id });
+    return c.json({ ok: true });
+  } catch (e: any) { c.status(500); return c.json({ error: e.message }); }
+});
+
+/** Delete a content draft */
+app.delete('/api/content/drafts/:id', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const id = c.req.param('id');
+  const existing = await c.env.DB.prepare('SELECT id FROM content_drafts WHERE id = ?').bind(id).first();
+  if (!existing) { c.status(404); return c.json({ error: 'not_found' }); }
+  await c.env.DB.prepare('DELETE FROM content_drafts WHERE id = ?').bind(id).run();
+  await audit(c.env, 'content_draft_deleted', { draftId: id });
+  return c.json({ ok: true });
+});
+
+/** Calendar: get scheduled posts by date range */
+app.get('/api/content/calendar', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const artistId = c.req.query('artistId');
+  const from = c.req.query('from');
+  const to = c.req.query('to');
+  if (!artistId) { c.status(400); return c.json({ error: 'artistId required' }); }
+  let sql = 'SELECT * FROM content_drafts WHERE artistId = ? AND status = ?';
+  const params: any[] = [artistId, 'scheduled'];
+  if (from) { sql += ' AND scheduledAt >= ?'; params.push(parseInt(from)); }
+  if (to) { sql += ' AND scheduledAt <= ?'; params.push(parseInt(to)); }
+  sql += ' ORDER BY scheduledAt ASC';
+  const { results } = await c.env.DB.prepare(sql).bind(...params).all();
+  return c.json({ items: results || [] });
+});
+
+/** Record analytics event */
+app.post('/api/content/analytics', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  try {
+    const { draftId, artistId, platform, caption, impressions, likes, comments, shares, saves, clicks, source } = await c.req.json();
+    if (!draftId || !artistId) { c.status(400); return c.json({ error: 'draftId and artistId required' }); }
+    const id = generateId('ca');
+    await c.env.DB.prepare(
+      `INSERT INTO content_analytics (id, draftId, artistId, platform, caption, impressionCount, likeCount, commentCount, shareCount, saveCount, clickCount, source, recordedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(id, draftId, artistId, platform || 'instagram', caption || '', impressions || 0, likes || 0, comments || 0, shares || 0, saves || 0, clicks || 0, source || 'manual', now()).run();
+    return c.json({ ok: true, id });
+  } catch (e: any) { c.status(500); return c.json({ error: e.message }); }
+});
+
+/** Get analytics (aggregated) */
+app.get('/api/content/analytics', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const artistId = c.req.query('artistId');
+  const period = c.req.query('period') || 'week';
+  if (!artistId) { c.status(400); return c.json({ error: 'artistId required' }); }
+
+  const periodMs: Record<string, number> = {
+    week: 7 * 86400 * 1000,
+    month: 30 * 86400 * 1000,
+    all: 0,
+  };
+  const since = periodMs[period] ? now() - periodMs[period] : 0;
+
+  let sql = 'SELECT * FROM content_analytics WHERE artistId = ?';
+  const params: any[] = [artistId];
+  if (since > 0) { sql += ' AND recordedAt >= ?'; params.push(since); }
+  sql += ' ORDER BY recordedAt DESC';
+
+  const { results } = await c.env.DB.prepare(sql).bind(...params).all();
+  const rows = results || [];
+
+  // Aggregate
+  const total: any = { posts: rows.length, impressions: 0, likes: 0, comments: 0, shares: 0, saves: 0, clicks: 0 };
+  for (const r of rows) {
+    total.impressions += (r as any).impressionCount || 0;
+    total.likes += (r as any).likeCount || 0;
+    total.comments += (r as any).commentCount || 0;
+    total.shares += (r as any).shareCount || 0;
+    total.saves += (r as any).saveCount || 0;
+    total.clicks += (r as any).clickCount || 0;
+  }
+
+  // By platform
+  const byPlatform: Record<string, any> = {};
+  for (const r of rows) {
+    const p = (r as any).platform || 'unknown';
+    if (!byPlatform[p]) byPlatform[p] = { posts: 0, impressions: 0, likes: 0 };
+    byPlatform[p].posts++;
+    byPlatform[p].impressions += (r as any).impressionCount || 0;
+    byPlatform[p].likes += (r as any).likeCount || 0;
+  }
+
+  return c.json({ items: rows, total, byPlatform });
 });
 
 // =============================================

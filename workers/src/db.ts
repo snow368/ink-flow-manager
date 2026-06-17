@@ -3,6 +3,7 @@
 export interface Env {
   DB: D1Database;
   INKFLOW_IMAGES: R2Bucket;
+  AI: any; // Cloudflare Workers AI binding
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
   SERVER_API_KEY?: string;
@@ -156,11 +157,39 @@ CREATE TABLE IF NOT EXISTS site_configs (
   studioName TEXT DEFAULT '',
   customDomain TEXT DEFAULT '',
   locations TEXT DEFAULT '[]',
+  phone TEXT DEFAULT '',
+  address TEXT DEFAULT '',
+  city TEXT DEFAULT '',
+  state TEXT DEFAULT '',
+  rating REAL DEFAULT 0,
+  reviewCount INTEGER DEFAULT 0,
+  photoUrls TEXT DEFAULT '[]',
+  services TEXT DEFAULT '[]',
+  priceRange TEXT DEFAULT '$$',
+  claimToken TEXT DEFAULT '',
+  claimedBy TEXT DEFAULT '',
+  claimedAt INTEGER,
+  data TEXT DEFAULT '{}',
   publishedAt INTEGER,
   updatedAt INTEGER
 );
 CREATE INDEX IF NOT EXISTS idx_site_configs_slug ON site_configs(slug);
 CREATE INDEX IF NOT EXISTS idx_site_configs_artistId ON site_configs(artistId);
+CREATE INDEX IF NOT EXISTS idx_site_configs_claimToken ON site_configs(claimToken);
+
+CREATE TABLE IF NOT EXISTS claim_requests (
+  id TEXT PRIMARY KEY,
+  slug TEXT NOT NULL,
+  email TEXT NOT NULL,
+  name TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  status TEXT DEFAULT 'pending',
+  token TEXT NOT NULL,
+  createdAt INTEGER,
+  verifiedAt INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_claim_requests_slug ON claim_requests(slug);
+CREATE INDEX IF NOT EXISTS idx_claim_requests_token ON claim_requests(token);
 
 CREATE TABLE IF NOT EXISTS photo_metadata (
   id TEXT PRIMARY KEY,
@@ -174,10 +203,123 @@ CREATE TABLE IF NOT EXISTS photo_metadata (
   createdAt INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_photos_clientId ON photo_metadata(clientId);
+
+CREATE TABLE IF NOT EXISTS app_data (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  artistId TEXT NOT NULL DEFAULT '',
+  data TEXT NOT NULL DEFAULT '{}',
+  createdAt INTEGER NOT NULL,
+  updatedAt INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_app_data_type ON app_data(type);
+CREATE INDEX IF NOT EXISTS idx_app_data_artist ON app_data(artistId);
+CREATE INDEX IF NOT EXISTS idx_app_data_type_artist ON app_data(type, artistId);
+CREATE INDEX IF NOT EXISTS idx_app_data_created ON app_data(createdAt);
+
+CREATE TABLE IF NOT EXISTS content_drafts (
+  id TEXT PRIMARY KEY,
+  artistId TEXT NOT NULL,
+  platform TEXT DEFAULT 'instagram',
+  caption TEXT DEFAULT '',
+  hashtags TEXT DEFAULT '',
+  imageUrls TEXT DEFAULT '[]',
+  gridDataUrl TEXT DEFAULT '',
+  watermarkText TEXT DEFAULT '',
+  layout TEXT DEFAULT '3x3',
+  backgroundColor TEXT DEFAULT '#000000',
+  tone TEXT DEFAULT 'professional',
+  status TEXT DEFAULT 'draft',
+  scheduledAt INTEGER,
+  publishedAt INTEGER,
+  createdAt INTEGER NOT NULL,
+  updatedAt INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_content_drafts_artistId ON content_drafts(artistId);
+CREATE INDEX IF NOT EXISTS idx_content_drafts_status ON content_drafts(status);
+CREATE INDEX IF NOT EXISTS idx_content_drafts_scheduledAt ON content_drafts(scheduledAt);
+
+CREATE TABLE IF NOT EXISTS content_analytics (
+  id TEXT PRIMARY KEY,
+  draftId TEXT NOT NULL,
+  artistId TEXT NOT NULL,
+  platform TEXT NOT NULL,
+  caption TEXT DEFAULT '',
+  impressionCount INTEGER DEFAULT 0,
+  likeCount INTEGER DEFAULT 0,
+  commentCount INTEGER DEFAULT 0,
+  shareCount INTEGER DEFAULT 0,
+  saveCount INTEGER DEFAULT 0,
+  clickCount INTEGER DEFAULT 0,
+  source TEXT DEFAULT 'manual',
+  recordedAt INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_content_analytics_draftId ON content_analytics(draftId);
 `;
 
 export async function initDB(env: Env): Promise<void> {
   await env.DB.exec(INIT_SQL);
+  await migrateSiteConfigs(env);
+}
+
+/** Add columns that may not exist on older D1 instances */
+async function migrateSiteConfigs(env: Env): Promise<void> {
+  const newCols = [
+    'phone TEXT DEFAULT \'\'',
+    'address TEXT DEFAULT \'\'',
+    'city TEXT DEFAULT \'\'',
+    'state TEXT DEFAULT \'\'',
+    'rating REAL DEFAULT 0',
+    'reviewCount INTEGER DEFAULT 0',
+    'photoUrls TEXT DEFAULT \'[]\'',
+    'services TEXT DEFAULT \'[]\'',
+    'priceRange TEXT DEFAULT \'$$\'',
+    'claimToken TEXT DEFAULT \'\'',
+    'claimedBy TEXT DEFAULT \'\'',
+    'claimedAt INTEGER',
+    'data TEXT DEFAULT \'{}\'',
+  ];
+  for (const col of newCols) {
+    try {
+      await env.DB.exec(`ALTER TABLE site_configs ADD COLUMN ${col}`);
+    } catch {
+      // Column already exists — ignore
+    }
+  }
+  // Create app_data table for older deploys
+  try {
+    await env.DB.exec(`CREATE TABLE IF NOT EXISTS app_data (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      artistId TEXT NOT NULL DEFAULT '',
+      data TEXT NOT NULL DEFAULT '{}',
+      createdAt INTEGER NOT NULL,
+      updatedAt INTEGER NOT NULL
+    )`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_type ON app_data(type)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_artist ON app_data(artistId)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_type_artist ON app_data(type, artistId)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_created ON app_data(createdAt)`);
+  } catch { /* ignore */ }
+
+  // Create claim_requests table if it doesn't exist (handled by INIT_SQL now, but keep for older deploys)
+  try {
+    await env.DB.exec(`CREATE TABLE IF NOT EXISTS claim_requests (
+      id TEXT PRIMARY KEY,
+      slug TEXT NOT NULL,
+      email TEXT NOT NULL,
+      name TEXT DEFAULT '',
+      phone TEXT DEFAULT '',
+      status TEXT DEFAULT 'pending',
+      token TEXT NOT NULL,
+      createdAt INTEGER,
+      verifiedAt INTEGER
+    )`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_claim_requests_slug ON claim_requests(slug)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_claim_requests_token ON claim_requests(token)`);
+  } catch {
+    // ignore
+  }
 }
 
 // ---- Generic helpers ----

@@ -9,6 +9,7 @@ import {
   markAftercareReady,
   PRESET_NOTES, PHOTO_LABELS,
 } from '../lib/sessionExecution';
+import { uploadImage } from '../lib/upload';
 
 interface Props {
   session: SessionRecord;
@@ -33,26 +34,34 @@ const STATE_LABELS: Record<string, string> = {
   completed: 'Completed',
 };
 
-function ImgUploadBtn({ onCapture }: { onCapture: (dataUrl: string) => void }) {
+function ImgUploadBtn({ onCapture }: { onCapture: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false);
   return (
     <label style={{
       border: `1px solid ${THEME.border.default}`, borderRadius: THEME.radius.lg,
       padding: '6px 12px', fontSize: THEME.fontSize.xs, color: THEME.text.muted,
       cursor: 'pointer', fontWeight: THEME.fontWeight.semibold,
-      display: 'inline-flex', alignItems: 'center', gap: 4,
+      display: 'inline-flex', alignItems: 'center', gap: 4, opacity: uploading ? 0.5 : 1,
     }}>
-      + Photo
+      {uploading ? '⏳' : '+ Photo'}
       <input
         type="file"
         accept="image/*"
         capture="environment"
         style={{ display: 'none' }}
-        onChange={e => {
+        disabled={uploading}
+        onChange={async e => {
           const file = e.target.files?.[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = () => onCapture(reader.result as string);
-          reader.readAsDataURL(file);
+          if (!file || uploading) return;
+          setUploading(true);
+          try {
+            const url = await uploadImage(file);
+            onCapture(url);
+          } catch (err) {
+            console.error('Upload failed:', err);
+          } finally {
+            setUploading(false);
+          }
         }}
       />
     </label>
@@ -123,15 +132,16 @@ export default function ActiveSessionPanel({ session, onUpdate }: Props) {
     input.onchange = async () => {
       const file = input.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        setBusy(true);
-        await addProgressPhoto(session.id, reader.result as string, label);
+      setBusy(true);
+      try {
+        const url = await uploadImage(file);
+        await addProgressPhoto(session.id, url, label);
         onUpdate();
-        setBusy(false);
-        setShowPhotoLabels(false);
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error('Upload failed:', err);
+      }
+      setBusy(false);
+      setShowPhotoLabels(false);
     };
     input.click();
   }, [session.id, onUpdate]);

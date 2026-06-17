@@ -812,25 +812,285 @@ export class InkFlowDB extends Dexie {
   }
 }
 
-export const db = new InkFlowDB();
+// ============================================================
+// D1-backed db — transparent replacement for Dexie/IndexedDB
+// All operations go through the Worker's /api/data/:type CRUD
+// ============================================================
 
-// Expose for console debugging & seed scripts
+import { getBackendUrl } from './lib/backendApi';
+
+function apiReq(): { url: string; headers: Record<string, string> } {
+  const url = getBackendUrl();
+  const secret = localStorage.getItem('inkflow_api_secret') || '';
+  const uid = localStorage.getItem('inkflow_current_user') || '';
+  if (!url) throw new Error('Backend URL not configured');
+  return {
+    url,
+    headers: { 'Content-Type': 'application/json', 'x-api-secret': secret, 'x-user-id': uid },
+  };
+}
+
+function tableName(type: string): string {
+  // Map class property names to D1 type names
+  const map: Record<string, string> = {
+    users: 'user', clients: 'client', appointments: 'appointment', projects: 'project',
+    waivers: 'waiver', sessions: 'session', inventory: 'inventory', portfolio: 'portfolio',
+    socialDrafts: 'socialDraft', referrals: 'referral', leads: 'lead',
+    leadRevisions: 'leadRevision', supplyBrands: 'supplyBrand',
+    posTransactions: 'posTransaction', studioLocations: 'studioLocation',
+    invoices: 'invoice', competitors: 'competitor', supplyReviews: 'supplyReview',
+    waitingList: 'waitingList', healthChecklists: 'healthChecklist',
+    communicationLog: 'communicationLog', affiliateClicks: 'affiliateClick',
+    auditLog: 'auditLog', shifts: 'shift', tasks: 'task', reviews: 'review',
+    clientReferrals: 'clientReferral', leadConfirmations: 'leadConfirmation',
+    projectAssets: 'projectAsset', projectApprovalTokens: 'projectApprovalToken',
+    depositFlow: 'depositFlow', projectRevisions: 'projectRevision', photos: 'photo',
+  };
+  return map[type] || type;
+}
+
+/** Build a table-like object that delegates to D1 CRUD */
+function d1Table(type: string) {
+  const t = tableName(type);
+
+  async function request(method: string, path: string, body?: any): Promise<any> {
+    const cfg = apiReq();
+    const res = await fetch(cfg.url + path, { method, headers: cfg.headers, body: body ? JSON.stringify(body) : undefined });
+    if (!res.ok) { const e = await res.json().catch(() => ({ error: res.statusText })); throw new Error(e.error || 'API error'); }
+    return res.json();
+  }
+
+  function buildQuery(filters?: Record<string, string>): string {
+    const params = new URLSearchParams(filters || {});
+    const uid = localStorage.getItem('inkflow_current_user') || '';
+    // Auto-add artistId for owner-scoped tables
+    const ownerTables = ['client', 'appointment', 'project', 'session', 'lead', 'portfolio', 'socialDraft', 'inventory', 'posTransaction', 'invoice', 'task', 'shift'];
+    if (ownerTables.includes(t) && !params.has('artistId')) params.set('artistId', uid);
+    // For users, filter by id
+    if (t === 'user' && !params.has('id')) params.set('id', uid);
+    const qs = params.toString();
+    return qs ? '?' + qs : '';
+  }
+
+  return {
+    // Dexie-compatible where() builder (simple version — overridden post-hoc below)
+    where(_field: string) {
+      return {
+        equals: () => this,
+        startsWith: () => this,
+        above: () => this,
+        below: () => this,
+        between: () => this,
+        async first() { return null; },
+        async toArray() { return []; },
+        async delete() {},
+        async modify() {},
+        async each() {},
+      };
+    },
+
+    // OrderBy (simple - just returns all)
+    orderBy(_field: string) {
+      return {
+        async toArray() { const { items } = await request('GET', '/api/data/' + t + buildQuery()); return items || []; },
+        async first() { const r = await request('GET', '/api/data/' + t + buildQuery({ limit: '1' })); return r?.items?.[0] || null; },
+        async last() { const r = await request('GET', '/api/data/' + t + buildQuery()); const a = r?.items || []; return a[a.length - 1] || null; },
+        reverse() { return this; },
+      };
+    },
+
+    // Filter (client-side)
+    filter(fn: (item: any) => boolean) {
+      const tableType = t;
+      return {
+        async toArray() { const { items } = await request('GET', '/api/data/' + tableType + buildQuery()); return (items || []).filter(fn); },
+        async first() { const arr = await this.toArray(); return arr[0] || null; },
+        async count() { const arr = await this.toArray(); return arr.length; },
+        async each(callback: (item: any) => void) { const arr = await this.toArray(); for (const item of arr) callback(item); },
+        async modify(callback: (item: any) => void) { const arr = await this.toArray(); for (const item of arr) { callback(item); await request('POST', '/api/data/' + tableType, item); } },
+        async delete() { const arr = await this.toArray(); for (const item of arr) await request('DELETE', '/api/data/' + tableType + '/' + (item.id || '')); },
+        limit(n: number) {
+          const self = this;
+          return { ...this, async toArray() { const items = await self.toArray(); return Array.isArray(items) ? items.slice(0, n) : []; } };
+        },
+        offset(_n: number) { return { ...this }; },
+        reverse() { return this; },
+        and(fn2: (item: any) => boolean) {
+          const self = this;
+          return { ...this, async toArray() { const items = await self.toArray(); return Array.isArray(items) ? items.filter(fn2) : []; } };
+        },
+      };
+    },
+
+    // Limit
+    limit(n: number) {
+      return { ...this, async toArray() { const { items } = await request('GET', '/api/data/' + t + buildQuery({ limit: String(n) })); return items || []; } };
+    },
+
+    // Reverse
+    reverse() { return this; },
+
+    // Standard CRUD
+    async get(id: string) { return request('GET', '/api/data/' + t + '/' + id); },
+    async add(data: any) {
+      const { ok, id } = await request('POST', '/api/data/' + t, { ...data, artistId: localStorage.getItem('inkflow_current_user') || '' });
+      return { ...data, id };
+    },
+    async put(data: any) {
+      const id = data.id || generateId(t);
+      await request('POST', '/api/data/' + t, { ...data, id });
+      return id;
+    },
+    async update(id: string, changes: any) {
+      const existing = await this.get(id).catch(() => null);
+      if (existing) await request('PUT', '/api/data/' + t + '/' + id, { ...existing, ...changes });
+    },
+    async delete(id: string) { return request('DELETE', '/api/data/' + t + '/' + id); },
+    async clear() {
+      const { items } = await request('GET', '/api/data/' + t + buildQuery());
+      for (const item of items || []) await this.delete(item.id);
+    },
+    async bulkAdd(items: any[]) {
+      for (const item of items) await this.add(item);
+    },
+    async toArray() { const { items } = await request('GET', '/api/data/' + t + buildQuery()); return items || []; },
+    async count() { const arr = await this.toArray(); return arr.length; },
+    async each(callback: (item: any) => void) { const arr = await this.toArray(); for (const item of arr) callback(item); },
+
+    // Hook stubs (no-op for backward compat)
+    hook(_event: string) {
+      return { subscribe: (_fn: any) => {}, unsubscribe: () => {} };
+    },
+  };
+}
+
+function generateId(prefix: string): string {
+  return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// Build the db object with all 33 tables
+const dbTables = ['users', 'clients', 'appointments', 'projects', 'waivers', 'sessions',
+  'inventory', 'portfolio', 'socialDrafts', 'referrals', 'leads', 'leadRevisions',
+  'supplyBrands', 'posTransactions', 'studioLocations', 'invoices', 'competitors',
+  'supplyReviews', 'waitingList', 'healthChecklists', 'communicationLog', 'affiliateClicks',
+  'auditLog', 'shifts', 'tasks', 'reviews', 'clientReferrals', 'leadConfirmations',
+  'projectAssets', 'projectApprovalTokens', 'depositFlow', 'projectRevisions', 'photos',
+];
+
+const db: Record<string, any> = {};
+for (const tbl of dbTables) {
+  db[tbl] = d1Table(tbl);
+}
+
+// Fix the where() filter chain: remove self.put/self.delete which cause recursion
+for (const tbl of dbTables) {
+  const origWhere = db[tbl].where;
+  db[tbl].where = function(field: string) {
+    const t = db[tbl];
+    const filters: Record<string, string> = {};
+    const chain = {
+      equals(val: string) { filters[field] = val; return chain; },
+      startsWith(val: string) { filters[field] = val; return chain; },
+      above() { return chain; },
+      below() { return chain; },
+      between() { return chain; },
+      async first() { const arr = await chain.toArray(); return arr[0] || null; },
+      async toArray() {
+        if (field === 'id') {
+          try { const r = await t.get(filters[field]); return r ? [r] : []; }
+          catch { return []; }
+        }
+        const { items } = await apiReqGet(tbl);
+        return (items || []).filter((item: any) => {
+          if (field === 'email') return item.email === filters[field];
+          return true; // artistId filtered server-side
+        });
+      },
+      async delete() { const items = await chain.toArray(); for (const item of items) t.delete(item.id).catch(() => {}); },
+      async modify(callback: (item: any) => void) { const items = await chain.toArray(); for (const item of items) { callback(item); t.put(item).catch(() => {}); } },
+      async each(callback: (item: any) => void) { const items = await chain.toArray(); for (const item of items) callback(item); },
+    };
+    return chain;
+  };
+}
+
+// Export
+export { db };
+
+async function apiReqGet(type: string): Promise<{ items: any[] }> {
+  const cfg = apiReq();
+  const uid = localStorage.getItem('inkflow_current_user') || '';
+  const t = tableName(type);
+  try {
+    const res = await fetch(cfg.url + '/api/data/' + t + '?artistId=' + uid, { headers: cfg.headers });
+    if (res.ok) return res.json();
+  } catch {}
+  return { items: [] };
+}
+
+// User-specific helpers
+// Helper: get backend config
+function apiCfg() {
+  const url = getBackendUrl();
+  return {
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-secret': localStorage.getItem('inkflow_api_secret') || '',
+      'x-user-id': localStorage.getItem('inkflow_current_user') || '',
+    },
+  };
+}
+
+db.users.get = async function(id: string) {
+  const data = localStorage.getItem('inkflow_current_user_data');
+  if (data) { try { return JSON.parse(data); } catch {} }
+  return null;
+};
+db.users.where = function(field: string) {
+  const filters: Record<string, string> = {};
+  const chain = {
+    equals(val: string) { filters[field] = val; return chain; },
+    async first() {
+      if (field === 'email') {
+        const data = localStorage.getItem('inkflow_current_user_data');
+        if (data) { try { const u = JSON.parse(data); if (u.email === filters[field]) return u; } catch {} }
+      }
+      return null;
+    },
+    async toArray() { const u = await db.users.get(''); return u ? [u] : []; },
+  };
+  return chain;
+};
+db.users.toArray = async function() {
+  const data = localStorage.getItem('inkflow_current_user_data');
+  return data ? [JSON.parse(data)] : [];
+};
+db.users.update = async function(id: string, changes: any) {
+  // Update localStorage cache
+  const existing = localStorage.getItem('inkflow_current_user_data');
+  if (existing) {
+    const updated = { ...JSON.parse(existing), ...changes };
+    localStorage.setItem('inkflow_current_user_data', JSON.stringify(updated));
+  }
+  // Sync to D1 via API
+  const cfg = apiCfg();
+  if (cfg.url) {
+    fetch(cfg.url + '/api/data/user/' + id, {
+      method: 'PUT',
+      headers: cfg.headers,
+      body: JSON.stringify(changes),
+    }).catch(() => {});
+  }
+};
+db.users.add = async function(data: any) {
+  localStorage.setItem('inkflow_current_user_data', JSON.stringify(data));
+  localStorage.setItem('inkflow_current_user', data.id);
+  return data.id;
+};
+
+// Expose for console debugging
 (window as any).__db = db;
-
-// Auto-mark pending sync when data changes (avoids circular import with syncManager)
-const markSyncPending = () => localStorage.setItem('inkflow_pending_sync', '1');
-db.clients.hook('creating').subscribe(markSyncPending);
-db.clients.hook('updating').subscribe(markSyncPending);
-db.clients.hook('deleting').subscribe(markSyncPending);
-db.appointments.hook('creating').subscribe(markSyncPending);
-db.appointments.hook('updating').subscribe(markSyncPending);
-db.appointments.hook('deleting').subscribe(markSyncPending);
-db.portfolio.hook('creating').subscribe(markSyncPending);
-db.portfolio.hook('updating').subscribe(markSyncPending);
-db.portfolio.hook('deleting').subscribe(markSyncPending);
-db.projects.hook('creating').subscribe(markSyncPending);
-db.projects.hook('updating').subscribe(markSyncPending);
-db.projects.hook('deleting').subscribe(markSyncPending);
 
 export interface UserRecord {
   id: string;

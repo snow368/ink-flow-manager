@@ -326,16 +326,15 @@ function DeleteAccountButton({ userId }: { userId?: string }) {
     deleting.current = true;
     try {
       const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
-      if (apiSecret) {
-        await fetch('/api/auth/unregister', {
+      const backendUrl = getBackendUrl();
+      if (backendUrl && apiSecret) {
+        await fetch(`${backendUrl}/api/auth/unregister`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json', 'x-api-secret': apiSecret, 'x-user-role': 'owner' },
           body: JSON.stringify({ userId }),
         }).catch(() => {});
       }
-      localStorage.removeItem('inkflow_current_user');
-      localStorage.removeItem('inkflow_current_user_data');
-      try { await db.delete(); } catch { /* ignore */ }
+      localStorage.clear();
       setStep('done');
       setTimeout(() => { window.location.href = '/'; }, 1500);
     } catch { setStep('idle'); }

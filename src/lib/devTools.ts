@@ -1,5 +1,6 @@
-import { db } from '../db';
-import { createProjectWithAppointment } from './projectLogic';
+// Dev Tools — now backed by D1 API instead of IndexedDB
+import { api } from './appApi';
+import { getBackendUrl } from './backendApi';
 
 const DEMO_CLIENTS = [
   { name: 'Alice Johnson', phone: '555-0101', email: 'alice@example.com', allergies: ['Latex gloves'] },
@@ -24,51 +25,66 @@ function randomTime(): string {
 }
 
 export async function seedDemoData(): Promise<string> {
-  const clientIds: string[] = [];
+  const results: string[] = [];
 
   for (const c of DEMO_CLIENTS) {
-    const id = 'client_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
-    await db.clients.add({
-      id, name: c.name, phone: c.phone, email: c.email,
+    const { ok, id } = await api.clients.create({
+      name: c.name, phone: c.phone, email: c.email,
       allergies: c.allergies.length > 0 ? c.allergies : undefined,
-      createdAt: Date.now(),
     });
-    clientIds.push(id);
+    if (ok) results.push(`client:${id}`);
   }
 
   for (let i = 0; i < 15; i++) {
-    const clientId = clientIds[Math.floor(Math.random() * clientIds.length)];
+    const clientId = results[i % results.length].split(':')[1];
     const type = APPOINTMENT_TYPES[Math.floor(Math.random() * APPOINTMENT_TYPES.length)];
     const date = randomDate(30);
     const status = Math.random() > 0.3 ? (Math.random() > 0.5 ? 'ready' : 'unconfirmed') : 'done';
-    await createProjectWithAppointment({
-      artistId: 'demo_artist',
+
+    await api.appointments.create({
       clientId,
       title: `${type.replace(/_/g, ' ')} project`,
-      projectStatus: status === 'done' ? 'completed' : 'scheduled',
       date,
       time: randomTime(),
       duration: [30, 60, 90, 120, 180][Math.floor(Math.random() * 5)],
       appointmentType: type,
-      appointmentStatus: status as 'ready' | 'unconfirmed' | 'done',
-      waiverCompleted: status === 'ready' || status === 'done',
+      status: status === 'done' ? 'done' : status,
+      projectStatus: status === 'done' ? 'completed' : 'scheduled',
     });
   }
 
-  return `Created ${DEMO_CLIENTS.length} clients and 15 appointments`;
+  return `Created ${DEMO_CLIENTS.length} clients and 15 appointments via D1`;
 }
 
 export async function resetDatabase(): Promise<string> {
-  await db.clients.clear();
-  await db.projects.clear();
-  await db.appointments.clear();
-  await db.waivers.clear();
-  await db.sessions.clear();
-  await db.inventory.clear();
+  const backendUrl = getBackendUrl();
+  const apiSecret = localStorage.getItem('inkflow_api_secret') || '';
+  if (!backendUrl || !apiSecret) return 'API not configured';
+
+  const types = ['client', 'appointment', 'project', 'waiver', 'session', 'inventory',
+    'lead', 'portfolio', 'socialDraft', 'posTransaction', 'invoice', 'competitor', 'task'];
+
+  let cleared = 0;
+  for (const type of types) {
+    try {
+      const res = await fetch(`${backendUrl}/api/data/${type}?limit=500`, {
+        headers: { 'x-api-secret': apiSecret },
+      });
+      const { items } = await res.json();
+      for (const item of items || []) {
+        await fetch(`${backendUrl}/api/data/${type}/${item.id}`, {
+          method: 'DELETE',
+          headers: { 'x-api-secret': apiSecret },
+        });
+        cleared++;
+      }
+    } catch { /* skip tables with no data */ }
+  }
+
   localStorage.removeItem('inkflow_ip_reg_count');
-  return 'Database cleared';
+  return `Database cleared: ${cleared} records removed from D1`;
 }
 
 export function getDemoUserIds(): string[] {
-  return ['demo_artist', 'demo_owner', 'demo_staff'];
+  return [localStorage.getItem('inkflow_current_user') || ''].filter(Boolean);
 }
