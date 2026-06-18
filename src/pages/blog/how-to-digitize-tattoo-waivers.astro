@@ -3,11 +3,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 import PageSchema from '../../components/PageSchema.astro';
 ---
 
-<BaseLayout>
+<BaseLayout breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Digitize Tattoo Waivers' },
+  ]}>
   <SEOHead slot="head" title="How to Digitize Tattoo Waivers — Complete Guide 2026 | InkFlow Blog" description="Learn how to digitize tattoo waivers in 2026. Step-by-step guide to paperless consent forms, e-signatures, and QR check-in for your studio." />
   <PageSchema type="article" data={{
     headline: "How to Digitize Tattoo Waivers in 2026",
@@ -19,10 +22,6 @@ import PageSchema from '../../components/PageSchema.astro';
 
   <article class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <Breadcrumb items={[
-        { label: 'Blog', href: '/blog' },
-        { label: 'Digitize Tattoo Waivers' },
-      ]} />
       <p class="text-sm text-accent-400 mb-4">May 28, 2026</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-4xl">How to Digitize Tattoo Waivers in 2026</h1>
       <!-- Author -->

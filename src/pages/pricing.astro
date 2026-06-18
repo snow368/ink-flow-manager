@@ -4,7 +4,6 @@ import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import PageSchema from '../components/PageSchema.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
 ---
 
 <BaseLayout>
@@ -19,10 +18,6 @@ import Breadcrumb from '../components/Breadcrumb.astro';
   <!-- HERO -->
   <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <Breadcrumb items={[
-        { label: 'Home', href: '/' },
-        { label: 'Pricing' },
-      ]} />
       <p class="text-sm font-semibold text-accent-400 mb-3">PRICING</p>
       <div class="inline-block rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-1.5 text-xs text-accent-400 mb-4">🚀 内测期间全部功能免费 · 提建议送3个月Pro</div>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free for Solo Artists. Upgrade When You Grow.</h1>

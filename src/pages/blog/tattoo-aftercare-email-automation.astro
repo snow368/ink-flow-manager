@@ -3,16 +3,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups" description="Automated aftercare emails save you hours a week and keep clients happy. Here's how tattoo studios are replacing scattered DMs with a system that actually works." />
-  <Navbar />
-  <Breadcrumb items={[
+<BaseLayout breadcrumbs={[
+    { label: 'Home', href: '/' },
     { label: 'Blog', href: '/blog' },
     { label: 'Aftercare Automation' },
-  ]} />
+  ]}>
+  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups" description="Automated aftercare emails save you hours a week and keep clients happy. Here's how tattoo studios are replacing scattered DMs with a system that actually works." />
+  <Navbar />
 
   <article class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">

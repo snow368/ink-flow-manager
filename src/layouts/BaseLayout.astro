@@ -1,6 +1,44 @@
 ---
 import DevGate from "../components/DevGate.astro";
 import PageSchema from "../components/PageSchema.astro";
+import Breadcrumb from "../components/Breadcrumb.astro";
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  /** 覆盖自动生成的面包屑。不传则根据 URL 路径自动生成 */
+  breadcrumbs?: BreadcrumbItem[];
+  /** 当前页面标题（用于面包屑最后一项） */
+  pageTitle?: string;
+}
+
+const { breadcrumbs, pageTitle } = Astro.props as Props;
+
+// 自动从 URL 路径生成面包屑
+function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
+  const parts = pathname.replace(/\/$/, "").split("/").filter(Boolean);
+  const items: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+
+  let current = "";
+  for (let i = 0; i < parts.length; i++) {
+    current += "/" + parts[i];
+    const isLast = i === parts.length - 1;
+    const label = isLast
+      ? (title || parts[i].replace(/-/g, " "))
+      : parts[i].replace(/-/g, " ");
+    items.push(isLast
+      ? { label: label }
+      : { label: label, href: current }
+    );
+  }
+  return items;
+}
+
+const crumbs = breadcrumbs || autoBreadcrumbs(Astro.url.pathname, pageTitle);
+const showBreadcrumb = Astro.url.pathname !== "/";  // 首页不显示
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +53,7 @@ import PageSchema from "../components/PageSchema.astro";
   </head>
   <body class="bg-ink-950 text-gray-100 font-sans antialiased">
     <DevGate>
+      {showBreadcrumb && <Breadcrumb items={crumbs} />}
       <slot />
     </DevGate>
   </body>
