@@ -11,19 +11,49 @@ const TEMPLATES = [
   { name: 'Studio Showcase', desc: 'Multi-artist, locations, services, booking', layout: 'studio', key: 'studio' },
 ];
 
-const THEMES = [
-  { name: 'Dark', primary: '#e11d48', bg: '#0c0c0c', card: '#1a1a1e', text: '#ffffff', key: 'dark' },
-  { name: 'Minimal', primary: '#000000', bg: '#ffffff', card: '#f5f5f5', text: '#1a1a1a', key: 'minimal' },
-  { name: 'Rose', primary: '#e11d48', bg: '#1a0a0a', card: '#2d1414', text: '#ffe4e6', key: 'rose' },
-  { name: 'Forest', primary: '#22c55e', bg: '#0f172a', card: '#1e293b', text: '#e2e8f0', key: 'forest' },
-  { name: 'Ocean', primary: '#3b82f6', bg: '#0c1929', card: '#1a2a40', text: '#e0f2fe', key: 'ocean' },
-  { name: 'Gold', primary: '#f59e0b', bg: '#1c1917', card: '#292524', text: '#fef3c7', key: 'gold' },
-  { name: 'Lavender', primary: '#a855f7', bg: '#130c1a', card: '#201530', text: '#f3e8ff', key: 'lavender' },
-  { name: 'Teal', primary: '#14b8a6', bg: '#0a1414', card: '#142121', text: '#ccfbf1', key: 'teal' },
-  { name: 'Coral', primary: '#f97316', bg: '#1a0f0a', card: '#2d1a14', text: '#ffedd5', key: 'coral' },
-  { name: 'Slate', primary: '#64748b', bg: '#0f1117', card: '#1a1d27', text: '#e2e8f0', key: 'slate' },
-  { name: 'Cherry', primary: '#be123c', bg: '#0c0c0c', card: '#1e1018', text: '#ffe4e6', key: 'cherry' },
-  { name: 'Sky', primary: '#0ea5e9', bg: '#0c1520', card: '#142130', text: '#e0f2fe', key: 'sky' },
+// Shared with Worker templates.ts — 31 color themes
+const THEMES: { name: string; primary: string; bg: string; card: string; text: string; key: string; tier: string; desc: string }[] = [
+  { name: 'Minimal', primary: '#1a1a1a', bg: '#ffffff', card: '#ffffff', text: '#1a1a1a', key: 'minimal', tier: 'free', desc: 'Clean white, timeless' },
+  { name: 'Traditional', primary: '#c41e1e', bg: '#0a0a0a', card: '#141414', text: '#f5f0e8', key: 'traditional', tier: 'free', desc: 'Bold American red' },
+  { name: 'Vintage', primary: '#8b4513', bg: '#f5f0e8', card: '#faf5ee', text: '#2c2418', key: 'vintage', tier: 'free', desc: 'Warm retro feel' },
+  { name: 'Moody', primary: '#b8860b', bg: '#0d0d0d', card: '#141414', text: '#e8e0d8', key: 'moody', tier: 'free', desc: 'Dark with gold' },
+  { name: 'Edgy', primary: '#ff0066', bg: '#0a0a0a', card: '#111', text: '#f0f0f0', key: 'edgy', tier: 'pro', desc: 'Neon pink on black' },
+  { name: 'Studio', primary: '#d4a574', bg: '#f8f8f8', card: '#ffffff', text: '#222', key: 'studio', tier: 'pro', desc: 'Gallery warm tones' },
+  { name: 'Brutalist', primary: '#ffffff', bg: '#000000', card: '#0a0a0a', text: '#ffffff', key: 'brutalist', tier: 'pro', desc: 'Heavy black & white' },
+  { name: 'Nature', primary: '#4a8c3f', bg: '#0f1a0e', card: '#1a2a18', text: '#e0ecd8', key: 'nature', tier: 'pro', desc: 'Forest green' },
+  { name: 'Royal', primary: '#7c3aed', bg: '#0e0a1a', card: '#1a1528', text: '#e8e0f0', key: 'royal', tier: 'pro', desc: 'Deep purple & gold' },
+  { name: 'Neon', primary: '#00ffff', bg: '#0a0a12', card: '#12121e', text: '#f0f0f8', key: 'neon', tier: 'pro', desc: 'Cyan on dark' },
+  { name: 'Japanese', primary: '#cc3300', bg: '#0f0a08', card: '#1a1410', text: '#f0e8e0', key: 'japanese', tier: 'pro', desc: 'Traditional irezumi red' },
+  { name: 'Cyberpunk', primary: '#ff00aa', bg: '#0a0515', card: '#140a24', text: '#e0d8f0', key: 'cyberpunk', tier: 'pro', desc: 'Neon magenta cyber' },
+  { name: 'Sunset', primary: '#ff6622', bg: '#1a0e0a', card: '#2a1810', text: '#f0e0d8', key: 'sunset', tier: 'pro', desc: 'Warm orange glow' },
+  { name: 'Sakura', primary: '#e86a8a', bg: '#1a1018', card: '#2a1a24', text: '#f0e0e8', key: 'sakura', tier: 'pro', desc: 'Cherry blossom pink' },
+  { name: 'Punk', primary: '#ffee00', bg: '#0a0a0a', card: '#141010', text: '#f0f0f0', key: 'punk', tier: 'pro', desc: 'High-contrast yellow' },
+  { name: 'Neonoir', primary: '#ff2244', bg: '#080808', card: '#111114', text: '#e0e0e0', key: 'neonoir', tier: 'pro', desc: 'Red noir dramatic' },
+  { name: 'Midnight', primary: '#4a80d0', bg: '#080c14', card: '#101826', text: '#d8e0f0', key: 'midnight', tier: 'free', desc: 'Deep blue night' },
+  { name: 'Botanical', primary: '#5a9e6a', bg: '#0f1a12', card: '#1a2a1e', text: '#dce8d8', key: 'botanical', tier: 'free', desc: 'Sage green' },
+  { name: 'Arctic', primary: '#2a7aaa', bg: '#e8f0f5', card: '#ffffff', text: '#1a2a3a', key: 'arctic', tier: 'free', desc: 'Cool ice blue' },
+  { name: 'Desert', primary: '#c4783a', bg: '#e8e0d0', card: '#f5f0e8', text: '#2a2218', key: 'desert', tier: 'free', desc: 'Warm desert tones' },
+  { name: 'Tribal', primary: '#d4d4d4', bg: '#050505', card: '#0d0d0d', text: '#e8e8e8', key: 'tribal', tier: 'free', desc: 'Black & grey' },
+  { name: 'Lavender', primary: '#8a6aca', bg: '#f0ecf5', card: '#ffffff', text: '#2a203a', key: 'lavender', tier: 'free', desc: 'Soft purple' },
+  { name: 'Industrial', primary: '#4682b4', bg: '#121212', card: '#1c1c1c', text: '#d8d8d8', key: 'industrial', tier: 'plus', desc: 'Steel & concrete' },
+  { name: 'Woodcut', primary: '#cc9a4a', bg: '#1a1410', card: '#26201a', text: '#e0d8cc', key: 'woodcut', tier: 'plus', desc: 'Dark print-like' },
+  { name: 'Watercolor', primary: '#e88d9a', bg: '#f8f4f0', card: '#ffffff', text: '#2a2420', key: 'watercolor', tier: 'plus', desc: 'Soft pastels' },
+  { name: 'Gothic', primary: '#800020', bg: '#0a0808', card: '#141010', text: '#d8d0c8', key: 'gothic', tier: 'plus', desc: 'Ornate dark' },
+  { name: 'Coastal', primary: '#2a8a8a', bg: '#f0f5f5', card: '#ffffff', text: '#1a2a2a', key: 'coastal', tier: 'plus', desc: 'Light & breezy' },
+  { name: 'Urban', primary: '#ff6600', bg: '#0a0a0a', card: '#151515', text: '#f0f0f0', key: 'urban', tier: 'plus', desc: 'Graffiti bold' },
+  { name: 'Metallic', primary: '#9a9aaa', bg: '#0e0e10', card: '#18181c', text: '#e0e0e4', key: 'metallic', tier: 'plus', desc: 'Silver chrome' },
+  { name: 'Steampunk', primary: '#b8862a', bg: '#14100a', card: '#1e1a14', text: '#e0d8cc', key: 'steampunk', tier: 'plus', desc: 'Brass & bronze' },
+  { name: 'Celestial', primary: '#c8a040', bg: '#080818', card: '#101028', text: '#e0d8f0', key: 'celestial', tier: 'plus', desc: 'Gold on midnight' },
+  { name: 'Biomechanical', primary: '#c0392b', bg: '#0d0d0f', card: '#161618', text: '#e0e0e2', key: 'biomechanical', tier: 'pro', desc: 'Metallic red & grey' },
+  { name: 'Chicano', primary: '#c4956a', bg: '#1a1410', card: '#261e18', text: '#e8ddd0', key: 'chicano', tier: 'pro', desc: 'Warm brown & gold' },
+  { name: 'Maori', primary: '#cc2222', bg: '#080808', card: '#111111', text: '#e8e8e8', key: 'maori', tier: 'free', desc: 'Tribal red & black' },
+  { name: 'Trash Polka', primary: '#cc2244', bg: '#0a0a0a', card: '#141414', text: '#f0f0f0', key: 'trash-polka', tier: 'plus', desc: 'Collage red chaos' },
+  { name: 'New School', primary: '#ff66cc', bg: '#0a0a20', card: '#151530', text: '#e8e8f0', key: 'new-school', tier: 'pro', desc: 'Bright neon cartoon' },
+  { name: 'Halloween', primary: '#ff6600', bg: '#0a0808', card: '#141010', text: '#e8d8c8', key: 'halloween', tier: 'free', desc: 'Orange & black' },
+  { name: 'Nordic', primary: '#7a9aaa', bg: '#0c1018', card: '#161c28', text: '#d8e0e8', key: 'nordic', tier: 'free', desc: 'Cool steel blue' },
+  { name: 'Tropical', primary: '#ff7744', bg: '#0a1414', card: '#142020', text: '#dce8e0', key: 'tropical', tier: 'pro', desc: 'Coral & teal' },
+  { name: 'Monochrome', primary: '#666666', bg: '#080808', card: '#141414', text: '#cccccc', key: 'monochrome', tier: 'free', desc: 'Clean grey scale' },
+  { name: 'Retro Wave', primary: '#ff6688', bg: '#0a0a30', card: '#151545', text: '#e0d8f8', key: 'retro-wave', tier: 'plus', desc: '80s sunset neon' },
 ];
 
 export default function WebsiteWizard() {
@@ -32,7 +62,7 @@ export default function WebsiteWizard() {
   const [user, setUser] = useState<UserRecord | null>(null);
   const [bio, setBio] = useState('');
   const [templateKey, setTemplateKey] = useState('portfolio');
-  const [themeKey, setThemeKey] = useState('dark');
+  const [themeKey, setThemeKey] = useState('minimal');
   const [slug, setSlug] = useState('');
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
