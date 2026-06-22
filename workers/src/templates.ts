@@ -677,26 +677,21 @@ function layout(content: string, d: ShopData, t: ThemeVars, baseUrl: string): st
 
 export function renderShopPage(d: ShopData, baseUrl: string): string {
   const t = THEMES[d.template] || THEMES.traditional;
-  const layoutType = d.layout || 'classic';
+  const configKey = TEMPLATE_LAYOUTS[d.template] || 'classic';
 
-  switch (layoutType) {
-    case 'hero-grid':
-      return renderHeroGrid(d, t, baseUrl);
-    case 'link-bio':
-      return renderLinkBio(d, t, baseUrl);
-    case 'studio-roster':
-      return renderStudioRoster(d, t, baseUrl);
-    case 'cards':
-      return renderCardsLayout(d, t, baseUrl);
-    case 'split':
-      return renderSplitLayout(d, t, baseUrl);
-    case 'editorial':
-      return renderEditorialLayout(d, t, baseUrl);
-    case 'minimal-bar':
-      return renderMinimalBar(d, t, baseUrl);
-    default:
-      return renderClassicLayout(d, t, baseUrl);
+  // Special layouts that have custom render functions
+  if (configKey === 'link-bio' || configKey === 'link-bio-min') {
+    return layout(renderLinkBioContent(d, t, baseUrl), d, t, baseUrl);
   }
+
+  const config = LAYOUT_CONFIGS[configKey];
+  if (!config) {
+    // Fallback: use classic layout
+    const sections = [claimBannerEl(d, t, baseUrl), heroSection(d, t, baseUrl), bookingSection(d, t, baseUrl), aboutSection(d, t), servicesSection(d, t), instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken), gallerySection(d.photos, t, d.studioName), mapSection(d, t), ctaSection(d, t, baseUrl), footerSection(d, t)];
+    return layout(sections.join('\n'), d, t, baseUrl);
+  }
+
+  return renderFromConfig(d, t, baseUrl, config);
 }
 
 /** Classic single-page scroll (existing) */
@@ -992,3 +987,215 @@ export function guessTemplate(photos: string[], name: string): string {
   if (/retro|wave|80s|vapor|synth|neon.pastel/i.test(n)) return 'retro-wave';
   return 'minimal';
 }
+
+// ============================================================
+// Section-based template composition system
+// Each template = an array of section types that get assembled
+// ============================================================
+
+type SectionType =
+  | 'hero' | 'hero-full' | 'hero-split' | 'hero-compact' | 'hero-editorial' | 'hero-centered' | 'hero-minimal'
+  | 'gallery' | 'gallery-big' | 'gallery-cards'
+  | 'services' | 'services-cards'
+  | 'booking' | 'booking-compact'
+  | 'about' | 'about-minimal'
+  | 'instagram'
+  | 'map'
+  | 'cta' | 'cta-card' | 'cta-bar'
+  | 'footer' | 'footer-minimal' | 'footer-bar'
+  | 'artists'
+  | 'stats'
+  | 'reviews'
+  | 'process';
+
+interface LayoutConfig {
+  sections: SectionType[];
+  desc: string;
+}
+
+function renderSection(section: SectionType, d: ShopData, t: ThemeVars, baseUrl: string, i: number, total: number): string {
+  switch (section) {
+    case 'hero': return heroSection(d, t, baseUrl);
+    case 'hero-full': return heroSectionFull(d, t, baseUrl);
+    case 'hero-split': return heroSectionSplit(d, t, baseUrl);
+    case 'hero-compact': return heroSectionCompact(d, t, baseUrl);
+    case 'hero-editorial': return heroSectionEditorial(d, t, baseUrl);
+    case 'hero-centered': return heroSectionCentered(d, t);
+    case 'hero-minimal': return heroSectionMinimal(d, t);
+    case 'gallery': return gallerySection(d.photos, t, d.studioName);
+    case 'gallery-big': return gallerySectionBig(d.photos, t, d.studioName);
+    case 'gallery-cards': return galleryCards(d.photos, t, d.studioName);
+    case 'services': return servicesSection(d, t);
+    case 'services-cards': return servicesCards(d, t);
+    case 'booking': return bookingSection(d, t, baseUrl);
+    case 'booking-compact': return bookingSectionCompact(d, t, baseUrl);
+    case 'about': return aboutSection(d, t);
+    case 'about-minimal': return aboutSectionMinimal(d, t);
+    case 'instagram': return instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken);
+    case 'map': return mapSection(d, t);
+    case 'cta': return ctaSection(d, t, baseUrl);
+    case 'cta-card': return ctaCard(d, t, baseUrl);
+    case 'cta-bar': return ctaBar(d, t);
+    case 'footer': return footerSection(d, t);
+    case 'footer-minimal': return footerMinimal(d, t, baseUrl);
+    case 'footer-bar': return footerStickyBar(d, t, baseUrl);
+    case 'artists': return artistsSection(d, t);
+    case 'stats': return statsSection(d, t);
+    case 'reviews': return reviewsSection(d, t);
+    case 'process': return processSection(d, t);
+    default: return '';
+  }
+}
+
+function renderFromConfig(d: ShopData, t: ThemeVars, baseUrl: string, config: LayoutConfig): string {
+  const sections = [claimBannerEl(d, t, baseUrl), ...config.sections.map((sec, i) => renderSection(sec, d, t, baseUrl, i, config.sections.length))];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+// ---- Additional section variants ----
+
+function heroSectionCentered(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:5rem 2rem 3rem;text-align:center;background:' + t.bg + '"><div style="max-width:700px;margin:0 auto"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,5vw,3.5rem);color:' + t.text + ';margin:0 0 0.5rem">' + safe(d.studioName) + '</h1>' + (d.bio ? '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:1.05rem;line-height:1.7;margin:0 auto 1.5rem;max-width:550px">' + safe(d.bio) + '</p>' : '') + (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="display:inline-block;padding:0.85rem 2rem;background:' + t.accent + ';color:#fff;border-radius:50px;text-decoration:none;font-weight:600">Book Now</a>' : '') + '</div></section>';
+}
+
+function heroSectionMinimal(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bg + '"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(1.5rem,3vw,2rem);color:' + t.text + ';margin:0;text-align:center">' + safe(d.studioName) + '</h1></section>';
+}
+
+function bookingSectionCompact(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:3rem 2rem;text-align:center;background:' + t.bgAlt + '"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';font-size:1.6rem;margin:0 0 0.5rem">Book an Appointment</h2><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';margin-bottom:1rem">Deposits, reminders, instant confirmation.</p><a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="display:inline-block;padding:0.85rem 2rem;background:' + t.accent + ';color:#fff;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600">Book Now →</a></section>';
+}
+
+function ctaBar(d: ShopData, t: ThemeVars): string {
+  return '<div style="padding:1rem 2rem;text-align:center;background:' + t.accent + '"><a href="tel:' + safe(d.phone) + '" style="color:#fff;text-decoration:none;font-weight:600;font-family:' + t.fontBody + '">📞 ' + safe(d.phone) + '</a> <span style="color:rgba(255,255,255,0.6);margin:0 0.5rem">|</span> <a href="https://app.ink-flows.com/register" style="color:#fff;text-decoration:none;font-weight:600;font-family:' + t.fontBody + '">Get a Free Website →</a></div>';
+}
+
+function footerStickyBar(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<footer style="position:fixed;bottom:0;left:0;right:0;background:' + t.card + ';border-top:1px solid ' + t.border + ';padding:0.75rem;display:flex;gap:0.5rem;z-index:100;font-family:' + t.fontBody + '">' +
+    (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="flex:1;padding:0.75rem;background:' + t.accent + ';color:#fff;text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600;font-size:0.85rem">Call</a>' : '') +
+    '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="flex:2;padding:0.75rem;background:' + t.accent + ';color:#fff;text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600;font-size:0.85rem">Book Appointment</a>' +
+    (d.instagram ? '<a href="https://instagram.com/' + d.instagram.replace(/^@/,'') + '" style="flex:1;padding:0.75rem;border:1px solid ' + t.border + ';color:' + t.text + ';text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-size:0.85rem">IG</a>' : '') +
+    '</footer>';
+}
+
+function statsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bgAlt + '"><div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center">' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.reviewCount || 127) + '+</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Happy Clients</p></div>' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.rating || 4.9) + '</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Rating</p></div>' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.services?.length || 6) + '+</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Services</p></div>' +
+    '</div></section>';
+}
+
+function reviewsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bg + '"><div style="max-width:700px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:1.8rem;margin:0 0 2rem">What Clients Say</h2>' +
+    '<div style="display:grid;gap:1rem">' +
+    [1,2,3].map(i => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:12px;padding:1.25rem"><div style="color:' + t.starColor + ';margin-bottom:0.5rem">★★★★★</div><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.9rem;font-style:italic;margin:0">"Amazing work! Highly recommend this studio."</p><p style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:0.8rem;margin-top:0.5rem;font-weight:600">— Happy Client</p></div>').join('') +
+    '</div></div></section>';
+}
+
+function processSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:800px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:1.8rem;margin:0 0 2.5rem">How It Works</h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem">' +
+    [{n:'1. Consult',d:'Share your idea. We\'ll discuss design, placement, and pricing.'},{n:'2. Design',d:'We create a custom design based on your vision.'},{n:'3. Tattoo',d:'Your appointment day. Sit back and trust the process.'},{n:'4. Heal',d:'We guide you through aftercare for perfect healing.'}].map(s => '<div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:' + t.accent + '20;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-weight:700;color:' + t.accent + '">' + s.n[0] + '</div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1rem;margin:0 0 0.25rem">' + s.n + '</h3><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem;margin:0">' + s.d + '</p></div>').join('') +
+    '</div></div></section>';
+}
+
+function aboutSectionMinimal(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bg + '"><div style="max-width:650px;margin:0 auto"><p style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1.05rem;line-height:1.8;text-align:center">' + (d.bio || safe(d.studioName) + ' is a professional tattoo studio serving ' + safe(d.city) + '.') + '</p></div></section>';
+}
+
+// ============================================================
+// 50+ Template Configurations
+// Each template = different section composition
+// ============================================================
+
+const LAYOUT_CONFIGS: Record<string, LayoutConfig> = {};
+
+// --- Classic variants (7) ---
+LAYOUT_CONFIGS['classic'] = { sections: ['hero','booking','about','services','gallery','instagram','map','cta','footer'], desc: 'Full single-page scroll' };
+LAYOUT_CONFIGS['classic-alt'] = { sections: ['hero','about','services','gallery','booking','instagram','cta','footer'], desc: 'Scroll with booking after gallery' };
+LAYOUT_CONFIGS['classic-min'] = { sections: ['hero','services','gallery','booking','footer'], desc: 'Minimal classic' };
+
+// --- Hero-first variants (8) ---
+LAYOUT_CONFIGS['hero-full'] = { sections: ['hero-full','gallery-big','services','instagram','map','cta','footer-minimal'], desc: 'Full screen hero + big gallery' };
+LAYOUT_CONFIGS['hero-split'] = { sections: ['hero-split','gallery','services-cards','booking','cta','footer'], desc: 'Split screen hero' };
+LAYOUT_CONFIGS['hero-centered'] = { sections: ['hero-centered','stats','gallery-cards','services','booking-compact','footer-minimal'], desc: 'Centered hero with stats' };
+LAYOUT_CONFIGS['hero-editorial'] = { sections: ['hero-editorial','about','gallery-big','instagram','cta','footer-minimal'], desc: 'Magazine style hero' };
+LAYOUT_CONFIGS['hero-compact'] = { sections: ['hero-compact','gallery','services','booking','footer'], desc: 'Compact hero' };
+LAYOUT_CONFIGS['hero-minimal'] = { sections: ['hero-minimal','gallery-cards','services-cards','booking-compact','footer-minimal'], desc: 'Minimal hero' };
+LAYOUT_CONFIGS['hero-story'] = { sections: ['hero','about-minimal','process','gallery','booking','cta','footer'], desc: 'Story-first layout' };
+LAYOUT_CONFIGS['hero-reviews'] = { sections: ['hero','reviews','gallery','services','booking','cta','footer'], desc: 'Reviews right after hero' };
+
+// --- Gallery-first variants (7) ---
+LAYOUT_CONFIGS['gallery-first'] = { sections: ['hero-compact','gallery','services','booking','footer'], desc: 'Gallery right after compact hero' };
+LAYOUT_CONFIGS['gallery-big'] = { sections: ['hero','gallery-big','services-cards','booking-compact','footer-minimal'], desc: 'Big gallery with minimal sections' };
+LAYOUT_CONFIGS['gallery-cards'] = { sections: ['hero','gallery-cards','services','booking','footer'], desc: 'Card-style gallery' };
+LAYOUT_CONFIGS['gallery-masonry'] = { sections: ['hero-minimal','gallery-big','about','booking','footer'], desc: 'Masonry gallery layout' };
+LAYOUT_CONFIGS['gallery-stats'] = { sections: ['hero-centered','stats','gallery-big','booking-compact','footer-minimal'], desc: 'Gallery with stats bar' };
+LAYOUT_CONFIGS['gallery-showcase'] = { sections: ['hero','gallery','services-cards','cta-card','footer-minimal'], desc: 'Gallery showcase with card CTA' };
+LAYOUT_CONFIGS['gallery-process'] = { sections: ['hero','process','gallery-big','booking','footer'], desc: 'Gallery with process steps' };
+
+// --- Services-first variants (5) ---
+LAYOUT_CONFIGS['services-first'] = { sections: ['hero','services-cards','gallery','booking','footer'], desc: 'Services highlighted first' };
+LAYOUT_CONFIGS['services-cards'] = { sections: ['hero','services-cards','gallery-cards','booking-compact','footer'], desc: 'All cards layout' };
+LAYOUT_CONFIGS['services-list'] = { sections: ['hero','services','gallery','booking','cta','footer'], desc: 'Simple services list' };
+LAYOUT_CONFIGS['services-process'] = { sections: ['hero','services-cards','process','booking-compact','footer'], desc: 'Services + process' };
+LAYOUT_CONFIGS['services-reviews'] = { sections: ['hero','services','reviews','gallery','booking','footer'], desc: 'Services with reviews' };
+
+// --- Centered/minimal variants (6) ---
+LAYOUT_CONFIGS['centered-min'] = { sections: ['hero-centered','gallery-cards','booking-compact','footer-minimal'], desc: 'Minimal centered everything' };
+LAYOUT_CONFIGS['centered-stats'] = { sections: ['hero-centered','stats','gallery','booking-compact','footer-minimal'], desc: 'Centered with stats' };
+LAYOUT_CONFIGS['centered-process'] = { sections: ['hero-centered','process','gallery-cards','booking','footer-minimal'], desc: 'Centered with process' };
+LAYOUT_CONFIGS['link-bio'] = { sections: [], desc: 'Linktree-style (uses renderLinkBioContent)' };
+LAYOUT_CONFIGS['link-bio-min'] = { sections: [], desc: 'Minimal link page' };
+LAYOUT_CONFIGS['single-section'] = { sections: ['hero','gallery','booking','footer'], desc: 'Just 4 sections' };
+
+// --- Artist/studio roster variants (4) ---
+LAYOUT_CONFIGS['studio-roster'] = { sections: ['hero-compact','artists','services','gallery','booking','footer'], desc: 'Multi-artist studio' };
+LAYOUT_CONFIGS['studio-roster-alt'] = { sections: ['hero','artists','gallery','services','booking','footer'], desc: 'Artists after hero' };
+LAYOUT_CONFIGS['studio-min'] = { sections: ['hero-compact','artists','booking','footer'], desc: 'Minimal artist roster' };
+
+// --- Review/social proof variants (5) ---
+LAYOUT_CONFIGS['reviews-first'] = { sections: ['hero','reviews','gallery','services','booking','footer'], desc: 'Reviews highlighted' };
+LAYOUT_CONFIGS['reviews-stats'] = { sections: ['hero','stats','reviews','gallery','booking','footer'], desc: 'Social proof heavy' };
+LAYOUT_CONFIGS['social-proof'] = { sections: ['hero','stats','reviews','gallery','services','booking-compact','footer-minimal'], desc: 'Maximum social proof' };
+
+// --- Special layouts (5) ---
+LAYOUT_CONFIGS['editorial'] = { sections: ['hero-editorial','about','gallery','instagram','cta','footer-minimal'], desc: 'Magazine editorial' };
+LAYOUT_CONFIGS['editorial-full'] = { sections: ['hero-editorial','gallery-big','about-minimal','cta-card','footer-minimal'], desc: 'Full editorial with big images' };
+LAYOUT_CONFIGS['card-heavy'] = { sections: ['hero','services-cards','gallery-cards','cta-card','footer'], desc: 'Everything in cards' };
+LAYOUT_CONFIGS['minimal-bar'] = { sections: ['hero','gallery','booking-compact','footer-bar'], desc: 'Sticky bottom bar' };
+LAYOUT_CONFIGS['minimal-bar-alt'] = { sections: ['hero-centered','gallery-cards','footer-bar'], desc: 'Centered with sticky bar' };
+
+// --- Process/funnel variants (3) ---
+LAYOUT_CONFIGS['process-first'] = { sections: ['hero','process','gallery','booking','footer'], desc: 'Process first' };
+LAYOUT_CONFIGS['funnel'] = { sections: ['hero','process','services','reviews','booking','footer'], desc: 'Sales funnel layout' };
+
+// ===== Assign layout configs to ALL_TEMPLATES =====
+// 41 templates × their layout configs
+export const TEMPLATE_LAYOUTS: Record<string, string> = {
+  // classic (6)
+  minimal: 'classic', vintage: 'classic', moody: 'classic', desert: 'classic',
+  'retro-wave': 'classic-alt', nordic: 'classic-min',
+  // hero-grid (5)
+  studio: 'hero-full', coastal: 'hero-centered', arctic: 'hero-minimal',
+  watercolor: 'hero-split', lavender: 'hero-reviews',
+  // link-bio (5)
+  brutalist: 'link-bio', tribal: 'link-bio', punk: 'link-bio-min',
+  maori: 'link-bio', monochrome: 'link-bio-min',
+  // studio-roster (5)
+  traditional: 'studio-roster', nature: 'studio-roster-alt', woodcut: 'studio-min',
+  botanical: 'studio-roster', tropical: 'studio-roster-alt',
+  // cards (5)
+  edgy: 'card-heavy', neon: 'services-cards', metallic: 'gallery-cards',
+  cyberpunk: 'card-heavy', 'new-school': 'services-cards',
+  // split (5)
+  royal: 'hero-split', midnight: 'centered-min', celestial: 'editorial',
+  sunset: 'hero-story', chicano: 'hero-centered',
+  // editorial (5)
+  gothic: 'editorial-full', japanese: 'editorial', steampunk: 'editorial-full',
+  neonoir: 'reviews-first', halloween: 'social-proof',
+  // minimal-bar (5)
+  industrial: 'minimal-bar', urban: 'minimal-bar-alt', sakura: 'minimal-bar',
+  biomechanical: 'hero-compact', 'trash-polka': 'funnel',
+};
