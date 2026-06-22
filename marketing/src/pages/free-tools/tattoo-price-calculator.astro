@@ -3,25 +3,50 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 import TattooPriceCalculator from '../../components/TattooPriceCalculator.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Tattoo Price Calculator — Free Cost Estimator" description="Estimate the cost of your next tattoo. Free interactive calculator based on size, detail, and placement." />
+  <SEOHead slot="head" title="Tattoo Price Calculator — Free Pricing Estimator for Artists" description="Calculate tattoo prices based on size, detail, placement, and artist experience. Free tattoo pricing estimator for artists and clients. No signup required." />
+  <FAQSchema data={{ questions: [
+    { question: "Is the tattoo price calculator free?", answer: "Yes. Calculate unlimited estimates for free. No account or signup required." },
+    { question: "What factors affect tattoo pricing?", answer: "Size, detail level, placement, color vs black and grey, artist experience, and studio location all impact the final price." },
+    { question: "Can I use this for client estimates?", answer: "Yes. The calculator provides a starting point for estimates. Final pricing should be confirmed during consultation." },
+    { question: "How accurate is the price estimate?", answer: "The estimate is based on industry averages. Actual pricing varies by artist, studio, and geographic location." },
+  ]}} />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
+  <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Price Calculator</h1>
-      <p class="mt-4 text-lg text-gray-400">Get a ballpark estimate for your next tattoo. Choose your size, detail, and placement.</p>
+      <p class="mt-4 text-lg text-gray-400">Estimate tattoo prices based on size, detail, placement, and artist experience. A starting point for consultations.</p>
     </div>
   </section>
 
-  <section class="pb-20">
+  <section class="pb-12">
     <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
       <TattooPriceCalculator />
     </div>
   </section>
 
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white">Factors That Affect Tattoo Pricing</h2>
+      <p class="mt-3 text-gray-400">Understanding these factors helps you set fair prices and manage client expectations.</p>
+      <div class="mt-8 grid gap-4 sm:grid-cols-3 text-left">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Size &amp; Complexity</h3><p class="mt-1 text-xs text-gray-400">Small simple pieces ($50-200), medium detailed ($200-500), large custom ($500-2000+). The more details and colors, the higher the price.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Placement &amp; Body Part</h3><p class="mt-1 text-xs text-gray-400">Rib, spine, and hand/foot placements often cost more due to difficulty. Arms and legs are typically the most affordable.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Artist &amp; Studio Factors</h3><p class="mt-1 text-xs text-gray-400">Experience level, demand, studio location, and session duration all impact the hourly or flat rate.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Manage Pricing &amp; Bookings in One Place</h2>
+    <p class="mt-3 text-gray-400">InkFlow helps you set service prices, collect deposits at booking, and track revenue — all in one platform.</p>
+    <a href="/features/tattoo-payment-processing" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
+  </section>
   <Footer />
 </BaseLayout>

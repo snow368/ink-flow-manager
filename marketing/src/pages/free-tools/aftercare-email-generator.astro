@@ -3,25 +3,50 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Tattoo Aftercare Email Template Generator — Free" description="Generate professional tattoo aftercare emails for your clients. Free template generator. Copy and send in seconds." />
+  <SEOHead slot="head" title="Tattoo Aftercare Email Template Generator — Free Tool" description="Generate professional tattoo aftercare emails for your clients. Free template generator with SMS templates. Copy and send in seconds. No signup required." />
+  <FAQSchema data={{ questions: [
+    { question: "Is the aftercare email generator free?", answer: "Yes. Generate unlimited aftercare email templates for free. No account or signup required." },
+    { question: "Can I customize the generated emails?", answer: "Yes. You can edit the generated template before copying. Adjust the tone, add studio-specific details, or modify the instructions." },
+    { question: "What's included in the aftercare email?", answer: "Basic aftercare instructions covering washing, moisturizing, sun protection, and healing timeline. The template can be customized for different tattoo types." },
+    { question: "How do I send the generated email?", answer: "Copy the generated template and paste into your email client, SMS, or DM. For automated sending, upgrade to InkFlow's aftercare automation." },
+  ]}} />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
+  <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Aftercare Email Generator</h1>
-      <p class="mt-4 text-lg text-gray-400">Create a professional aftercare message for your clients. Just enter their name and tattoo type.</p>
+      <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Aftercare Email Template Generator</h1>
+      <p class="mt-4 text-lg text-gray-400">Create a professional aftercare message for your clients. Just enter their name and tattoo type — copy and send in seconds.</p>
     </div>
   </section>
 
-  <section class="pb-20">
+  <section class="pb-12">
     <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
       <AftercareEmailGenerator />
     </div>
   </section>
 
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white">What's Included in the Template</h2>
+      <p class="mt-3 text-gray-400">Each generated email covers the essential aftercare timeline your clients need for proper healing.</p>
+      <div class="mt-8 grid gap-4 sm:grid-cols-3 text-left">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">First 24 Hours</h3><p class="mt-1 text-xs text-gray-400">Keep the bandage on, avoid water, and don't touch. What to expect in terms of swelling and discharge.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Days 2-7</h3><p class="mt-1 text-xs text-gray-400">Washing routine, moisturizing schedule, and what to do about peeling and itching.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Week 2-4</h3><p class="mt-1 text-xs text-gray-400">Sun protection, returning to exercise, and when to schedule a touch-up if needed.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Stop Writing Aftercare Emails by Hand</h2>
+    <p class="mt-3 text-gray-400">InkFlow sends automated aftercare sequences at day 3, 7, and 14. Set it once, runs on autopilot.</p>
+    <a href="/features/tattoo-aftercare-software-automation" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
+  </section>
   <Footer />
 </BaseLayout>
