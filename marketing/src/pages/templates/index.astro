@@ -178,7 +178,8 @@ const LAYOUT_GROUPS = [
     selectedTemplate = key;
     selectedTier = tier || 'free';
     document.getElementById('selectedTemplate').textContent = '✓ Selected: ' + name;
-    // Highlight selected
+
+    // Highlight selected swatch
     document.querySelectorAll('.color-swatch').forEach(el => {
       el.style.borderColor = '';
       el.style.background = '';
@@ -188,6 +189,15 @@ const LAYOUT_GROUPS = [
       swatch.style.borderColor = '#06b6d4';
       swatch.style.background = '#06b6d415';
     }
+
+    // Update the preview iframe in the same layout group
+    const groupSection = swatch?.closest('section');
+    const iframe = groupSection?.querySelector('iframe');
+    if (iframe) {
+      const newSrc = iframe.src.replace(/\/api\/template-preview\/[^\/]+/, '/api/template-preview/' + key);
+      iframe.src = newSrc;
+    }
+
     document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' });
   };
 
