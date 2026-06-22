@@ -297,6 +297,24 @@ app.post('/api/stripe/webhook', async (c) => {
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as any;
+      // Subscription payment via Stripe checkout
+      if (session.metadata?.type === 'subscription') {
+        const userId = session.metadata.userId;
+        const planTier = session.metadata.planTier || 'website_solo';
+        const interval = session.metadata.interval || 'year';
+        const amountCents = Number(session.metadata.amount || 1999);
+        const paidAtSec = now() / 1000;
+        const expiresAtSec = interval === 'year' ? paidAtSec + (365 * 86400) : paidAtSec + (30 * 86400);
+        await c.env.DB.prepare(
+          `INSERT INTO subscriptions (id, userId, planTier, interval, status, amount, currency, paidAt, expiresAt, stripeSessionId, createdAt, updatedAt)
+           VALUES (?, ?, ?, ?, 'active', ?, 'usd', ?, ?, ?, ?, ?)`
+        ).bind(`sub_stripe_${session.id}`, userId, planTier, interval, amountCents, paidAtSec, expiresAtSec, session.id, now(), now()).run();
+        if (planTier.startsWith('app_')) {
+          await c.env.DB.prepare('UPDATE users SET plan = ?, updatedAt = ? WHERE id = ?').bind(planTier.replace('app_', ''), now(), userId).run();
+        }
+        await audit(c.env, 'subscription_paid_stripe', { userId, planTier, interval, sessionId: session.id, expiresAt: expiresAtSec });
+        return c.json({ received: true });
+      }
       await c.env.DB.prepare(
         'INSERT INTO payments (id, type, sessionId, paymentIntentId, leadId, artistId, connectedAccountId, amountTotal, currency, paymentStatus, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
       ).bind(`pay_${session.id}`, 'deposit_paid', session.id, session.payment_intent || '', session.metadata?.leadId || '', session.metadata?.artistId || '', session.metadata?.connectedAccountId || '', session.amount_total || 0, session.currency || 'usd', session.payment_status || '', now()).run();
@@ -1883,6 +1901,110 @@ app.get('/api/content/analytics', async (c) => {
 
   return c.json({ items: rows, total, byPlatform });
 });
+
+// =============================================
+// Subscription Routes — Website & App Plan Renewals
+// =============================================
+
+/** Create a checkout session for subscription (via Stripe) */
+app.post('/api/subscription/create-checkout', async (c) => {
+  try {
+    const { userId, email, planTier = 'website_solo', interval = 'year', successUrl, cancelUrl } = await c.req.json();
+    if (!userId || !successUrl || !cancelUrl) {
+      c.status(400); return c.json({ error: 'userId, successUrl, cancelUrl are required' });
+    }
+    const PRICES: Record<string, Record<string, number>> = {
+      website_solo: { year: 1999 },  app_starter: { month: 999, year: 9999 },
+      app_pro: { month: 2999, year: 29999 },  app_plus: { month: 4999, year: 49999 },
+    };
+    const amountCents = PRICES[planTier]?.[interval];
+    if (!amountCents) { c.status(400); return c.json({ error: `Unknown planTier/interval: ${planTier}/${interval}` }); }
+    const planNames: Record<string, string> = { website_solo: 'Website Solo', app_starter: 'InkFlow Starter', app_pro: 'InkFlow Pro', app_plus: 'InkFlow Plus' };
+    const stripeKey = c.env.STRIPE_SECRET_KEY;
+    if (!stripeKey) { c.status(500); return c.json({ error: 'Stripe not configured' }); }
+    const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia', httpClient: Stripe.createFetchHttpClient() });
+    const session = await stripe.checkout.sessions.create({
+      mode: interval === 'month' ? 'subscription' : 'payment',
+      customer_email: email || undefined,
+      line_items: [{ price_data: { currency: 'usd', product_data: { name: `${planNames[planTier] || planTier} ${interval === 'year' ? 'Annual' : 'Monthly'}`, description: interval === 'year' ? 'Billed annually. Renews at same rate.' : 'Billed monthly. Cancel anytime.' }, unit_amount: amountCents }, quantity: 1 }],
+      metadata: { type: 'subscription', userId, planTier, interval, amount: String(amountCents) },
+      success_url: successUrl, cancel_url: cancelUrl,
+    });
+    await audit(c.env, 'subscription_checkout_created', { userId, planTier, interval, sessionId: session.id });
+    return c.json({ id: session.id, url: session.url });
+  } catch (error: any) {
+    console.error('[subscription/create-checkout]', error);
+    c.status(500); return c.json({ error: error.message || 'Failed to create checkout' });
+  }
+});
+
+/** Manually record a subscription (for any payment method — Stripe, manual, crypto, etc.) */
+app.post('/api/subscription/record', async (c) => {
+  try {
+    const { userId, planTier = 'website_solo', interval = 'year', amount, currency = 'usd', paidAt: paidAtInput, notes } = await c.req.json();
+    if (!userId) { c.status(400); return c.json({ error: 'userId required' }); }
+    const paidAtSec = paidAtInput ? Math.floor(new Date(paidAtInput).getTime() / 1000) : (now() / 1000);
+    const expiresAtSec = interval === 'year' ? paidAtSec + (365 * 86400) : paidAtSec + (30 * 86400);
+    const amountCents = amount || (planTier === 'website_solo' ? 1999 : 999);
+
+    await c.env.DB.prepare(
+      `INSERT INTO subscriptions (id, userId, planTier, interval, status, amount, currency, paidAt, expiresAt, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?)`
+    ).bind(`sub_manual_${now()}_${userId}`, userId, planTier, interval, amountCents, currency, paidAtSec, expiresAtSec, now(), now()).run();
+
+    if (planTier.startsWith('app_')) {
+      await c.env.DB.prepare('UPDATE users SET plan = ?, updatedAt = ? WHERE id = ?').bind(planTier.replace('app_', ''), now(), userId).run();
+    }
+    await audit(c.env, 'subscription_recorded', { userId, planTier, interval, expiresAt: expiresAtSec, notes });
+    return c.json({ success: true, expiresAt: expiresAtSec });
+  } catch (error: any) {
+    console.error('[subscription/record]', error);
+    c.status(500); return c.json({ error: error.message || 'Failed to record subscription' });
+  }
+});
+
+/** Check subscription status for a user */
+app.get('/api/subscription/status', async (c) => {
+  const userId = c.req.query('userId');
+  if (!userId) { c.status(400); return c.json({ error: 'userId required' }); }
+
+  const sub = await c.env.DB.prepare(
+    'SELECT * FROM subscriptions WHERE userId = ? AND status = ? ORDER BY expiresAt DESC LIMIT 1'
+  ).bind(userId, 'active').first() as any;
+
+  if (!sub) {
+    return c.json({ active: false, subscriptions: [] });
+  }
+
+  const nowSec = now() / 1000;
+  const expired = sub.expiresAt < nowSec;
+
+  return c.json({
+    active: !expired,
+    planTier: sub.planTier,
+    interval: sub.interval,
+    paidAt: sub.paidAt,
+    expiresAt: sub.expiresAt,
+    status: expired ? 'expired' : sub.status,
+    daysRemaining: Math.max(0, Math.floor((sub.expiresAt - nowSec) / 86400)),
+  });
+});
+
+/** List subscriptions expiring within N days (for sending reminders) */
+app.get('/api/subscription/expiring', async (c) => {
+  const days = Number(c.req.query('days')) || 30;
+  const nowSec = now() / 1000;
+  const futureSec = nowSec + (days * 86400);
+
+  const { results } = await c.env.DB.prepare(
+    'SELECT * FROM subscriptions WHERE status = ? AND expiresAt BETWEEN ? AND ? ORDER BY expiresAt ASC'
+  ).bind('active', nowSec, futureSec).all();
+
+  return c.json({ count: (results || []).length, subscriptions: results || [] });
+});
+
+// Extend webhook to handle subscription payments
+// (webhook is at /api/stripe/webhook — checkout.session.completed handler extended above)
 
 // =============================================
 // Ledger helper
