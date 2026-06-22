@@ -354,8 +354,8 @@ export default function Register() {
             <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose website plan</p>
             <div style={{ display: 'flex', gap: 8 }}>
               {[
-                { id: 'website_basic', name: 'Website Basic', price: '$4.99/mo', color: '#64748b', desc: '1 page, all templates' },
-                { id: 'website_pro', name: 'Website Pro', price: '$9.99/mo', color: '#a855f7', desc: 'Multi-page, custom domain', popular: true },
+                { id: 'website_basic', name: 'Website Basic', price: '$9.99/yr', color: '#64748b', desc: 'Single page, free templates' },
+                { id: 'website_pro', name: 'Website Pro', price: '$19.99/yr', color: '#a855f7', desc: 'Multi-page, all 41 templates', popular: true },
               ].map(p => {
                 const isSelected = selectedPlan === p.id;
                 return (
