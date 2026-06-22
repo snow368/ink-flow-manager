@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Studio Analytics — Revenue, Bookings &amp; Artist Performance" description="InkFlow's studio analytics dashboard tracks revenue, artist performance, booking trends, and client growth. Data-driven decisions for your tattoo studio. Start free." />
+  <FAQSchema data={{ questions: [
+    { question: "What metrics does the analytics dashboard show?", answer: "Revenue trends, booking volume, artist performance, client growth, no-show rates, and average session value. All updated in real-time." },
+    { question: "Can I see performance per artist?", answer: "Yes. Compare artists by revenue, bookings completed, average session value, and client satisfaction ratings." },
+    { question: "Are analytics available on mobile?", answer: "Yes. The analytics dashboard is fully responsive and works on any device — phone, tablet, or desktop." },
+  ]}} />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO STUDIO ANALYTICS</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Studio Analytics: Revenue, Bookings &amp; Performance Dashboard</h1>
+      <p class="mt-6 text-lg text-gray-400">InkFlow's analytics dashboard tracks revenue trends, booking volume, artist performance, and client growth — all updated in real-time. Data-driven decisions for your studio.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why You Need Studio Analytics</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">You don't know if your studio is growing until you see the numbers.</h3><p class="mt-1 text-sm text-gray-400">Revenue up or down? Bookings increasing? Without analytics, you're guessing. InkFlow shows real-time trends.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Some artists outperform others — you need to know why.</h3><p class="mt-1 text-sm text-gray-400">Compare artists by revenue, bookings, and average session value. Identify your top performers and share their best practices.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">No-show rates and booking trends affect your bottom line.</h3><p class="mt-1 text-sm text-gray-400">Track no-show rates over time. See which days and services are most popular. Optimize your schedule based on data.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Analytics Features Built for Studio Owners</h2>
+      <div class="mt-12 space-y-16">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h3 class="text-2xl font-bold text-white">Real-Time Revenue &amp; Booking Trends</h3>
+          <p class="mt-4 text-gray-400">See revenue trends, booking volume, and client growth — all updated in real-time. Compare week-over-week and year-over-year.</p>
+          <h4 class="mt-4 text-lg font-semibold text-white">Custom Date Range Comparisons</h4>
+          <p class="text-sm text-gray-400">Compare any two periods — this month vs last month, this year vs last year. Spot seasonal patterns and growth trends.</p>
+          <h5 class="mt-3 text-base font-medium text-white">Revenue by Service Type</h5>
+          <p class="text-sm text-gray-400">See which services generate the most revenue. Identify your highest-margin offerings and focus marketing efforts.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-400">[Screenshot: Analytics dashboard]</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-400">[Screenshot: Artist performance]</p>
+        </div>
+        <div class="order-1 md:order-2">
+          <h3 class="text-2xl font-bold text-white">Artist Performance Comparison</h3>
+          <p class="mt-4 text-gray-400">Compare artists by revenue, bookings completed, and average session value. Identify top performers and coaching opportunities.</p>
+          <h4 class="mt-4 text-lg font-semibold text-white">Per-Artist Booking &amp; Revenue Reports</h4>
+          <p class="text-sm text-gray-400">See each artist's booking count, total revenue, average session value, and client retention rate. Export monthly for commission calculations.</p>
+          <h5 class="mt-3 text-base font-medium text-white">Client Satisfaction Scores</h5>
+          <p class="text-sm text-gray-400">Track average ratings per artist based on post-session reviews. Identify artists who excel at client experience.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- BUYER GUIDE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Analytics Approach Fits Your Studio?</h2>
+      <p class="mt-3 text-center text-gray-400">The right analytics depends on your studio size and data needs.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist tracking personal performance</h3><p class="text-sm text-gray-400 mt-1">Basic revenue and booking trends help you understand seasonality. InkFlow's free analytics gives you enough data to make informed decisions.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Multi-artist studio comparing performance</h3><p class="text-sm text-gray-400 mt-1">Artist performance comparison reveals top earners and coaching opportunities. InkFlow shows revenue, bookings, and satisfaction per artist.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Multi-location chain</h3><p class="text-sm text-gray-400 mt-1">Compare performance across locations. Identify top-performing studios and replicate their success. Centralized reporting for the entire chain.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Make Data-Driven Decisions</h2>
+    <p class="mt-3 text-gray-400">Free plan includes basic analytics. Upgrade for full artist performance and trend reports.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+    <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+  </section>
+  <Footer />
+</BaseLayout>

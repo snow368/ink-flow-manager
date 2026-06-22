@@ -2,48 +2,191 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="Multi-Artist Commission Tracking Explained — 2026 | InkFlow Blog" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." />
+<BaseLayout pageTitle="Multi-Artist Commission Tracking">
+  <BlogSchema title="Multi-Artist Commission Tracking Explained — 2026" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." publishedDate="2026-05-20" tags={["commission tracking", "artist payouts", "studio management"]} />
+  <SEOHead slot="head" title="Multi-Artist Commission Tracking Explained — 2026" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." />
   <Navbar />
 
   <article class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <p class="text-sm text-accent-400 mb-4">May 28, 2026</p>
+      <p class="text-sm text-accent-400 mb-4">May 20, 2026</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Multi-Artist Commission Tracking Explained</h1>
-      <p class="mt-4 text-lg text-gray-400">Stop using spreadsheets to calculate artist commissions. InkFlow automates commission splits so everyone gets paid correctly, every time.</p>
+      <!-- Featured Image -->
+      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
+        <img src="/images/blog/commission-tracking.svg" alt="Commission tracking dashboard showing automated payout splits and reporting for multi-artist tattoo studios" class="w-full aspect-[16/9] object-cover" loading="eager" />
+      </div>
+      <p class="mt-2 text-xs text-gray-600 text-center">Automated commission tracking — set different rates, calculate payouts instantly</p>
+      <p class="mt-4 text-lg text-gray-400">Stop using spreadsheets to calculate artist commissions. Here's how to set up automated commission tracking that pays everyone correctly, every time.</p>
     </div>
   </article>
 
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
       <h2>The Problem with Manual Commission Tracking</h2>
-      <p>If you're using spreadsheets or a notebook to track artist commissions, you know the pain. Different rates for different artists. Tips that need splitting. Retail sales vs service commissions. It adds up fast, and mistakes are common.</p>
-      <p><a href="/features/pos" class="text-accent-400 hover:underline">InkFlow's POS system</a> calculates commissions automatically based on the rates you set for each artist.</p>
 
-      <h2>How It Works</h2>
-      <h3>Set Per-Artist Rates</h3>
-      <p>Each artist can have a different commission rate. Set it once in their profile — InkFlow remembers it for every transaction.</p>
-      <h3>Automatic Calculation</h3>
-      <p>After each appointment, InkFlow calculates the artist's commission, deducts supplies, and adds tips. No manual entry required.</p>
-      <h3>Payout Reports</h3>
-      <p>Run payout reports for any date range. See exactly what each artist earned, what was deducted, and what needs to be paid out.</p>
+      <div class="not-prose my-8 rounded-xl border border-ink-800 bg-ink-900/50 p-6">
+        <p class="text-sm font-semibold text-white mb-4">📊 The Cost of Manual Commission Tracking</p>
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">3+ hrs</p><p class="text-xs text-gray-500">Per week on commission math</p></div>
+          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">$6.5K</p><p class="text-xs text-gray-500">Annual time cost for 5-artist studio</p></div>
+          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">12%</p><p class="text-xs text-gray-500">Average commission error rate (manual)</p></div>
+        </div>
+      </div>
 
-      <h2>Common Commission Models</h2>
+      <p>If you're using spreadsheets or a notebook to track artist commissions, you know the pain. Different rates for different artists. Tips that need splitting. Retail sales versus service commissions. Booking fees that need deducting. Supply costs to subtract. It adds up fast, and mistakes are common — especially during busy months when there are dozens of transactions to reconcile.</p>
+      <p>Common issues studios face with manual tracking:</p>
       <ul>
-        <li>Fixed percentage (60/40, 70/30 split)</li>
-        <li>Tiered rates (higher percentage after reaching a threshold)</li>
-        <li>Different rates for services vs retail sales</li>
-        <li>Graduating rates for apprentices</li>
+        <li><strong>Math errors</strong> — A single misplaced decimal point can short an artist by hundreds of dollars</li>
+        <li><strong>Missed transactions</strong> — Walk-ins, product sales, and add-on services get forgotten</li>
+        <li><strong>Time wasted</strong> — The average studio manager spends 3-5 hours per week on commission math</li>
+        <li><strong>Artist disputes</strong> — Without a transparent system, artists question whether they're being paid correctly</li>
+        <li><strong>Tax headaches</strong> — Poor records make 1099 preparation and tax filing more difficult than it needs to be</li>
       </ul>
+      <p><a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow's POS and commission system</a> eliminates these problems by calculating commissions automatically based on the rates you set for each artist.</p>
+
+      <h2>Common Commission Models for Tattoo Studios</h2>
+      <p>Different studios use different commission structures. The most common models are:</p>
+
+      <h3>Fixed Percentage Split</h3>
+      <p>The simplest model. The studio takes a fixed percentage of each artist's booked services, and the artist keeps the rest. Common splits include 60/40 (artist keeps 60%), 70/30, or 50/50 for newer artists.</p>
+      <p><strong>Best for:</strong> Studios where all artists have similar experience levels and the studio provides all supplies, marketing, and client acquisition.</p>
+
+      <h3>Tiered Commission Rates</h3>
+      <p>Artists earn a higher percentage after hitting a revenue threshold. For example, 50% on the first $5,000/month, 60% on $5,001-$10,000, and 70% on anything above $10,000. This incentivizes artists to book more work while protecting the studio's base costs.</p>
+      <p><strong>Best for:</strong> Motivating artists to grow their books while ensuring the studio covers overhead.</p>
+
+      <h3>Service vs. Retail Split</h3>
+      <p>Different rates for tattoo services versus retail product sales. Artists might earn 60% on services but only 10% on retail sales (since the studio sources and stocks the products).</p>
+      <p><strong>Best for:</strong> Studios with active retail operations (aftercare products, merchandise).</p>
+
+      <h3>Graduating Rates for Apprentices</h3>
+      <p>New artists start at a lower rate (e.g., 40%) that increases as they reach milestones — first 50 sessions, first year, portfolio benchmarks. This recognizes growing skill and client base while protecting the studio's investment in training.</p>
+      <p><strong>Best for:</strong> Studios that train apprentices and want a clear path to full commission.</p>
+
+      <h2>What Should Be Deducted Before Commission?</h2>
+      <p>Before calculating commission, most studios deduct certain costs from the transaction total. Common deductions include:</p>
+      <ul>
+        <li><strong>Booking deposits</strong> — Already collected and may have different payout rules</li>
+        <li><strong>Supply costs</strong> — Ink, cartridges, gloves, wrap used during the session</li>
+        <li><strong>Credit card processing fees</strong> — Typically 2.5-3.5% per transaction</li>
+        <li><strong>Shop fees</strong> — Some studios charge a flat "shop fee" per session for use of the space</li>
+        <li><strong>Commission on tips</strong> — Some studios take a cut of tips, others let artists keep 100%</li>
+      </ul>
+      <p>Your studio's policy should be transparent and documented. When artists know exactly how their pay is calculated, disputes disappear.</p>
+
+      <h2>How Automated Commission Tracking Works</h2>
+      <p>With InkFlow, the process is completely automated:</p>
+      <ol>
+        <li><strong>Set up each artist's profile</strong> with their commission rate, deductions, and payout schedule</li>
+        <li><strong>Book appointments</strong> through the system — each service is linked to the artist who performed it</li>
+        <li><strong>Process payments</strong> at checkout — InkFlow calculates commission automatically, deducts supplies and fees</li>
+        <li><strong>Run payout reports</strong> — See exactly what each artist earned, what was deducted, and what needs to be paid out</li>
+        <li><strong>Export for payroll</strong> — Generate summary reports for 1099 preparation or direct deposit</li>
+      </ol>
+      <p>The entire process takes seconds per transaction instead of minutes of manual math.</p>
+
+      <h2>Payout Schedules: What Works Best</h2>
+      <p>Most studios run one of three payout schedules:</p>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-ink-700">
+            <th class="text-left py-2 pr-4">Schedule</th>
+            <th class="text-left py-2 pr-4">How It Works</th>
+            <th class="text-left py-2 pr-4">Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4 font-semibold">Weekly</td>
+            <td class="py-2 pr-4">Pay out every Friday for the prior week</td>
+            <td class="py-2 pr-4">Full-time artists who rely on regular income</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4 font-semibold">Bi-Weekly</td>
+            <td class="py-2 pr-4">Pay out every other week</td>
+            <td class="py-2 pr-4">Balance of admin efficiency and artist cash flow</td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-4 font-semibold">Monthly</td>
+            <td class="py-2 pr-4">Pay out on the 1st or 15th</td>
+            <td class="py-2 pr-4">Part-time artists, studios with fewer transactions</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Common Commission Tracking Mistakes to Avoid</h2>
+      <ul>
+        <li><strong>Not tracking supply deductions</strong> — If the studio provides supplies, deducting them from commission prevents the studio from subsidizing artist costs out of its own share</li>
+        <li><strong>Inconsistent tip policies</strong> — Decide upfront whether tips are included in commission calculations and stick to it</li>
+        <li><strong>No written agreement</strong> — Every artist should sign a commission agreement that spells out rates, deductions, and payout timing</li>
+        <li><strong>Mixing retail and service commissions</strong> — These should be tracked separately since they have different margin structures</li>
+        <li><strong>Delaying payouts</strong> — Late payouts erode trust. Automate as much as possible to stay on schedule</li>
+      </ul>
+
+      <h2>FAQ</h2>
+
+      <h3>What's the standard commission split for tattoo studios?</h3>
+      <p>The most common split is 60/40 (artist keeps 60%, studio keeps 40%). However, this varies widely based on experience, location, and what the studio provides (supplies, marketing, front desk, space).</p>
+
+      <h3>Should tips be included in commission calculations?</h3>
+      <p>This depends on your studio policy. Some studios let artists keep 100% of tips, while others include tips in the commission calculation. Whatever you choose, be consistent and transparent.</p>
+
+      <h3>How do I handle commission for walk-ins and online bookings?</h3>
+      <p>All transactions should be tracked through your POS regardless of how the client booked. <a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow's POS system</a> automatically links every payment to the artist who performed the service.</p>
+
+      <h3>Do I need different commission rates for apprentices?</h3>
+      <p>Yes, graduating rates work best for apprentices. Start lower (40-50%) and increase as they reach milestones. This protects your training investment while giving them a clear path to full commission.</p>
+
+      <h3>What's the best software for commission tracking?</h3>
+      <p><a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow</a> is purpose-built for tattoo studios with automatic commission calculation, per-artist rates, supply deduction tracking, and payout reports — starting at $29.99/month for up to 5 artists.</p>
     </div>
   </section>
 
-  <section class="py-12 text-center border-t border-ink-800/50">
-    <h2 class="text-2xl font-bold text-white">Automate Your Commissions</h2>
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free</a>
+  <FAQSchema
+    questions={[
+      { question: "What's the standard commission split for tattoo studios?", answer: "The most common split is 60/40 (artist keeps 60%, studio keeps 40%). Varies based on experience, location, and what the studio provides." },
+      { question: "Should tips be included in commission calculations?", answer: "Depends on policy. Some studios let artists keep 100% of tips, others include tips in commission calculations. Be consistent and transparent." },
+      { question: "Do I need different commission rates for apprentices?", answer: "Yes, graduating rates work best. Start lower (40-50%) and increase as they reach milestones." },
+      { question: "What's the best software for commission tracking?", answer: "InkFlow is purpose-built for tattoo studios with automatic commission calculation, per-artist rates, and payout reports starting at $29.99/month." },
+    ]}
+  />
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 to-transparent p-8 text-center mb-6">
+        <h2 class="text-2xl font-bold text-white">Simplify Your Commission Tracking</h2>
+        <p class="mt-2 text-gray-400">Automatic calculations, per-artist rates, and instant payout reports — <strong class="text-accent-400">starts at $29.99/mo for up to 5 artists.</strong></p>
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+            Start Free Trial →
+          </a>
+          <a href="/features/tattoo-pos-system" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+            See POS & Commissions
+          </a>
+        </div>
+        <div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
+          <span>✓ No credit card required</span>
+          <span>✓ Free plan for solo artists</span>
+          <span>✓ Automatic payout reports</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-center">
+        <a href="/features/tattoo-payment-processing" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
+          <p class="text-sm font-medium text-white group-hover:text-accent-300">Deposits & Payments</p>
+          <p class="text-xs text-gray-500 mt-1">Collect and split payments</p>
+        </a>
+        <a href="/blog/reduce-no-shows-deposit-booking" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
+          <p class="text-sm font-medium text-white group-hover:text-accent-300">No-Show Prevention</p>
+          <p class="text-xs text-gray-500 mt-1">Protect your revenue</p>
+        </a>
+      </div>
+    </div>
   </section>
 
   <Footer />

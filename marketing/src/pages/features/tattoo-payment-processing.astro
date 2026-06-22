@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <FAQSchema data={{ questions: [
+    { question: "What payment methods does InkFlow support?", answer: "Credit card, debit card, Apple Pay, and Google Pay — all processed through Stripe. Deposits, balance collection, tips, and retail sales." },
+    { question: "Does InkFlow add any markup on top of Stripe fees?", answer: "No. You pay only Stripe's standard 2.9% + $0.30 per transaction. InkFlow does not add any platform markup." },
+    { question: "Can I split payments between artists automatically?", answer: "Yes. Set different commission rates per artist. InkFlow auto-calculates and records splits after every appointment." },
+    { question: "Do I need a physical terminal to accept payments?", answer: "No. Send payment links via SMS or email after each session. Clients pay on their phone with Apple Pay or card — no terminal needed." },
+  ]}} />
+  <Navbar />
+
+  <!-- HERO: GEO首句即答案 -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO PAYMENT PROCESSING</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Payment Processing: Deposits, Payments, Commissions in One Place</h1>
+        <p class="mt-6 text-lg text-gray-400">InkFlow's tattoo payment processing collects deposits at booking, sends payment links after sessions, and splits commissions automatically — no separate POS terminal needed. Stripe-powered with no platform markup.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+          <a href="/pricing" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See Pricing</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div><p class="text-3xl font-bold text-accent-400">2.9%+$0.30</p><p class="mt-1 text-sm text-gray-500">Standard card processing</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">$0</p><p class="mt-1 text-sm text-gray-500">Platform fee on payments</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">Auto</p><p class="mt-1 text-sm text-gray-500">Commission calculations</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">No HW</p><p class="mt-1 text-sm text-gray-500">Works with phone or tablet</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM: 标准 H2→H3 痛点区 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Tattoo Studios Need Different Payment Processing</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Most processors only offer card-on-file — tattoo studios need real deposits at booking.</h3><p class="mt-1 text-sm text-gray-400">InkFlow collects actual payments that lock appointments and improve cash flow. Set flat fees or percentages per service, per artist, or globally.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual commission math costs 3+ hours every week.</h3><p class="mt-1 text-sm text-gray-400">Spreadsheets, calculators, and late-night emails add up. InkFlow auto-splits commissions per artist after every appointment — no more math.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">You don't need a $500 POS terminal to accept payments.</h3><p class="mt-1 text-sm text-gray-400">InkFlow sends payment links via SMS or email after each session. Clients pay with Apple Pay, Google Pay, or card on their phone. Works for balance collection, tips, and retail sales.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION: 标准 H2→H3 功能区 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Payment Features Built for Tattoo Studios</h2>
+      <div class="mt-12 space-y-16">
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white">Deposit Collection Collects Real Payments at Booking, Not Card-on-File Holds</h3>
+            <p class="mt-4 text-gray-400">Require a deposit at booking to secure appointments — set flat fees or percentages per service, per artist, or globally.</p>
+            <h4 class="mt-4 text-lg font-semibold text-white">Actual Payment vs Card-on-File: Why It Matters</h4>
+            <p class="text-sm text-gray-400">Square holds card details for later charges. InkFlow collects the deposit immediately — your cash flow improves and clients are locked in. Deposits are tracked as liabilities until the service is completed.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Per-Service, Per-Artist, and Global Rates</h5>
+            <p class="text-sm text-gray-400">Set flat fees or percentages at three levels. Per-service (custom designs 25%, flash $50), per-artist (senior artists 30%, junior 20%), or a global default that applies everywhere.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">Auto-Refund Rules Based on Cancellation Policy</h6>
+            <p class="text-sm text-gray-400">"48h+ notice = full refund. 24-48h = 50% refund. Under 24h = forfeited." InkFlow enforces your rules automatically. No manual refund requests, no awkward conversations.</p>
+          </div>
+          <div class="rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+            <p class="mt-4 text-3xl font-bold text-white">$0</p>
+            <p class="text-sm text-gray-500">Stripe processing fee only — no platform markup</p>
+          </div>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div class="order-2 md:order-1 rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+            <span class="text-4xl">🔗</span>
+            <p class="mt-4 text-sm text-gray-400">Send a payment link via SMS right after the session.</p>
+          </div>
+          <div class="order-1 md:order-2">
+            <h3 class="text-2xl font-bold text-white">Payment Links Work as a POS System Without Buying POS Hardware</h3>
+            <p class="mt-4 text-gray-400">After a session, send a payment link via SMS or email. Clients pay on their phone — no terminal, no Square reader, no Clover hardware.</p>
+            <h4 class="mt-4 text-lg font-semibold text-white">Balance Collection, Tips, and Retail — All from One Link</h4>
+            <p class="text-sm text-gray-400">The same link handles deposit balance collection, tip addition, and retail product sales (aftercare balms, gift cards). Clients choose what to pay for.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Vs Square: No Terminal Rental ($0 vs $79-$199/mo)</h5>
+            <p class="text-sm text-gray-400">Square's POS terminal starts at $79/month plus transaction fees. InkFlow's payment links cost $0 in platform fees — only Stripe's standard 2.9%+$0.30 per transaction.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">No Hardware, No Contracts, No Monthly Minimum</h6>
+            <p class="text-sm text-gray-400">No terminal to buy, no contract to sign, no monthly minimum to meet. Works with any smartphone or tablet. Artists can process payments from anywhere in the studio.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white">Automatic Commission Splitting Calculates Payouts After Every Appointment</h3>
+            <p class="mt-4 text-gray-400">Set different commission rates per artist. InkFlow auto-calculates payouts after each appointment — no more spreadsheet math.</p>
+            <h4 class="mt-4 text-lg font-semibold text-white">Per-Artist Commission Rates with Auto-Calculation</h4>
+            <p class="text-sm text-gray-400">Each artist gets their own rate — senior artists at 60%, junior at 40%, guest artists at 70%. InkFlow calculates and records the split after every appointment.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Vs Vagaro: Built-In vs Manual Entry</h5>
+            <p class="text-sm text-gray-400">Vagaro requires manual commission entry or spreadsheet tracking. InkFlow's commission software is built into every transaction — calculated and recorded automatically.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">Monthly Payout Reports for Tax Season</h6>
+            <p class="text-sm text-gray-400">Export per-artist payout summaries by month, quarter, or year. Each report includes total sessions, gross revenue, commission rate, and net payout. Ready for accountant review.</p>
+          </div>
+          <div class="rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
+            <span class="text-4xl">📊</span>
+            <p class="mt-4 text-sm text-gray-400">Auto-calculated per artist, per appointment</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE: 8维度 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">InkFlow vs Square vs Stripe: 8-Dimension Comparison</h2>
+      <p class="mt-3 text-center text-gray-400">Square is a payment system with basic booking. Stripe requires code. Here's how they compare for tattoo studios.</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium">Feature</th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Square</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Stripe (alone)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Deposit at booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Card-on-file only</td><td class="text-center py-3 text-gray-600">Requires custom code</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Payment links via SMS</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">Requires custom code</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Auto commission splitting</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Built-in tattoo booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Basic</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Digital waivers included</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">No POS hardware needed</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Platform markup on fees</td><td class="text-center py-3 pr-4 text-accent-400">$0</td><td class="text-center py-3 pr-4 text-gray-600">2.6%+$0.10</td><td class="text-center py-3 text-gray-600">2.9%+$0.30</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Aftercare automation</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER SCENARIO GUIDE: 标准 H2→H3 选购指南 -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Payment Solution Fits Your Studio?</h2>
+      <p class="mt-3 text-center text-gray-400">Your choice depends on whether you need a standalone processor or an all-in-one studio platform.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold">Solo artist who just needs to accept cards</h3>
+          <p class="text-sm text-gray-400 mt-1">Square or Stripe works for basic payment acceptance. But neither handles deposit-based booking, commission splitting, or tattoo waivers — you'll need separate tools for each.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold">Multi-artist studio with complex commissions</h3>
+          <p class="text-sm text-gray-400 mt-1">InkFlow auto-calculates commissions per artist after every appointment. Square and Stripe don't. You save hours of spreadsheet time every week.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold">Studio that wants deposits without POS hardware</h3>
+          <p class="text-sm text-gray-400 mt-1">Only InkFlow combines deposit collection, payment links, and studio management in one system — with zero platform markup on Stripe's processing fees. No terminal rental, no hardware to buy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+      <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">What payment methods does InkFlow support?</summary>
+        <p class="mt-2 text-sm text-gray-400">Credit card, debit card, Apple Pay, and Google Pay — all processed through Stripe. Deposits, balance collection, tips, and retail sales.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Does InkFlow add any markup on top of Stripe fees?</summary>
+        <p class="mt-2 text-sm text-gray-400">No. You pay only Stripe's standard 2.9% + $0.30 per transaction. InkFlow does not add any platform markup.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can I split payments between artists automatically?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. Set different commission rates per artist. InkFlow auto-calculates and records splits after every appointment.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Do I need a physical terminal to accept payments?</summary>
+        <p class="mt-2 text-sm text-gray-400">No. Send payment links via SMS or email after each session. Clients pay on their phone with Apple Pay or card — no terminal needed.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- STAY AS CTA -->
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <h2 class="text-2xl font-bold text-white">Start Collecting Deposits Today</h2>
+    <p class="mt-2 text-gray-400">Free plan includes deposit collection, payment links, and commission tracking.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
+  </section>
+  <Footer />
+</BaseLayout>

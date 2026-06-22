@@ -71,15 +71,15 @@ app.get('/api/config/check', async (c) => {
 
 app.post('/api/auth/register', async (c) => {
   try {
-    const { email, name, passwordHash, studioName, roles, deviceId } = await c.req.json();
+    const { email, name, passwordHash, studioName, roles, deviceId, plan } = await c.req.json();
     if (!email || !passwordHash) { c.status(400); return c.json({ error: 'Email and password required' }); }
     const existing = await c.env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
     if (existing) { c.status(409); return c.json({ error: 'Email already registered' }); }
     const id = generateId('user');
     const ts = now();
     await c.env.DB.prepare(
-      'INSERT INTO users (id, email, name, passwordHash, roles, studioName, deviceId, verified, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?)'
-    ).bind(id, email, name || '', passwordHash, JSON.stringify(roles || []), studioName || '', deviceId || '', ts, ts).run();
+      'INSERT INTO users (id, email, name, passwordHash, roles, studioName, deviceId, plan, verified, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)'
+    ).bind(id, email, name || '', passwordHash, JSON.stringify(roles || []), studioName || '', deviceId || '', plan || 'free', ts, ts).run();
     return c.json({ ok: true, userId: id });
   } catch (e: any) {
     c.status(500);
@@ -757,10 +757,11 @@ app.get('/s/:slug', async (c) => {
     services,
     placeId: (safeJson(row.data, {}) as any)?.placeId || '',
     slug: row.slug,
-    template: (row.template as ShopData['template']) || 'classic',
+    template: (row.template as ShopData['template']) || 'minimal',
     claimToken: row.claimToken || '',
     claimed: Boolean(row.claimedBy),
     priceRange: row.priceRange || '$$',
+    instagram: row.instagram || '',
   };
 
   const baseUrl = c.env.PUBLIC_URL || 'https://app.ink-flows.com';
@@ -805,22 +806,450 @@ app.post('/claim', async (c) => {
   if (row.claimToken !== token) return c.json({ error: 'invalid_token' }, 400);
   if (row.claimedBy) return c.json({ error: 'already_claimed' }, 400);
 
+  // Generate verification code
+  const code = String(Math.floor(100000 + Math.random() * 900000));
   const ts = now();
   const claimId = generateId('clm');
 
-  // Record the claim request
+  // Store code in claim_requests
   await c.env.DB.prepare(
-    'INSERT INTO claim_requests (id, slug, email, name, phone, status, token, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-  ).bind(claimId, slug, email, name || '', '', 'pending', token, ts).run();
+    'INSERT INTO claim_requests (id, slug, email, name, status, token, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).bind(claimId, slug, email, name || '', 'code_sent', token, ts).run();
 
-  // Mark as claimed immediately for V1 (no email verification yet)
-  // In V2, this would send a verification email first
+  // Store code in a simple key-value table
+  try {
+    await c.env.DB.prepare("CREATE TABLE IF NOT EXISTS claim_codes (slug TEXT PRIMARY KEY, code TEXT NOT NULL, expiresAt INTEGER NOT NULL)").run();
+  } catch { /* ignore */ }
+  await c.env.DB.prepare(
+    'INSERT OR REPLACE INTO claim_codes (slug, code, expiresAt) VALUES (?, ?, ?)'
+  ).bind(slug, code, ts + 600000).run(); // expires in 10 minutes
+
+  // Send email with verification code + marketing
+  const baseUrl = c.env.PUBLIC_URL || 'https://ink-flow-api.snow368.workers.dev';
+  const sendgridKey = c.env.SENDGRID_API_KEY || '';
+  const emailFrom = c.env.EMAIL_FROM || 'hello@ink-flows.com';
+  const shopName = row.studioName || row.slug;
+
+  if (sendgridKey) {
+    try {
+      const emailHtml = verificationEmailHtml(code, shopName, slug, baseUrl);
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + sendgridKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email }] }],
+          from: { email: emailFrom, name: 'InkFlow' },
+          subject: 'Verify your shop page — ' + shopName,
+          content: [{ type: 'text/html', value: emailHtml }],
+        }),
+      });
+    } catch { /* email non-critical */ }
+  }
+
+  return c.json({ ok: true, needsCode: true, slug, email });
+});
+
+/** Verify claim code */
+app.post('/claim/verify', async (c) => {
+  const { slug, code } = await c.req.json();
+  if (!slug || !code) return c.json({ error: 'slug and code required' }, 400);
+
+  const row = await c.env.DB.prepare(
+    'SELECT code, expiresAt FROM claim_codes WHERE slug = ?'
+  ).bind(slug).first() as any;
+
+  if (!row) return c.json({ error: 'no_code' }, 400);
+  if (row.code !== code) return c.json({ error: 'wrong_code' }, 400);
+  if (row.expiresAt < now()) return c.json({ error: 'code_expired' }, 400);
+
+  // Get the claim request email
+  const claimReq = await c.env.DB.prepare(
+    "SELECT email FROM claim_requests WHERE slug = ? AND status = 'code_sent' ORDER BY createdAt DESC LIMIT 1"
+  ).bind(slug).first() as any;
+  const email = claimReq?.email || '';
+
+  const ts = now();
   await c.env.DB.prepare(
     'UPDATE site_configs SET claimedBy = ?, claimedAt = ?, updatedAt = ? WHERE slug = ?'
   ).bind(email, ts, ts, slug).run();
+  await c.env.DB.prepare(
+    "UPDATE claim_requests SET status = 'verified' WHERE slug = ? AND status = 'code_sent'"
+  ).bind(slug).run();
+  await c.env.DB.prepare('DELETE FROM claim_codes WHERE slug = ?').bind(slug).run();
+  await audit(c.env, 'site_claimed', { slug, email, via: 'email_code' });
 
-  await audit(c.env, 'site_claimed', { slug, email });
-  return c.json({ ok: true, slug, message: 'Page claimed successfully!' });
+  const baseUrl = c.env.PUBLIC_URL || 'https://ink-flow-api.snow368.workers.dev';
+  return c.json({ ok: true, manageUrl: baseUrl + '/manage/' + slug });
+});
+
+/** Management page after claiming — enter IG handle etc */
+app.get('/manage/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  const token = c.req.query('token');
+
+  const row = await c.env.DB.prepare(
+    'SELECT * FROM site_configs WHERE slug = ?'
+  ).bind(slug).first() as any;
+
+  if (!row) return c.html('<h1>Not found</h1>', 404);
+  if (!row.claimedBy) return c.html('<h1>Not claimed yet</h1><p><a href="/claim?slug=' + slug + '&token=' + row.claimToken + '">Claim this page first</a></p>');
+
+  const shopData = {
+    studioName: row.studioName || '',
+    slug: row.slug,
+    claimedBy: row.claimedBy || '',
+    bio: row.bio || '',
+    phone: row.phone || '',
+    city: row.city || '',
+    state: row.state || '',
+    instagram: row.instagram || '',
+    services: safeJson(row.services, []),
+    photoUrls: safeJson(row.photoUrls, []),
+    template: row.template || 'minimal',
+  };
+
+  return c.html(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage — ${safeVal(shopData.studioName)}</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter',sans-serif;background:#0d0d0d;color:#f0f0f0;min-height:100vh;padding:2rem}
+    .container{max-width:600px;margin:0 auto}
+    .card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:2rem;margin-bottom:1.5rem}
+    h1{font-size:1.4rem;font-weight:700;margin-bottom:0.5rem}
+    .sub{color:#888;font-size:0.9rem;margin-bottom:1.5rem;line-height:1.5}
+    .form-group{margin-bottom:1rem}
+    label{display:block;font-size:0.85rem;font-weight:600;color:#ccc;margin-bottom:0.35rem}
+    input,textarea,select{width:100%;padding:0.75rem 1rem;background:#0d0d0d;border:1px solid #333;border-radius:8px;color:#f0f0f0;font-size:0.95rem;font-family:'Inter',sans-serif}
+    input:focus,textarea:focus{outline:none;border-color:#c9a84c}
+    textarea{resize:vertical;min-height:80px}
+    .badge{display:inline-block;background:#05966920;color:#34d399;font-size:0.75rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:100px;margin-bottom:1rem}
+    .btn{width:100%;padding:0.85rem;background:#c9a84c;color:#0d0d0d;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+    .btn:hover{background:#dbb95d}
+    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .success-msg{color:#34d399;font-size:0.85rem;display:none;margin-top:0.5rem}
+    .preview-link{display:block;text-align:center;color:#c9a84c;font-size:0.9rem;margin-top:1rem;text-decoration:none}
+    .preview-link:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">Claimed by ${safeVal(shopData.claimedBy)}</div>
+    <h1>Manage ${safeVal(shopData.studioName)}</h1>
+    <p class="sub">Your page is live. Fill in your Instagram handle to auto-display your work.</p>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Instagram handle</label>
+        <input type="text" id="igHandle" placeholder="e.g. yourstudio" value="${safeVal(shopData.instagram)}">
+        <p style="color:#555;font-size:0.8rem;margin-top:0.25rem">Just the username — we'll embed your feed automatically</p>
+      </div>
+      <div class="form-group">
+        <label>About / Bio</label>
+        <textarea id="bio" rows="3">${safeVal(shopData.bio)}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" id="phone" value="${safeVal(shopData.phone)}">
+      </div>
+      <button class="btn" onclick="saveSettings()">Save</button>
+      <div class="success-msg" id="successMsg">Saved! Your page has been updated.</div>
+      <a class="preview-link" href="/s/${slug}" target="_blank">Preview your page →</a>
+    </div>
+
+    <!-- Booking Requests -->
+    <!-- Template Switcher (Pro/Plus) -->
+    <div class="card">
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;">🎨 Template</h2>
+      <p class="sub" style="margin-bottom:1rem;">Switch your page style. Content stays the same.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;" id="templateGrid">
+        <p style="color:#555;font-size:0.85rem;">Loading templates...</p>
+      </div>
+      <p id="templateMsg" style="color:#34d399;font-size:0.8rem;display:none;margin-top:0.5rem;">Template updated!</p>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1rem;">📬 Booking Requests</h2>
+      <p class="sub" style="margin-bottom:1rem;">When someone fills the booking form on your page, it shows up here.</p>
+      <div id="bookingList"><p style="color:#555;font-size:0.85rem;">Loading...</p></div>
+    </div>
+  </div>
+  <script>
+    // Load booking requests
+    async function loadBookings() {
+      const el = document.getElementById('bookingList');
+      try {
+        const res = await fetch('/api/booking-requests/${slug}');
+        const data = await res.json();
+        if (!data.items || data.items.length === 0) {
+          el.innerHTML = '<p style="color:#555;font-size:0.85rem;">No booking requests yet.</p>';
+          return;
+        }
+        el.innerHTML = data.items.map(b => {
+          const date = b.createdAt ? new Date(b.createdAt).toLocaleDateString() : '';
+          const status = b.status || 'new';
+          const statusColor = status === 'new' ? '#f59e0b' : status === 'contacted' ? '#3b82f6' : '#34d399';
+          return '<div style="background:#0d0d0d;border:1px solid #2a2a2a;border-radius:10px;padding:1rem;margin-bottom:0.75rem;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.5rem;">' +
+            '<div><p style="font-weight:600;font-size:0.95rem;">' + esc(b.name) + '</p>' +
+            '<p style="color:#94a3b8;font-size:0.8rem;">' + esc(b.phone) + (b.email ? ' · ' + esc(b.email) : '') + '</p></div>' +
+            '<span style="font-size:0.7rem;padding:2px 8px;border-radius:100px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + status + '</span></div>' +
+            (b.message ? '<p style="color:#94a3b8;font-size:0.85rem;line-height:1.4;margin-bottom:0.5rem;">"' + esc(b.message) + '"</p>' : '') +
+            '<div style="display:flex;gap:0.5rem;align-items:center;">' +
+            '<span style="color:#555;font-size:0.75rem;">' + date + '</span>' +
+            (status === 'new' ? '<button onclick="markContacted(\'' + b.id + '\')" style="margin-left:auto;padding:4px 12px;border-radius:6px;border:1px solid #3b82f6;background:transparent;color:#60a5fa;font-size:0.75rem;cursor:pointer;">Mark contacted</button>' : '') +
+            '<a href="tel:' + b.phone + '" style="margin-left:' + (status === 'new' ? '0.25rem' : 'auto') + ';padding:4px 12px;border-radius:6px;border:1px solid #22c55e;background:transparent;color:#4ade80;font-size:0.75rem;cursor:pointer;text-decoration:none;">📞 Call</a>' +
+            (b.email ? '<a href="mailto:' + b.email + '" style="padding:4px 12px;border-radius:6px;border:1px solid #a855f7;background:transparent;color:#c084fc;font-size:0.75rem;cursor:pointer;text-decoration:none;">✉️ Email</a>' : '') +
+            '</div></div>';
+        }).join('');
+      } catch(e) {
+        el.innerHTML = '<p style="color:#ef4444;font-size:0.85rem;">Failed to load booking requests.</p>';
+      }
+    }
+
+    async function markContacted(id) {
+      try {
+        await fetch('/api/booking-requests/${slug}/' + id + '/contacted', { method: 'PUT' });
+        loadBookings();
+      } catch(e) {
+        alert('Failed to update');
+      }
+    }
+
+    function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    loadBookings();
+
+    // Load templates
+    async function loadTemplates() {
+      const grid = document.getElementById('templateGrid');
+      const msg = document.getElementById('templateMsg');
+      const currentTemplate = '${shopData.template}';
+      try {
+        const res = await fetch('/api/templates');
+        const data = await res.json();
+        grid.innerHTML = data.templates.map(t => {
+          const isCurrent = t.id === currentTemplate;
+          return '<div onclick="switchTemplate(\'' + t.id + '\')" style="cursor:pointer;padding:10px;border-radius:8px;border:2px solid ' + (isCurrent ? '#c9a84c' : '#2a2a2a') + ';background:' + (isCurrent ? '#c9a84c20' : '#0d0d0d') + ';text-align:center;">' +
+            '<p style="font-weight:600;font-size:0.85rem;color:#f0f0f0;">' + t.name + '</p>' +
+            (isCurrent ? '<p style="font-size:0.65rem;color:#c9a84c;margin-top:2px;">ACTIVE</p>' : '<p style="font-size:0.65rem;color:#555;">' + t.tier + '</p>') +
+            '</div>';
+        }).join('');
+      } catch(e) {
+        grid.innerHTML = '<p style="color:#555;font-size:0.85rem;">Failed to load templates.</p>';
+      }
+    }
+
+    window.switchTemplate = async function(id) {
+      try {
+        const res = await fetch('/api/site-config/' + '${slug}' + '/template', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ template: id }),
+        });
+        if (res.ok) {
+          document.getElementById('templateMsg').style.display = 'block';
+          setTimeout(() => document.getElementById('templateMsg').style.display = 'none', 2000);
+          loadTemplates();
+        }
+      } catch(e) {
+        alert('Failed to switch template');
+      }
+    };
+
+    loadTemplates();
+
+    async function saveSettings() {
+      const btn = document.querySelector('.btn');
+      const msg = document.getElementById('successMsg');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      msg.style.display = 'none';
+      try {
+        const data = {
+          instagram: document.getElementById('igHandle').value.replace(/^@/,'').trim(),
+          bio: document.getElementById('bio').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+        };
+        const res = await fetch('/api/site-config/' + '${slug}', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          msg.style.display = 'block';
+          setTimeout(() => msg.style.display = 'none', 3000);
+        }
+      } catch(e) {
+        alert('Save failed: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    }
+  </script>
+</body>
+</html>`);
+});
+
+/** API to update site_config settings (bio, phone, instagram etc) */
+app.put('/api/site-config/:slug', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const slug = c.req.param('slug');
+  const row = await c.env.DB.prepare('SELECT * FROM site_configs WHERE slug = ?').bind(slug).first() as any;
+  if (!row) { c.status(404); return c.json({ error: 'not_found' }); }
+
+  const body = await c.req.json();
+  const ts = now();
+  const updates: string[] = [];
+  const params: any[] = [];
+
+  for (const key of ['bio', 'phone', 'studioName', 'instagram', 'priceRange']) {
+    if (body[key] !== undefined) {
+      updates.push(key + ' = ?');
+      params.push(String(body[key]));
+    }
+  }
+  // Handle services array
+  if (body.services) {
+    updates.push('services = ?');
+    params.push(JSON.stringify(body.services));
+  }
+
+  if (updates.length === 0) { c.status(400); return c.json({ error: 'no_fields' }); }
+  updates.push('updatedAt = ?');
+  params.push(ts);
+  params.push(slug);
+
+  await c.env.DB.prepare(
+    'UPDATE site_configs SET ' + updates.join(', ') + ' WHERE slug = ?'
+  ).bind(...params).run();
+
+  return c.json({ ok: true, slug });
+});
+
+/** Booking request from shop page — stores lead in D1 */
+app.post('/api/booking-request', async (c) => {
+  try {
+    const { slug, name, phone, email, message } = await c.req.json();
+    if (!slug || !name || !phone) {
+      return c.json({ error: 'slug, name, and phone required' }, 400);
+    }
+
+    // Store as booking lead
+    const id = generateId('blead');
+    const ts = now();
+    await c.env.DB.prepare(
+      `INSERT INTO app_data (id, type, artistId, data, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(
+      id, 'booking_lead', slug,
+      JSON.stringify({ slug, name, phone, email: email || '', message: message || '', shopSlug: slug }),
+      ts, ts
+    ).run();
+
+    await audit(c.env, 'booking_request', { slug, name, phone: phone.slice(0, 4) + '****' });
+
+    // Notify shop owner (non-blocking)
+    try {
+      const shop = await c.env.DB.prepare('SELECT claimedBy, phone FROM site_configs WHERE slug = ?').bind(slug).first() as any;
+      if (shop?.claimedBy) {
+        console.log('[booking] New lead for ' + slug + ': ' + name);
+      }
+    } catch { /* silent */ }
+
+    return c.json({ ok: true, id });
+  } catch (e: any) {
+    return c.json({ error: e.message }, 500);
+  }
+});
+
+/** Get booking requests for a shop (public) */
+app.get('/api/booking-requests/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  const { results } = await c.env.DB.prepare("SELECT * FROM app_data WHERE type = 'booking_lead' AND artistId = ? ORDER BY createdAt DESC LIMIT 50").bind(slug).all();
+  const items = (results || []).map((r: any) => {
+    const d = JSON.parse(r.data || '{}');
+    return { id: r.id, name: d.name, phone: d.phone, email: d.email || '', message: d.message || '', status: d.status || 'new', createdAt: r.createdAt };
+  });
+  return c.json({ items });
+});
+
+/** Mark booking request as contacted */
+app.put('/api/booking-requests/:slug/:id/contacted', async (c) => {
+  const id = c.req.param('id');
+  const row = await c.env.DB.prepare("SELECT * FROM app_data WHERE id = ? AND type = 'booking_lead'").bind(id).first() as any;
+  if (!row) { c.status(404); return c.json({ error: 'not_found' }); }
+  const data = JSON.parse(row.data || '{}');
+  data.status = 'contacted';
+  await c.env.DB.prepare('UPDATE app_data SET data = ?, updatedAt = ? WHERE id = ?').bind(JSON.stringify(data), now(), id).run();
+  return c.json({ ok: true });
+});
+
+/** Template management: list available + switch */
+const TEMPLATES_META = [
+  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless' },
+  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red' },
+  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel' },
+  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold accents' },
+  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black' },
+  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones' },
+  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white' },
+  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green' },
+  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold' },
+  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan glow on dark' },
+  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete' },
+  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like' },
+  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels' },
+  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark' },
+  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy' },
+  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold' },
+];
+
+app.get('/api/templates', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  return c.json({ templates: TEMPLATES_META });
+});
+
+app.post('/api/site-config/:slug/template', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const slug = c.req.param('slug');
+  const { template: newTemplate } = await c.req.json();
+  if (!TEMPLATES_META.find(t => t.id === newTemplate)) {
+    return c.json({ error: 'invalid_template' }, 400);
+  }
+  await c.env.DB.prepare('UPDATE site_configs SET template = ?, theme = ?, updatedAt = ? WHERE slug = ?')
+    .bind(newTemplate, newTemplate, now(), slug).run();
+  return c.json({ ok: true, template: newTemplate });
+});
+
+/** Plan management: get current plan + available plans */
+app.get('/api/plan', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const userId = c.req.header('x-user-id') || '';
+  if (!userId) { c.status(401); return c.json({ error: 'unauthorized' }); }
+  const user = await c.env.DB.prepare('SELECT id, plan, email FROM users WHERE id = ?').bind(userId).first() as any;
+  if (!user) { c.status(404); return c.json({ error: 'user_not_found' }); }
+  return c.json({ currentPlan: user.plan || 'free', availablePlans: ['free', 'starter', 'pro', 'plus'] });
+});
+
+/** Plan management: change plan */
+app.post('/api/plan/change', async (c) => {
+  if (!requireAuth(c, c.env)) return;
+  const userId = c.req.header('x-user-id') || '';
+  const { plan: newPlan } = await c.req.json();
+  if (!userId) { c.status(401); return c.json({ error: 'unauthorized' }); }
+  if (!['free', 'starter', 'pro', 'plus'].includes(newPlan)) { c.status(400); return c.json({ error: 'invalid_plan' }); }
+  const user = await c.env.DB.prepare('SELECT id, plan FROM users WHERE id = ?').bind(userId).first() as any;
+  if (!user) { c.status(404); return c.json({ error: 'user_not_found' }); }
+  const ts = now();
+  await c.env.DB.prepare('UPDATE users SET plan = ?, updatedAt = ? WHERE id = ?').bind(newPlan, ts, userId).run();
+  await audit(c.env, 'plan_change', { userId, from: user.plan, to: newPlan });
+  return c.json({ ok: true, plan: newPlan });
 });
 
 // ---- Helpers for template routes ----

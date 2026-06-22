@@ -3,11 +3,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import FAQSchema from '../components/FAQSchema.astro';
 
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Tattoo Studio Management Software — InkFlow" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
+  <SEOHead slot="head" title="Tattoo Studio Management Software" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
+  <FAQSchema data={{ questions: [
+    { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
+    { question: "Can I accept deposits through InkFlow?", answer: "Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%." },
+    { question: "Does InkFlow work on iPad?", answer: "Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk." },
+    { question: "Can I have multiple artists on one account?", answer: "Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link." },
+    { question: "Can I import my existing client data?", answer: "Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms." },
+  ]}} />
   <Navbar />
 
   <!-- Hero -->
@@ -24,8 +32,8 @@ import Footer from '../components/Footer.astro';
             Trusted by 500+ studios worldwide
           </div>
           <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
-            Studio Management,<br />
-            <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Built for Tattoo</span>
+            Tattoo Studio Management<br />
+            <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Software for Your Shop</span>
           </h1>
           <p class="mt-6 text-lg text-gray-400 max-w-xl">
             Booking, deposits, waivers, CRM, POS, inventory, aftercare — one platform replaces five tools. Built by tattoo artists, for tattoo studios.
@@ -34,7 +42,7 @@ import Footer from '../components/Footer.astro';
             <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105 text-center">
               Start Free Trial
             </a>
-            <a href="/features/booking" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all text-center">
+            <a href="/features/tattoo-booking-software" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all text-center">
               See Features →
             </a>
           </div>
@@ -85,7 +93,7 @@ import Footer from '../components/Footer.astro';
       </div>
       <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         <!-- Booking -->
-        <a href="/features/booking" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-booking-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -104,7 +112,7 @@ import Footer from '../components/Footer.astro';
           </div>
         </a>
         <!-- Payments / Deposits -->
-        <a href="/features/payments" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-payment-processing" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
@@ -127,7 +135,7 @@ import Footer from '../components/Footer.astro';
           </div>
         </a>
         <!-- Waivers -->
-        <a href="/features/waivers" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-waiver-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -150,7 +158,7 @@ import Footer from '../components/Footer.astro';
           </div>
         </a>
         <!-- CRM -->
-        <a href="/features/crm" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-crm-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -174,7 +182,7 @@ import Footer from '../components/Footer.astro';
           </div>
         </a>
         <!-- Inventory -->
-        <a href="/features/inventory" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-inventory-management" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
@@ -201,7 +209,7 @@ import Footer from '../components/Footer.astro';
           </div>
         </a>
         <!-- Aftercare -->
-        <a href="/features/aftercare" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+        <a href="/features/tattoo-aftercare-software-automation" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
           <div class="p-6 pb-0">
             <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
@@ -263,44 +271,63 @@ import Footer from '../components/Footer.astro';
         <h2 class="text-3xl font-bold text-white sm:text-4xl">Simple Pricing</h2>
         <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you need more.</p>
       </div>
-      <div class="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
-        <div class="rounded-xl border border-ink-800 p-8 text-center">
+      <div class="grid gap-8 md:grid-cols-4 max-w-5xl mx-auto">
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
           <h3 class="text-lg font-semibold text-white">Free</h3>
           <p class="mt-2 text-4xl font-bold text-white">$0</p>
           <p class="mt-1 text-sm text-gray-400">Forever free</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400">
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
             <li>1 artist</li>
-            <li>Basic booking</li>
-            <li>Client management</li>
+            <li>Basic app tools</li>
+            <li>Local-only</li>
           </ul>
           <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
         </div>
-        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 text-center relative">
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
+          <h3 class="text-lg font-semibold text-white">Starter</h3>
+          <p class="mt-2 text-4xl font-bold text-white">$9.99</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$99.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Online booking</li>
+            <li>Digital waivers</li>
+            <li>Client CRM + cloud</li>
+            <li>SMS reminders</li>
+            <li>Free website page</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started</a>
+        </div>
+        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 text-center flex flex-col relative">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
           <h3 class="text-lg font-semibold text-white">Pro</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$29</p>
+          <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
           <p class="mt-1 text-sm text-gray-400">Per month</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400">
-            <li>Up to 10 artists</li>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$299.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Up to 5 artists</li>
             <li>Full features</li>
             <li>Digital waivers</li>
-            <li>SMS reminders</li>
+            <li>Unlimited SMS</li>
+            <li>Enhanced website</li>
           </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start Pro Trial</a>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start Free Trial</a>
         </div>
-        <div class="rounded-xl border border-ink-800 p-8 text-center">
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
           <h3 class="text-lg font-semibold text-white">Plus</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$49</p>
+          <p class="mt-2 text-4xl font-bold text-white">$49.99</p>
           <p class="mt-1 text-sm text-gray-400">Per month</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400">
-            <li>Everything in Pro</li>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$499.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Multi-location</li>
             <li>Custom domain</li>
             <li>Priority support</li>
             <li>Analytics dashboard</li>
+            <li>Unlimited website</li>
           </ul>
           <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Start Plus Trial</a>
         </div>
       </div>
+      <p class="mt-10 text-center"><a href="/pricing/" class="text-sm text-accent-400 hover:text-accent-300 transition-colors">See full pricing →</a></p>
     </div>
   </section>
 

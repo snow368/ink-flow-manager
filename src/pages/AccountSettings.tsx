@@ -175,18 +175,8 @@ export default function AccountSettings() {
       </div>
 
       {/* Plan */}
-      <div style={{ background: THEME.bg.card, padding: 14, borderRadius: 10, marginBottom: 12 }}>
-        <p style={{ fontSize: 11, color: THEME.text.muted, marginBottom: 4 }}>Plan</p>
-        <p style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>
-          {user.plan === 'solo' ? 'Solo' : user.plan === 'pro' ? 'Pro' : user.plan === 'pro_plus' ? 'Pro+' : 'Free'}
-        </p>
-        {(!user.plan || user.plan === 'free') && (
-          <button onClick={() => navigate('/pricing')}
-            style={{ marginTop: 4, padding: '10px 18px', borderRadius: 10, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-            {t(lang, 'view_plans')}
-          </button>
-        )}
-      </div>
+      <PlanSection user={user} setUser={setUser} lang={lang} navigate={navigate} />
+
 
       {/* Consumable Presets */}
       <ConsumablePresets lang={lang} />
@@ -371,6 +361,77 @@ function SectionHeader({ label }: { label: string }) {
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, marginTop: 4 }}>
       <span style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
       <div style={{ flex: 1, height: 1, background: '#1e293b' }} />
+    </div>
+  );
+}
+
+const PLAN_COLORS: Record<string, string> = { free: '#64748b', starter: '#6366f1', solo: '#6366f1', pro: '#2563eb', pro_plus: '#a855f7', plus: '#a855f7' };
+const PLAN_LABELS: Record<string, string> = { free: 'Free', starter: 'Starter', solo: 'Starter', pro: 'Pro', pro_plus: 'Plus', plus: 'Plus' };
+
+const ALL_PLANS = [
+  { id: 'free', name: 'Free', price: '$0', color: '#64748b', features: ['Manual client management', 'Local-only (no cloud)', 'Basic appointment booking'] },
+  { id: 'starter', name: 'Starter', price: '$9.99/mo', color: '#6366f1', features: ['Online booking widget', 'Digital waivers', 'Cloud sync', 'SMS/email reminders', '1 free website page', 'Payment links'] },
+  { id: 'pro', name: 'Pro', price: '$29.99/mo', color: '#2563eb', features: ['Everything in Starter', 'Up to 5 artists', 'Commission splitting', 'Aftercare automation', 'Inventory tracking', 'Enhanced website (10 pages)'], popular: true },
+  { id: 'plus', name: 'Plus', price: '$49.99/mo', color: '#a855f7', features: ['Everything in Pro', 'Multi-location', 'Unlimited artists', 'Custom domain', 'Priority support', 'No InkFlow branding'] },
+];
+
+function PlanSection({ user, setUser, lang, navigate }: { user: any; setUser: (u: any) => void; lang: any; navigate: any }) {
+  const currentPlan = user?.plan || 'free';
+  const [changing, setChanging] = useState(false);
+
+  async function changePlan(target: string) {
+    if (target === currentPlan) return;
+    setChanging(true);
+    try {
+      const backendUrl = getBackendUrl();
+      const secret = localStorage.getItem('inkflow_api_secret') || '';
+      const uid = localStorage.getItem('inkflow_current_user') || '';
+
+      const res = await fetch(`${backendUrl}/api/plan/change`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-secret': secret, 'x-user-id': uid },
+        body: JSON.stringify({ plan: target }),
+      });
+      if (res.ok) {
+        setUser({ ...user, plan: target });
+        localStorage.setItem('inkflow_current_user_data', JSON.stringify({ ...JSON.parse(localStorage.getItem('inkflow_current_user_data') || '{}'), plan: target }));
+      } else {
+        const err = await res.json();
+        alert(err.error || 'Plan change failed');
+      }
+    } catch (e: any) {
+      alert('Failed to change plan: ' + e.message);
+    }
+    setChanging(false);
+  }
+
+  return (
+    <div style={{ background: '#1e293b', borderRadius: 10, marginBottom: 12, padding: 14 }}>
+      <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>Plan</p>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {ALL_PLANS.map(plan => {
+          const isCurrent = plan.id === currentPlan || (plan.id === 'starter' && (currentPlan === 'solo'));
+          const isUpgrade = ['free', 'starter', 'solo'].indexOf(currentPlan) < ['free', 'starter', 'solo'].indexOf(plan.id);
+          return (
+            <div key={plan.id} onClick={() => !isCurrent && !changing && changePlan(plan.id)}
+              style={{
+                flex: '1 1 140px', padding: 12, borderRadius: 10, cursor: isCurrent ? 'default' : 'pointer',
+                border: `2px solid ${isCurrent ? plan.color : '#334155'}`,
+                background: isCurrent ? `${plan.color}15` : '#0f172a',
+                opacity: changing ? 0.5 : 1,
+                position: 'relative',
+              }}>
+              {plan.popular && <div style={{ position: 'absolute', top: -8, right: 8, background: plan.color, color: '#fff', fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 8 }}>POPULAR</div>}
+              <p style={{ fontSize: 13, fontWeight: 700, color: '#f0f0f0', marginBottom: 2 }}>{plan.name}</p>
+              <p style={{ fontSize: 11, color: plan.color, fontWeight: 600, marginBottom: 4 }}>{plan.price}</p>
+              {plan.features.slice(0, 3).map((f, i) => (
+                <p key={i} style={{ fontSize: 10, color: '#94a3b8', lineHeight: 1.4 }}>✓ {f}</p>
+              ))}
+              {isCurrent && <p style={{ fontSize: 9, color: plan.color, marginTop: 4, fontWeight: 600 }}>CURRENT</p>}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

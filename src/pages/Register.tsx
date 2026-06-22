@@ -13,6 +13,14 @@ export default function Register() {
   const upgradePlan = searchParams.get('upgrade') || '';
   const [mode, setMode] = useState<'register' | 'login'>('register');
   const [deviceId, setDeviceId] = useState('');
+
+  // 从 URL 参数读取 ?type=website&plan=website_basic
+  useEffect(() => {
+    const type = searchParams.get('type');
+    const plan = searchParams.get('plan');
+    if (type === 'website') setRegisterType('website');
+    if (plan) setSelectedPlan(plan);
+  }, []);
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +29,9 @@ export default function Register() {
   const [roles, setRoles] = useState<Array<'artist' | 'owner' | 'staff'>>(['artist']);
   const [studioName, setStudioName] = useState('');
   const [studioAddress, setStudioAddress] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState('free');
+  const [registerType, setRegisterType] = useState<'app' | 'website'>('app');
+  const [selectedTheme, setSelectedTheme] = useState('minimal');
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
   const navigatedRef = useRef(false);  /* prevent button flash on redirect */
@@ -161,7 +172,7 @@ export default function Register() {
           const serverRes = await fetch(`${backendUrl}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, name, passwordHash, studioName, roles, deviceId }),
+            body: JSON.stringify({ email, name, passwordHash, studioName, roles, deviceId, plan: selectedPlan, registerType, siteTemplate: registerType === 'website' ? selectedTheme : undefined }),
           });
           if (serverRes.ok) {
             serverOk = true;
@@ -177,8 +188,8 @@ export default function Register() {
         localStorage.setItem('inkflow_current_user', userId);
         try {
           localStorage.setItem('inkflow_current_user_data', JSON.stringify({
-            id: userId, email, name, roles, plan: upgradePlan || 'free',
-            studioName: studioName.trim() || '', createdAt: now,
+            id: userId, email, name, roles, plan: selectedPlan, registerType,
+            siteTheme: selectedTheme, studioName: studioName.trim() || '', createdAt: now,
           }));
         } catch { /* ok */ }
       }
@@ -186,7 +197,7 @@ export default function Register() {
       /* 🚀 REDIRECT FIRST — before any IndexedDB ops (Safari may hang on IndexedDB) */
       clearTimeout(timeout);
       navigatedRef.current = true;
-      const targetUrl = upgradePlan === 'pro_plus' ? '/pro-plus-setup' : '/today?welcome=1';
+      const targetUrl = registerType === 'website' ? '/website-wizard?welcome=1' : (upgradePlan === 'pro_plus' ? '/pro-plus-setup' : '/today?welcome=1');
       window.location.href = targetUrl;
     } catch (err) {
       clearTimeout(timeout);
@@ -279,6 +290,157 @@ export default function Register() {
           <input placeholder="Studio name *" value={studioName} onChange={e => setStudioName(e.target.value)} style={inputStyle} />
           <input placeholder="Studio address (city, country) *" value={studioAddress} onChange={e => setStudioAddress(e.target.value)} style={inputStyle} />
         </div>
+      )}
+
+      {mode === 'register' && (
+        <>
+        {/* Product type toggle: App vs Website Only */}
+        <div style={{ marginBottom: 12 }}>
+          <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>I want</p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div onClick={() => setRegisterType('app')} style={{
+              flex: 1, padding: '10px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
+              border: `2px solid ${registerType === 'app' ? '#6366f1' : '#334155'}`,
+              background: registerType === 'app' ? '#6366f115' : '#1e293b',
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#f0f0f0' }}>Studio App</p>
+              <p style={{ fontSize: 9, color: '#94a3b8' }}>Booking, CRM, payments</p>
+            </div>
+            <div onClick={() => setRegisterType('website')} style={{
+              flex: 1, padding: '10px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
+              border: `2px solid ${registerType === 'website' ? '#6366f1' : '#334155'}`,
+              background: registerType === 'website' ? '#6366f115' : '#1e293b',
+            }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#f0f0f0' }}>Website Only</p>
+              <p style={{ fontSize: 9, color: '#94a3b8' }}>Tattoo shop landing page</p>
+            </div>
+          </div>
+        </div>
+
+        {/* App plans */}
+        {registerType === 'app' && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose your plan</p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {[
+                { id: 'free', name: 'Free', price: '$0', color: '#64748b', desc: 'Basic app tools, local-only' },
+                { id: 'starter', name: 'Starter', price: '$9.99/mo', color: '#6366f1', desc: 'Full app + 1 website page' },
+                { id: 'pro', name: 'Pro', price: '$29.99/mo', color: '#2563eb', desc: 'Up to 5 artists + website', popular: true },
+                { id: 'plus', name: 'Plus', price: '$49.99/mo', color: '#a855f7', desc: 'Unlimited everything' },
+              ].map(p => {
+                const isSelected = selectedPlan === p.id;
+                return (
+                  <div key={p.id} onClick={() => setSelectedPlan(p.id)}
+                    style={{
+                      flex: '1 1 110px', padding: 10, borderRadius: 10, cursor: 'pointer',
+                      border: `2px solid ${isSelected ? p.color : '#334155'}`,
+                      background: isSelected ? `${p.color}15` : '#1e293b',
+                      position: 'relative', textAlign: 'center',
+                    }}>
+                    {p.popular && <div style={{ position: 'absolute', top: -8, right: 6, background: p.color, color: '#fff', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 6 }}>POPULAR</div>}
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#f0f0f0' }}>{p.name}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: p.color }}>{p.price}</p>
+                    <p style={{ fontSize: 9, color: '#94a3b8' }}>{p.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Website Only plans */}
+        {registerType === 'website' && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose website plan</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[
+                { id: 'website_basic', name: 'Website Basic', price: '$4.99/mo', color: '#64748b', desc: '1 page, all templates' },
+                { id: 'website_pro', name: 'Website Pro', price: '$9.99/mo', color: '#a855f7', desc: 'Multi-page, custom domain', popular: true },
+              ].map(p => {
+                const isSelected = selectedPlan === p.id;
+                return (
+                  <div key={p.id} onClick={() => setSelectedPlan(p.id)}
+                    style={{
+                      flex: 1, padding: 10, borderRadius: 10, cursor: 'pointer',
+                      border: `2px solid ${isSelected ? p.color : '#334155'}`,
+                      background: isSelected ? `${p.color}15` : '#1e293b',
+                      position: 'relative', textAlign: 'center',
+                    }}>
+                    {p.popular && <div style={{ position: 'absolute', top: -8, right: 6, background: p.color, color: '#fff', fontSize: 8, fontWeight: 700, padding: '2px 6px', borderRadius: 6 }}>POPULAR</div>}
+                    <p style={{ fontSize: 11, fontWeight: 700, color: '#f0f0f0' }}>{p.name}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: p.color }}>{p.price}</p>
+                    <p style={{ fontSize: 9, color: '#94a3b8' }}>{p.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Template picker (shown for both app+website and website-only) */}
+        {registerType === 'website' && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose a template</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, maxHeight: 300, overflowY: 'auto' }}>
+              {[
+                { name: 'Minimal', key: 'minimal', primary: '#1a1a1a', bg: '#ffffff', tier: 'free' },
+                { name: 'Traditional', key: 'traditional', primary: '#c41e1e', bg: '#0a0a0a', tier: 'free' },
+                { name: 'Vintage', key: 'vintage', primary: '#8b4513', bg: '#f5f0e8', tier: 'free' },
+                { name: 'Moody', key: 'moody', primary: '#b8860b', bg: '#0d0d0d', tier: 'free' },
+                { name: 'Edgy', key: 'edgy', primary: '#ff0066', bg: '#0a0a0a', tier: 'pro' },
+                { name: 'Studio', key: 'studio', primary: '#d4a574', bg: '#f8f8f8', tier: 'pro' },
+                { name: 'Brutalist', key: 'brutalist', primary: '#ffffff', bg: '#000000', tier: 'pro' },
+                { name: 'Nature', key: 'nature', primary: '#4a8c3f', bg: '#0f1a0e', tier: 'pro' },
+                { name: 'Royal', key: 'royal', primary: '#7c3aed', bg: '#0e0a1a', tier: 'pro' },
+                { name: 'Neon', key: 'neon', primary: '#00ffff', bg: '#0a0a12', tier: 'pro' },
+                { name: 'Japanese', key: 'japanese', primary: '#cc3300', bg: '#0f0a08', tier: 'pro' },
+                { name: 'Cyberpunk', key: 'cyberpunk', primary: '#ff00aa', bg: '#0a0515', tier: 'pro' },
+                { name: 'Sunset', key: 'sunset', primary: '#ff6622', bg: '#1a0e0a', tier: 'pro' },
+                { name: 'Sakura', key: 'sakura', primary: '#e86a8a', bg: '#1a1018', tier: 'pro' },
+                { name: 'Punk', key: 'punk', primary: '#ffee00', bg: '#0a0a0a', tier: 'pro' },
+                { name: 'Neonoir', key: 'neonoir', primary: '#ff2244', bg: '#080808', tier: 'pro' },
+                { name: 'Midnight', key: 'midnight', primary: '#4a80d0', bg: '#080c14', tier: 'free' },
+                { name: 'Botanical', key: 'botanical', primary: '#5a9e6a', bg: '#0f1a12', tier: 'free' },
+                { name: 'Arctic', key: 'arctic', primary: '#2a7aaa', bg: '#e8f0f5', tier: 'free' },
+                { name: 'Desert', key: 'desert', primary: '#c4783a', bg: '#e8e0d0', tier: 'free' },
+                { name: 'Tribal', key: 'tribal', primary: '#d4d4d4', bg: '#050505', tier: 'free' },
+                { name: 'Lavender', key: 'lavender', primary: '#8a6aca', bg: '#f0ecf5', tier: 'free' },
+                { name: 'Industrial', key: 'industrial', primary: '#4682b4', bg: '#121212', tier: 'plus' },
+                { name: 'Watercolor', key: 'watercolor', primary: '#e88d9a', bg: '#f8f4f0', tier: 'plus' },
+                { name: 'Gothic', key: 'gothic', primary: '#800020', bg: '#0a0808', tier: 'plus' },
+                { name: 'Coastal', key: 'coastal', primary: '#2a8a8a', bg: '#f0f5f5', tier: 'plus' },
+                { name: 'Urban', key: 'urban', primary: '#ff6600', bg: '#0a0a0a', tier: 'plus' },
+                { name: 'Metallic', key: 'metallic', primary: '#9a9aaa', bg: '#0e0e10', tier: 'plus' },
+                { name: 'Steampunk', key: 'steampunk', primary: '#b8862a', bg: '#14100a', tier: 'plus' },
+                { name: 'Celestial', key: 'celestial', primary: '#c8a040', bg: '#080818', tier: 'plus' },
+              ].map(t => {
+                const isSelected = selectedTheme === t.key;
+                return (
+                  <div key={t.key} onClick={() => setSelectedTheme(t.key)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
+                      borderRadius: 8, cursor: 'pointer',
+                      border: `2px solid ${isSelected ? t.primary : '#334155'}`,
+                      background: isSelected ? `${t.primary}20` : '#1e293b',
+                    }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 6, flexShrink: 0,
+                      background: `linear-gradient(135deg, ${t.bg} 50%, ${t.primary} 50%)`,
+                      border: '1px solid #ffffff20',
+                    }} />
+                    <div>
+                      <p style={{ fontSize: 11, fontWeight: 600, color: '#f0f0f0' }}>{t.name}</p>
+                      <p style={{ fontSize: 9, color: t.tier === 'free' ? '#34d399' : t.tier === 'pro' ? '#6366f1' : '#a855f7' }}>
+                        {t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        </>
       )}
 
       <button

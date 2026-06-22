@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f0f1a"/><stop offset="100%" stop-color="#1a1a2e"/></linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <!-- Email icons -->
+  <g transform="translate(600,280)" opacity="0.12">
+    <rect x="-100" y="-80" width="200" height="160" rx="8" fill="none" stroke="#6366f1" stroke-width="2"/>
+    <line x1="-100" y1="-60" x2="0" y2="10" stroke="#6366f1" stroke-width="1.5"/>
+    <line x1="0" y1="10" x2="100" y2="-60" stroke="#6366f1" stroke-width="1.5"/>
+  </g>
+  <!-- Email 1 -->
+  <g transform="translate(380,270)">
+    <rect x="0" y="0" width="160" height="100" rx="6" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+    <rect x="10" y="8" width="140" height="10" rx="3" fill="#6366f1" opacity="0.2"/>
+    <rect x="10" y="25" width="100" height="6" rx="2" fill="#6366f1" opacity="0.15"/>
+    <rect x="10" y="37" width="80" height="6" rx="2" fill="#6366f1" opacity="0.15"/>
+    <rect x="10" y="55" width="120" height="4" rx="2" fill="#6366f1" opacity="0.1"/>
+    <rect x="10" y="63" width="90" height="4" rx="2" fill="#6366f1" opacity="0.1"/>
+    <circle cx="80" cy="85" r="8" fill="none" stroke="#6366f1" stroke-width="1" opacity="0.3"/>
+  </g>
+  <!-- Arrow -->
+  <g transform="translate(560,310)">
+    <polygon points="0,-8 25,0 0,8" fill="#6366f1" opacity="0.4"/>
+  </g>
+  <!-- Email 2 -->
+  <g transform="translate(600,270)">
+    <rect x="0" y="0" width="160" height="100" rx="6" fill="none" stroke="#8b5cf6" stroke-width="1.5" opacity="0.5"/>
+    <rect x="10" y="8" width="140" height="10" rx="3" fill="#8b5cf6" opacity="0.2"/>
+    <rect x="10" y="25" width="100" height="6" rx="2" fill="#8b5cf6" opacity="0.15"/>
+    <rect x="10" y="37" width="80" height="6" rx="2" fill="#8b5cf6" opacity="0.15"/>
+    <rect x="10" y="55" width="120" height="4" rx="2" fill="#8b5cf6" opacity="0.1"/>
+    <rect x="10" y="63" width="90" height="4" rx="2" fill="#8b5cf6" opacity="0.1"/>
+    <circle cx="80" cy="85" r="8" fill="#8b5cf6" opacity="0.3"/>
+  </g>
+  <!-- Arrow 2 -->
+  <g transform="translate(780,310)">
+    <polygon points="0,-8 25,0 0,8" fill="#8b5cf6" opacity="0.4"/>
+  </g>
+  <!-- Email 3 -->
+  <g transform="translate(820,270)">
+    <rect x="0" y="0" width="160" height="100" rx="6" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.5"/>
+    <rect x="10" y="8" width="140" height="10" rx="3" fill="#10b981" opacity="0.2"/>
+    <rect x="10" y="25" width="100" height="6" rx="2" fill="#10b981" opacity="0.15"/>
+    <rect x="10" y="37" width="80" height="6" rx="2" fill="#10b981" opacity="0.15"/>
+    <rect x="10" y="55" width="120" height="4" rx="2" fill="#10b981" opacity="0.1"/>
+    <rect x="10" y="63" width="90" height="4" rx="2" fill="#10b981" opacity="0.1"/>
+    <circle cx="80" cy="85" r="8" fill="#10b981" opacity="0.3"/>
+  </g>
+  <!-- Timeline dots -->
+  <text x="600" y="450" text-anchor="middle" fill="white" font-size="14" font-family="system-ui" opacity="0.4">Day 1 ——— Day 3 ——— Day 7 ——— Day 14</text>
+  <text x="600" y="480" text-anchor="middle" fill="white" font-size="36" font-weight="700" font-family="system-ui">Aftercare Email Automation</text>
+  <text x="600" y="515" text-anchor="middle" fill="#9ca3af" font-size="18" font-family="system-ui">Automated healing check-ins &amp; review requests</text>
+</svg>

@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  publishedDate: string;
+  author?: string;
+  image?: string;
+  tags?: string[];
+}
+
+const { title, description, publishedDate, author = "InkFlow Team", image = "https://ink-flows.com/images/hero-screenshot-2.png", tags = [] } = Astro.props;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "datePublished": publishedDate,
+  "author": {
+    "@type": "Organization",
+    "name": author,
+    "url": "https://ink-flows.com"
+  },
+  "image": image,
+  "publisher": {
+    "@type": "Organization",
+    "name": "InkFlow",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://ink-flows.com/icons/icon-512.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": Astro.url.href
+  },
+  ...(tags.length > 0 && { "keywords": tags.join(", ") })
+})} />

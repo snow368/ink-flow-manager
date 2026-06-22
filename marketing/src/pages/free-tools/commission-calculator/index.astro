@@ -1,0 +1,321 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SEOHead from '../../../components/SEOHead.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import FAQSchema from '../../../components/FAQSchema.astro';
+---
+
+<BaseLayout pageTitle="Tattoo Artist Commission Calculator">
+  <SEOHead slot="head" title="Tattoo Artist Commission Calculator — Free Tool" description="Calculate tattoo artist commissions instantly. Free interactive calculator for 60/40, 70/30, and custom splits. See earnings per session, week, and month." />
+  <Navbar />
+
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Artist Commission Calculator</h1>
+      <p class="mt-4 text-lg text-gray-400">Calculate artist commissions instantly. Compare different split models and see what you (or your artists) take home per session, week, and month.</p>
+    </div>
+  </section>
+
+  <section class="pb-12">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-ink-700 bg-ink-900/50 p-6 sm:p-8">
+        <h2 class="text-xl font-bold text-white mb-6">Commission Calculator</h2>
+
+        <div class="space-y-5">
+          <!-- Session price -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Average Session Price ($)</label>
+            <input id="cc-price" type="number" value="200" min="20" max="5000" step="10"
+              class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+          </div>
+
+          <!-- Commission model -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Commission Split</label>
+            <select id="cc-split" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              <option value="50">50/50 — Apprentice / New Artist</option>
+              <option value="60" selected>60/40 — Standard (Artist 60%)</option>
+              <option value="65">65/35 — Experienced Artist</option>
+              <option value="70">70/30 — Top Artist</option>
+              <option value="75">75/25 — Senior / High Demand</option>
+              <option value="0">Custom — Enter artist % below</option>
+            </select>
+          </div>
+
+          <!-- Custom artist % -->
+          <div id="cc-custom-wrap" class="hidden">
+            <label class="block text-sm font-medium text-gray-300 mb-2">Artist Percentage (%)</label>
+            <input id="cc-custom" type="number" value="60" min="10" max="95" step="1"
+              class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+          </div>
+
+          <!-- Sessions per week -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Sessions per Week</label>
+            <select id="cc-sessions" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              <option value="1">1 session/week (part time)</option>
+              <option value="3" selected>3 sessions/week (average)</option>
+              <option value="5">5 sessions/week (full time)</option>
+              <option value="8">8 sessions/week (busy)</option>
+              <option value="12">12+ sessions/week (booked solid)</option>
+            </select>
+          </div>
+
+          <!-- Supply deduction -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Supply Deduction</label>
+            <select id="cc-supply" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              <option value="0">Studio covers supplies</option>
+              <option value="15">Artist covers supplies (~$15/session)</option>
+              <option value="25">Artist covers supplies (~$25/session, premium)</option>
+            </select>
+          </div>
+
+          <!-- Number of artists (studio view) -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">Number of Artists (studio total)</label>
+            <select id="cc-artists" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              <option value="1" selected>1 (solo artist)</option>
+              <option value="2">2 artists</option>
+              <option value="3">3 artists</option>
+              <option value="5">5 artists</option>
+              <option value="8">8 artists</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="cc-calc" class="mt-6 w-full rounded-lg bg-accent-500 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+          Calculate Commission
+        </button>
+
+        <!-- Results -->
+        <div id="cc-results" class="mt-6 hidden space-y-5">
+
+          <!-- Visual split bar -->
+          <div class="rounded-lg bg-ink-800/40 p-4">
+            <p class="text-xs text-gray-500 mb-3 text-center">SPLIT BREAKDOWN</p>
+            <div class="flex h-8 rounded-lg overflow-hidden" id="cc-split-bar">
+              <div id="cc-bar-artist" class="bg-green-500/60 flex items-center justify-center text-xs font-bold text-white transition-all duration-500" style="width: 60%">Artist 60%</div>
+              <div id="cc-bar-studio" class="bg-accent-500/60 flex items-center justify-center text-xs font-bold text-white transition-all duration-500" style="width: 40%">Studio 40%</div>
+            </div>
+          </div>
+
+          <!-- Per session -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="rounded-lg bg-ink-800/50 p-4 text-center border border-green-500/20">
+              <p class="text-xs text-gray-400">Artist Earns / Session</p>
+              <p id="cc-artist-session" class="text-2xl font-bold text-green-400">$0</p>
+              <p class="text-[10px] text-gray-600 mt-1 after supply">after supply deduction</p>
+            </div>
+            <div class="rounded-lg bg-ink-800/50 p-4 text-center border border-accent-500/20">
+              <p class="text-xs text-gray-400">Studio Earns / Session</p>
+              <p id="cc-studio-session" class="text-2xl font-bold text-accent-400">$0</p>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="rounded-lg bg-ink-800/30 p-4">
+            <p class="text-xs text-gray-500 mb-3 text-center">PROJECTED EARNINGS</p>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="text-center">
+                <p class="text-[10px] text-gray-500">Artist / Week</p>
+                <p id="cc-artist-week" class="text-lg font-bold text-green-400">$0</p>
+              </div>
+              <div class="text-center border-x border-ink-700">
+                <p class="text-[10px] text-gray-500">Artist / Month</p>
+                <p id="cc-artist-month" class="text-lg font-bold text-green-400">$0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-[10px] text-gray-500">Artist / Year</p>
+                <p id="cc-artist-year" class="text-lg font-bold text-green-400">$0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Studio summary -->
+          <div class="rounded-lg bg-gradient-to-r from-accent-500/10 to-amber-500/10 border border-accent-500/20 p-4 text-center">
+            <p class="text-xs text-gray-400">Studio Monthly Commission Revenue</p>
+            <p id="cc-studio-month" class="text-2xl font-bold text-accent-400">$0</p>
+            <p class="text-[10px] text-gray-600 mt-1">from <span id="cc-artist-count">1</span> artist(s)</p>
+          </div>
+
+          <!-- CTA after results -->
+          <div class="pt-2 space-y-2">
+            <p class="text-xs text-gray-500 text-center">Want to automate this? No more spreadsheet math.</p>
+            <a href="https://app.ink-flows.com/register" class="block w-full rounded-lg bg-accent-500 py-3 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+              Start Free Trial — Automate Your Commissions
+            </a>
+            <div class="flex gap-2 text-xs">
+              <a href="/blog/multi-artist-commission-tracking" class="flex-1 rounded-lg border border-ink-700 py-2 text-center text-gray-400 hover:border-accent-500/30 hover:text-accent-300 transition-all">
+                Read Commission Guide →
+              </a>
+              <a href="/features/tattoo-payment-processing" class="flex-1 rounded-lg border border-ink-700 py-2 text-center text-gray-400 hover:border-accent-500/30 hover:text-accent-300 transition-all">
+                See POS Features →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Use -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+      <h2>How to Use This Calculator</h2>
+      <p>Enter your average session price, choose a commission split, and see what both the artist and studio earn. Adjust the sliders to compare different models — for example, a 70/30 split with an experienced artist vs a 50/50 split with an apprentice.</p>
+
+      <h3>What's a Standard Commission Split?</h3>
+      <p>The most common commission split in tattoo studios is <strong>60/40 (artist keeps 60%)</strong>. However, splits vary based on experience, what the studio provides, and local market rates.</p>
+      <ul>
+        <li><strong>50/50:</strong> Common for apprentices or artists who bring limited clientele</li>
+        <li><strong>60/40:</strong> Industry standard for established artists</li>
+        <li><strong>70/30:</strong> For experienced artists with strong followings</li>
+        <li><strong>75/25:</strong> Senior artists or specialists (high demand)</li>
+      </ul>
+
+      <h3>What Gets Deducted Before Commission?</h3>
+      <p>Most studios deduct supply costs before calculating commission. Common deductions include ink, needles, gloves, disposables, and credit card processing fees. Some studios also charge a flat "shop fee" per session.</p>
+      <p><a href="/features/tattoo-payment-processing" class="text-accent-400 hover:underline">InkFlow's POS system</a> handles all these deductions automatically — no spreadsheet math required.</p>
+
+      <h3>Compare: Manual vs Automated Commission Tracking</h3>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-ink-700">
+            <th class="text-left py-2 pr-4"></th>
+            <th class="text-left py-2 pr-4">Spreadsheets</th>
+            <th class="text-left py-2 pr-4">InkFlow (Automated)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">Time per week</td>
+            <td class="py-2 pr-4">2-3 hours</td>
+            <td class="py-2 pr-4 text-green-400">2 minutes</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">Error rate</td>
+            <td class="py-2 pr-4">5-10%</td>
+            <td class="py-2 pr-4 text-green-400">&lt;0.1%</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">Supply deduction</td>
+            <td class="py-2 pr-4">Manual entry</td>
+            <td class="py-2 pr-4 text-green-400">Automatic</td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-4">Per-artist rates</td>
+            <td class="py-2 pr-4">Complex formulas</td>
+            <td class="py-2 pr-4 text-green-400">Set once</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="mt-4">For a deeper dive into commission structures, read our <a href="/blog/multi-artist-commission-tracking" class="text-accent-400 hover:underline">Multi-Artist Commission Tracking guide</a>.</p>
+
+      <h2>FAQ</h2>
+
+      <h3>What's the difference between commission split and booth rent?</h3>
+      <p>In a commission split, the artist earns a percentage of each session and the studio covers overhead (supplies, front desk, marketing). In booth rent, the artist pays a flat fee and keeps 100% of earnings but covers their own supplies and marketing.</p>
+
+      <h3>How do I choose the right commission split?</h3>
+      <p>Consider the artist's experience, their existing client base, what the studio provides (supplies, booking, marketing, front desk), and local market rates. Use this calculator to model different scenarios.</p>
+
+      <h3>Should tips be included in commission?</h3>
+      <p>This is a studio policy decision. Some studios let artists keep 100% of tips, others include tips in the commission calculation. Whatever you choose, be transparent and consistent.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "What's the difference between commission split and booth rent?", answer: "In a commission split, the artist earns a percentage and the studio covers overhead. In booth rent, the artist pays a flat fee and keeps 100% but covers their own costs." },
+      { question: "How do I choose the right commission split?", answer: "Consider the artist's experience, their existing client base, what the studio provides, and local market rates." },
+      { question: "Should tips be included in tattoo commission?", answer: "Depends on studio policy. Some let artists keep 100% of tips, others include tips in commission. Be transparent and consistent." },
+    ]}
+  />
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 to-transparent p-8">
+        <h2 class="text-2xl font-bold text-white">Automate Your Commission Tracking</h2>
+        <p class="mt-2 text-gray-400">Stop using spreadsheets. InkFlow calculates commissions automatically — per artist, per session, per product.</p>
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+            Start Free Trial →
+          </a>
+          <a href="/features/tattoo-payment-processing" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+            See POS & Commissions
+          </a>
+        </div>
+        <div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
+          <span>✓ No credit card</span>
+          <span>✓ Free plan for solo artists</span>
+          <span>✓ Per-artist rates</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  function calcCommission() {
+    const price = parseFloat(document.getElementById('cc-price').value) || 200;
+    let splitPct = parseInt(document.getElementById('cc-split').value);
+    if (splitPct === 0) splitPct = parseInt(document.getElementById('cc-custom').value) || 60;
+    const sessions = parseInt(document.getElementById('cc-sessions').value) || 3;
+    const supply = parseInt(document.getElementById('cc-supply').value) || 0;
+    const artists = parseInt(document.getElementById('cc-artists').value) || 1;
+
+    const artistPct = splitPct / 100;
+    const studioPct = 1 - artistPct;
+
+    const artistPerSession = (price - supply) * artistPct;
+    const studioPerSession = (price - supply) * studioPct;
+
+    const artistPerWeek = artistPerSession * sessions;
+    const artistPerMonth = artistPerWeek * 4.3;
+    const artistPerYear = artistPerMonth * 12;
+    const studioPerMonth = studioPerSession * sessions * 4.3 * artists;
+
+    // Update numbers
+    document.getElementById('cc-artist-session').textContent = '$' + artistPerSession.toFixed(0);
+    document.getElementById('cc-studio-session').textContent = '$' + studioPerSession.toFixed(0);
+    document.getElementById('cc-artist-week').textContent = '$' + artistPerWeek.toFixed(0);
+    document.getElementById('cc-artist-month').textContent = '$' + artistPerMonth.toFixed(0);
+    document.getElementById('cc-artist-year').textContent = '$' + artistPerYear.toFixed(0);
+    document.getElementById('cc-studio-month').textContent = '$' + studioPerMonth.toFixed(0);
+    document.getElementById('cc-artist-count').textContent = artists;
+
+    // Update visual bar
+    document.getElementById('cc-bar-artist').style.width = artistPct * 100 + '%';
+    document.getElementById('cc-bar-artist').textContent = 'Artist ' + Math.round(artistPct * 100) + '%';
+    document.getElementById('cc-bar-studio').style.width = studioPct * 100 + '%';
+    document.getElementById('cc-bar-studio').textContent = 'Studio ' + Math.round(studioPct * 100) + '%';
+
+    // Scroll to results smoothly
+    document.getElementById('cc-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    document.getElementById('cc-results').classList.remove('hidden');
+  }
+
+  // Calculate on button click
+  document.getElementById('cc-calc')?.addEventListener('click', calcCommission);
+
+  // Auto-calculate on any input change
+  document.querySelectorAll('#cc-price, #cc-split, #cc-custom, #cc-sessions, #cc-supply, #cc-artists').forEach(el => {
+    el.addEventListener('change', calcCommission);
+    el.addEventListener('input', calcCommission);
+  });
+
+  // Show/hide custom field
+  document.getElementById('cc-split')?.addEventListener('change', function() {
+    document.getElementById('cc-custom-wrap').classList.toggle('hidden', this.value !== '0');
+  });
+
+  // Auto-calculate on load
+  document.addEventListener('DOMContentLoaded', calcCommission);
+</script>

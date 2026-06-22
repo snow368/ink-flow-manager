@@ -4,29 +4,46 @@ import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import PageSchema from '../components/PageSchema.astro';
-import Breadcrumb from '../components/Breadcrumb.astro';
+import FAQSchema from '../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="InkFlow Pricing — Free, Solo $9.9, Pro $29.99 | Tattoo Studio Software" description="Free for solo artists. Solo $9.9/mo, Pro $29.99/mo for studios, Plus for multi-location. Start free, upgrade when you grow." />
+  <SEOHead slot="head" title="InkFlow Pricing — Free, Starter $9.99, Pro $29.99, Plus $49.99 | Tattoo Studio Software" description="Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo for multi-location. Annual plans available. Start free, upgrade when you grow." />
   <PageSchema type="software" data={{
-    description: "Tattoo studio management software. Free forever, Solo $9.9/mo, Pro $29.99/mo, Plus from $29.99/mo.",
+    description: "Tattoo studio management software. Free forever, Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
     offers: { price: "0", currency: "USD" },
     aggregateRating: { value: "4.8", count: "127" },
   }} />
+  <!-- Pricing offers schema (all plans) -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "InkFlow Plans",
+    "brand": { "@type": "Brand", "name": "InkFlow" },
+    "description": "Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
+    "offers": [
+      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "USD", "description": "Forever free for 1 artist, basic manual tools" },
+      { "@type": "Offer", "name": "Starter", "price": "9.99", "priceCurrency": "USD", "description": "Online booking, digital waivers, CRM, SMS reminders, free website page" },
+      { "@type": "Offer", "name": "Pro", "price": "29.99", "priceCurrency": "USD", "description": "Up to 5 artists, commission splitting, aftercare automation, inventory, 10-page website" },
+      { "@type": "Offer", "name": "Plus", "price": "49.99", "priceCurrency": "USD", "description": "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
+    ]
+  })} />
+  <FAQSchema data={{ questions: [
+    { question: "Is there a free plan?", answer: "Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience." },
+    { question: "What is the difference between Free and Starter?", answer: "Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection." },
+    { question: "Can I switch plans later?", answer: "Yes. Upgrade or downgrade anytime. Upgrades take effect immediately, downgrades at the next billing cycle." },
+    { question: "What is included in the beta period?", answer: "During beta testing, all features are free on every plan. No payment needed. We will notify you before the official launch." },
+    { question: "How does multi-shop pricing work on Plus?", answer: "First shop is $29.99/mo. Each additional shop is $15/mo. All locations managed from one dashboard with cross-shop analytics." },
+  ]}} />
   <Navbar />
 
   <!-- HERO -->
   <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <Breadcrumb items={[
-        { label: 'Home', href: '/' },
-        { label: 'Pricing' },
-      ]} />
       <p class="text-sm font-semibold text-accent-400 mb-3">PRICING</p>
       <div class="inline-block rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-1.5 text-xs text-accent-400 mb-4">🚀 内测期间全部功能免费 · 提建议送3个月Pro</div>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free for Solo Artists. Upgrade When You Grow.</h1>
-      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">正式定价如下。内测期间所有功能免费使用。升级到 Solo、Pro 或 Plus 在正式上线后才需要。</p>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">正式定价如下。内测期间所有功能免费使用。升级到 Starter、Pro 或 Plus 在正式上线后才需要。</p>
     </div>
   </section>
 
@@ -49,11 +66,12 @@ import Breadcrumb from '../components/Breadcrumb.astro';
           <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
         </div>
 
-        <!-- SOLO -->
+        <!-- STARTER -->
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8 flex flex-col">
-          <h2 class="text-lg font-semibold text-white">Solo</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$9.9</p>
+          <h2 class="text-lg font-semibold text-white">Starter</h2>
+          <p class="mt-2 text-4xl font-bold text-white">$9.99</p>
           <p class="mt-1 text-sm text-gray-400">Per month — 1 artist</p>
+          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$99.99</strong>/year <span class="text-accent-400">(save $19.89)</span></p>
           <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Online booking widget</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Digital waivers</li>
@@ -61,8 +79,9 @@ import Breadcrumb from '../components/Breadcrumb.astro';
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> SMS & email reminders</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Deposit collection</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Payment links</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Free website page</strong> — basic listing</li>
           </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Upgrade to Solo</a>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Upgrade to Starter</a>
         </div>
 
         <!-- PRO -->
@@ -71,13 +90,15 @@ import Breadcrumb from '../components/Breadcrumb.astro';
           <h2 class="text-lg font-semibold text-white">Pro</h2>
           <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
           <p class="mt-1 text-sm text-gray-400">Per month — 1 shop, up to 5 artists</p>
+          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$299.99</strong>/year <span class="text-accent-400">(save $59.89)</span></p>
           <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Solo</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Starter</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Up to 5 artist accounts</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Commission splitting</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Aftercare automation</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Inventory tracking</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Staff management</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Enhanced website</strong> — 10 pages, all templates</li>
           </ul>
           <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg bg-accent-500 py-2.5 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Upgrade to Pro</a>
         </div>
@@ -85,8 +106,9 @@ import Breadcrumb from '../components/Breadcrumb.astro';
         <!-- PLUS -->
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8 flex flex-col">
           <h2 class="text-lg font-semibold text-white">Plus</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
+          <p class="mt-2 text-4xl font-bold text-white">$49.99</p>
           <p class="mt-1 text-sm text-gray-400">First shop + $15/additional</p>
+          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$499.99</strong>/year <span class="text-accent-400">(save $99.89)</span></p>
           <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Pro</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Multi-location management</li>
@@ -94,13 +116,14 @@ import Breadcrumb from '../components/Breadcrumb.astro';
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Priority support</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Unlimited pages</strong> — custom domain, no branding</li>
           </ul>
           <div class="mt-6">
             <p class="text-xs text-gray-500 mb-2">Multi-shop pricing:</p>
             <div class="space-y-1 text-xs text-gray-400">
-              <p>2 shops → <strong class="text-white">$44.99</strong>/mo</p>
-              <p>3 shops → <strong class="text-white">$59.99</strong>/mo</p>
-              <p>5 shops → <strong class="text-white">$89.99</strong>/mo</p>
+              <p>2 shops → <strong class="text-white">$64.99</strong>/mo</p>
+              <p>3 shops → <strong class="text-white">$79.99</strong>/mo</p>
+              <p>5 shops → <strong class="text-white">$109.99</strong>/mo</p>
             </div>
           </div>
           <a href="https://app.ink-flows.com/register" class="mt-5 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Upgrade to Plus</a>
@@ -120,7 +143,7 @@ import Breadcrumb from '../components/Breadcrumb.astro';
             <tr class="border-b border-ink-800">
               <th class="pb-4 pr-4 font-medium">Feature</th>
               <th class="pb-4 pr-4 font-medium text-center">Free</th>
-              <th class="pb-4 pr-4 font-medium text-center">Solo</th>
+              <th class="pb-4 pr-4 font-medium text-center">Starter</th>
               <th class="pb-4 pr-4 font-medium text-center text-accent-400">Pro</th>
               <th class="pb-4 font-medium text-center">Plus</th>
             </tr>
@@ -139,8 +162,8 @@ import Breadcrumb from '../components/Breadcrumb.astro';
             <tr><td class="py-3 pr-4">Photo management</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">Google review requests</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">Referral program</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
-            <tr><td class="py-3 pr-4">Personal website</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
-            <tr><td class="py-3 pr-4">Custom domain</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
+            <tr><td class="py-3 pr-4">Free website page</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">1 page</td><td class="py-3 pr-4 text-center text-green-400">10 pages</td><td class="py-3 text-center text-green-400">Unlimited</td></tr>
+            <tr><td class="py-3 pr-4">Custom domain</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">Multi-location</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">No InkFlow branding</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">Priority support</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
@@ -153,9 +176,9 @@ import Breadcrumb from '../components/Breadcrumb.astro';
       <h2 class="text-2xl font-bold text-white text-center">Which Plan Is Right for You?</h2>
       <div class="mt-8 grid gap-4 md:grid-cols-4">
         <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🆓 Just starting out</p><p class="mt-1 text-sm text-gray-400">Free plan — basic manual tools. Test the waters.</p></div>
-        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🪪 Solo artist</p><p class="mt-1 text-sm text-gray-400">Go Solo ($9.9/mo). Online booking, waivers, cloud CRM.</p></div>
-        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🏪 Single shop with team</p><p class="mt-1 text-sm text-gray-400">Go Pro ($29.99/mo). 5 artists, commission, inventory, aftercare.</p></div>
-        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🏢 Multi-location studio</p><p class="mt-1 text-sm text-gray-400">Go Plus ($29.99 + $15/shop). All locations, one dashboard.</p></div>
+        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🪪 Solo artist</p><p class="mt-1 text-sm text-gray-400">Go Starter ($9.99/mo). Online booking, waivers, cloud CRM, free website page.</p></div>
+        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🏪 Single shop with team</p><p class="mt-1 text-sm text-gray-400">Go Pro ($29.99/mo). 5 artists, commission, inventory, aftercare, enhanced website.</p></div>
+        <div class="rounded-xl border border-ink-800 p-5"><p class="text-white font-medium">🏢 Multi-location studio</p><p class="mt-1 text-sm text-gray-400">Go Plus ($49.99 + $15/shop). All locations, one dashboard, unlimited website.</p></div>
       </div>
     </div>
   </section>
@@ -166,11 +189,11 @@ import Breadcrumb from '../components/Breadcrumb.astro';
       <h2 class="text-2xl font-bold text-white text-center">Pricing FAQs</h2>
       <details class="rounded-xl border border-ink-800 p-4">
         <summary class="cursor-pointer text-sm font-medium text-white">Is there a free plan?</summary>
-        <p class="mt-2 text-sm text-gray-400">Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Solo for the full experience.</p>
+        <p class="mt-2 text-sm text-gray-400">Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience.</p>
       </details>
       <details class="rounded-xl border border-ink-800 p-4">
-        <summary class="cursor-pointer text-sm font-medium text-white">What's the difference between Free and Solo?</summary>
-        <p class="mt-2 text-sm text-gray-400">Free is manual and local-only. Solo adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection.</p>
+        <summary class="cursor-pointer text-sm font-medium text-white">What's the difference between Free and Starter?</summary>
+        <p class="mt-2 text-sm text-gray-400">Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection.</p>
       </details>
       <details class="rounded-xl border border-ink-800 p-4">
         <summary class="cursor-pointer text-sm font-medium text-white">Can I switch plans later?</summary>
@@ -184,6 +207,51 @@ import Breadcrumb from '../components/Breadcrumb.astro';
         <summary class="cursor-pointer text-sm font-medium text-white">How does multi-shop pricing work on Plus?</summary>
         <p class="mt-2 text-sm text-gray-400">First shop is $29.99/mo. Each additional shop is $15/mo. All locations managed from one dashboard with cross-shop analytics.</p>
       </details>
+    </div>
+  </section>
+
+  <!-- WEBSITE ONLY PLAN -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <p class="text-sm font-semibold text-accent-400 mb-2">WEBSITE ONLY</p>
+        <h2 class="text-2xl font-bold text-white">Just Need a Website?</h2>
+        <p class="mt-2 text-gray-400 max-w-xl mx-auto">Get a tattoo shop landing page in minutes. 16 designs, claim in 2 clicks.</p>
+      </div>
+      <div class="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 flex flex-col">
+          <h3 class="text-base font-semibold text-white">Website Basic</h3>
+          <p class="mt-2 text-3xl font-bold text-white">$4.99</p>
+          <p class="text-sm text-gray-400">per month</p>
+          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$49.99</strong>/year <span class="text-accent-400">(save $9.89)</span></p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1 landing page</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All 16 templates</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Google Maps embed</li>
+            <li class="flex items-start gap-2 text-gray-500"><span class="mt-0.5">✗</span> InkFlow branding</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_basic" class="mt-6 block w-full rounded-lg border border-ink-700 py-2 text-center text-sm font-medium text-gray-300 hover:border-ink-500 transition-colors">Get Website Basic</a>
+        </div>
+        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-6 flex flex-col relative">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-3 py-0.5 text-xs font-semibold text-ink-950">Popular</span>
+          <h3 class="text-base font-semibold text-white">Website Pro</h3>
+          <p class="mt-2 text-3xl font-bold text-white">$9.99</p>
+          <p class="text-sm text-gray-400">per month</p>
+          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$99.99</strong>/year <span class="text-accent-400">(save $19.89)</span></p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Multi-page website</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All 16 templates</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_pro" class="mt-6 block w-full rounded-lg bg-accent-500 py-2 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Get Website Pro</a>
+        </div>
+      </div>
+      <p class="mt-6 text-center text-xs text-gray-500">Already have an InkFlow app plan? Your website is included. <a href="/pricing/" class="text-accent-400 hover:underline">See app plans</a></p>
     </div>
   </section>
 

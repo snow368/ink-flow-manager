@@ -1,0 +1,171 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <FAQSchema data={{ questions: [
+    { question: "How does InkFlow's review automation work?", answer: "After each appointment, InkFlow automatically sends a review request via SMS or email. The timing is based on your preference — immediately after, next day, or 48 hours later. Clients are directed to Google, Yelp, or Facebook based on their rating." },
+    { question: "Can I track referrals without asking clients how they heard about us?", answer: "Yes. InkFlow tracks referral sources automatically through booking links, promo codes, and client-shared links. No more 'how did you hear about us?' forms with unreliable answers." },
+    { question: "Does InkFlow integrate with Mailchimp or email marketing tools?", answer: "You don't need Mailchimp. InkFlow includes built-in review requests, referral tracking, and lead capture — no integration required. Automated emails and SMS are included in every plan." },
+    { question: "What happens to leads that don't book immediately?", answer: "Leads receive an automated follow-up after 48 hours via SMS. They're also tagged by style preference for future targeted promotions." },
+  ]}} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO MARKETING AUTOMATION</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Marketing Automation: Auto Reviews, Referrals & Lead Capture</h1>
+      <p class="mt-6 text-lg text-gray-400">InkFlow's marketing automation sends review requests after each session, tracks referral chains, and captures leads from booking — all without Mailchimp or separate tools. Turn every client into your best marketer.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Most Studios Leave Money on the Table</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Review requests are forgotten — 80% of happy clients never get asked.</h3><p class="mt-1 text-sm text-gray-400">Artists forget to ask for reviews at the end of a session. Automation sends the request when the client's experience is freshest.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Referral tracking is guesswork without a system.</h3><p class="mt-1 text-sm text-gray-400">"How did you hear about us?" spreadsheets are unreliable. InkFlow tracks every referral automatically from the booking source.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Leads slip through the cracks without follow-up.</h3><p class="mt-1 text-sm text-gray-400">Booking inquiries that don't convert immediately are lost forever without automated follow-up nurturing.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Marketing Features Built for Tattoo Studios</h2>
+      <div class="mt-12 space-y-16">
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h3 class="text-2xl font-bold text-white">Auto Review Requests Boost Google Ratings Without Manual Follow-Up</h3>
+          <p class="mt-4 text-gray-400">Send review requests automatically after each appointment — timed to arrive when the client's experience is freshest.</p>
+          <h4 class="mt-4 text-lg font-semibold text-white">Post-Session Timing for Maximum Response</h4>
+          <p class="text-sm text-gray-400">Reviews requested within 24 hours of the session have the highest completion rate. InkFlow sends the request automatically — no remembering needed.</p>
+          <h5 class="mt-3 text-base font-medium text-white">Multi-Platform: Google, Yelp, Facebook</h5>
+          <p class="text-sm text-gray-400">Direct clients to your preferred platform based on their feedback. Happy clients go to Google. Neutral feedback goes to a private feedback form.</p>
+          <h6 class="mt-2 text-sm font-medium text-gray-400">2x More Reviews Than Manual Requests</h6>
+          <p class="text-sm text-gray-400">Studios using automated review requests see 2x more reviews. Each Google review increases click-through rate by ~10%.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-400">[Screenshot: Review request settings]</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-400">[Screenshot: Referral tracking]</p>
+        </div>
+        <div class="order-1 md:order-2">
+          <h3 class="text-2xl font-bold text-white">Referral Program Automation Rewards Your Best Advocates</h3>
+          <p class="mt-4 text-gray-400">See which clients refer the most business and reward them automatically. Referral clients book at higher rates and become loyal faster.</p>
+          <h4 class="mt-4 text-lg font-semibold text-white">Full Referral Chain Tracking</h4>
+          <p class="text-sm text-gray-400">Every new client is tagged with their referral source. Track conversion rates by referrer. See which clients send the most business over time.</p>
+          <h5 class="mt-3 text-base font-medium text-white">Automatic Reward Tiers</h5>
+          <p class="text-sm text-gray-400">Set reward rules: 5 referrals → $50 credit, 10 referrals → free touch-up. InkFlow tracks and notifies both parties automatically.</p>
+          <h6 class="mt-2 text-sm font-medium text-gray-400">40% Higher Conversion from Referral Leads</h6>
+          <p class="text-sm text-gray-400">Referred clients arrive with trust already established — shorter sales cycle, higher average spend.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+        <div>
+          <h3 class="text-2xl font-bold text-white">Lead Capture from Booking Captures Every Inquiry Automatically</h3>
+          <p class="mt-4 text-gray-400">Every booking request captures lead info — name, email, phone, tattoo description. Follow up automatically without lifting a finger.</p>
+          <h4 class="mt-4 text-lg font-semibold text-white">Auto-Follow-Up for Non-Converted Leads</h4>
+          <p class="text-sm text-gray-400">Leads who inquire but don't book receive a follow-up SMS after 48 hours. Recover 20%+ of lost bookings with automated nurturing.</p>
+          <h5 class="mt-3 text-base font-medium text-white">Lead Scoring by Tattoo Description Quality</h5>
+          <p class="text-sm text-gray-400">Detailed descriptions with placement, size, and style = high-intent lead. Vague inquiries get a gentle prompt for more details.</p>
+          <h6 class="mt-2 text-sm font-medium text-gray-400">Segmented Lead Lists for Retargeting</h6>
+          <p class="text-sm text-gray-400">Leads are auto-tagged by style preference and budget. Send targeted offers to relevant segments — flash sale for traditional, or custom design consultation for realism.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+          <p class="text-sm text-gray-400">[Screenshot: Lead inbox]</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">InkFlow vs Mailchimp vs Manual: Marketing Automation Comparison</h2>
+      <p class="mt-3 text-center text-gray-400">Mailchimp requires setup and separate integrations. Manual follow-up misses most opportunities. Here's how they compare.</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium">Feature</th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Mailchimp</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Manual</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Auto review requests</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗ (needs integration)</td><td class="text-center py-3 text-gray-600">Remembered 10%</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Referral tracking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">Guesswork</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Lead capture from booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Via API only</td><td class="text-center py-3 text-gray-600">Spreadsheet</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Auto lead follow-up</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Via automation</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">SMS included (no per-text fee)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">$0.07+/text</td><td class="text-center py-3 text-gray-600">Your time</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Client segmentation by tattoo style</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Via tags (manual)</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Monthly cost for automation</td><td class="text-center py-3 pr-4 text-accent-400">$0</td><td class="text-center py-3 pr-4 text-gray-600">$13+</td><td class="text-center py-3 text-gray-600">$0 (time cost)</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Setup time</td><td class="text-center py-3 pr-4 text-accent-400">5 min</td><td class="text-center py-3 pr-4 text-gray-600">Days</td><td class="text-center py-3 text-gray-600">Never</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER SCENARIO GUIDE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Marketing Approach Fits Your Studio?</h2>
+      <p class="mt-3 text-center text-gray-400">Your choice depends on your time and whether you want automated or manual marketing.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist focused on their craft</h3><p class="text-sm text-gray-400 mt-1">You don't have time to chase reviews or track referrals. InkFlow automates it all — reviews sent, referrals tracked, leads nurtured. Set it once, runs forever.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio owner with dedicated front desk</h3><p class="text-sm text-gray-400 mt-1">Your front desk can handle manual marketing, but automation frees them up for higher-value tasks. InkFlow handles the repetitive follow-ups.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Growing studio focused on word-of-mouth</h3><p class="text-sm text-gray-400 mt-1">Referral tracking and automated rewards turn happy clients into your marketing team. InkFlow identifies your best advocates and rewards them automatically.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+      <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">How does InkFlow's review automation work?</summary>
+        <p class="mt-2 text-sm text-gray-400">After each appointment, InkFlow automatically sends a review request via SMS or email. The timing is based on your preference — immediately after, next day, or 48 hours later. Clients are directed to Google, Yelp, or Facebook based on their rating.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can I track referrals without asking clients how they heard about us?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. InkFlow tracks referral sources automatically through booking links, promo codes, and client-shared links. No more "how did you hear about us?" forms with unreliable answers.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Does InkFlow integrate with Mailchimp or email marketing tools?</summary>
+        <p class="mt-2 text-sm text-gray-400">You don't need Mailchimp. InkFlow includes built-in review requests, referral tracking, and lead capture — no integration required. Automated emails and SMS are included in every plan.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">What happens to leads that don't book immediately?</summary>
+        <p class="mt-2 text-sm text-gray-400">Leads receive an automated follow-up after 48 hours via SMS. They're also tagged by style preference for future targeted promotions.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Automate Your Studio's Marketing</h2>
+    <p class="mt-3 text-gray-400">Free plan includes review requests, referral tracking, and lead capture.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
+    <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+  </section>
+  <Footer />
+</BaseLayout>
