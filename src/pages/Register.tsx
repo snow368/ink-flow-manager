@@ -377,63 +377,6 @@ export default function Register() {
           </div>
         )}
 
-        {/* Template picker (shown for both app+website and website-only) */}
-        {registerType === 'website' && (
-          <div style={{ marginBottom: 16 }}>
-            <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 8 }}>Choose a template</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, maxHeight: 300, overflowY: 'auto' }}>
-              {[
-                { name: 'Minimal', key: 'minimal', primary: '#1a1a1a', bg: '#ffffff', tier: 'free' },
-                { name: 'Traditional', key: 'traditional', primary: '#c41e1e', bg: '#0a0a0a', tier: 'free' },
-                { name: 'Vintage', key: 'vintage', primary: '#8b4513', bg: '#f5f0e8', tier: 'free' },
-                { name: 'Moody', key: 'moody', primary: '#b8860b', bg: '#0d0d0d', tier: 'free' },
-                { name: 'Edgy', key: 'edgy', primary: '#ff0066', bg: '#0a0a0a', tier: 'pro' },
-                { name: 'Studio', key: 'studio', primary: '#d4a574', bg: '#f8f8f8', tier: 'pro' },
-                { name: 'Brutalist', key: 'brutalist', primary: '#ffffff', bg: '#000000', tier: 'pro' },
-                { name: 'Nature', key: 'nature', primary: '#4a8c3f', bg: '#0f1a0e', tier: 'pro' },
-                { name: 'Royal', key: 'royal', primary: '#7c3aed', bg: '#0e0a1a', tier: 'pro' },
-                { name: 'Neon', key: 'neon', primary: '#00ffff', bg: '#0a0a12', tier: 'pro' },
-                { name: 'Japanese', key: 'japanese', primary: '#cc3300', bg: '#0f0a08', tier: 'pro' },
-                { name: 'Cyberpunk', key: 'cyberpunk', primary: '#ff00aa', bg: '#0a0515', tier: 'pro' },
-                { name: 'Sunset', key: 'sunset', primary: '#ff6622', bg: '#1a0e0a', tier: 'pro' },
-                { name: 'Sakura', key: 'sakura', primary: '#e86a8a', bg: '#1a1018', tier: 'pro' },
-                { name: 'Punk', key: 'punk', primary: '#ffee00', bg: '#0a0a0a', tier: 'pro' },
-                { name: 'Neonoir', key: 'neonoir', primary: '#ff2244', bg: '#080808', tier: 'pro' },
-                { name: 'Midnight', key: 'midnight', primary: '#4a80d0', bg: '#080c14', tier: 'free' },
-                { name: 'Botanical', key: 'botanical', primary: '#5a9e6a', bg: '#0f1a12', tier: 'free' },
-                { name: 'Arctic', key: 'arctic', primary: '#2a7aaa', bg: '#e8f0f5', tier: 'free' },
-                { name: 'Desert', key: 'desert', primary: '#c4783a', bg: '#e8e0d0', tier: 'free' },
-                { name: 'Tribal', key: 'tribal', primary: '#d4d4d4', bg: '#050505', tier: 'free' },
-                { name: 'Lavender', key: 'lavender', primary: '#8a6aca', bg: '#f0ecf5', tier: 'free' },
-                { name: 'Industrial', key: 'industrial', primary: '#4682b4', bg: '#121212', tier: 'plus' },
-                { name: 'Watercolor', key: 'watercolor', primary: '#e88d9a', bg: '#f8f4f0', tier: 'plus' },
-                { name: 'Gothic', key: 'gothic', primary: '#800020', bg: '#0a0808', tier: 'plus' },
-                { name: 'Coastal', key: 'coastal', primary: '#2a8a8a', bg: '#f0f5f5', tier: 'plus' },
-                { name: 'Urban', key: 'urban', primary: '#ff6600', bg: '#0a0a0a', tier: 'plus' },
-                { name: 'Metallic', key: 'metallic', primary: '#9a9aaa', bg: '#0e0e10', tier: 'plus' },
-                { name: 'Steampunk', key: 'steampunk', primary: '#b8862a', bg: '#14100a', tier: 'plus' },
-                { name: 'Celestial', key: 'celestial', primary: '#c8a040', bg: '#080818', tier: 'plus' },
-              ].map(t => {
-                const isSelected = selectedTheme === t.key;
-                return (
-                  <div key={t.key} onClick={() => setSelectedTheme(t.key)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
-                      borderRadius: 8, cursor: 'pointer',
-                      border: `2px solid ${isSelected ? t.primary : '#334155'}`,
-                      background: isSelected ? `${t.primary}20` : '#1e293b',
-                    }}>
-                    <div style={{
-                      width: 28, height: 28, borderRadius: 6, flexShrink: 0,
-                      background: `linear-gradient(135deg, ${t.bg} 50%, ${t.primary} 50%)`,
-                      border: '1px solid #ffffff20',
-                    }} />
-                    <div>
-                      <p style={{ fontSize: 11, fontWeight: 600, color: '#f0f0f0' }}>{t.name}</p>
-                      <p style={{ fontSize: 9, color: t.tier === 'free' ? '#34d399' : t.tier === 'pro' ? '#6366f1' : '#a855f7' }}>
-                        {t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}
-                      </p>
-                    </div>
                   </div>
                 );
               })}
