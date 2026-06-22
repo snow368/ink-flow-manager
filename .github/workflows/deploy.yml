@@ -29,14 +29,14 @@ jobs:
       - run: npm install
       - run: npm run build
       - name: Deploy Pages (frontend)
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v3.14
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           command: pages deploy dist/ --project-name ink-flow
       - name: Install Worker deps
         run: cd workers && npm ci
       - name: Deploy Worker (API)
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v3.14
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: workers
