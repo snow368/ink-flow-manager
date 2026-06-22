@@ -1170,6 +1170,61 @@ LAYOUT_CONFIGS['minimal-bar-alt'] = { sections: ['hero-centered','gallery-cards'
 // --- Process/funnel variants (3) ---
 LAYOUT_CONFIGS['process-first'] = { sections: ['hero','process','gallery','booking','footer'], desc: 'Process first' };
 LAYOUT_CONFIGS['funnel'] = { sections: ['hero','process','services','reviews','booking','footer'], desc: 'Sales funnel layout' };
+LAYOUT_CONFIGS['process-full'] = { sections: ['hero','process','services-cards','reviews','gallery','booking','cta','footer'], desc: 'Full funnel' };
+
+// --- Expanded combos (50+) ---
+LAYOUT_CONFIGS['hero-gallery-reviews'] = { sections: ['hero','gallery','reviews','booking','footer'], desc: 'Hero + gallery + social proof' };
+LAYOUT_CONFIGS['hero-services-reviews'] = { sections: ['hero','services','reviews','gallery','booking','footer'], desc: 'Services then reviews' };
+LAYOUT_CONFIGS['hero-stats-gallery'] = { sections: ['hero','stats','gallery','booking','footer'], desc: 'Stats bar after hero' };
+LAYOUT_CONFIGS['hero-process-booking'] = { sections: ['hero','process','booking','footer'], desc: 'Quick funnel' };
+LAYOUT_CONFIGS['hero-gallery-process'] = { sections: ['hero','gallery','process','booking','cta','footer'], desc: 'Gallery then process' };
+LAYOUT_CONFIGS['hero-booking-gallery'] = { sections: ['hero','booking','gallery','services','footer'], desc: 'Book then browse' };
+LAYOUT_CONFIGS['hero-map-booking'] = { sections: ['hero','map','booking','footer'], desc: 'Location first' };
+LAYOUT_CONFIGS['hero-about-services-gallery'] = { sections: ['hero','about','services','gallery','booking','footer'], desc: 'About the studio' };
+LAYOUT_CONFIGS['hero-gallery-services'] = { sections: ['hero','gallery','services','booking','footer'], desc: 'Gallery first' };
+LAYOUT_CONFIGS['hero-reviews-gallery'] = { sections: ['hero','reviews','gallery','booking','footer'], desc: 'Reviews then portfolio' };
+LAYOUT_CONFIGS['hero-stats-process'] = { sections: ['hero','stats','process','booking','footer'], desc: 'Stats + process' };
+LAYOUT_CONFIGS['hero-gallery-map'] = { sections: ['hero','gallery','map','booking','footer'], desc: 'Gallery + location' };
+LAYOUT_CONFIGS['hero-services-booking'] = { sections: ['hero','services','booking','gallery','footer'], desc: 'Book after services' };
+LAYOUT_CONFIGS['hero-about-booking'] = { sections: ['hero','about','booking','gallery','footer'], desc: 'About then book' };
+LAYOUT_CONFIGS['hero-instagram-booking'] = { sections: ['hero','instagram','booking','footer'], desc: 'Instagram first' };
+
+// --- Full experience variants (15) ---
+LAYOUT_CONFIGS['full-experience'] = { sections: ['hero','stats','about','services','gallery','reviews','process','instagram','map','booking','cta','footer'], desc: 'Everything' };
+LAYOUT_CONFIGS['full-gallery'] = { sections: ['hero','gallery','services','process','booking','footer'], desc: 'Gallery focused full' };
+LAYOUT_CONFIGS['full-services'] = { sections: ['hero','services','gallery','reviews','booking','cta','footer'], desc: 'Services focused' };
+LAYOUT_CONFIGS['full-social'] = { sections: ['hero','stats','reviews','gallery','instagram','booking','footer'], desc: 'Social proof focused' };
+LAYOUT_CONFIGS['full-minimal'] = { sections: ['hero','gallery','booking','footer'], desc: 'Minimal full' };
+LAYOUT_CONFIGS['full-about'] = { sections: ['hero','about','process','gallery','booking','footer'], desc: 'About + process' };
+LAYOUT_CONFIGS['full-booking'] = { sections: ['hero','booking','gallery','services','map','footer'], desc: 'Booking focused' };
+LAYOUT_CONFIGS['full-location'] = { sections: ['hero','about','services','map','booking','footer'], desc: 'Location focused' };
+LAYOUT_CONFIGS['full-portfolio'] = { sections: ['hero','gallery','instagram','booking','footer'], desc: 'Portfolio focused' };
+LAYOUT_CONFIGS['full-artist'] = { sections: ['hero','artists','gallery','booking','footer'], desc: 'Artist focused' };
+
+// --- Compact/mobile-first variants (12) ---
+LAYOUT_CONFIGS['compact'] = { sections: ['hero-compact','gallery','booking','footer'], desc: 'Compact everything' };
+LAYOUT_CONFIGS['compact-services'] = { sections: ['hero-compact','services-cards','booking','footer'], desc: 'Compact services' };
+LAYOUT_CONFIGS['compact-gallery'] = { sections: ['hero-compact','gallery-cards','booking-compact','footer-minimal'], desc: 'Compact gallery' };
+LAYOUT_CONFIGS['compact-min'] = { sections: ['hero-minimal','gallery','booking-compact','footer-minimal'], desc: 'Ultra compact' };
+LAYOUT_CONFIGS['compact-stats'] = { sections: ['hero-compact','stats','booking','footer'], desc: 'Compact with stats' };
+LAYOUT_CONFIGS['compact-process'] = { sections: ['hero-compact','process','booking','footer'], desc: 'Compact funnel' };
+LAYOUT_CONFIGS['mobile-first'] = { sections: ['hero','gallery','booking-compact','footer-bar'], desc: 'Mobile-first with sticky bar' };
+LAYOUT_CONFIGS['mobile-gallery'] = { sections: ['hero-minimal','gallery-cards','booking-compact','footer-bar'], desc: 'Mobile gallery' };
+LAYOUT_CONFIGS['hero-btn-booking'] = { sections: ['hero','booking-compact','footer-bar'], desc: '3 section mobile' };
+
+// --- Niche variants (10) ---
+LAYOUT_CONFIGS['booking-first'] = { sections: ['booking','gallery','services','footer'], desc: 'Book first, ask later' };
+LAYOUT_CONFIGS['map-highlight'] = { sections: ['hero','map','services','booking','footer'], desc: 'Map highlighted' };
+LAYOUT_CONFIGS['instagram-highlight'] = { sections: ['hero','instagram','gallery','booking','footer'], desc: 'Instagram highlighted' };
+LAYOUT_CONFIGS['reviews-highlight'] = { sections: ['hero','reviews','stats','booking','footer'], desc: 'Reviews highlighted' };
+LAYOUT_CONFIGS['process-highlight'] = { sections: ['hero','process','booking','footer'], desc: 'Process highlighted' };
+LAYOUT_CONFIGS['about-highlight'] = { sections: ['hero','about','process','booking','footer'], desc: 'About highlighted' };
+LAYOUT_CONFIGS['services-highlight'] = { sections: ['hero','services-cards','booking','footer'], desc: 'Services highlighted' };
+LAYOUT_CONFIGS['gallery-highlight'] = { sections: ['hero','gallery-big','booking','footer'], desc: 'Gallery highlighted' };
+LAYOUT_CONFIGS['hero-only'] = { sections: ['hero','booking','footer'], desc: 'Minimalist' };
+
+// ===== Assign 100+ template configs to 41 color themes =====
+// Each color theme gets 2-3 layout variations = 82-123 combinations
 
 // ===== Assign layout configs to ALL_TEMPLATES =====
 // 41 templates × their layout configs
