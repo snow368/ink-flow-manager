@@ -1914,7 +1914,7 @@ app.post('/api/subscription/create-checkout', async (c) => {
       c.status(400); return c.json({ error: 'userId, successUrl, cancelUrl are required' });
     }
     const PRICES: Record<string, Record<string, number>> = {
-      website_solo: { year: 1999 },  app_starter: { month: 999, year: 9999 },
+      website_solo: { month: 990, year: 1999 },  app_starter: { month: 999, year: 9999 },
       app_pro: { month: 2999, year: 29999 },  app_plus: { month: 4999, year: 49999 },
     };
     const amountCents = PRICES[planTier]?.[interval];
