@@ -8,13 +8,13 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Booking Software — Cut No-Shows by 80% with Deposits" description="InkFlow's tattoo booking software cuts no-shows by up to 80% with deposit-based scheduling. Multi-artist calendar, automated SMS reminders, and online booking widget — no POS terminal needed. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Can clients book online without creating an account?", answer: "Yes. Clients book via a public link — no account needed. They just provide name, email, and phone. Returning clients are recognized automatically." },
     { question: "Can I set different deposits for different services?", answer: "Absolutely. Per-service, per-artist, or global default. Percentage or flat fee. Refund policies are automatic based on your rules." },
     { question: "How does InkFlow compare to Acuity or Booksy?", answer: "InkFlow is built for tattoo studios. Acuity and Booksy are general-purpose. InkFlow includes tattoo-specific features: digital consent forms, commission splitting, aftercare automation, and inventory tracking — all in one platform." },
     { question: "Does the booking widget work on my existing website?", answer: "Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom." },
     { question: "Can I migrate from another booking system?", answer: "Yes. We help you import client data, artist schedules, and service menus. Most studios are set up in under an hour." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO: GEO首句即答案 -->

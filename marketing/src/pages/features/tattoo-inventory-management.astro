@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Shop Inventory Management — Track Ink, Needles &amp; Supply Costs" description="InkFlow's tattoo inventory management tracks ink, needles, and supplies with low-stock alerts and cost-per-session tracking. Never run out mid-session. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Can I set low-stock alerts?", answer: "Yes. Set minimum quantities per item. InkFlow notifies you when stock is running low — via email, SMS, or in-app." },
     { question: "Does it track cost per session?", answer: "Yes. Link inventory items to services. InkFlow calculates supply costs per appointment automatically." },
     { question: "Can multiple artists manage inventory?", answer: "Yes. Each artist can log usage. Studio owner sees consolidated inventory across all artists." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO -->

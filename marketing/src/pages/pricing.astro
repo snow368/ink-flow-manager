@@ -28,22 +28,22 @@ import FAQSchema from '../components/FAQSchema.astro';
       { "@type": "Offer", "name": "Plus", "price": "49.99", "priceCurrency": "USD", "description": "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
     ]
   })} />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is there a free plan?", answer: "Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience." },
     { question: "What is the difference between Free and Starter?", answer: "Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection." },
     { question: "Can I switch plans later?", answer: "Yes. Upgrade or downgrade anytime. Upgrades take effect immediately, downgrades at the next billing cycle." },
     { question: "What is included in the beta period?", answer: "During beta testing, all features are free on every plan. No payment needed. We will notify you before the official launch." },
     { question: "How does multi-shop pricing work on Plus?", answer: "First shop is $29.99/mo. Each additional shop is $15/mo. All locations managed from one dashboard with cross-shop analytics." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO -->
   <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">PRICING</p>
-      <div class="inline-block rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-1.5 text-xs text-accent-400 mb-4">🚀 内测期间全部功能免费 · 提建议送3个月Pro</div>
+      <div class="inline-block rounded-full bg-accent-500/10 border border-accent-500/30 px-4 py-1.5 text-xs text-accent-400 mb-4">🚀 Beta — all features free. Suggest a feature & get 3 months Pro.</div>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free for Solo Artists. Upgrade When You Grow.</h1>
-      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">正式定价如下。内测期间所有功能免费使用。升级到 Starter、Pro 或 Plus 在正式上线后才需要。</p>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">All features are free during beta. Upgrade to Starter, Pro, or Plus when we launch. No credit card needed.</p>
     </div>
   </section>
 
@@ -216,39 +216,41 @@ import FAQSchema from '../components/FAQSchema.astro';
       <div class="text-center mb-10">
         <p class="text-sm font-semibold text-accent-400 mb-2">WEBSITE ONLY</p>
         <h2 class="text-2xl font-bold text-white">Just Need a Website?</h2>
-        <p class="mt-2 text-gray-400 max-w-xl mx-auto">Get a tattoo shop landing page in minutes. 16 designs, claim in 2 clicks.</p>
+        <p class="mt-2 text-gray-400 max-w-xl mx-auto">Get a tattoo shop website in minutes. Auto-generated from templates, Instagram gallery connected.</p>
       </div>
       <div class="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 flex flex-col">
           <h3 class="text-base font-semibold text-white">Website Basic</h3>
-          <p class="mt-2 text-3xl font-bold text-white">$4.99</p>
-          <p class="text-sm text-gray-400">per month</p>
-          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$49.99</strong>/year <span class="text-accent-400">(save $9.89)</span></p>
+          <p class="mt-2 text-3xl font-bold text-white">$9.99</p>
+          <p class="text-sm text-gray-400">per year</p>
+          <p class="text-xs text-gray-500">Single landing page · Billed annually · Renews at $9.99/yr</p>
           <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1 landing page</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All 16 templates</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1-page landing page</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All templates</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery (directly from IG)</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Google Maps embed</li>
-            <li class="flex items-start gap-2 text-gray-500"><span class="mt-0.5">✗</span> InkFlow branding</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Subdomain (slug.ink-flows.com)</li>
           </ul>
-          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_basic" class="mt-6 block w-full rounded-lg border border-ink-700 py-2 text-center text-sm font-medium text-gray-300 hover:border-ink-500 transition-colors">Get Website Basic</a>
+          <p class="mt-3 text-xs text-gray-500">Zero storage cost — uses your Instagram photos</p>
+          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_basic" class="mt-6 block w-full rounded-lg border border-ink-700 py-2 text-center text-sm font-medium text-gray-300 hover:border-ink-500 transition-colors">Get Basic</a>
         </div>
         <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-6 flex flex-col relative">
           <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-3 py-0.5 text-xs font-semibold text-ink-950">Popular</span>
           <h3 class="text-base font-semibold text-white">Website Pro</h3>
-          <p class="mt-2 text-3xl font-bold text-white">$9.99</p>
-          <p class="text-sm text-gray-400">per month</p>
-          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$99.99</strong>/year <span class="text-accent-400">(save $19.89)</span></p>
+          <p class="mt-2 text-3xl font-bold text-white">$19.99</p>
+          <p class="text-sm text-gray-400">per year</p>
+          <p class="text-xs text-gray-500">Multi-page website · Billed annually · Renews at $19.99/yr</p>
           <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Multi-page website</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All 16 templates</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All templates</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery</li>
+            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery (directly from IG)</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain</li>
             <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
           </ul>
-          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_pro" class="mt-6 block w-full rounded-lg bg-accent-500 py-2 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Get Website Pro</a>
+          <p class="mt-3 text-xs text-gray-500">Zero storage cost — uses your Instagram photos</p>
+          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_pro" class="mt-6 block w-full rounded-lg bg-accent-500 py-2 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Get Pro</a>
         </div>
       </div>
       <p class="mt-6 text-center text-xs text-gray-500">Already have an InkFlow app plan? Your website is included. <a href="/pricing/" class="text-accent-400 hover:underline">See app plans</a></p>
@@ -258,7 +260,7 @@ import FAQSchema from '../components/FAQSchema.astro';
   <!-- CTA -->
   <section class="border-t border-ink-800/50 py-16 text-center">
     <h2 class="text-3xl font-bold text-white">Start Free. No Credit Card Needed.</h2>
-    <p class="mt-3 text-gray-400">Beta期间全部功能免费使用。</p>
+    <p class="mt-3 text-gray-400">All features are free during beta. No credit card required.</p>
     <a href="https://app.ink-flows.com/register" class="mt-8 inline-block rounded-lg bg-accent-500 px-10 py-4 text-lg font-semibold text-ink-950 hover:bg-accent-400 transition-all">Get Started Free →</a>
   </section>
 

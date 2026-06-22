@@ -3,11 +3,31 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 import NoShowCalculator from '../../components/NoShowCalculator.astro';
 ---
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo No-Show Cost Calculator — Free Tool" description="Calculate how much no-shows cost your tattoo studio. Free interactive calculator. See your annual loss in seconds." />
+  <!-- HowTo Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Calculate No-Show Costs for Your Tattoo Studio",
+    "description": "Use this calculator to estimate how much missed appointments cost your studio. Enter your average session price and no-show rate to see your annual loss.",
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "Enter your average session price", "text": "Input the average price of a tattoo session at your studio." },
+      { "@type": "HowToStep", "position": 2, "name": "Enter your weekly appointment count", "text": "Input how many appointments you book per week." },
+      { "@type": "HowToStep", "position": 3, "name": "Enter your no-show rate", "text": "Input your estimated no-show percentage. Industry average is 10-30%." },
+      { "@type": "HowToStep", "position": 4, "name": "View your annual loss", "text": "The calculator shows your estimated annual revenue lost to no-shows and potential savings." }
+    ]
+  })} />
+  <FAQSchema questions={[
+    { question: "Is the no-show calculator free?", answer: "Yes. Calculate unlimited scenarios for free. No account or signup required." },
+    { question: "How accurate is the estimate?", answer: "The estimate is based on your inputs. For best results, use your actual no-show rate from booking records rather than guessing." },
+    { question: "What's the average no-show rate for tattoo studios?", answer: "Industry data shows most studios lose 10-30% of booked appointments to no-shows." },
+    { question: "How can I reduce no-shows?", answer: "InkFlow's deposit-based booking system cuts no-shows by up to 80%. Automated reminders and waitlists help recover last-minute cancellations." },
+  ]} />
   <Navbar />
 
   <!-- Hero -->

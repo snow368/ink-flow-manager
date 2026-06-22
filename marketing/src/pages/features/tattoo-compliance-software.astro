@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Studio Health Compliance — Checklists, Autoclave Logs &amp; Inspections" description="InkFlow's health compliance software helps tattoo studios stay inspection-ready with digital checklists, autoclave logs, and documentation. Built into your studio management. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Does InkFlow generate health inspection checklists?", answer: "Yes. Built-in checklists cover sterilization, cleanliness, and documentation requirements. Customize for your local health department's requirements." },
     { question: "Can I log autoclave cycles?", answer: "Yes. Digital autoclave logs with date, time, cycle type, and operator. Export for health department inspections." },
     { question: "Are compliance records stored permanently?", answer: "Yes. All compliance records are stored with timestamps and audit trails. Exportable for inspections at any time." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

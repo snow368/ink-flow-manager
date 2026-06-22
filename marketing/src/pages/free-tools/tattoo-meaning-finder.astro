@@ -3,25 +3,73 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Tattoo Meaning Finder — Free Symbolism Guide" description="Discover the meaning behind popular tattoo designs. Search rose, wolf, dragon, butterfly and more. Free tattoo symbolism guide." />
+  <SEOHead slot="head" title="Tattoo Meaning Finder — Search Symbolism &amp; Design Meanings" description="Discover the meaning behind popular tattoo symbols, flowers, animals, and cultural designs. Free search tool. No signup required." />
+  <FAQSchema data={{ questions: [
+    { question: "What symbols are included?", answer: "Hundreds of symbols across categories: animals, flowers, mythological, geometric, religious, cultural, and modern designs." },
+    { question: "Can I suggest a meaning to add?", answer: "Yes. Contact us with your suggestion and source. We review and add new meanings regularly." },
+    { question: "Are meanings based on cultural accuracy?", answer: "We cite cultural and historical sources for traditional meanings. Modern interpretations are labeled as such." },
+  ]}} />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
+  <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Meaning Finder</h1>
-      <p class="mt-4 text-lg text-gray-400">What does that tattoo really mean? Search any design to find out.</p>
+      <p class="mt-4 text-lg text-gray-400">Discover the meaning behind popular tattoo symbols and designs. Search by symbol, style, or cultural tradition — free tool, no signup.</p>
     </div>
   </section>
 
-  <section class="pb-20">
-    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
-      <TattooMeaningFinder />
+  <section class="pb-12">
+    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8"><TattooMeaningFinder /></div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Symbolism Matters in Tattoos</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Clients often choose designs without knowing their cultural significance.</h3><p class="mt-1 text-sm text-gray-400">A symbol that means one thing in Western culture may have a completely different meaning elsewhere. Help clients make informed choices.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Meaningful tattoos have higher client satisfaction.</h3><p class="mt-1 text-sm text-gray-400">Clients who choose designs with personal or cultural meaning are more likely to love their tattoo long-term. Fewer regrets, more referrals.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Being knowledgeable about symbolism builds trust.</h3><p class="mt-1 text-sm text-gray-400">When you can explain the meaning behind a design, clients see you as an expert. It leads to more consultations and higher-value bookings.</p></div>
+      </div>
     </div>
   </section>
 
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Popular Tattoo Meanings by Category</h2>
+      <p class="mt-3 text-center text-gray-400">Quick reference for the most searched tattoo symbols.</p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Lotus Flower</h3><p class="mt-1 text-xs text-gray-400">Rebirth, enlightenment, purity. Rising from mud symbolizes overcoming hardship. Common in Buddhist traditions.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Wolf</h3><p class="mt-1 text-xs text-gray-400">Loyalty, family, protection, instinct. A symbol of strength and pack mentality. Popular in tribal and realism styles.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Compass</h3><p class="mt-1 text-xs text-gray-400">Direction, travel, purpose. Often combined with maps, coordinates, or nautical elements. Popular with travelers.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Phoenix</h3><p class="mt-1 text-xs text-gray-400">Resurrection, renewal, triumph over adversity. Rising from ashes. Popular for personal transformation stories.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Skull</h3><p class="mt-1 text-xs text-gray-400">Mortality, danger, remembrance. Varies by culture — Mexican Day of Dead skulls honor ancestors, Western skulls often symbolize rebellion.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Anchor</h3><p class="mt-1 text-xs text-gray-400">Stability, grounding, hope. Traditional sailor tattoo. Can represent a person or value that keeps you steady.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">How Artists Use the Meaning Finder</h2>
+      <p class="mt-3 text-center text-gray-400">Incorporate symbolism knowledge into your consultation process.</p>
+      <div class="mt-8 grid gap-4 sm:grid-cols-3 text-left">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">During Consultations</h3><p class="mt-1 text-xs text-gray-400">Search symbols together with clients. Discuss meaning before committing to a design. Builds trust and client confidence.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Design Planning</h3><p class="mt-1 text-xs text-gray-400">Combine multiple symbols with complementary meanings. Create unique compositions that tell the client's story.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Social Media Content</h3><p class="mt-1 text-xs text-gray-400">Post about symbolism to attract clients who want meaningful tattoos. Content about meanings drives consultation requests.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Help Clients Find Their Perfect Design</h2>
+    <p class="mt-3 text-gray-400">InkFlow helps you manage consultations, design approvals, and bookings — all in one platform.</p>
+    <a href="/features/tattoo-booking-software" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
+  </section>
   <Footer />
 </BaseLayout>

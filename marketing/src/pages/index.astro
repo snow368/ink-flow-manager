@@ -9,13 +9,13 @@ import FAQSchema from '../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Studio Management Software" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
     { question: "Can I accept deposits through InkFlow?", answer: "Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%." },
     { question: "Does InkFlow work on iPad?", answer: "Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk." },
     { question: "Can I have multiple artists on one account?", answer: "Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link." },
     { question: "Can I import my existing client data?", answer: "Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- Hero -->

@@ -8,12 +8,12 @@ import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
 ---
 
 <BaseLayout>
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What client data does InkFlow CRM store?", answer: "Full client history — appointments, waivers, photos, payments, preferences, medical history, and referral sources. Searchable by name, phone, or email." },
     { question: "Can I segment clients by tattoo style?", answer: "Yes. Tag clients by style preference, visit frequency, or lifetime value. Filter and message specific groups in one click." },
     { question: "Does the CRM track referral sources automatically?", answer: "Yes. Every new client is tagged with their referral source. Track conversion rates by referrer and see who sends the most business." },
     { question: "How is InkFlow CRM different from HubSpot?", answer: "HubSpot needs heavy customization for tattoo studios. InkFlow understands tattoo workflows out of the box — photo storage per client, waiver tracking, aftercare automation." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO: GEO首句即答案 -->

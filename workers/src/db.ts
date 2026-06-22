@@ -143,6 +143,25 @@ CREATE TABLE IF NOT EXISTS quotas (
   updatedAt INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id TEXT PRIMARY KEY,
+  userId TEXT NOT NULL,
+  planTier TEXT NOT NULL DEFAULT 'website_solo',
+  interval TEXT NOT NULL DEFAULT 'year',
+  status TEXT NOT NULL DEFAULT 'active',
+  amount INTEGER NOT NULL DEFAULT 1999,
+  currency TEXT DEFAULT 'usd',
+  paidAt INTEGER NOT NULL,
+  expiresAt INTEGER NOT NULL,
+  stripeSessionId TEXT DEFAULT '',
+  stripeSubscriptionId TEXT DEFAULT '',
+  createdAt INTEGER NOT NULL,
+  updatedAt INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_userId ON subscriptions(userId);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_expiresAt ON subscriptions(expiresAt);
+
 CREATE INDEX IF NOT EXISTS idx_ledger_artistId ON ledger(artistId);
 CREATE INDEX IF NOT EXISTS idx_notifications_artistId ON notifications(artistId);
 CREATE INDEX IF NOT EXISTS idx_payments_artistId ON payments(artistId);
@@ -306,6 +325,28 @@ async function migrateSiteConfigs(env: Env): Promise<void> {
     await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_artist ON app_data(artistId)`);
     await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_type_artist ON app_data(type, artistId)`);
     await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_app_data_created ON app_data(createdAt)`);
+  } catch { /* ignore */ }
+
+  // Create subscriptions table for older deploys
+  try {
+    await env.DB.exec(`CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      userId TEXT NOT NULL,
+      planTier TEXT NOT NULL DEFAULT 'website_solo',
+      interval TEXT NOT NULL DEFAULT 'year',
+      status TEXT NOT NULL DEFAULT 'active',
+      amount INTEGER NOT NULL DEFAULT 1999,
+      currency TEXT DEFAULT 'usd',
+      paidAt INTEGER NOT NULL,
+      expiresAt INTEGER NOT NULL,
+      stripeSessionId TEXT DEFAULT '',
+      stripeSubscriptionId TEXT DEFAULT '',
+      createdAt INTEGER NOT NULL,
+      updatedAt INTEGER NOT NULL
+    )`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_subscriptions_userId ON subscriptions(userId)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status)`);
+    await env.DB.exec(`CREATE INDEX IF NOT EXISTS idx_subscriptions_expiresAt ON subscriptions(expiresAt)`);
   } catch { /* ignore */ }
 
   // Create claim_requests table if it doesn't exist (handled by INIT_SQL now, but keep for older deploys)

@@ -406,7 +406,7 @@ function encodeUri(str: string): string {
 
 // ---- Section Builders ----
 
-function heroSection(d: ShopData, t: ThemeVars): string {
+function heroSection(d: ShopData, t: ThemeVars, baseUrl: string): string {
   const bgImage = d.photos?.[0]
     ? 'background-image: ' + t.heroOverlay + ', url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center;'
     : 'background: ' + t.bgAlt + ';';
@@ -428,26 +428,16 @@ function heroSection(d: ShopData, t: ThemeVars): string {
     '</header>';
 }
 
-function bookingSection(d: ShopData, t: ThemeVars): string {
+function bookingSection(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bookUrl = baseUrl + '/book?slug=' + d.slug + '&embed=1&studio=' + encodeUri(d.studioName);
   return '' +
     '<section class="section booking" id="booking" style="background: ' + t.bgAlt + ';">' +
-      '<div class="container" style="max-width: 600px;">' +
+      '<div class="container" style="max-width: 700px; text-align: center;">' +
         '<h2 style="font-family: ' + t.fontHeading + '; color: ' + t.accent + '; margin: 0 0 0.5rem; text-align: center; font-size: 2rem;">Book an Appointment</h2>' +
-        '<p style="font-family: ' + t.fontBody + '; color: ' + t.textMuted + '; text-align: center; margin-bottom: 1.5rem; font-size: 0.95rem;">Fill in your details and we\'ll get back to you.</p>' +
-        '<form id="bookingForm" onsubmit="return submitBooking(event)" style="display:flex;flex-direction:column;gap:0.75rem;">' +
-          '<input type="hidden" name="slug" value="' + d.slug + '">' +
-          '<input type="text" name="name" placeholder="Your Name" required style="width:100%;padding:0.75rem 1rem;background:' + t.bg + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';color:' + t.text + ';font-size:0.95rem;font-family:' + t.fontBody + ';">' +
-          '<input type="tel" name="phone" placeholder="Phone Number" required style="width:100%;padding:0.75rem 1rem;background:' + t.bg + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';color:' + t.text + ';font-size:0.95rem;font-family:' + t.fontBody + ';">' +
-          '<input type="email" name="email" placeholder="Email (optional)" style="width:100%;padding:0.75rem 1rem;background:' + t.bg + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';color:' + t.text + ';font-size:0.95rem;font-family:' + t.fontBody + ';">' +
-          '<textarea name="message" placeholder="What are you looking for? (style, size, placement...)" rows="3" style="width:100%;padding:0.75rem 1rem;background:' + t.bg + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';color:' + t.text + ';font-size:0.95rem;font-family:' + t.fontBody + ';resize:vertical;"></textarea>' +
-          '<button type="submit" id="bookingBtn" style="width:100%;padding:0.85rem;background:' + t.accent + ';color:#fff;border:none;border-radius:' + t.borderRadius + ';font-size:1rem;font-weight:700;cursor:pointer;font-family:' + t.fontBody + ';">Send Request</button>' +
-          '<p id="bookingMsg" style="display:none;font-family:' + t.fontBody + ';font-size:0.9rem;text-align:center;color:#34d399;">Request sent! We\'ll get back to you soon.</p>' +
-        '</form>' +
+        '<p style="font-family: ' + t.fontBody + '; color: ' + t.textMuted + '; margin-bottom: 1.5rem; font-size: 0.95rem;">Powered by InkFlow — deposits, reminders, and instant confirmation.</p>' +
+        '<iframe src="' + safe(bookUrl) + '" width="100%" height="600" frameborder="0" style="border-radius:' + t.borderRadius + ';border:1px solid ' + t.border + ';background:' + t.bg + ';" loading="lazy" allow="payment" title="Book an appointment"></iframe>' +
       '</div>' +
-    '</section>' +
-    '<script>' +
-    'async function submitBooking(e){e.preventDefault();var f=e.target;var btn=document.getElementById("bookingBtn");var msg=document.getElementById("bookingMsg");btn.disabled=true;btn.textContent="Sending...";try{var r=await fetch("/api/booking-request",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug:f.slug.value,name:f.name.value,phone:f.phone.value,email:f.email.value,message:f.message.value})});if(r.ok){msg.style.display="block";f.reset()}else{alert("Something went wrong. Please try again.")}}catch(e){alert("Network error. Please try again.")}finally{btn.disabled=false;btn.textContent="Send Request"}}' +
-    '</script>';
+    '</section>';
 }
 
 function aboutSection(d: ShopData, t: ThemeVars): string {
@@ -687,8 +677,8 @@ export function renderShopPage(d: ShopData, baseUrl: string): string {
   const t = THEMES[d.template] || THEMES.traditional;
   const sections = [
     claimBannerEl(d, t, baseUrl),
-    heroSection(d, t),
-    bookingSection(d, t),
+    heroSection(d, t, baseUrl),
+    bookingSection(d, t, baseUrl),
     aboutSection(d, t),
     servicesSection(d, t),
     instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken),

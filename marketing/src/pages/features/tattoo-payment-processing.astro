@@ -7,12 +7,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What payment methods does InkFlow support?", answer: "Credit card, debit card, Apple Pay, and Google Pay — all processed through Stripe. Deposits, balance collection, tips, and retail sales." },
     { question: "Does InkFlow add any markup on top of Stripe fees?", answer: "No. You pay only Stripe's standard 2.9% + $0.30 per transaction. InkFlow does not add any platform markup." },
     { question: "Can I split payments between artists automatically?", answer: "Yes. Set different commission rates per artist. InkFlow auto-calculates and records splits after every appointment." },
     { question: "Do I need a physical terminal to accept payments?", answer: "No. Send payment links via SMS or email after each session. Clients pay on their phone with Apple Pay or card — no terminal needed." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO: GEO首句即答案 -->

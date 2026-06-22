@@ -7,12 +7,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "How does InkFlow's review automation work?", answer: "After each appointment, InkFlow automatically sends a review request via SMS or email. The timing is based on your preference — immediately after, next day, or 48 hours later. Clients are directed to Google, Yelp, or Facebook based on their rating." },
     { question: "Can I track referrals without asking clients how they heard about us?", answer: "Yes. InkFlow tracks referral sources automatically through booking links, promo codes, and client-shared links. No more 'how did you hear about us?' forms with unreliable answers." },
     { question: "Does InkFlow integrate with Mailchimp or email marketing tools?", answer: "You don't need Mailchimp. InkFlow includes built-in review requests, referral tracking, and lead capture — no integration required. Automated emails and SMS are included in every plan." },
     { question: "What happens to leads that don't book immediately?", answer: "Leads receive an automated follow-up after 48 hours via SMS. They're also tagged by style preference for future targeted promotions." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO -->
