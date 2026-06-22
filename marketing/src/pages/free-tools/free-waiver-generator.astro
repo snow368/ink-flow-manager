@@ -9,12 +9,12 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Free Tattoo Consent Form Generator — Printable Waiver Template" description="Generate a free tattoo consent form template. Add studio info, medical disclaimers, print or save as PDF. Free tool, no signup." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is the consent form generator really free?", answer: "Yes. Generate unlimited consent forms for free. No account or signup required." },
     { question: "Are the generated waivers legally binding?", answer: "The template includes standard waiver language, but we recommend having a lawyer review it for your jurisdiction." },
     { question: "Can I customize the waiver template?", answer: "Yes. The generator includes editable fields for studio name, address, services, and medical disclaimer text." },
     { question: "How do I collect signatures on the generated form?", answer: "Print for in-person signing, or use InkFlow's digital waiver system for e-signatures with timestamps and IP logging." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">

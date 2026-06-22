@@ -9,12 +9,12 @@ import TattooPriceCalculator from '../../components/TattooPriceCalculator.astro'
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Price Calculator — Free Pricing Estimator for Artists &amp; Clients" description="Estimate tattoo prices based on size, detail, placement, and artist experience. Free interactive calculator for artists and clients. No signup." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is the tattoo price calculator free?", answer: "Yes. Calculate unlimited estimates. No account or signup required." },
     { question: "What factors affect tattoo pricing?", answer: "Size, detail level, placement, color vs black and grey, artist experience, and studio location all impact the final price." },
     { question: "Can I use this for client estimates?", answer: "Yes. The calculator provides a starting point. Final pricing should be confirmed during consultation." },
     { question: "How accurate is the estimate?", answer: "Based on industry averages. Actual pricing varies by artist, studio, and geographic location." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">
