@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,22 +33,9 @@ jobs:
       - run: npm run build
       - name: Install Wrangler
         run: npm install -g wrangler
-      - name: Check Token
-        run: |
-          if [ -z "${{ secrets.CF_API_TOKEN }}" ]; then
-            echo "CF_API_TOKEN is EMPTY"
-          else
-            echo "CF_API_TOKEN is set (length: ${#CF_API_TOKEN})"
-          fi
-        env:
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       - name: Deploy Pages (frontend)
         run: wrangler pages deploy dist/ --project-name ink-flow
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       - name: Install Worker deps
         run: cd workers && npm ci
       - name: Deploy Worker (API)
         run: cd workers && wrangler deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
