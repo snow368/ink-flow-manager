@@ -8,45 +8,85 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="Free Tattoo Consent Form Generator — Digital Waiver Template" description="Generate a free tattoo consent form for your studio. Digital waiver template with e-signature fields. Export as PDF. No signup required." />
-  <FAQSchema questions={[
+  <SEOHead slot="head" title="Free Tattoo Consent Form Generator — Printable Waiver Template" description="Generate a free tattoo consent form template. Add studio info, medical disclaimers, print or save as PDF. Free tool, no signup." />
+  <FAQSchema data={{ questions: [
     { question: "Is the consent form generator really free?", answer: "Yes. Generate unlimited consent forms for free. No account or signup required." },
-    { question: "Are the generated waivers legally binding?", answer: "The generated template includes standard waiver language, but we recommend having a lawyer review it for your specific jurisdiction." },
+    { question: "Are the generated waivers legally binding?", answer: "The template includes standard waiver language, but we recommend having a lawyer review it for your jurisdiction." },
     { question: "Can I customize the waiver template?", answer: "Yes. The generator includes editable fields for studio name, address, services, and medical disclaimer text." },
-    { question: "How do I collect signatures on the generated form?", answer: "Print the generated form for in-person signing, or use InkFlow's digital waiver system for e-signatures." },
-  ]} />
+    { question: "How do I collect signatures on the generated form?", answer: "Print for in-person signing, or use InkFlow's digital waiver system for e-signatures with timestamps and IP logging." },
+  ]}} />
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free Tattoo Consent Form Generator</h1>
-      <p class="mt-4 text-lg text-gray-400">Generate a professional tattoo consent form for your studio. Customize fields, add your studio info, and print or export as PDF.</p>
+      <p class="mt-4 text-lg text-gray-400">Generate a professional tattoo consent form. Customize fields, add your studio info, and print or save as PDF — no signup needed.</p>
     </div>
   </section>
 
   <section class="pb-12">
-    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8">
-      <FreeWaiverGenerator />
-    </div>
+    <div class="mx-auto max-w-xl px-4 sm:px-6 lg:px-8"><FreeWaiverGenerator /></div>
   </section>
 
-  <section class="border-t border-ink-800/50 py-12">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-2xl font-bold text-white">What Your Consent Form Should Include</h2>
-      <p class="mt-3 text-gray-400">A proper tattoo consent form protects both you and your client.</p>
-      <div class="mt-8 grid gap-4 sm:grid-cols-3 text-left">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Client Information</h3><p class="mt-1 text-xs text-gray-400">Full name, date of birth, ID verification, and emergency contact. Required for legal documentation.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Medical Disclosure</h3><p class="mt-1 text-xs text-gray-400">Allergies, medications, skin conditions, blood-borne diseases, and pregnancy status. Critical for client safety.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Liability &amp; Consent</h3><p class="mt-1 text-xs text-gray-400">Acknowledgment of risks, aftercare agreement, photo release, and minor consent if applicable. Must be signed and dated.</p></div>
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why You Need a Proper Consent Form</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">A generic waiver doesn't protect you in court.</h3><p class="mt-1 text-sm text-gray-400">A proper consent form with medical disclosure and liability acknowledgment is your studio's first line of legal protection.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Missing health info puts clients at risk.</h3><p class="mt-1 text-sm text-gray-400">Without a structured medical history form, clients may forget to mention medications or conditions that affect tattooing.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Paper waivers get lost — digital is better.</h3><p class="mt-1 text-sm text-gray-400">60% of paper waivers are lost within a year. This generator gives you a printable form, but digital waivers store everything permanently.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="border-t border-ink-800/50 py-16 text-center">
-    <h2 class="text-2xl font-bold text-white">Go Fully Digital — No Paper, No Lost Forms</h2>
-    <p class="mt-3 text-gray-400">InkFlow's digital waivers include QR check-in, e-signatures, and cloud storage. Clients sign on their phone — legally binding, always accessible.</p>
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What Every Consent Form Should Include</h2>
+      <p class="mt-3 text-center text-gray-400">A comprehensive consent form covers client info, medical history, liability, and aftercare.</p>
+      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Client Information</h3><p class="mt-1 text-xs text-gray-400">Full name, date of birth, photo ID, address, phone, emergency contact. Required for legal documentation.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Medical History</h3><p class="mt-1 text-xs text-gray-400">Allergies, medications, skin conditions, blood-borne diseases. Critical for client safety during the tattooing process.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Liability &amp; Consent</h3><p class="mt-1 text-xs text-gray-400">Permanent nature acknowledgment, risk disclaimer, release of liability, photo consent. Must be signed and dated.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Aftercare Agreement</h3><p class="mt-1 text-xs text-gray-400">Client agrees to follow care instructions. Touch-up policy, timeframe, and signature with date.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Free Generator vs InkFlow Digital Waivers</h2>
+      <div class="mt-8 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead><tr class="border-b border-ink-800 bg-ink-900/50"><th class="px-5 py-3 text-left text-gray-300"></th><th class="px-5 py-3 text-center text-gray-500">Generator</th><th class="px-5 py-3 text-center text-accent-400">InkFlow</th></tr></thead>
+          <tbody class="divide-y divide-ink-800">
+            <tr><td class="px-5 py-3 text-gray-400">Printable form</td><td class="px-5 py-3 text-center text-gray-500">✅</td><td class="px-5 py-3 text-center text-accent-400">✅</td></tr>
+            <tr><td class="px-5 py-3 text-gray-400">E-signature with audit trail</td><td class="px-5 py-3 text-center text-gray-500">❌</td><td class="px-5 py-3 text-center text-accent-400">✅</td></tr>
+            <tr><td class="px-5 py-3 text-gray-400">QR check-in</td><td class="px-5 py-3 text-center text-gray-500">❌</td><td class="px-5 py-3 text-center text-accent-400">✅</td></tr>
+            <tr><td class="px-5 py-3 text-gray-400">Auto-fills from booking</td><td class="px-5 py-3 text-center text-gray-500">❌</td><td class="px-5 py-3 text-center text-accent-400">✅</td></tr>
+            <tr><td class="px-5 py-3 text-gray-400">Cloud storage + compliance</td><td class="px-5 py-3 text-center text-gray-500">❌</td><td class="px-5 py-3 text-center text-accent-400">✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Waiver Method Is Right for You?</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist, occasional clients</h3><p class="mt-1 text-sm text-gray-400">The free printable generator works. Print, sign, file. Just keep organized records for inspections.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Busy studio with daily clients</h3><p class="mt-1 text-sm text-gray-400">Digital waivers save 5+ minutes per check-in. Clients sign on their phone via QR code. InkFlow's digital waivers are free.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Compliance-focused studio</h3><p class="mt-1 text-sm text-gray-400">Full audit trails with timestamps and IP logs meet health department standards. Export PDFs for inspections in seconds.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20 text-center">
+    <h2 class="text-2xl font-bold text-white">Go Digital — No Paper, No Lost Forms</h2>
+    <p class="mt-3 text-gray-400">InkFlow's digital waivers include QR check-in, e-signatures, and cloud storage. Clients sign on their phone — always accessible.</p>
     <a href="/features/tattoo-waiver-software" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
+    <p class="mt-3 text-sm text-gray-600"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Try InkFlow Free →</a></p>
   </section>
   <Footer />
 </BaseLayout>
