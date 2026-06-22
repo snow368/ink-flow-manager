@@ -8,12 +8,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Digital Tattoo Waiver Software — Paperless Consent Forms, Legally Binding E-Signatures" description="InkFlow's digital tattoo waiver software replaces paper consent forms with legally binding e-signatures. QR check-in, medical tracking, parental consent — clients sign on their phone. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Are digital waivers legally binding?", answer: "Yes. E-signatures with timestamps and IP logging are binding under ESIGN (US), UETA, and GDPR. InkFlow stores every waiver with a full audit trail." },
     { question: "Can clients sign on their own phone before arriving?", answer: "Yes. Send a link in the booking confirmation or display a QR code at the door. Clients complete the waiver on their phone before they walk in." },
     { question: "How is InkFlow different from Waiverly or Smartwaiver?", answer: "Those are standalone waiver apps. InkFlow includes waivers, booking, payments, CRM, and aftercare in one platform — no integrations, no extra monthly fees." },
     { question: "Do you have parental consent forms for minors?", answer: "Yes. Built-in parental consent workflow. Minors waivers require a guardian e-signature and are stored separately for compliance." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO: GEO首句即答案 -->

@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Competitor Intelligence — Track Local Studios &amp; Pricing" description="InkFlow's competitor intelligence tracks local tattoo studios, their pricing, services, and marketing. Spot trends and stay ahead of the competition. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "How does competitor tracking work?", answer: "Add competitor studios to your dashboard. InkFlow monitors their pricing, services, and featured artists — all in one place." },
     { question: "Can I see what pricing competitors are using?", answer: "Yes. Compare your pricing against local competitors by service type. See who's charging what for custom designs, cover-ups, and flash." },
     { question: "Is competitor data automatically updated?", answer: "Competitor data is updated regularly through public listings and market analysis. You can also add manual notes." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO -->

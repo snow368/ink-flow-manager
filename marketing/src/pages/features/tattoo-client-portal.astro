@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Client Portal — Appointments, Waivers &amp; History in One Place" description="InkFlow's tattoo client portal gives clients access to their appointment history, signed waivers, and upcoming bookings. No more 'can you send me my waiver?' Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What can clients see in the portal?", answer: "Clients can view their appointment history, signed waivers, upcoming bookings, and past tattoo photos. They can also reschedule or cancel appointments." },
     { question: "Do clients need to create an account?", answer: "No account needed for booking. A portal account is created automatically after their first appointment. They access it via a secure link." },
     { question: "Can clients download their waivers?", answer: "Yes. Clients can download and print any signed waiver from their portal at any time." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

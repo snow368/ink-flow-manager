@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Studio Analytics — Revenue, Bookings &amp; Artist Performance" description="InkFlow's studio analytics dashboard tracks revenue, artist performance, booking trends, and client growth. Data-driven decisions for your tattoo studio. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What metrics does the analytics dashboard show?", answer: "Revenue trends, booking volume, artist performance, client growth, no-show rates, and average session value. All updated in real-time." },
     { question: "Can I see performance per artist?", answer: "Yes. Compare artists by revenue, bookings completed, average session value, and client satisfaction ratings." },
     { question: "Are analytics available on mobile?", answer: "Yes. The analytics dashboard is fully responsive and works on any device — phone, tablet, or desktop." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Supply Brands Directory — Find &amp; Compare Suppliers" description="Discover and compare tattoo supply brands. See what other studios use, read reviews, and find your next supplier. Ink, needles, cartridges, machines, and aftercare." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What types of supply brands are listed?", answer: "Ink brands, needle and cartridge manufacturers, tattoo machines, aftercare products, PPE, and studio equipment. Updated regularly." },
     { question: "Can I leave reviews for supply brands?", answer: "Yes. Share your experience with specific brands and products. Help other studio owners make informed purchasing decisions." },
     { question: "Are prices listed for supplies?", answer: "Where available, we list estimated retail prices. Actual pricing varies by distributor. Links to official distributors are provided." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

@@ -7,12 +7,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "How do I get my booking page?", answer: "Your booking page is created automatically when you sign up for InkFlow. Choose your URL, upload your photo, and share the link on Instagram or your website." },
     { question: "Can I use my own domain for my booking page?", answer: "Yes. Pro and Plus users can connect their own domain. Just add a CNAME record — no technical support needed." },
     { question: "Does the booking page collect deposits?", answer: "Yes. Clients pay a deposit to book. This locks the appointment and cuts no-shows by up to 80%." },
     { question: "Can I embed the booking page on my existing website?", answer: "Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-20 sm:pt-32 sm:pb-28">

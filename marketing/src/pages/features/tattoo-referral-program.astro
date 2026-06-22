@@ -8,11 +8,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Studio Referral Program — Automated Referral Tracking" description="InkFlow's referral program automation tracks which clients send you business and rewards your best advocates automatically. 40% higher conversion from referred leads. Start free." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "How does automated referral tracking work?", answer: "Every new client is tagged with their referral source. Track conversion rates by referrer. Reward advocates automatically based on referral volume." },
     { question: "Can I set up automatic rewards?", answer: "Yes. Set reward rules — 5 referrals = $50 credit, 10 referrals = free touch-up. InkFlow tracks and notifies both parties automatically." },
     { question: "Do referred clients convert at higher rates?", answer: "Yes. Referred clients book at 40% higher rates than organic leads. They arrive with trust already established." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

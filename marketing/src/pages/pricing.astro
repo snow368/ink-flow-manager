@@ -28,13 +28,13 @@ import FAQSchema from '../components/FAQSchema.astro';
       { "@type": "Offer", "name": "Plus", "price": "49.99", "priceCurrency": "USD", "description": "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
     ]
   })} />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is there a free plan?", answer: "Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience." },
     { question: "What is the difference between Free and Starter?", answer: "Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection." },
     { question: "Can I switch plans later?", answer: "Yes. Upgrade or downgrade anytime. Upgrades take effect immediately, downgrades at the next billing cycle." },
     { question: "What is included in the beta period?", answer: "During beta testing, all features are free on every plan. No payment needed. We will notify you before the official launch." },
     { question: "How does multi-shop pricing work on Plus?", answer: "First shop is $29.99/mo. Each additional shop is $15/mo. All locations managed from one dashboard with cross-shop analytics." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- HERO -->

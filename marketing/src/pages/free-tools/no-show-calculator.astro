@@ -22,12 +22,12 @@ import NoShowCalculator from '../../components/NoShowCalculator.astro';
       { "@type": "HowToStep", "position": 4, "name": "View your annual loss", "text": "The calculator shows your estimated annual revenue lost to no-shows and potential savings." }
     ]
   })} />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "Is the no-show calculator free?", answer: "Yes. Calculate unlimited scenarios for free. No account or signup required." },
     { question: "How accurate is the estimate?", answer: "The estimate is based on your inputs. For best results, use your actual no-show rate from booking records rather than guessing." },
     { question: "What's the average no-show rate for tattoo studios?", answer: "Industry data shows most studios lose 10-30% of booked appointments to no-shows." },
     { question: "How can I reduce no-shows?", answer: "InkFlow's deposit-based booking system cuts no-shows by up to 80%. Automated reminders and waitlists help recover last-minute cancellations." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <!-- Hero -->
