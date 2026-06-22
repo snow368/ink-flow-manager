@@ -6,7 +6,8 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description, canonical, ogImage } = Astro.props;
+const { title, description, canonical } = Astro.props;
+const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
 const site = 'https://ink-flows.com';
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
@@ -29,9 +30,9 @@ const jsonLd = JSON.stringify({
 <meta property="og:url" content={canonical || Astro.url.href} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
-{ogImage && <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />}
+<meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={`${title} | InkFlow`} />
 <meta name="twitter:description" content={description} />
-{ogImage && <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />}
+<meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
 <script type="application/ld+json" set:html={jsonLd} />

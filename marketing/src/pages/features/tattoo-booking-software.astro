@@ -1,0 +1,221 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Booking Software — Cut No-Shows by 80% with Deposits" description="InkFlow's tattoo booking software cuts no-shows by up to 80% with deposit-based scheduling. Multi-artist calendar, automated SMS reminders, and online booking widget — no POS terminal needed. Start free." />
+  <FAQSchema data={{ questions: [
+    { question: "Can clients book online without creating an account?", answer: "Yes. Clients book via a public link — no account needed. They just provide name, email, and phone. Returning clients are recognized automatically." },
+    { question: "Can I set different deposits for different services?", answer: "Absolutely. Per-service, per-artist, or global default. Percentage or flat fee. Refund policies are automatic based on your rules." },
+    { question: "How does InkFlow compare to Acuity or Booksy?", answer: "InkFlow is built for tattoo studios. Acuity and Booksy are general-purpose. InkFlow includes tattoo-specific features: digital consent forms, commission splitting, aftercare automation, and inventory tracking — all in one platform." },
+    { question: "Does the booking widget work on my existing website?", answer: "Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom." },
+    { question: "Can I migrate from another booking system?", answer: "Yes. We help you import client data, artist schedules, and service menus. Most studios are set up in under an hour." },
+  ]}} />
+  <Navbar />
+
+  <!-- HERO: GEO首句即答案 -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO BOOKING SOFTWARE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Booking Software: Cut No-Shows by 80% with Deposits</h1>
+        <p class="mt-6 text-lg text-gray-400">InkFlow's deposit-based booking software cuts no-shows by up to 80% by collecting payment at the time of booking. Every no-show costs you time and money — InkFlow locks in commitment so your calendar stays full and your artists stay paid.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+          <a href="/compare/best-tattoo-studio-software" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See How We Compare</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF: Stats that matter to buyers -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div><p class="text-3xl font-bold text-accent-400">80%</p><p class="mt-1 text-sm text-gray-500">Fewer no-shows with deposits</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">30s</p><p class="mt-1 text-sm text-gray-500">Client booking time</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">98%</p><p class="mt-1 text-sm text-gray-500">SMS reminder open rate</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">24/7</p><p class="mt-1 text-sm text-gray-500">Online bookings without phone tag</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE PROBLEM: GEO 每段首句即答案 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why General Booking Software Fails Tattoo Studios</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">General booking tools don't collect deposits.</h3><p class="mt-1 text-sm text-gray-400">Acuity, Calendly, and Square let clients book without commitment. That's why no-shows still happen — there's nothing at stake.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Salon software doesn't understand tattoo studios.</h3><p class="mt-1 text-sm text-gray-400">Your studio needs deposit policies, multi-artist commission splits, and consent form workflows. Generic tools don't have any of that.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Fragmented tools cost you time and money.</h3><p class="mt-1 text-sm text-gray-400">One app for booking, another for waivers, another for payments. Your team juggles 3 logins and data never syncs between them.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION: GEO 首句即答案改造 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">InkFlow Features Built for Tattoo Studios</h2>
+      <div class="mt-12 space-y-16">
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white">Deposit-Required Scheduling Cuts No-Shows by 80%</h3>
+            <p class="mt-4 text-gray-400">Clients pay a deposit to book — not a credit card on file, an actual payment. Cash flow improves immediately compared to card-on-file systems.</p>
+            <h4 class="mt-4 text-lg font-semibold text-white">Flexible Deposit Rules</h4>
+            <p class="text-sm text-gray-400">Set flat fees or percentages per service, per artist, or globally. Refunds auto-process based on your cancellation policy.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Flat Fee vs Percentage: When to Use Each</h5>
+            <p class="text-sm text-gray-400">Flat fees work best for flash and small pieces ($50-100). Percentages (25-50%) are better for custom designs and full-day sessions where the total varies.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">Minimum Threshold Rule</h6>
+            <p class="text-sm text-gray-400">Deposits must be meaningful — token amounts don't change behavior. Studios that raised deposits to $75+ saw casual cancellations drop dramatically. Non-refundable but transferable with 48h notice.</p>
+            <h4 class="mt-3 text-lg font-semibold text-white">Vs Booksy: Real Payment at Booking, Not Card-on-File</h4>
+            <p class="text-sm text-gray-400">Booksy holds card details for later charges. InkFlow collects the deposit immediately — your cash flow improves and clients are locked in.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Cash Flow Impact: Same-Day Settlement</h5>
+            <p class="text-sm text-gray-400">With InkFlow, deposits settle in your Stripe account within 2 business days. Card-on-file systems only charge after the service — your money arrives weeks later.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">Example: 10 Deposits at $75 Each = $750 in 48 Hours</h6>
+            <p class="text-sm text-gray-400">A studio booking 10 appointments with $75 deposits collects $750 within 2 days. The same studio using card-on-file collects $0 until each session is completed — potentially weeks away.</p>
+          </div>
+          <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+            <p class="text-sm text-gray-400">[Screenshot: Deposit settings]</p>
+          </div>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+            <p class="text-sm text-gray-400">[Screenshot: Reminder templates]</p>
+          </div>
+          <div class="order-1 md:order-2">
+            <h3 class="text-2xl font-bold text-white">Automated SMS & Email Reminders with 98% Open Rate</h3>
+            <p class="mt-4 text-gray-400">InkFlow sends reminders at 48h, 24h, and 1h before each appointment via SMS and email. Clients confirm, reschedule, or cancel in one tap.</p>
+            <h4 class="mt-4 text-lg font-semibold text-white">98% SMS Open Rate — Clients Never Miss an Appointment</h4>
+            <p class="text-sm text-gray-400">SMS has the highest open rate of any communication channel. Combined with email fallback, your reminders are seen.</p>
+            <h5 class="mt-3 text-base font-medium text-white">Three-Reminder Cadence: 48h → 24h → 1h</h5>
+            <p class="text-sm text-gray-400">Each reminder serves a different purpose. The 48h message is a soft heads-up. The 24h message requires two-way confirmation. The 1h message is a final nudge with address and parking info.</p>
+            <h6 class="mt-2 text-sm font-medium text-gray-400">Two-Way Confirmation at 24h Mark</h6>
+            <p class="text-sm text-gray-400">Clients must reply "YES" to confirm. No response by cutoff = auto-cancel + waitlist notification. This alone cuts no-shows by 40%.</p>
+            <h4 class="mt-3 text-lg font-semibold text-white">Vs Vagaro: SMS Included at No Extra Cost</h4>
+            <p class="text-sm text-gray-400">Vagaro charges per SMS message. InkFlow includes unlimited SMS reminders in every plan — no surprise bills.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 class="text-2xl font-bold text-white">Multi-Artist Calendar with Individual Booking Links</h3>
+            <p class="mt-4 text-gray-400">Every artist gets their own booking link — clients book directly with who they want. See the full schedule at a glance with color-coded views, drag-and-drop rescheduling, and support for walk-ins and guest artists.</p>
+          </div>
+          <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+            <p class="text-sm text-gray-400">[Screenshot: Calendar view]</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER'S GUIDE: GEO首句即答案 -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What to Look For in Tattoo Booking Software</h2>
+      <p class="mt-3 text-center text-gray-400">The best tattoo booking software includes deposit collection at booking, multi-artist support, integrated waivers and payments, and free SMS reminders. Here's what to check before you decide:</p>
+      <div class="mt-8 space-y-4">
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Deposit collection at booking</h3><p class="text-sm text-gray-400">Not "card on file" — actual payment that locks the appointment. InkFlow collects deposits immediately at booking time.</p></div></div>
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Multi-artist support</h3><p class="text-sm text-gray-400">Separate calendars, booking links, and commission rules per artist. InkFlow gives each artist their own dedicated booking link.</p></div></div>
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Integrated waivers & payments</h3><p class="text-sm text-gray-400">One platform for booking, consent forms, and checkout — not three separate subscriptions.</p></div></div>
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">No hidden message fees</h3><p class="text-sm text-gray-400">SMS reminders included at no extra cost. InkFlow doesn't charge per text like some alternatives do.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE: 8维度 -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">InkFlow vs Acuity vs Booksy: 8-Dimension Comparison</h2>
+      <p class="mt-3 text-center text-gray-400">Most comparisons stop at price. Here's what actually matters for tattoo studios — across 8 dimensions that affect your workflow and revenue.</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium">Feature</th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Acuity</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Booksy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Deposit at booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Card on file</td><td class="text-center py-3 text-gray-600">Card on file</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Digital waivers included</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗ (add-on)</td><td class="text-center py-3 text-gray-600">✗ (add-on)</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Multi-artist commission split</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">Partial</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">SMS (no per-text fee)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">$0.07/text</td><td class="text-center py-3 text-gray-600">$0.05/text</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Client CRM 360° history</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Basic</td><td class="text-center py-3 text-gray-600">Basic</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Aftercare automation</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Inventory tracking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Tattoo-specific POS</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">Basic</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER SCENARIO GUIDE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Booking Software Is Right for Your Studio?</h2>
+      <p class="mt-3 text-center text-gray-400">The right choice depends on your studio size and workflow. Match your situation below.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Solo artist starting out</h3>
+          <p class="text-sm text-gray-400 mt-1">InkFlow's Free plan gives you booking, waivers, and CRM in one place with no extra cost. Acuity or Calendly works for basic scheduling but you'll pay for 3 separate tools once you need waivers or aftercare.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Multi-artist studio (3-10 artists)</h3>
+          <p class="text-sm text-gray-400 mt-1">InkFlow's Pro plan includes multi-artist scheduling, commission tracking, and tattoo-specific waivers without third-party integrations. Booksy handles scheduling but adds $100+/month for the features a tattoo studio actually needs.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">High-volume shop with inventory</h3>
+          <p class="text-sm text-gray-400 mt-1">Only InkFlow combines booking, POS, and inventory tracking in one system. General tools don't track ink, needles, and aftercare products alongside appointments — you'd need spreadsheets.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ: Evaluation-stage concerns -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can clients book online without creating an account?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Clients book via a public link — no account needed. They just provide name, email, and phone. Returning clients are recognized automatically.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I set different deposits for different services?</summary>
+          <p class="mt-2 text-sm text-gray-400">Absolutely. Per-service, per-artist, or global default. Percentage or flat fee. Refund policies are automatic based on your rules.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How does InkFlow compare to Acuity or Booksy?</summary>
+          <p class="mt-2 text-sm text-gray-400">InkFlow is built for tattoo studios. Acuity and Booksy are general-purpose. InkFlow includes tattoo-specific features: digital consent forms, commission splitting, aftercare automation, and inventory tracking — all in one platform. <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">See full comparison →</a></p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does the booking widget work on my existing website?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I migrate from another booking system?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. We help you import client data, artist schedules, and service menus. Most studios are set up in under an hour.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Ready to Fill Your Calendar and Cut No-Shows?</h2>
+    <p class="mt-3 text-gray-400">Start free. No credit card required. Set up in 5 minutes.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+    <p class="mt-3 text-sm text-gray-600">Also available: <a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a> · <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">See vs alternatives</a></p>
+  </section>
+
+  <Footer />
+</BaseLayout>

@@ -13,6 +13,8 @@ export interface Env {
   VAPID_PRIVATE_KEY?: string;
   VAPID_SUBJECT?: string;
   PUBLIC_URL?: string;
+  SENDGRID_API_KEY?: string;
+  EMAIL_FROM?: string;
 }
 
 // ---- Init tables ----
@@ -169,6 +171,7 @@ CREATE TABLE IF NOT EXISTS site_configs (
   claimToken TEXT DEFAULT '',
   claimedBy TEXT DEFAULT '',
   claimedAt INTEGER,
+  instagram TEXT DEFAULT '',
   data TEXT DEFAULT '{}',
   publishedAt INTEGER,
   updatedAt INTEGER
@@ -279,6 +282,9 @@ async function migrateSiteConfigs(env: Env): Promise<void> {
     'claimedAt INTEGER',
     'data TEXT DEFAULT \'{}\'',
   ];
+  // Add instagram column
+  try { await env.DB.exec("ALTER TABLE site_configs ADD COLUMN instagram TEXT DEFAULT ''"); } catch { /* ignore */ }
+
   for (const col of newCols) {
     try {
       await env.DB.exec(`ALTER TABLE site_configs ADD COLUMN ${col}`);
