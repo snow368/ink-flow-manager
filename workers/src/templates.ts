@@ -29,6 +29,8 @@ export interface ShopData {
   priceRange?: string;
   website?: string;
   instagram?: string;
+  /** Layout pattern: classic | hero-grid | link-bio | studio-roster | cards | split | editorial | minimal-bar */
+  layout?: string;
 }
 
 interface ThemeVars {
@@ -675,6 +677,30 @@ function layout(content: string, d: ShopData, t: ThemeVars, baseUrl: string): st
 
 export function renderShopPage(d: ShopData, baseUrl: string): string {
   const t = THEMES[d.template] || THEMES.traditional;
+  const layoutType = d.layout || 'classic';
+
+  switch (layoutType) {
+    case 'hero-grid':
+      return renderHeroGrid(d, t, baseUrl);
+    case 'link-bio':
+      return renderLinkBio(d, t, baseUrl);
+    case 'studio-roster':
+      return renderStudioRoster(d, t, baseUrl);
+    case 'cards':
+      return renderCardsLayout(d, t, baseUrl);
+    case 'split':
+      return renderSplitLayout(d, t, baseUrl);
+    case 'editorial':
+      return renderEditorialLayout(d, t, baseUrl);
+    case 'minimal-bar':
+      return renderMinimalBar(d, t, baseUrl);
+    default:
+      return renderClassicLayout(d, t, baseUrl);
+  }
+}
+
+/** Classic single-page scroll (existing) */
+function renderClassicLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
   const sections = [
     claimBannerEl(d, t, baseUrl),
     heroSection(d, t, baseUrl),
@@ -690,48 +716,235 @@ export function renderShopPage(d: ShopData, baseUrl: string): string {
   return layout(sections.join('\n'), d, t, baseUrl);
 }
 
+/** Hero + large gallery grid */
+function renderHeroGrid(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionFull(d, t, baseUrl),
+    gallerySectionBig(d.photos, t, d.studioName),
+    servicesSection(d, t),
+    instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken),
+    mapSection(d, t),
+    ctaSection(d, t, baseUrl),
+    footerMinimal(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Link-in-bio (Linktree style) */
+function renderLinkBio(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return layout(renderLinkBioContent(d, t, baseUrl), d, t, baseUrl);
+}
+
+/** Multi-artist studio roster */
+function renderStudioRoster(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionCompact(d, t, baseUrl),
+    artistsSection(d, t),
+    servicesSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    bookingSection(d, t, baseUrl),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Card-based everything */
+function renderCardsLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionCompact(d, t, baseUrl),
+    servicesCards(d, t),
+    galleryCards(d.photos, t, d.studioName),
+    mapSection(d, t),
+    ctaCard(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Split screen sections */
+function renderSplitLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionSplit(d, t, baseUrl),
+    aboutSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    bookingSection(d, t, baseUrl),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Editorial / magazine style */
+function renderEditorialLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionEditorial(d, t, baseUrl),
+    aboutSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Minimal with sticky bottom bar */
+function renderMinimalBar(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return layout(renderMinimalBarContent(d, t, baseUrl), d, t, baseUrl);
+}
+
+// ---- New section variants ----
+
+function heroSectionFull(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center; background-attachment: fixed;' : 'background: ' + t.bgAlt + ';';
+  return '<section class="hero" style="min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;' + bgImage + '"><div class="hero-content" style="max-width:800px;padding:2rem;"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2.5rem,7vw,4.5rem);color:#fff;margin:0 0 0.5rem">' + safe(d.studioName) + '</h1>' + (d.bio ? '<p style="font-family:' + t.fontBody + ';font-size:1.2rem;color:rgba(255,255,255,0.85);margin:0 auto 1.5rem;max-width:600px">' + safe(d.bio) + '</p>' : '') + '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" class="btn-primary" style="display:inline-block;padding:1rem 2.5rem;background:' + t.accent + ';color:#fff;text-decoration:none;font-weight:700;font-size:1.1rem;border-radius:50px;min-height:44px">Book Appointment</a></div></section>';
+}
+
+function heroSectionCompact(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:4rem 2rem;text-align:center;background:' + t.bg + '"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,5vw,3rem);color:' + t.text + ';margin:0">' + safe(d.studioName) + '</h1>' + (d.rating ? '<div style="color:' + t.starColor + ';font-size:1.2rem;margin-top:0.5rem">' + stars(d.rating) + ' ' + d.rating + '</div>' : '') + (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="display:inline-block;margin-top:1rem;padding:0.75rem 2rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600">Call Now</a>' : '') + '</section>';
+}
+
+function heroSectionSplit(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'url(' + safe(d.photos[0]) + ')' : t.bgAlt;
+  return '<section style="display:grid;grid-template-columns:1fr 1fr;min-height:70vh">' +
+    '<div style="background:linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.5)),' + bgImage + ';background-size:cover;background-position:center"></div>' +
+    '<div style="display:flex;flex-direction:column;justify-content:center;padding:3rem;background:' + t.bg + ';color:' + t.text + '">' +
+    '<h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,4vw,3.5rem);margin:0 0 1rem">' + safe(d.studioName) + '</h1>' +
+    '<p style="font-family:' + t.fontBody + ';font-size:1rem;color:' + t.textMuted + ';margin-bottom:1.5rem">' + (d.bio || 'Professional tattoo studio serving ' + safe(d.city) + '.') + '</p>' +
+    '</div></section>';
+}
+
+function heroSectionEditorial(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center;' : 'background: ' + t.bgAlt + ';';
+  return '<section style="position:relative;min-height:90vh;' + bgImage + 'display:flex;align-items:flex-end"><div style="padding:3rem 2rem;background:linear-gradient(transparent,' + t.bg + ');width:100%"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2.5rem,6vw,4rem);color:' + t.text + ';margin:0">' + safe(d.studioName) + '</h1><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:1.1rem;margin-top:0.5rem">' + safe(d.city) + ', ' + safe(d.state) + '</p></div></section>';
+}
+
+function artistsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:900px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Our Artists</h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem">' +
+    [1,2,3].map(i => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';padding:2rem;text-align:center"><div style="width:80px;height:80px;border-radius:50%;background:' + t.border + ';margin:0 auto 1rem"></div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1.1rem;margin:0 0 0.25rem">Artist ' + i + '</h3><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem;margin:0">Specialist in custom work</p></div>').join('\n') +
+    '</div></div></section>';
+}
+
+function servicesCards(d: ShopData, t: ThemeVars): string {
+  const services = d.services?.length ? d.services : ['Custom Tattoos', 'Cover-ups', 'Fine Line', 'Black & Grey', 'Color Work', 'Consultation'];
+  return '<section style="padding:4rem 2rem;background:' + t.bg + '"><div style="max-width:1000px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Services</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem">' + services.map(s => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:16px;padding:2rem;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.15)"><div style="width:48px;height:48px;border-radius:50%;background:' + t.accent + '20;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem">✦</div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1rem;margin:0">' + safe(s) + '</h3></div>').join('') + '</div></div></section>';
+}
+
+function gallerySectionBig(photos: string[], t: ThemeVars, studioName: string): string {
+  if (!photos?.length) return '';
+  return '<section style="padding:3rem 1rem;background:' + t.bg + '"><div style="max-width:1200px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 1.5rem">Our Work</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;grid-auto-flow:dense">' + photos.slice(0, 12).map((p, i) => '<a href="' + safe(p) + '" style="grid-row:span ' + (i % 3 === 0 ? 2 : 1) + ';border-radius:12px;overflow:hidden;display:block"><img src="' + safe(p) + '" alt="" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"></a>').join('\n') + '</div></div></section>';
+}
+
+function galleryCards(photos: string[], t: ThemeVars, studioName: string): string {
+  if (!photos?.length) return '';
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:1000px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Portfolio</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem">' + photos.slice(0, 8).map(p => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:16px;overflow:hidden;padding:0.75rem"><img src="' + safe(p) + '" alt="" style="width:100%;height:200px;object-fit:cover;border-radius:12px"><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.8rem;margin:0.5rem 0 0;text-align:center;padding:0.25rem">Tattoo at ' + safe(studioName) + '</p></div>').join('\n') + '</div></div></section>';
+}
+
+function ctaCard(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:4rem 2rem;text-align:center;background:' + t.bg + '"><div style="max-width:500px;margin:0 auto;background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:20px;padding:3rem 2rem"><h2 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:1.6rem;margin:0 0 0.5rem">Ready to Book?</h2><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';margin-bottom:1.5rem;font-size:0.95rem">Book your appointment online — deposits and reminders included.</p><a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="display:inline-block;padding:1rem 2rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:700">Book Now</a></div></section>';
+}
+
+function footerMinimal(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<footer style="padding:1.5rem;text-align:center;background:' + t.bg + ';border-top:1px solid ' + t.border + ';font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem">' + safe(d.studioName) + ' &mdash; ' + safe(d.city) + ', ' + safe(d.state) + ' &middot; <a href="' + safe(baseUrl) + '" style="color:' + t.accent + ';text-decoration:none">InkFlow</a></footer>';
+}
+
+function renderLinkBioContent(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const links = [
+    { label: 'Book Appointment', url: baseUrl + '/book?slug=' + d.slug + '&embed=1', icon: '📅' },
+    { label: 'View Portfolio', url: baseUrl + '/s/' + d.slug, icon: '🖼️' },
+  ];
+  if (d.instagram) links.push({ label: 'Instagram', url: 'https://instagram.com/' + d.instagram.replace(/^@/, ''), icon: '📸' });
+  if (d.phone) links.push({ label: 'Call ' + d.phone, url: 'tel:' + d.phone, icon: '📞' });
+  if (d.address) links.push({ label: 'Get Directions', url: 'https://maps.google.com/?q=' + encodeUri(d.address + ', ' + d.city + ', ' + d.state), icon: '📍' });
+
+  return claimBannerEl(d, t, baseUrl) +
+    '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:' + t.bg + '">' +
+    '<div style="width:80px;height:80px;border-radius:50%;background:' + t.card + ';border:3px solid ' + t.accent + ';display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:' + t.accent + ';margin-bottom:1rem">' + (d.studioName.charAt(0)) + '</div>' +
+    '<h1 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:1.4rem;margin:0;text-align:center">' + safe(d.studioName) + '</h1>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.9rem;margin:0.25rem 0 1.5rem;text-align:center">' + safe(d.city) + ', ' + safe(d.state) + (d.rating ? ' &middot; ' + stars(d.rating) + ' ' + d.rating : '') + '</p>' +
+    '<div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:400px">' + links.map(l => '<a href="' + safe(l.url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:14px;text-decoration:none;color:' + t.text + ';font-family:' + t.fontBody + ';font-weight:500;font-size:0.95rem;transition:transform .15s" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'"><span style="font-size:1.2rem">' + l.icon + '</span><span style="flex:1">' + l.label + '</span><span style="color:' + t.textMuted + '">→</span></a>').join('\n') + '</div>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.75rem;margin-top:2rem">Powered by <a href="https://ink-flows.com" style="color:' + t.accent + ';text-decoration:none">InkFlow</a></p></div>';
+}
+
+function renderMinimalBarContent(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center;' : 'background: ' + t.bgAlt + ';';
+  return claimBannerEl(d, t, baseUrl) +
+    '<div style="padding-bottom:80px;min-height:100vh;' + bgImage + 'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 2rem 6rem">' +
+    '<h1 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:clamp(1.8rem,4vw,2.5rem);text-shadow:0 2px 10px rgba(0,0,0,0.3)">' + safe(d.studioName) + '</h1>' +
+    (d.bio ? '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';max-width:400px;margin:0.5rem auto 1.5rem">' + safe(d.bio) + '</p>' : '') +
+    '</div>' +
+    '<div style="position:fixed;bottom:0;left:0;right:0;background:' + t.card + ';border-top:1px solid ' + t.border + ';padding:0.75rem 1rem;display:flex;gap:0.5rem;justify-content:center;z-index:100">' +
+    (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="flex:1;padding:0.75rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600;text-align:center;font-size:0.9rem">📞 Call</a>' : '') +
+    '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="flex:2;padding:0.75rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600;text-align:center;font-size:0.9rem">📅 Book Now</a>' +
+    (d.instagram ? '<a href="https://instagram.com/' + d.instagram.replace(/^@/, '') + '" style="flex:1;padding:0.75rem;border:1px solid ' + t.border + ';color:' + t.text + ';text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:500;text-align:center;font-size:0.9rem">📸 IG</a>' : '') +
+    '</div>';
+}
+
 export const ALL_TEMPLATES = [
-  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless' },
-  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red' },
-  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel' },
-  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold' },
-  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black' },
-  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones' },
-  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white' },
-  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green' },
-  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold' },
-  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan on dark' },
-  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete' },
-  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like' },
-  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels' },
-  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark' },
-  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy' },
-  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold' },
-  { id: 'japanese', name: 'Japanese', tier: 'pro', desc: 'Traditional irezumi red' },
-  { id: 'midnight', name: 'Midnight', tier: 'free', desc: 'Deep blue night' },
-  { id: 'cyberpunk', name: 'Cyberpunk', tier: 'pro', desc: 'Neon magenta cyber' },
-  { id: 'botanical', name: 'Botanical', tier: 'free', desc: 'Sage green' },
-  { id: 'metallic', name: 'Metallic', tier: 'plus', desc: 'Silver chrome' },
-  { id: 'sunset', name: 'Sunset', tier: 'pro', desc: 'Warm orange glow' },
-  { id: 'sakura', name: 'Sakura', tier: 'pro', desc: 'Cherry blossom pink' },
-  { id: 'tribal', name: 'Tribal', tier: 'free', desc: 'Black & grey' },
-  { id: 'steampunk', name: 'Steampunk', tier: 'plus', desc: 'Brass & bronze' },
-  { id: 'arctic', name: 'Arctic', tier: 'free', desc: 'Cool ice blue' },
-  { id: 'desert', name: 'Desert', tier: 'free', desc: 'Warm desert tones' },
-  { id: 'punk', name: 'Punk', tier: 'pro', desc: 'High-contrast yellow' },
-  { id: 'celestial', name: 'Celestial', tier: 'plus', desc: 'Gold on midnight' },
-  { id: 'neonoir', name: 'Neonoir', tier: 'pro', desc: 'Red noir dramatic' },
-  { id: 'lavender', name: 'Lavender', tier: 'free', desc: 'Soft purple' },
-  { id: 'biomechanical', name: 'Biomechanical', tier: 'pro', desc: 'Metallic red & grey' },
-  { id: 'chicano', name: 'Chicano', tier: 'pro', desc: 'Warm brown & gold' },
-  { id: 'maori', name: 'Maori', tier: 'free', desc: 'Tribal red & black' },
-  { id: 'trash-polka', name: 'Trash Polka', tier: 'plus', desc: 'Collage red chaos' },
-  { id: 'new-school', name: 'New School', tier: 'pro', desc: 'Bright neon cartoon' },
-  { id: 'halloween', name: 'Halloween', tier: 'free', desc: 'Orange & black' },
-  { id: 'nordic', name: 'Nordic', tier: 'free', desc: 'Cool steel blue' },
-  { id: 'tropical', name: 'Tropical', tier: 'pro', desc: 'Coral & teal' },
-  { id: 'monochrome', name: 'Monochrome', tier: 'free', desc: 'Clean grey scale' },
-  { id: 'retro-wave', name: 'Retro Wave', tier: 'plus', desc: '80s sunset neon' },
+  // === classic (single page scroll) — 5 ===
+  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless', layout: 'classic' },
+  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel', layout: 'classic' },
+  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold', layout: 'classic' },
+  { id: 'desert', name: 'Desert', tier: 'free', desc: 'Warm desert tones', layout: 'classic' },
+  { id: 'retro-wave', name: 'Retro Wave', tier: 'plus', desc: '80s sunset neon', layout: 'classic' },
+
+  // === hero-grid (full hero + masonry gallery) — 5 ===
+  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones', layout: 'hero-grid' },
+  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy', layout: 'hero-grid' },
+  { id: 'arctic', name: 'Arctic', tier: 'free', desc: 'Cool ice blue', layout: 'hero-grid' },
+  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels', layout: 'hero-grid' },
+  { id: 'lavender', name: 'Lavender', tier: 'free', desc: 'Soft purple', layout: 'hero-grid' },
+
+  // === link-bio (Linktree style) — 5 ===
+  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white', layout: 'link-bio' },
+  { id: 'tribal', name: 'Tribal', tier: 'free', desc: 'Black & grey', layout: 'link-bio' },
+  { id: 'punk', name: 'Punk', tier: 'pro', desc: 'High-contrast yellow', layout: 'link-bio' },
+  { id: 'maori', name: 'Maori', tier: 'free', desc: 'Tribal red & black', layout: 'link-bio' },
+  { id: 'monochrome', name: 'Monochrome', tier: 'free', desc: 'Clean grey scale', layout: 'link-bio' },
+
+  // === studio-roster (multi-artist cards) — 5 ===
+  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red', layout: 'studio-roster' },
+  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green', layout: 'studio-roster' },
+  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like', layout: 'studio-roster' },
+  { id: 'botanical', name: 'Botanical', tier: 'free', desc: 'Sage green', layout: 'studio-roster' },
+  { id: 'tropical', name: 'Tropical', tier: 'pro', desc: 'Coral & teal', layout: 'studio-roster' },
+
+  // === cards (card-based everything) — 5 ===
+  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black', layout: 'cards' },
+  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan on dark', layout: 'cards' },
+  { id: 'metallic', name: 'Metallic', tier: 'plus', desc: 'Silver chrome', layout: 'cards' },
+  { id: 'cyberpunk', name: 'Cyberpunk', tier: 'pro', desc: 'Neon magenta cyber', layout: 'cards' },
+  { id: 'new-school', name: 'New School', tier: 'pro', desc: 'Bright neon cartoon', layout: 'cards' },
+
+  // === split (split screen sections) — 5 ===
+  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold', layout: 'split' },
+  { id: 'midnight', name: 'Midnight', tier: 'free', desc: 'Deep blue night', layout: 'split' },
+  { id: 'celestial', name: 'Celestial', tier: 'plus', desc: 'Gold on midnight', layout: 'split' },
+  { id: 'sunset', name: 'Sunset', tier: 'pro', desc: 'Warm orange glow', layout: 'split' },
+  { id: 'chicano', name: 'Chicano', tier: 'pro', desc: 'Warm brown & gold', layout: 'split' },
+
+  // === editorial (magazine style) — 5 ===
+  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark', layout: 'editorial' },
+  { id: 'japanese', name: 'Japanese', tier: 'pro', desc: 'Traditional irezumi red', layout: 'editorial' },
+  { id: 'steampunk', name: 'Steampunk', tier: 'plus', desc: 'Brass & bronze', layout: 'editorial' },
+  { id: 'neonoir', name: 'Neonoir', tier: 'pro', desc: 'Red noir dramatic', layout: 'editorial' },
+  { id: 'halloween', name: 'Halloween', tier: 'free', desc: 'Orange & black', layout: 'editorial' },
+
+  // === minimal-bar (sticky bottom bar) — 5 ===
+  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete', layout: 'minimal-bar' },
+  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold', layout: 'minimal-bar' },
+  { id: 'sakura', name: 'Sakura', tier: 'pro', desc: 'Cherry blossom pink', layout: 'minimal-bar' },
+  { id: 'biomechanical', name: 'Biomechanical', tier: 'pro', desc: 'Metallic red & grey', layout: 'minimal-bar' },
+  { id: 'trash-polka', name: 'Trash Polka', tier: 'plus', desc: 'Collage red chaos', layout: 'minimal-bar' },
+
+  // === extra (traditional kept, plus nordic) — 1 ===
+  { id: 'nordic', name: 'Nordic', tier: 'free', desc: 'Cool steel blue', layout: 'classic' },
 ];
 
 /** Guess template from photo style keywords (lightweight — no API call) */
