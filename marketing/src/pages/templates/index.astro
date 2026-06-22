@@ -110,13 +110,10 @@ const LAYOUT_GROUPS = [
         <!-- Color themes row -->
         <div class="flex flex-wrap gap-3">
           {groupTemplates.map(t => (
-            <a href={`https://app.ink-flows.com/register?template=${t.key}&plan=${t.tier === 'free' ? 'website_basic' : 'website_pro'}`} class="group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-4 py-3 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all min-w-[140px]">
+            <div class="color-swatch group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-4 py-3 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all min-w-[140px] cursor-pointer" data-key={t.key} data-tier={t.tier} data-name={t.name} onclick={`selectTemplate('${t.key}','${t.name}','${t.tier}')`}>
               <div class="w-5 h-5 rounded-full shrink-0" style={`background: ${['minimal','studio','traditional','brutalist'].includes(t.key) ? '#fff' : '#1a1a1a'}`}></div>
-              <div>
-                <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors">{t.name}</p>
-                <p class="text-[10px] text-gray-500">{t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}</p>
-              </div>
-            </a>
+              <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors">{t.name}</p>
+            </div>
           ))}
         </div>
       </div>
@@ -124,15 +121,104 @@ const LAYOUT_GROUPS = [
     );
   })}
 
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <div class="rounded-2xl border border-accent-500/20 bg-gradient-to-b from-accent-500/5 to-transparent p-8 sm:p-12">
-        <h2 class="text-2xl font-bold text-white sm:text-3xl">Ready to Build Your Studio Website?</h2>
-        <p class="mt-3 text-gray-400">Pick a layout, choose your color, connect your Instagram, and go live in minutes.</p>
-        <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3 text-sm font-bold text-white hover:bg-accent-400 transition-colors">Get Started Free →</a>
+  <!-- Get Started Form -->
+  <section class="border-t border-ink-800/50 py-16" id="get-started">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white sm:text-3xl">Create Your Website</h2>
+      <p class="mt-3 text-gray-400">Fill in your info. We'll generate your site instantly. Pay only when you're happy.</p>
+      <div id="selectedTemplate" class="mt-4 text-sm text-accent-400"></div>
+
+      <!-- Step 1: Info Form -->
+      <div id="stepForm" class="mt-8 max-w-md mx-auto text-left">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Email</label>
+            <input type="email" id="fieldEmail" placeholder="your@email.com" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm focus:border-accent-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Studio Name</label>
+            <input type="text" id="fieldName" placeholder="Your Tattoo Studio" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm focus:border-accent-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Instagram Handle (optional)</label>
+            <input type="text" id="fieldIG" placeholder="@yourstudio" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm focus:border-accent-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-1">Bio (optional)</label>
+            <textarea id="fieldBio" rows="2" placeholder="Tell clients about your studio..." class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm focus:border-accent-500 outline-none"></textarea>
+          </div>
+          <button onclick="generateSite()" id="generateBtn" class="w-full py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400 transition-colors">Generate Free Preview →</button>
+          <p class="text-xs text-gray-600 text-center">Free preview. Pay $9.99/yr or $19.99/yr to publish.</p>
+        </div>
+      </div>
+
+      <!-- Step 2: Preview -->
+      <div id="stepPreview" class="mt-8 hidden">
+        <div class="rounded-xl border border-ink-700 overflow-hidden">
+          <iframe id="previewFrame" class="w-full h-[500px]" style="pointer-events:none"></iframe>
+        </div>
+        <div class="mt-6 flex gap-4 justify-center">
+          <button onclick="publishSite()" class="px-8 py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400 transition-colors">Publish — $9.99/yr</button>
+          <button onclick="publishSitePro()" class="px-8 py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition-colors">Publish Pro — $19.99/yr</button>
+        </div>
+        <p class="mt-3 text-xs text-gray-600">Secure payment via Stripe · Cancel anytime</p>
       </div>
     </div>
   </section>
 
   <Footer />
 </BaseLayout>
+
+<script>
+  let selectedTemplate = null;
+  let selectedTier = 'free';
+
+  function selectTemplate(key, name, tier) {
+    selectedTemplate = key;
+    selectedTier = tier || 'free';
+    document.getElementById('selectedTemplate').textContent = '✓ Selected: ' + name;
+    document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function generateSite() {
+    const email = document.getElementById('fieldEmail').value.trim();
+    const name = document.getElementById('fieldName').value.trim();
+    const ig = document.getElementById('fieldIG').value.trim();
+    const bio = document.getElementById('fieldBio').value.trim();
+    if (!email || !name) { alert('Email and Studio Name are required'); return; }
+    if (!selectedTemplate) { alert('Please select a template first'); return; }
+
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true; btn.textContent = 'Generating...';
+
+    try {
+      // Register via API
+      const res = await fetch('https://ink-flow-api.snow368.workers.dev/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, studioName: name, plan: selectedTier === 'free' ? 'website_basic' : 'website_pro' })
+      });
+      const data = await res.json();
+      if (!res.ok) { alert('Error: ' + (data.error || 'Registration failed')); btn.disabled = false; btn.textContent = 'Generate Free Preview →'; return; }
+
+      // Generate preview via template-preview API
+      const previewUrl = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + selectedTemplate;
+      document.getElementById('previewFrame').src = previewUrl;
+      document.getElementById('stepForm').classList.add('hidden');
+      document.getElementById('stepPreview').classList.remove('hidden');
+    } catch (e) {
+      alert('Network error. Please try again.');
+      btn.disabled = false; btn.textContent = 'Generate Free Preview →';
+    }
+  }
+
+  function publishSite() {
+    const plan = 'website_basic';
+    window.open('https://app.ink-flows.com/register?plan=' + plan + '&template=' + selectedTemplate, '_blank');
+  }
+
+  function publishSitePro() {
+    const plan = 'website_pro';
+    window.open('https://app.ink-flows.com/register?plan=' + plan + '&template=' + selectedTemplate, '_blank');
+  }
+</script>
