@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import Stripe from 'stripe';
 import { Env, initDB, generateId, now } from './db';
-import { renderShopPage, guessTemplate, ShopData } from './templates';
+import { renderShopPage, guessTemplate, ShopData, ALL_TEMPLATES } from './templates';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -1900,6 +1900,42 @@ app.get('/api/content/analytics', async (c) => {
   }
 
   return c.json({ items: rows, total, byPlatform });
+});
+
+// =============================================
+// Template Preview — renders a template with sample data
+// =============================================
+app.get('/api/template-preview/:key', async (c) => {
+  const key = c.req.param('key');
+  const template = ALL_TEMPLATES.find(t => t.id === key);
+  if (!template) { c.status(404); return c.text('Template not found'); }
+
+  const sampleData: ShopData = {
+    studioName: template.name + ' Tattoo',
+    city: 'Portland',
+    state: 'OR',
+    phone: '(503) 555-0123',
+    address: '123 Main St, Portland, OR 97201',
+    rating: 4.9,
+    reviewCount: 127,
+    bio: 'Professional tattoo studio specializing in custom designs. Every piece is unique, every client is family.',
+    photos: [
+      'https://images.unsplash.com/photo-1562962230-16e4623d36e6?w=800',
+      'https://images.unsplash.com/photo-1611501275019-9b5cda7c1d1f?w=800',
+      'https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=800',
+    ],
+    services: ['Custom Tattoos', 'Cover-ups', 'Fine Line', 'Black & Grey', 'Color Work'],
+    placeId: '',
+    slug: 'preview-' + key,
+    template: key as any,
+    claimToken: '',
+    claimed: true,
+    instagram: 'inkflow',
+    priceRange: '$$',
+  };
+
+  const html = renderShopPage(sampleData, 'https://app.ink-flows.com');
+  return c.html(html);
 });
 
 // =============================================

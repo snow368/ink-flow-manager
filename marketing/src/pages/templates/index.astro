@@ -92,29 +92,10 @@ const tiers = [
       <div class="flex flex-col gap-4 max-w-3xl mx-auto" id="template-grid">
         {TEMPLATES.map(t => (
           <div class="template-card rounded-xl border border-ink-800 bg-ink-900/30 overflow-hidden hover:border-accent-500/50 transition-all duration-200 flex flex-col sm:flex-row" data-tier={t.tier}>
-            <!-- Preview area -->
-            <div class="h-64 sm:h-80 relative overflow-hidden" style={`background: ${t.bg}`}>
-              <div class="p-6">
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-lg flex items-center justify-center text-base font-bold" style={`background: ${t.primary}; color: ${['#ffffff','#f5f0e8','#e8f0f5','#f8f4f0','#f0f5f5','#f0ecf5','#e8e0d0','#f8f8f8','#f8f4f0','#f8f4f0','#e8f0f5'].includes(t.bg) ? '#1a1a1a' : '#fff'}`}>IF</div>
-                  <div>
-                    <div class="text-lg font-bold" style={`color: ${t.text}`}>{t.name}</div>
-                    <div class="text-sm" style={`color: ${t.text}99`}>Tattoo Studio</div>
-                  </div>
-                </div>
-                <!-- Hero mock -->
-                <div class="text-center py-4">
-                  <div class="h-4 w-2/3 mx-auto rounded mb-2" style={`background: ${t.text}20`}></div>
-                  <div class="h-3 w-1/2 mx-auto rounded mb-4" style={`background: ${t.text}15`}></div>
-                  <div class="h-10 w-40 mx-auto rounded-lg flex items-center justify-center font-bold" style={`background: ${t.primary}; color: #fff`}>Book Appointment</div>
-                </div>
-                <!-- Gallery row -->
-                <div class="flex gap-2 mt-4">
-                  <div class="flex-1 h-16 rounded-lg" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-                  <div class="flex-1 h-16 rounded-lg" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-                  <div class="flex-1 h-16 rounded-lg" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-                </div>
-              </div>
+            <!-- Preview area — live rendered template -->
+            <div class="h-72 sm:h-96 relative overflow-hidden bg-ink-900">
+              <iframe src={`https://ink-flow-api.snow368.workers.dev/api/template-preview/${t.key}`} class="w-full h-full" loading="lazy" title={`${t.name} template preview`} style="pointer-events:none;border:none;scale:1;transform-origin:0 0;"></iframe>
+              <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(to bottom, transparent 70%, rgba(10,10,10,0.95) 100%);"></div>
             </div>
             <!-- Info + Button -->
             <div class="p-6">
