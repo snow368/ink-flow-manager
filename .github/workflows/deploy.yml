@@ -31,10 +31,6 @@ jobs:
           cache: npm
       - run: npm install
       - run: npm run build
-      - name: Check Token
-        run: |
-          echo "Token length: ${#CLOUDFLARE_API_TOKEN}"
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then echo "MISSING"; else echo "OK"; fi
       - name: Install Wrangler
         run: npm install -g wrangler
       - name: Deploy Pages (frontend)
