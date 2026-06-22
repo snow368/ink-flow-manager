@@ -1914,12 +1914,12 @@ app.post('/api/subscription/create-checkout', async (c) => {
       c.status(400); return c.json({ error: 'userId, successUrl, cancelUrl are required' });
     }
     const PRICES: Record<string, Record<string, number>> = {
-      website_solo: { month: 990, year: 1999 },  app_starter: { month: 999, year: 9999 },
+      website_basic: { year: 999 }, website_pro: { year: 1999 }, app_starter: { month: 999, year: 9999 },
       app_pro: { month: 2999, year: 29999 },  app_plus: { month: 4999, year: 49999 },
     };
     const amountCents = PRICES[planTier]?.[interval];
     if (!amountCents) { c.status(400); return c.json({ error: `Unknown planTier/interval: ${planTier}/${interval}` }); }
-    const planNames: Record<string, string> = { website_solo: 'Website Solo', app_starter: 'InkFlow Starter', app_pro: 'InkFlow Pro', app_plus: 'InkFlow Plus' };
+    const planNames: Record<string, string> = { website_basic: 'Website Basic', website_pro: 'Website Pro', app_starter: 'InkFlow Starter', app_pro: 'InkFlow Pro', app_plus: 'InkFlow Plus' };
     const stripeKey = c.env.STRIPE_SECRET_KEY;
     if (!stripeKey) { c.status(500); return c.json({ error: 'Stripe not configured' }); }
     const stripe = new Stripe(stripeKey, { apiVersion: '2025-02-24.acacia', httpClient: Stripe.createFetchHttpClient() });
@@ -1945,7 +1945,7 @@ app.post('/api/subscription/record', async (c) => {
     if (!userId) { c.status(400); return c.json({ error: 'userId required' }); }
     const paidAtSec = paidAtInput ? Math.floor(new Date(paidAtInput).getTime() / 1000) : (now() / 1000);
     const expiresAtSec = interval === 'year' ? paidAtSec + (365 * 86400) : paidAtSec + (30 * 86400);
-    const amountCents = amount || (planTier === 'website_solo' ? 1999 : 999);
+    const amountCents = amount || (planTier === 'website_basic' ? 999 : planTier === 'website_pro' ? 1999 : 999);
 
     await c.env.DB.prepare(
       `INSERT INTO subscriptions (id, userId, planTier, interval, status, amount, currency, paidAt, expiresAt, createdAt, updatedAt)
