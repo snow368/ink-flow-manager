@@ -88,48 +88,39 @@ const tiers = [
   <!-- TEMPLATES GRID -->
   <section class="pb-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="template-grid">
+      <div class="flex flex-col gap-4 max-w-3xl mx-auto" id="template-grid">
         {TEMPLATES.map(t => (
-          <div class="template-card rounded-xl border border-ink-800 bg-ink-900/30 overflow-hidden hover:border-accent-500/50 transition-all duration-300 hover:-translate-y-1" data-tier={t.tier}>
-            <!-- Template preview: mock website layout -->
-            <div class="h-56 relative overflow-hidden" style={`background: ${t.bg}`}>
-              <!-- Nav bar -->
-              <div class="flex items-center justify-between px-4 py-2" style={`background: ${t.card}; border-bottom: 1px solid ${t.text}15`}>
-                <div class="flex items-center gap-2">
-                  <div class="w-5 h-5 rounded flex items-center justify-center text-[8px] font-bold" style={`background: ${t.primary}; color: ${t.bg === '#ffffff' || t.bg === '#f5f0e8' || t.bg === '#e8f0f5' || t.bg === '#f8f4f0' || t.bg === '#f0f5f5' || t.bg === '#f0ecf5' || t.bg === '#e8e0d0' || t.bg === '#f8f8f8' || t.bg === '#f8f4f0' || t.bg === '#f8f4f0' || t.bg === '#e8f0f5' ? '#fff' : '#fff'}`}>IF</div>
+          <div class="template-card rounded-xl border border-ink-800 bg-ink-900/30 overflow-hidden hover:border-accent-500/50 transition-all duration-200 flex flex-col sm:flex-row" data-tier={t.tier}>
+            <!-- Preview (left side) -->
+            <div class="sm:w-56 h-40 sm:h-auto shrink-0 relative overflow-hidden" style={`background: ${t.bg}`}>
+              <div class="p-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-5 h-5 rounded flex items-center justify-center text-[8px] font-bold" style={`background: ${t.primary}; color: ${['#ffffff','#f5f0e8','#e8f0f5','#f8f4f0','#f0f5f5','#f0ecf5','#e8e0d0','#f8f8f8','#f8f4f0','#f8f4f0','#e8f0f5'].includes(t.bg) ? '#1a1a1a' : '#fff'}`}>IF</div>
                   <span class="text-[9px] font-semibold" style={`color: ${t.primary}`}>{t.name}</span>
                 </div>
-                <div class="flex gap-2">
-                  <div class="w-4 h-1.5 rounded-full" style={`background: ${t.text}30`}></div>
-                  <div class="w-4 h-1.5 rounded-full" style={`background: ${t.text}30`}></div>
-                  <div class="w-4 h-1.5 rounded-full" style={`background: ${t.text}30`}></div>
+                <div class="h-2 w-3/4 rounded mb-2" style={`background: ${t.text}20`}></div>
+                <div class="h-2 w-1/2 rounded mb-3" style={`background: ${t.text}15`}></div>
+                <div class="h-5 rounded flex items-center justify-center text-[8px] font-bold mb-2" style={`background: ${t.primary}; color: #fff`}>Book</div>
+                <div class="flex gap-1">
+                  <div class="flex-1 h-6 rounded" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
+                  <div class="flex-1 h-6 rounded" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
                 </div>
               </div>
-              <!-- Hero section -->
-              <div class="px-4 pt-4 pb-3 text-center">
-                <div class="w-3/4 h-3 mx-auto rounded" style={`background: ${t.text}20`}></div>
-                <div class="w-1/2 h-2 mx-auto mt-2 rounded" style={`background: ${t.text}15`}></div>
-              </div>
-              <!-- CTA button mock -->
-              <div class="mx-4 mb-3 h-6 rounded flex items-center justify-center text-[8px] font-bold" style={`background: ${t.primary}; color: #fff`}>Book Appointment</div>
-              <!-- Gallery thumbnails row -->
-              <div class="flex gap-1.5 px-4">
-                <div class="flex-1 h-10 rounded" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-                <div class="flex-1 h-10 rounded" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-                <div class="flex-1 h-10 rounded" style={`background: ${t.card}; border: 1px solid ${t.text}15`}></div>
-              </div>
-              <!-- Footer bar -->
-              <div class="absolute bottom-0 left-0 right-0 h-4 flex items-center justify-center" style={`background: ${t.card}; border-top: 1px solid ${t.text}15`}>
-                <div class="w-12 h-1.5 rounded" style={`background: ${t.text}20`}></div>
-              </div>
             </div>
-            <!-- Info -->
-            <div class="p-4">
-              <div class="flex items-center justify-between mb-1">
-                <h3 class="font-semibold text-white text-sm">{t.name}</h3>
-                <span class={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${t.tier === 'free' ? 'bg-green-900/50 text-green-400' : t.tier === 'pro' ? 'bg-accent-500/10 text-accent-400' : 'bg-amber-900/50 text-amber-400'}`}>{t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}</span>
+            <!-- Info (right side) -->
+            <div class="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2 mb-2">
+                  <h3 class="font-bold text-white">{t.name}</h3>
+                  <span class={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${t.tier === 'free' ? 'bg-green-900/50 text-green-400' : t.tier === 'pro' ? 'bg-accent-500/10 text-accent-400' : 'bg-amber-900/50 text-amber-400'}`}>{t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}</span>
+                </div>
+                <p class="text-sm text-gray-400">{t.desc}</p>
               </div>
-              <p class="text-xs text-gray-500">{t.desc}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <span class="text-xs text-gray-600 flex items-center gap-1"><span class="text-green-400">✓</span> Mobile friendly</span>
+                <span class="text-xs text-gray-600 flex items-center gap-1"><span class="text-green-400">✓</span> SEO optimized</span>
+                <span class="text-xs text-gray-600 flex items-center gap-1"><span class="text-green-400">✓</span> Instagram ready</span>
+              </div>
             </div>
           </div>
         ))}
