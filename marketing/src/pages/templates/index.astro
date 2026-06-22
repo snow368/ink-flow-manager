@@ -110,7 +110,7 @@ const LAYOUT_GROUPS = [
         <!-- Color themes row -->
         <div class="flex flex-wrap gap-3">
           {groupTemplates.map(t => (
-            <div class="color-swatch group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-4 py-3 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all min-w-[140px] cursor-pointer" data-key={t.key} data-tier={t.tier} data-name={t.name} onclick={`selectTemplate('${t.key}','${t.name}','${t.tier}')`} style={`border-color: ${t.tier === 'plus' ? '#f59e0b' : t.tier === 'pro' ? 'rgb(163 58 58)' : 'rgb(34 197 94)'}40`}>
+            <div class="color-swatch group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-4 py-3 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all min-w-[140px] cursor-pointer" data-key={t.key} data-tier={t.tier} data-name={t.name} style={`border-color: ${t.tier === 'plus' ? '#f59e0b' : t.tier === 'pro' ? 'rgb(163 58 58)' : 'rgb(34 197 94)'}40`}>
               <div class="w-5 h-5 rounded-full shrink-0" style={`background: ${['minimal','studio','traditional','brutalist'].includes(t.key) ? '#fff' : '#1a1a1a'}`}></div>
               <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors">{t.name}</p>
               <span class="text-[10px] font-medium" style={`color: ${t.tier === 'plus' ? '#f59e0b' : t.tier === 'pro' ? 'rgb(163 58 58)' : 'rgb(34 197 94)'}`}>{t.tier === 'free' ? '' : t.tier === 'pro' ? 'Pro' : '+'}</span>
@@ -170,16 +170,37 @@ const LAYOUT_GROUPS = [
   <Footer />
 </BaseLayout>
 
-<script>
+<script is:inline>
   let selectedTemplate = null;
   let selectedTier = 'free';
 
-  function selectTemplate(key, name, tier) {
+  window.selectTemplate = function(key, name, tier) {
     selectedTemplate = key;
     selectedTier = tier || 'free';
     document.getElementById('selectedTemplate').textContent = '✓ Selected: ' + name;
+    // Highlight selected
+    document.querySelectorAll('.color-swatch').forEach(el => {
+      el.style.borderColor = '';
+      el.style.background = '';
+    });
+    const swatch = document.querySelector(`.color-swatch[data-key="${key}"]`);
+    if (swatch) {
+      swatch.style.borderColor = '#06b6d4';
+      swatch.style.background = '#06b6d415';
+    }
     document.getElementById('get-started').scrollIntoView({ behavior: 'smooth' });
-  }
+  };
+
+  document.addEventListener('click', function(e) {
+    const swatch = e.target.closest('.color-swatch');
+    if (swatch) {
+      const key = swatch.dataset.key;
+      const name = swatch.dataset.name;
+      const tier = swatch.dataset.tier;
+      window.selectTemplate(key, name, tier);
+    }
+  });
+</script>
 
   async function generateSite() {
     const email = document.getElementById('fieldEmail').value.trim();
