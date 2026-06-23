@@ -17,7 +17,7 @@ database_id = "5e462ed0-9613-4e16-85c4-8bb0494c5f4a"
 # Environment variables
 [vars]
 STRIPE_PLATFORM_FEE_PERCENT = "0"
-VAPID_SUBJECT = "mailto:admin@inkflow.app"
+VAPID_SUBJECT = "mailto:hello@ink-flows.com"
 PUBLIC_URL = "https://ink-flow-api.snow368.workers.dev"
 SENDGRID_API_KEY = ""
 EMAIL_FROM = "hello@ink-flows.com"

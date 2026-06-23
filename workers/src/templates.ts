@@ -17,19 +17,13 @@ export interface ShopData {
   services: string[];
   placeId: string;
   slug: string;
-  template: 'traditional' | 'minimal' | 'moody' | 'vintage' | 'edgy' | 'studio'
-    | 'brutalist' | 'nature' | 'royal' | 'neon' | 'industrial' | 'woodcut'
-    | 'watercolor' | 'gothic' | 'coastal' | 'urban' | 'japanese' | 'midnight'
-    | 'cyberpunk' | 'botanical' | 'metallic' | 'sunset' | 'sakura' | 'tribal'
-    | 'steampunk' | 'arctic' | 'desert' | 'punk' | 'celestial' | 'neonoir' | 'lavender'
-    | 'biomechanical' | 'chicano' | 'maori' | 'trash-polka' | 'new-school'
-    | 'halloween' | 'nordic' | 'tropical' | 'monochrome' | 'retro-wave';
+  template: string;
   claimToken: string;
   claimed: boolean;
   priceRange?: string;
   website?: string;
   instagram?: string;
-  /** Layout pattern: classic | hero-grid | link-bio | studio-roster | cards | split | editorial | minimal-bar */
+  /** Layout pattern: classic | hero-grid | link-bio | studio-roster | cards | split | editorial | minimal-bar | gallery-focus | mobile-first | social-proof | process-funnel | full-experience */
   layout?: string;
 }
 
@@ -341,6 +335,431 @@ const THEMES: Record<string, ThemeVars> = {
     heroOverlay: 'linear-gradient(rgba(10,10,48,0.7), rgba(10,10,48,0.9))',
     starColor: '#ff6688', borderRadius: '4px',
   },
+  // ── v4: Gallery Focus (12 new) ──
+  'americana': {
+    bg: '#0a0a0a', bgAlt: '#151515', text: '#f0f0f0', textMuted: '#888',
+    accent: '#c0262d', accentHover: '#dc2626', card: '#151515', border: '#252525',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.85))',
+    starColor: '#c0262d', borderRadius: '0',
+  },
+  'fine-line': {
+    bg: '#f5f5f0', bgAlt: '#ffffff', text: '#1a1a1a', textMuted: '#888',
+    accent: '#1a1a2e', accentHover: '#2a2a3e', card: '#ffffff', border: '#e0e0e0',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#1a1a2e', borderRadius: '4px',
+  },
+  'blackwork': {
+    bg: '#050505', bgAlt: '#0d0d0d', text: '#e8e8e8', textMuted: '#666',
+    accent: '#ffffff', accentHover: '#cccccc', card: '#0d0d0d', border: '#1a1a1a',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(5,5,5,0.6), rgba(5,5,5,0.85))',
+    starColor: '#ffffff', borderRadius: '0',
+  },
+  'ornamental': {
+    bg: '#0d0808', bgAlt: '#161010', text: '#e8ddd0', textMuted: '#7a6a5a',
+    accent: '#a67c52', accentHover: '#b68c62', card: '#161010', border: '#2a1e18',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(13,8,8,0.7), rgba(13,8,8,0.9))',
+    starColor: '#a67c52', borderRadius: '2px',
+  },
+  'geometric': {
+    bg: '#0a0e14', bgAlt: '#121a24', text: '#d8e0ec', textMuted: '#607080',
+    accent: '#2a7a9a', accentHover: '#3a8aaa', card: '#121a24', border: '#1e2a3a',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,14,20,0.7), rgba(10,14,20,0.9))',
+    starColor: '#2a7a9a', borderRadius: '2px',
+  },
+  'stipple': {
+    bg: '#0f0d0a', bgAlt: '#1a1612', text: '#e0d8cc', textMuted: '#7a7066',
+    accent: '#bf8f60', accentHover: '#cf9f70', card: '#1a1612', border: '#2a2420',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(15,13,10,0.7), rgba(15,13,10,0.9))',
+    starColor: '#bf8f60', borderRadius: '4px',
+  },
+  'etching': {
+    bg: '#e8e2d8', bgAlt: '#f0ece4', text: '#2a241e', textMuted: '#7a7268',
+    accent: '#4a3a2a', accentHover: '#5a4a3a', card: '#f5f0ea', border: '#d4ccc0',
+    fontHeading: "'Playfair Display', serif", fontBody: "'EB Garamond', serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.3))',
+    starColor: '#4a3a2a', borderRadius: '0',
+  },
+  'surrealism': {
+    bg: '#0a0818', bgAlt: '#14102a', text: '#e8e0f0', textMuted: '#7a6a9a',
+    accent: '#c84ad8', accentHover: '#d85ae8', card: '#14102a', border: '#2a2050',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,24,0.65), rgba(10,8,24,0.88))',
+    starColor: '#c84ad8', borderRadius: '8px',
+  },
+  'illustrative': {
+    bg: '#f5f2ec', bgAlt: '#ffffff', text: '#1e1a16', textMuted: '#7a7268',
+    accent: '#2a5a8a', accentHover: '#3a6a9a', card: '#ffffff', border: '#dcd4c8',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.25))',
+    starColor: '#2a5a8a', borderRadius: '4px',
+  },
+  'photorealism': {
+    bg: '#0c0c0c', bgAlt: '#161616', text: '#e8e8e8', textMuted: '#666',
+    accent: '#6688aa', accentHover: '#7698ba', card: '#161616', border: '#262626',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(12,12,12,0.6), rgba(12,12,12,0.85))',
+    starColor: '#6688aa', borderRadius: '0',
+  },
+  'dotwork': {
+    bg: '#0a0808', bgAlt: '#141010', text: '#d8d0c8', textMuted: '#6a6058',
+    accent: '#c49a6a', accentHover: '#d4aa7a', card: '#141010', border: '#2a1e18',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,8,0.65), rgba(10,8,8,0.88))',
+    starColor: '#c49a6a', borderRadius: '0',
+  },
+  'micro-realism': {
+    bg: '#f0eeec', bgAlt: '#f8f8f6', text: '#1e1c1a', textMuted: '#7a7876',
+    accent: '#7a7a7a', accentHover: '#9a9a9a', card: '#ffffff', border: '#d8d6d4',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#7a7a7a', borderRadius: '4px',
+  },
+  // ── v5: Mobile First (12 new) ──
+  'neo-tribal': {
+    bg: '#0a0a0a', bgAlt: '#121212', text: '#f0f0f0', textMuted: '#666',
+    accent: '#0099ff', accentHover: '#22aaff', card: '#121212', border: '#222',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.85))',
+    starColor: '#0099ff', borderRadius: '0',
+  },
+  'patchwork': {
+    bg: '#0a0a0a', bgAlt: '#151515', text: '#f0f0f0', textMuted: '#666',
+    accent: '#ff4488', accentHover: '#ff5599', card: '#151515', border: '#252525',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.8))',
+    starColor: '#ff4488', borderRadius: '0',
+  },
+  'handpoke': {
+    bg: '#f2ede4', bgAlt: '#faf5ee', text: '#2a241e', textMuted: '#8a8076',
+    accent: '#8a7a5a', accentHover: '#9a8a6a', card: '#ffffff', border: '#dcd4c8',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.3))',
+    starColor: '#8a7a5a', borderRadius: '8px',
+  },
+  'minimal-line': {
+    bg: '#ffffff', bgAlt: '#f8f6f4', text: '#2a2a2a', textMuted: '#8a8a8a',
+    accent: '#e8a0b0', accentHover: '#f0b0c0', card: '#ffffff', border: '#e8e8e4',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#e8a0b0', borderRadius: '8px',
+  },
+  'single-needle': {
+    bg: '#f5f3f0', bgAlt: '#fcfaf8', text: '#2a2826', textMuted: '#8a8886',
+    accent: '#3a5a7a', accentHover: '#4a6a8a', card: '#ffffff', border: '#e0dedc',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#3a5a7a', borderRadius: '4px',
+  },
+  'micro-tattoo': {
+    bg: '#fcf8f4', bgAlt: '#ffffff', text: '#2a2420', textMuted: '#8a8078',
+    accent: '#c4957a', accentHover: '#d4a58a', card: '#ffffff', border: '#e8e0d8',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#c4957a', borderRadius: '12px',
+  },
+  'abstract': {
+    bg: '#0a0a0a', bgAlt: '#141414', text: '#f0f0f0', textMuted: '#666',
+    accent: '#aaff00', accentHover: '#bbff22', card: '#141414', border: '#222',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.8))',
+    starColor: '#aaff00', borderRadius: '0',
+  },
+  'line-art': {
+    bg: '#ffffff', bgAlt: '#fafafa', text: '#1a1a2e', textMuted: '#7a7a8a',
+    accent: '#ff6b6b', accentHover: '#ff7b7b', card: '#ffffff', border: '#e8e8e8',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#ff6b6b', borderRadius: '4px',
+  },
+  'sketch': {
+    bg: '#e8e4dc', bgAlt: '#f0ece4', text: '#2a2824', textMuted: '#7a7670',
+    accent: '#6a5a4a', accentHover: '#7a6a5a', card: '#f8f4ec', border: '#d0ccc4',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.15), rgba(0,0,0,0.3))',
+    starColor: '#6a5a4a', borderRadius: '0',
+  },
+  'negative-space': {
+    bg: '#080c1a', bgAlt: '#10142a', text: '#e0e4f0', textMuted: '#6a7a9a',
+    accent: '#ffffff', accentHover: '#dddddd', card: '#10142a', border: '#20284a',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(8,12,26,0.6), rgba(8,12,26,0.85))',
+    starColor: '#ffffff', borderRadius: '0',
+  },
+  'white-ink': {
+    bg: '#050505', bgAlt: '#0a0a0a', text: '#e8e8e8', textMuted: '#555',
+    accent: '#cccccc', accentHover: '#eeeeee', card: '#0a0a0a', border: '#1a1a1a',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(5,5,5,0.5), rgba(5,5,5,0.8))',
+    starColor: '#cccccc', borderRadius: '0',
+  },
+  'stick-poke': {
+    bg: '#f5f0e8', bgAlt: '#fcf8f2', text: '#2e2822', textMuted: '#8a8076',
+    accent: '#6a5a4a', accentHover: '#7a6a5a', card: '#ffffff', border: '#d8d0c8',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.25))',
+    starColor: '#6a5a4a', borderRadius: '8px',
+  },
+  // ── v6: Social Proof (12 new) ──
+  'letterhead': {
+    bg: '#f5f0e8', bgAlt: '#fcf8f0', text: '#2a2220', textMuted: '#8a7a72',
+    accent: '#7a2a2a', accentHover: '#8a3a3a', card: '#fefaf5', border: '#d8d0c8',
+    fontHeading: "'Playfair Display', serif", fontBody: "'EB Garamond', serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.25))',
+    starColor: '#7a2a2a', borderRadius: '0',
+  },
+  'script': {
+    bg: '#0d0a08', bgAlt: '#181410', text: '#e8ddd0', textMuted: '#7a6a5a',
+    accent: '#c89a40', accentHover: '#d8aa50', card: '#181410', border: '#2a2218',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(13,10,8,0.65), rgba(13,10,8,0.88))',
+    starColor: '#c89a40', borderRadius: '0',
+  },
+  'black-letter': {
+    bg: '#f8f4ec', bgAlt: '#ffffff', text: '#1e1a16', textMuted: '#7a7268',
+    accent: '#9a1a1a', accentHover: '#aa2a2a', card: '#ffffff', border: '#d8d4cc',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#9a1a1a', borderRadius: '0',
+  },
+  'old-school': {
+    bg: '#0a0a0a', bgAlt: '#141414', text: '#f0ece8', textMuted: '#7a7672',
+    accent: '#1a4a7a', accentHover: '#2a5a8a', card: '#141414', border: '#2a2828',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.85))',
+    starColor: '#1a4a7a', borderRadius: '0',
+  },
+  'flash': {
+    bg: '#0a0a18', bgAlt: '#15152a', text: '#f0e8f0', textMuted: '#7a6a8a',
+    accent: '#ff4488', accentHover: '#ff5599', card: '#15152a', border: '#2a2850',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,24,0.6), rgba(10,10,24,0.85))',
+    starColor: '#ff4488', borderRadius: '4px',
+  },
+  'painterly': {
+    bg: '#f5f2ec', bgAlt: '#ffffff', text: '#2a2824', textMuted: '#8a8680',
+    accent: '#4a7a5a', accentHover: '#5a8a6a', card: '#ffffff', border: '#dcd8d0',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#4a7a5a', borderRadius: '8px',
+  },
+  'wash': {
+    bg: '#f0f2f5', bgAlt: '#f8fafc', text: '#1a2a3a', textMuted: '#6a7a8a',
+    accent: '#3a5a7a', accentHover: '#4a6a8a', card: '#ffffff', border: '#d0d8e0',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#3a5a7a', borderRadius: '4px',
+  },
+  'charcoal': {
+    bg: '#0a0a0a', bgAlt: '#141414', text: '#e8e0d8', textMuted: '#6a6662',
+    accent: '#c48a3a', accentHover: '#d49a4a', card: '#141414', border: '#2a2826',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.85))',
+    starColor: '#c48a3a', borderRadius: '0',
+  },
+  'pastel': {
+    bg: '#f8f4f0', bgAlt: '#ffffff', text: '#2a2a3a', textMuted: '#8a8a9a',
+    accent: '#f0a0b0', accentHover: '#f8b0c0', card: '#ffffff', border: '#e8e0e0',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#f0a0b0', borderRadius: '12px',
+  },
+  'neo-academic': {
+    bg: '#f5f2ee', bgAlt: '#fcfaf8', text: '#2a2220', textMuted: '#8a8078',
+    accent: '#6a2a2a', accentHover: '#7a3a3a', card: '#ffffff', border: '#d8d4d0',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.25))',
+    starColor: '#6a2a2a', borderRadius: '2px',
+  },
+  'avant-garde': {
+    bg: '#0a0a0a', bgAlt: '#151515', text: '#f0f0f0', textMuted: '#666',
+    accent: '#00ff88', accentHover: '#22ffaa', card: '#151515', border: '#252525',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.8))',
+    starColor: '#ff4488', borderRadius: '0',
+  },
+  'bauhaus': {
+    bg: '#0a0a0a', bgAlt: '#141414', text: '#f0f0f0', textMuted: '#666',
+    accent: '#ffdd00', accentHover: '#ffee22', card: '#141414', border: '#222',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.8))',
+    starColor: '#ffdd00', borderRadius: '0',
+  },
+  // ── v7: Process Funnel (12 new) ──
+  'irezumi': {
+    bg: '#0a0608', bgAlt: '#141012', text: '#e8d8d0', textMuted: '#7a6a62',
+    accent: '#cc2200', accentHover: '#dc3310', card: '#141012', border: '#2a1e1a',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,6,8,0.7), rgba(10,6,8,0.9))',
+    starColor: '#cc2200', borderRadius: '0',
+  },
+  'hannya': {
+    bg: '#0a0808', bgAlt: '#141010', text: '#e8d0c8', textMuted: '#7a5a52',
+    accent: '#9a1a1a', accentHover: '#aa2a2a', card: '#141010', border: '#2a1a18',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,8,0.7), rgba(10,8,8,0.9))',
+    starColor: '#9a1a1a', borderRadius: '0',
+  },
+  'dragon': {
+    bg: '#0a0a08', bgAlt: '#141412', text: '#e0e8d8', textMuted: '#6a7a62',
+    accent: '#2a8a3a', accentHover: '#3a9a4a', card: '#141412', border: '#2a2a22',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,8,0.65), rgba(10,10,8,0.88))',
+    starColor: '#2a8a3a', borderRadius: '4px',
+  },
+  'koi': {
+    bg: '#0a0808', bgAlt: '#141010', text: '#e8d8d0', textMuted: '#7a6a62',
+    accent: '#e87a2a', accentHover: '#f08a3a', card: '#141010', border: '#2a1e1a',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,8,0.65), rgba(10,8,8,0.88))',
+    starColor: '#e87a2a', borderRadius: '4px',
+  },
+  'tiger': {
+    bg: '#0a0806', bgAlt: '#141210', text: '#e8dcd0', textMuted: '#7a6e62',
+    accent: '#d4881a', accentHover: '#e4982a', card: '#141210', border: '#2a2420',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,6,0.65), rgba(10,8,6,0.88))',
+    starColor: '#d4881a', borderRadius: '0',
+  },
+  'oni': {
+    bg: '#0a0606', bgAlt: '#141010', text: '#e8d0c0', textMuted: '#7a5a4a',
+    accent: '#aa2222', accentHover: '#bb3333', card: '#141010', border: '#2a1816',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,6,6,0.7), rgba(10,6,6,0.9))',
+    starColor: '#aa2222', borderRadius: '0',
+  },
+  'phoenix': {
+    bg: '#0a0608', bgAlt: '#141014', text: '#e8d0d8', textMuted: '#7a5a6a',
+    accent: '#cc4400', accentHover: '#dc5510', card: '#141014', border: '#2a1a22',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,6,8,0.65), rgba(10,6,8,0.88))',
+    starColor: '#cc4400', borderRadius: '4px',
+  },
+  'serpent': {
+    bg: '#060a08', bgAlt: '#101412', text: '#d8e0d8', textMuted: '#5a6a62',
+    accent: '#1a8a4a', accentHover: '#2a9a5a', card: '#101412', border: '#1e2a22',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(6,10,8,0.65), rgba(6,10,8,0.88))',
+    starColor: '#1a8a4a', borderRadius: '2px',
+  },
+  'foo-dog': {
+    bg: '#0a0806', bgAlt: '#141210', text: '#e8ddd0', textMuted: '#7a6a5a',
+    accent: '#cc3300', accentHover: '#dc4410', card: '#141210', border: '#2a2218',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,6,0.65), rgba(10,8,6,0.88))',
+    starColor: '#d4881a', borderRadius: '2px',
+  },
+  'geisha': {
+    bg: '#0a0808', bgAlt: '#141012', text: '#e8d8d8', textMuted: '#7a6a6a',
+    accent: '#e86a8a', accentHover: '#f47a9a', card: '#141012', border: '#2a1e20',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,8,0.6), rgba(10,8,8,0.85))',
+    starColor: '#e86a8a', borderRadius: '8px',
+  },
+  'samurai': {
+    bg: '#080a0e', bgAlt: '#10141a', text: '#d8e0e8', textMuted: '#5a6a7a',
+    accent: '#aa2a2a', accentHover: '#bb3a3a', card: '#10141a', border: '#1e2430',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(8,10,14,0.65), rgba(8,10,14,0.88))',
+    starColor: '#aa2a2a', borderRadius: '2px',
+  },
+  'wave': {
+    bg: '#e8f0f5', bgAlt: '#f0f6fa', text: '#1a2a3a', textMuted: '#5a7a8a',
+    accent: '#1a6a8a', accentHover: '#2a7a9a', card: '#ffffff', border: '#d0dce8',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#1a6a8a', borderRadius: '4px',
+  },
+  // ── v8: Full Experience (12 new) ──
+  'museum': {
+    bg: '#f5f2ec', bgAlt: '#fcfaf6', text: '#2a2622', textMuted: '#8a867e',
+    accent: '#6a5a4a', accentHover: '#7a6a5a', card: '#ffffff', border: '#d8d4cc',
+    fontHeading: "'Playfair Display', serif", fontBody: "'EB Garamond', serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.25))',
+    starColor: '#6a5a4a', borderRadius: '0',
+  },
+  'gallery': {
+    bg: '#ffffff', bgAlt: '#f8f8f8', text: '#1a1a1a', textMuted: '#7a7a7a',
+    accent: '#2a2a2a', accentHover: '#4a4a4a', card: '#ffffff', border: '#e0e0e0',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#2a2a2a', borderRadius: '0',
+  },
+  'collection': {
+    bg: '#0a1412', bgAlt: '#14201e', text: '#dce8e4', textMuted: '#5a7a76',
+    accent: '#c89a3a', accentHover: '#d8aa4a', card: '#14201e', border: '#243432',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,20,18,0.65), rgba(10,20,18,0.88))',
+    starColor: '#c89a3a', borderRadius: '2px',
+  },
+  'anthology': {
+    bg: '#0e0a10', bgAlt: '#1a1420', text: '#e8dce8', textMuted: '#8a7a8a',
+    accent: '#c89aaa', accentHover: '#d8aaba', card: '#1a1420', border: '#2a2434',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(14,10,16,0.65), rgba(14,10,16,0.88))',
+    starColor: '#c89aaa', borderRadius: '8px',
+  },
+  'monograph': {
+    bg: '#e8e6e2', bgAlt: '#f2f0ec', text: '#2a2826', textMuted: '#8a8886',
+    accent: '#4a4a4a', accentHover: '#6a6a6a', card: '#faf8f6', border: '#d0ceca',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#4a4a4a', borderRadius: '0',
+  },
+  'portfolio': {
+    bg: '#f5f2ee', bgAlt: '#fcfaf8', text: '#2a2420', textMuted: '#8a847e',
+    accent: '#6a2a2a', accentHover: '#7a3a3a', card: '#ffffff', border: '#dcd8d2',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#6a2a2a', borderRadius: '4px',
+  },
+  'retrospective': {
+    bg: '#0a0808', bgAlt: '#141010', text: '#e8d8d0', textMuted: '#7a6a5a',
+    accent: '#6a2a1a', accentHover: '#7a3a2a', card: '#141010', border: '#2a1e18',
+    fontHeading: "'Playfair Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,8,8,0.65), rgba(10,8,8,0.88))',
+    starColor: '#6a2a1a', borderRadius: '0',
+  },
+  'showcase': {
+    bg: '#0a0a0a', bgAlt: '#141414', text: '#e8e8e8', textMuted: '#666',
+    accent: '#2a8a8a', accentHover: '#3a9a9a', card: '#141414', border: '#252525',
+    fontHeading: "'Bebas Neue', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,10,10,0.6), rgba(10,10,10,0.85))',
+    starColor: '#2a8a8a', borderRadius: '4px',
+  },
+  'compilation': {
+    bg: '#080a0a', bgAlt: '#101414', text: '#d8e0e0', textMuted: '#5a6a6a',
+    accent: '#b8702a', accentHover: '#c8803a', card: '#101414', border: '#202626',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(8,10,10,0.6), rgba(8,10,10,0.85))',
+    starColor: '#b8702a', borderRadius: '2px',
+  },
+  'treasury': {
+    bg: '#0a0c08', bgAlt: '#121610', text: '#e0e4d8', textMuted: '#6a7262',
+    accent: '#c49a3a', accentHover: '#d4aa4a', card: '#121610', border: '#262a22',
+    fontHeading: "'Cinzel', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(10,12,8,0.65), rgba(10,12,8,0.88))',
+    starColor: '#c49a3a', borderRadius: '2px',
+  },
+  'compendium': {
+    bg: '#e8e6e0', bgAlt: '#f2f0ec', text: '#2a2a26', textMuted: '#8a8a86',
+    accent: '#5a6a5a', accentHover: '#6a7a6a', card: '#faf8f6', border: '#d0cec8',
+    fontHeading: "'DM Serif Display', serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2))',
+    starColor: '#5a6a5a', borderRadius: '0',
+  },
+  'archive': {
+    bg: '#e8eaec', bgAlt: '#f2f4f6', text: '#1a1c1e', textMuted: '#7a7c7e',
+    accent: '#4a5a6a', accentHover: '#5a6a7a', card: '#ffffff', border: '#d0d4d8',
+    fontHeading: "'Inter', sans-serif", fontBody: "'Inter', sans-serif",
+    heroOverlay: 'linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.15))',
+    starColor: '#4a5a6a', borderRadius: '0',
+  },
 };
 export const TEMPLATE_TIERS: Record<string, string> = {
   minimal: 'free', traditional: 'free', vintage: 'free', moody: 'free',
@@ -355,6 +774,26 @@ export const TEMPLATE_TIERS: Record<string, string> = {
   biomechanical: 'pro', chicano: 'pro', maori: 'free', 'trash-polka': 'plus',
   'new-school': 'pro', halloween: 'free', nordic: 'free', tropical: 'pro',
   monochrome: 'free', 'retro-wave': 'plus',
+  // v4: Gallery Focus (12 new)
+  americana: 'free', 'fine-line': 'pro', blackwork: 'free', ornamental: 'plus',
+  geometric: 'pro', stipple: 'pro', etching: 'plus', surrealism: 'plus',
+  illustrative: 'pro', photorealism: 'plus', dotwork: 'free', 'micro-realism': 'pro',
+  // v5: Mobile First (12 new)
+  'neo-tribal': 'pro', patchwork: 'free', handpoke: 'free', 'minimal-line': 'free',
+  'single-needle': 'pro', 'micro-tattoo': 'pro', abstract: 'plus', 'line-art': 'free',
+  sketch: 'pro', 'negative-space': 'plus', 'white-ink': 'free', 'stick-poke': 'free',
+  // v6: Social Proof (12 new)
+  letterhead: 'plus', script: 'pro', 'black-letter': 'free', 'old-school': 'free',
+  flash: 'plus', painterly: 'pro', wash: 'free', charcoal: 'plus',
+  pastel: 'free', 'neo-academic': 'pro', 'avant-garde': 'plus', bauhaus: 'pro',
+  // v7: Process Funnel (12 new)
+  irezumi: 'pro', hannya: 'pro', dragon: 'free', koi: 'free',
+  tiger: 'pro', oni: 'pro', phoenix: 'plus', serpent: 'plus',
+  'foo-dog': 'plus', geisha: 'pro', samurai: 'plus', wave: 'free',
+  // v8: Full Experience (12 new)
+  museum: 'free', gallery: 'free', collection: 'plus', anthology: 'plus',
+  monograph: 'free', portfolio: 'free', retrospective: 'pro', showcase: 'pro',
+  compilation: 'plus', treasury: 'plus', compendium: 'free', archive: 'pro',
 };
 
 // ---- Helpers ----
@@ -940,6 +1379,76 @@ export const ALL_TEMPLATES = [
 
   // === extra (traditional kept, plus nordic) — 1 ===
   { id: 'nordic', name: 'Nordic', tier: 'free', desc: 'Cool steel blue', layout: 'classic' },
+
+  // === gallery-focus (12) ===
+  { id: 'americana', name: 'Americana', tier: 'free', desc: 'Classic red, white & blue', layout: 'gallery-focus' },
+  { id: 'fine-line', name: 'Fine Line', tier: 'pro', desc: 'Delicate & precise', layout: 'gallery-focus' },
+  { id: 'blackwork', name: 'Blackwork', tier: 'free', desc: 'Pure black & white', layout: 'gallery-focus' },
+  { id: 'ornamental', name: 'Ornamental', tier: 'plus', desc: 'Intricate symmetry', layout: 'gallery-focus' },
+  { id: 'geometric', name: 'Geometric', tier: 'pro', desc: 'Precision patterns', layout: 'gallery-focus' },
+  { id: 'stipple', name: 'Stipple', tier: 'pro', desc: 'Dotted shading & texture', layout: 'gallery-focus' },
+  { id: 'etching', name: 'Etching', tier: 'plus', desc: 'Fine line print style', layout: 'gallery-focus' },
+  { id: 'surrealism', name: 'Surrealism', tier: 'plus', desc: 'Dreamlike & imaginative', layout: 'gallery-focus' },
+  { id: 'illustrative', name: 'Illustrative', tier: 'pro', desc: 'Bold storytelling style', layout: 'gallery-focus' },
+  { id: 'photorealism', name: 'Photorealism', tier: 'plus', desc: 'True-to-life detail', layout: 'gallery-focus' },
+  { id: 'dotwork', name: 'Dotwork', tier: 'free', desc: 'Pattern & precision', layout: 'gallery-focus' },
+  { id: 'micro-realism', name: 'Micro Realism', tier: 'pro', desc: 'Tiny precise realism', layout: 'gallery-focus' },
+
+  // === mobile-first (12) ===
+  { id: 'neo-tribal', name: 'Neo Tribal', tier: 'pro', desc: 'Modern tribal patterns', layout: 'mobile-first' },
+  { id: 'patchwork', name: 'Patchwork', tier: 'free', desc: 'Mix of styles & colors', layout: 'mobile-first' },
+  { id: 'handpoke', name: 'Hand Poke', tier: 'free', desc: 'Raw handmade feel', layout: 'mobile-first' },
+  { id: 'minimal-line', name: 'Minimal Line', tier: 'free', desc: 'Thin lines & simplicity', layout: 'mobile-first' },
+  { id: 'single-needle', name: 'Single Needle', tier: 'pro', desc: 'Ultra-fine precision', layout: 'mobile-first' },
+  { id: 'micro-tattoo', name: 'Micro', tier: 'pro', desc: 'Tiny & delicate', layout: 'mobile-first' },
+  { id: 'abstract', name: 'Abstract', tier: 'plus', desc: 'Artistic & unconventional', layout: 'mobile-first' },
+  { id: 'line-art', name: 'Line Art', tier: 'free', desc: 'Clean continuous lines', layout: 'mobile-first' },
+  { id: 'sketch', name: 'Sketch', tier: 'pro', desc: 'Raw pencil-like strokes', layout: 'mobile-first' },
+  { id: 'negative-space', name: 'Negative Space', tier: 'plus', desc: 'Dark with bright accents', layout: 'mobile-first' },
+  { id: 'white-ink', name: 'White Ink', tier: 'free', desc: 'Pale on deep black', layout: 'mobile-first' },
+  { id: 'stick-poke', name: 'Stick n Poke', tier: 'free', desc: 'Earthy handmade vibe', layout: 'mobile-first' },
+
+  // === social-proof (12) ===
+  { id: 'letterhead', name: 'Letterhead', tier: 'plus', desc: 'Elegant printed feel', layout: 'social-proof' },
+  { id: 'script', name: 'Script', tier: 'pro', desc: 'Warm gold lettering', layout: 'social-proof' },
+  { id: 'black-letter', name: 'Blackletter', tier: 'free', desc: 'Crimson & parchment', layout: 'social-proof' },
+  { id: 'old-school', name: 'Old School', tier: 'free', desc: 'Classic navy & gold', layout: 'social-proof' },
+  { id: 'flash', name: 'Flash', tier: 'plus', desc: 'Hot pink pop art', layout: 'social-proof' },
+  { id: 'painterly', name: 'Painterly', tier: 'pro', desc: 'Sage & canvas tones', layout: 'social-proof' },
+  { id: 'wash', name: 'Wash', tier: 'free', desc: 'Soft indigo wash', layout: 'social-proof' },
+  { id: 'charcoal', name: 'Charcoal', tier: 'plus', desc: 'Smoky dark & amber', layout: 'social-proof' },
+  { id: 'pastel', name: 'Pastel', tier: 'free', desc: 'Soft pink & mint', layout: 'social-proof' },
+  { id: 'neo-academic', name: 'Neo Academic', tier: 'pro', desc: 'Scholarly burgundy', layout: 'social-proof' },
+  { id: 'avant-garde', name: 'Avant Garde', tier: 'plus', desc: 'Bold lime & magenta', layout: 'social-proof' },
+  { id: 'bauhaus', name: 'Bauhaus', tier: 'pro', desc: 'Yellow black minimal', layout: 'social-proof' },
+
+  // === process-funnel (12) ===
+  { id: 'irezumi', name: 'Irezumi', tier: 'pro', desc: 'Japanese traditional red', layout: 'process-funnel' },
+  { id: 'hannya', name: 'Hannya', tier: 'pro', desc: 'Dark mask aesthetic', layout: 'process-funnel' },
+  { id: 'dragon', name: 'Dragon', tier: 'free', desc: 'Jade green & black', layout: 'process-funnel' },
+  { id: 'koi', name: 'Koi', tier: 'free', desc: 'Orange & navy', layout: 'process-funnel' },
+  { id: 'tiger', name: 'Tiger', tier: 'pro', desc: 'Amber & black stripe', layout: 'process-funnel' },
+  { id: 'oni', name: 'Oni', tier: 'pro', desc: 'Crimson demon bold', layout: 'process-funnel' },
+  { id: 'phoenix', name: 'Phoenix', tier: 'plus', desc: 'Scarlet & flame', layout: 'process-funnel' },
+  { id: 'serpent', name: 'Serpent', tier: 'plus', desc: 'Emerald dark scale', layout: 'process-funnel' },
+  { id: 'foo-dog', name: 'Foo Dog', tier: 'plus', desc: 'Imperial red & gold', layout: 'process-funnel' },
+  { id: 'geisha', name: 'Geisha', tier: 'pro', desc: 'Cherry blossom soft', layout: 'process-funnel' },
+  { id: 'samurai', name: 'Samurai', tier: 'plus', desc: 'Steel blue & crimson', layout: 'process-funnel' },
+  { id: 'wave', name: 'Wave', tier: 'free', desc: 'Cerulean woodblock', layout: 'process-funnel' },
+
+  // === full-experience (12) ===
+  { id: 'museum', name: 'Museum', tier: 'free', desc: 'Warm beige curated', layout: 'full-experience' },
+  { id: 'gallery', name: 'Gallery', tier: 'free', desc: 'Pure white gallery', layout: 'full-experience' },
+  { id: 'collection', name: 'Collection', tier: 'plus', desc: 'Deep teal & gold', layout: 'full-experience' },
+  { id: 'anthology', name: 'Anthology', tier: 'plus', desc: 'Plum & rose gold', layout: 'full-experience' },
+  { id: 'monograph', name: 'Monograph', tier: 'free', desc: 'Slate & warm grey', layout: 'full-experience' },
+  { id: 'portfolio', name: 'Portfolio', tier: 'free', desc: 'Cream & burgundy', layout: 'full-experience' },
+  { id: 'retrospective', name: 'Retrospective', tier: 'pro', desc: 'Oxblood dramatic', layout: 'full-experience' },
+  { id: 'showcase', name: 'Showcase', tier: 'pro', desc: 'Charcoal & teal', layout: 'full-experience' },
+  { id: 'compilation', name: 'Compilation', tier: 'plus', desc: 'Navy & copper', layout: 'full-experience' },
+  { id: 'treasury', name: 'Treasury', tier: 'plus', desc: 'Forest green & gold', layout: 'full-experience' },
+  { id: 'compendium', name: 'Compendium', tier: 'free', desc: 'Stone & cedar', layout: 'full-experience' },
+  { id: 'archive', name: 'Archive', tier: 'pro', desc: 'Steel & white', layout: 'full-experience' },
 ];
 
 /** Guess template from photo style keywords (lightweight — no API call) */
@@ -1211,6 +1720,7 @@ LAYOUT_CONFIGS['compact-process'] = { sections: ['hero-compact','process','booki
 LAYOUT_CONFIGS['mobile-first'] = { sections: ['hero','gallery','booking-compact','footer-bar'], desc: 'Mobile-first with sticky bar' };
 LAYOUT_CONFIGS['mobile-gallery'] = { sections: ['hero-minimal','gallery-cards','booking-compact','footer-bar'], desc: 'Mobile gallery' };
 LAYOUT_CONFIGS['hero-btn-booking'] = { sections: ['hero','booking-compact','footer-bar'], desc: '3 section mobile' };
+LAYOUT_CONFIGS['hero-artists'] = { sections: ['hero','artists','gallery','booking','footer'], desc: 'Hero + artist roster' };
 
 // --- Niche variants (10) ---
 LAYOUT_CONFIGS['booking-first'] = { sections: ['booking','gallery','services','footer'], desc: 'Book first, ask later' };
@@ -1229,28 +1739,118 @@ LAYOUT_CONFIGS['hero-only'] = { sections: ['hero','booking','footer'], desc: 'Mi
 // ===== Assign layout configs to ALL_TEMPLATES =====
 // 41 templates × their layout configs
 export const TEMPLATE_LAYOUTS: Record<string, string> = {
-  // classic (6)
-  minimal: 'classic', vintage: 'classic', moody: 'classic', desert: 'classic',
-  'retro-wave': 'classic-alt', nordic: 'classic-min',
-  // hero-grid (5)
-  studio: 'hero-full', coastal: 'hero-centered', arctic: 'hero-minimal',
-  watercolor: 'hero-split', lavender: 'hero-reviews',
-  // link-bio (5)
-  brutalist: 'link-bio', tribal: 'link-bio', punk: 'link-bio-min',
-  maori: 'link-bio', monochrome: 'link-bio-min',
-  // studio-roster (5)
-  traditional: 'studio-roster', nature: 'studio-roster-alt', woodcut: 'studio-min',
-  botanical: 'studio-roster', tropical: 'studio-roster-alt',
-  // cards (5)
-  edgy: 'card-heavy', neon: 'services-cards', metallic: 'gallery-cards',
-  cyberpunk: 'card-heavy', 'new-school': 'services-cards',
-  // split (5)
-  royal: 'hero-split', midnight: 'centered-min', celestial: 'editorial',
-  sunset: 'hero-story', chicano: 'hero-centered',
-  // editorial (5)
-  gothic: 'editorial-full', japanese: 'editorial', steampunk: 'editorial-full',
-  neonoir: 'reviews-first', halloween: 'social-proof',
-  // minimal-bar (5)
-  industrial: 'minimal-bar', urban: 'minimal-bar-alt', sakura: 'minimal-bar',
-  biomechanical: 'hero-compact', 'trash-polka': 'funnel',
+  // ======= CLASSIC family (6 themes × unique configs) =======
+  minimal: 'classic',
+  vintage: 'classic-alt',
+  moody: 'classic-min',
+  desert: 'gallery-first',
+  'retro-wave': 'hero-gallery-services',
+  nordic: 'hero-about-services-gallery',
+  // ======= HERO-GRID family (5 themes × unique configs) =======
+  studio: 'hero-full',
+  coastal: 'hero-centered',
+  arctic: 'hero-minimal',
+  watercolor: 'hero-split',
+  lavender: 'hero-reviews',
+  // ======= LINK-BIO family (5 themes × unique configs) =======
+  brutalist: 'link-bio',
+  tribal: 'link-bio-min',
+  punk: 'single-section',
+  maori: 'centered-min',
+  monochrome: 'hero-btn-booking',
+  // ======= STUDIO-ROSTER family (5 themes × unique configs) =======
+  traditional: 'studio-roster',
+  nature: 'studio-roster-alt',
+  woodcut: 'studio-min',
+  botanical: 'full-artist',
+  tropical: 'hero-artists',
+  // ======= CARDS family (5 themes × unique configs) =======
+  edgy: 'card-heavy',
+  neon: 'services-cards',
+  metallic: 'gallery-cards',
+  cyberpunk: 'compact-services',
+  'new-school': 'compact-gallery',
+  // ======= SPLIT family (5 themes × unique configs) =======
+  royal: 'hero-split',
+  midnight: 'centered-min',
+  celestial: 'centered-stats',
+  sunset: 'hero-story',
+  chicano: 'hero-centered',
+  // ======= EDITORIAL family (5 themes × unique configs) =======
+  gothic: 'editorial-full',
+  japanese: 'editorial',
+  steampunk: 'full-experience',
+  neonoir: 'reviews-first',
+  halloween: 'social-proof',
+  // ======= MINIMAL-BAR family (5 themes × unique configs) =======
+  industrial: 'minimal-bar',
+  urban: 'minimal-bar-alt',
+  sakura: 'compact-min',
+  biomechanical: 'hero-compact',
+  'trash-polka': 'funnel',
+  // ======= GALLERY-FOCUS family (12 themes × unique configs) =======
+  americana: 'gallery-first',
+  'fine-line': 'gallery-big',
+  blackwork: 'gallery-cards',
+  ornamental: 'gallery-masonry',
+  geometric: 'gallery-stats',
+  stipple: 'gallery-showcase',
+  etching: 'gallery-process',
+  surrealism: 'gallery-highlight',
+  illustrative: 'hero-gallery-process',
+  photorealism: 'hero-gallery-services',
+  dotwork: 'hero-gallery-map',
+  'micro-realism': 'hero-gallery-reviews',
+  // ======= MOBILE-FIRST family (12 themes × unique configs) =======
+  'neo-tribal': 'compact',
+  patchwork: 'compact-gallery',
+  handpoke: 'compact-min',
+  'minimal-line': 'compact-stats',
+  'single-needle': 'compact-process',
+  'micro-tattoo': 'mobile-first',
+  abstract: 'mobile-gallery',
+  'line-art': 'compact-services',
+  sketch: 'services-highlight',
+  'negative-space': 'services-first',
+  'white-ink': 'services-list',
+  'stick-poke': 'services-process',
+  // ======= SOCIAL-PROOF family (12 themes × unique configs) =======
+  letterhead: 'hero-services-reviews',
+  script: 'reviews-stats',
+  'black-letter': 'editorial',
+  'old-school': 'services-reviews',
+  flash: 'instagram-highlight',
+  painterly: 'hero-story',
+  wash: 'about-highlight',
+  charcoal: 'centered-process',
+  pastel: 'map-highlight',
+  'neo-academic': 'hero-about-booking',
+  'avant-garde': 'hero-instagram-booking',
+  bauhaus: 'hero-map-booking',
+  // ======= PROCESS-FUNNEL family (12 themes × unique configs) =======
+  irezumi: 'process-first',
+  hannya: 'process-full',
+  dragon: 'funnel',
+  koi: 'hero-process-booking',
+  tiger: 'hero-stats-process',
+  oni: 'process-highlight',
+  phoenix: 'full-experience',
+  serpent: 'full-gallery',
+  'foo-dog': 'full-services',
+  geisha: 'full-about',
+  samurai: 'hero-reviews-gallery',
+  wave: 'hero-services-booking',
+  // ======= FULL-EXPERIENCE family (12 themes × unique configs) =======
+  museum: 'full-booking',
+  gallery: 'full-location',
+  collection: 'full-portfolio',
+  anthology: 'editorial-full',
+  monograph: 'full-minimal',
+  portfolio: 'full-social',
+  retrospective: 'reviews-highlight',
+  showcase: 'hero-editorial',
+  compilation: 'booking-first',
+  treasury: 'hero-stats-gallery',
+  compendium: 'hero-only',
+  archive: 'hero-split',
 };
