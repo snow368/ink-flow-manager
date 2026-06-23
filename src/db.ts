@@ -1097,7 +1097,7 @@ export interface UserRecord {
   email: string;
   name: string;
   roles: Array<'artist' | 'owner' | 'staff' | 'dev'>;
-  plan?: 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus';
+  plan?: 'free' | 'solo' | 'pro' | 'pro_plus' | 'plus' | 'website_basic' | 'website_pro';
   artistId?: string;
   deviceId?: string;
   verified: boolean;
