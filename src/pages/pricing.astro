@@ -104,9 +104,10 @@ const productSchema = {
           <thead class="text-left text-xs uppercase text-gray-500">
             <tr class="border-b border-ink-800">
               <th class="pb-4 pr-4 font-medium">Feature</th>
-              {APP_PLANS.map((plan) => (
-                <th class={`pb-4 pr-4 font-medium text-center ${plan.popular ? 'text-accent-400' : ''}`}>{plan.name}</th>
-              ))}
+              <th class="pb-4 pr-4 font-medium text-center">Free</th>
+              <th class="pb-4 pr-4 font-medium text-center">Starter</th>
+              <th class="pb-4 pr-4 font-medium text-center text-accent-400">Pro</th>
+              <th class="pb-4 font-medium text-center">Plus</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-ink-800/50">
