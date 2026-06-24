@@ -4,119 +4,120 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
-const TEMPLATES = [
-  { name: 'Minimal', key: 'minimal', tier: 'free', layout: 'classic', desc: 'Clean white single-page scroll.', accent: '#1a1a1a' },
-  { name: 'Vintage', key: 'vintage', tier: 'free', layout: 'classic', desc: 'Warm retro scroll.', accent: '#8b4513' },
-  { name: 'Moody', key: 'moody', tier: 'free', layout: 'classic', desc: 'Dark with gold accents.', accent: '#b8860b' },
-  { name: 'Desert', key: 'desert', tier: 'free', layout: 'classic', desc: 'Warm desert tones.', accent: '#c4783a' },
-  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', layout: 'classic', desc: '80s neon synthwave.', accent: '#ff6688' },
-  { name: 'Nordic', key: 'nordic', tier: 'free', layout: 'classic', desc: 'Cool steel blue.', accent: '#7a9aaa' },
-  { name: 'Studio', key: 'studio', tier: 'pro', layout: 'hero-grid', desc: 'Full-screen hero + gallery.', accent: '#d4a574' },
-  { name: 'Coastal', key: 'coastal', tier: 'plus', layout: 'hero-grid', desc: 'Light beachy gallery.', accent: '#2a8a8a' },
-  { name: 'Arctic', key: 'arctic', tier: 'free', layout: 'hero-grid', desc: 'Ice blue gallery.', accent: '#2a7aaa' },
-  { name: 'Watercolor', key: 'watercolor', tier: 'plus', layout: 'hero-grid', desc: 'Soft pastel gallery.', accent: '#e88d9a' },
-  { name: 'Lavender', key: 'lavender', tier: 'free', layout: 'hero-grid', desc: 'Purple tones.', accent: '#8a6aca' },
-  { name: 'Brutalist', key: 'brutalist', tier: 'pro', layout: 'link-bio', desc: 'Bold B&W link page.', accent: '#ffffff' },
-  { name: 'Tribal', key: 'tribal', tier: 'free', layout: 'link-bio', desc: 'Black & grey.', accent: '#d4d4d4' },
-  { name: 'Punk', key: 'punk', tier: 'pro', layout: 'link-bio', desc: 'Yellow link page.', accent: '#ffee00' },
-  { name: 'Maori', key: 'maori', tier: 'free', layout: 'link-bio', desc: 'Red & black.', accent: '#cc2222' },
-  { name: 'Monochrome', key: 'monochrome', tier: 'free', layout: 'link-bio', desc: 'Greyscale.', accent: '#666666' },
-  { name: 'Traditional', key: 'traditional', tier: 'free', layout: 'studio-roster', desc: 'Bold red roster.', accent: '#c41e1e' },
-  { name: 'Nature', key: 'nature', tier: 'pro', layout: 'studio-roster', desc: 'Forest green.', accent: '#4a8c3f' },
-  { name: 'Woodcut', key: 'woodcut', tier: 'plus', layout: 'studio-roster', desc: 'Dark print.', accent: '#cc9a4a' },
-  { name: 'Botanical', key: 'botanical', tier: 'free', layout: 'studio-roster', desc: 'Sage green.', accent: '#5a9e6a' },
-  { name: 'Tropical', key: 'tropical', tier: 'pro', layout: 'studio-roster', desc: 'Coral & teal.', accent: '#ff7744' },
-  { name: 'Edgy', key: 'edgy', tier: 'pro', layout: 'cards', desc: 'Neon pink cards.', accent: '#ff0066' },
-  { name: 'Neon', key: 'neon', tier: 'pro', layout: 'cards', desc: 'Cyan glow.', accent: '#00ffff' },
-  { name: 'Metallic', key: 'metallic', tier: 'plus', layout: 'cards', desc: 'Silver chrome.', accent: '#9a9aaa' },
-  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', layout: 'cards', desc: 'Neon magenta.', accent: '#ff00aa' },
-  { name: 'New School', key: 'new-school', tier: 'pro', layout: 'cards', desc: 'Cartoon bright.', accent: '#ff66cc' },
-  { name: 'Royal', key: 'royal', tier: 'pro', layout: 'split', desc: 'Purple & gold.', accent: '#7c3aed' },
-  { name: 'Midnight', key: 'midnight', tier: 'free', layout: 'split', desc: 'Deep blue.', accent: '#4a80d0' },
-  { name: 'Celestial', key: 'celestial', tier: 'plus', layout: 'split', desc: 'Gold on midnight.', accent: '#c8a040' },
-  { name: 'Sunset', key: 'sunset', tier: 'pro', layout: 'split', desc: 'Orange glow.', accent: '#ff6622' },
-  { name: 'Chicano', key: 'chicano', tier: 'pro', layout: 'split', desc: 'Brown & gold.', accent: '#c4956a' },
-  { name: 'Gothic', key: 'gothic', tier: 'plus', layout: 'editorial', desc: 'Ornate dark.', accent: '#800020' },
-  { name: 'Japanese', key: 'japanese', tier: 'pro', layout: 'editorial', desc: 'Irezumi red.', accent: '#cc3300' },
-  { name: 'Steampunk', key: 'steampunk', tier: 'plus', layout: 'editorial', desc: 'Brass & bronze.', accent: '#b8862a' },
-  { name: 'Neonoir', key: 'neonoir', tier: 'pro', layout: 'editorial', desc: 'Red noir.', accent: '#ff2244' },
-  { name: 'Halloween', key: 'halloween', tier: 'free', layout: 'editorial', desc: 'Orange & black.', accent: '#ff6600' },
-  { name: 'Industrial', key: 'industrial', tier: 'plus', layout: 'minimal-bar', desc: 'Steel & concrete.', accent: '#4682b4' },
-  { name: 'Urban', key: 'urban', tier: 'plus', layout: 'minimal-bar', desc: 'Graffiti bar.', accent: '#ff6600' },
-  { name: 'Sakura', key: 'sakura', tier: 'pro', layout: 'minimal-bar', desc: 'Cherry blossom.', accent: '#e86a8a' },
-  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', layout: 'minimal-bar', desc: 'Sci-fi machinery.', accent: '#c0392b' },
-  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', layout: 'minimal-bar', desc: 'Collage chaos.', accent: '#cc2244' },
-  { name: 'Americana', key: 'americana', tier: 'free', layout: 'gallery-focus', desc: 'Star-spangled.', accent: '#c0262d' },
-  { name: 'Fine Line', key: 'fine-line', tier: 'free', layout: 'gallery-focus', desc: 'Delicate line.', accent: '#1a1a2e' },
-  { name: 'Blackwork', key: 'blackwork', tier: 'free', layout: 'gallery-focus', desc: 'Pure B&W.', accent: '#ffffff' },
-  { name: 'Ornamental', key: 'ornamental', tier: 'pro', layout: 'gallery-focus', desc: 'Intricate patterns.', accent: '#a67c52' },
-  { name: 'Geometric', key: 'geometric', tier: 'pro', layout: 'gallery-focus', desc: 'Sharp shapes.', accent: '#2a7a9a' },
-  { name: 'Stipple', key: 'stipple', tier: 'free', layout: 'gallery-focus', desc: 'Dotwork.', accent: '#bf8f60' },
-  { name: 'Etching', key: 'etching', tier: 'plus', layout: 'gallery-focus', desc: 'Crosshatch.', accent: '#4a3a2a' },
-  { name: 'Surrealism', key: 'surrealism', tier: 'pro', layout: 'gallery-focus', desc: 'Dreamlike.', accent: '#c84ad8' },
-  { name: 'Illustrative', key: 'illustrative', tier: 'pro', layout: 'gallery-focus', desc: 'Comic book.', accent: '#2a5a8a' },
-  { name: 'Photorealism', key: 'photorealism', tier: 'plus', layout: 'gallery-focus', desc: 'Photo-real.', accent: '#6688aa' },
-  { name: 'Dotwork', key: 'dotwork', tier: 'free', layout: 'gallery-focus', desc: 'Mandala dots.', accent: '#c49a6a' },
-  { name: 'Micro Realism', key: 'micro-realism', tier: 'plus', layout: 'gallery-focus', desc: 'Tiny detail.', accent: '#7a7a7a' },
-  { name: 'Neo Tribal', key: 'neo-tribal', tier: 'free', layout: 'mobile-first', desc: 'Modern tribal.', accent: '#0099ff' },
-  { name: 'Patchwork', key: 'patchwork', tier: 'free', layout: 'mobile-first', desc: 'Mixed style.', accent: '#ff4488' },
-  { name: 'Hand Poke', key: 'hand-poke', tier: 'free', layout: 'mobile-first', desc: 'Raw hand-poked.', accent: '#8a7a5a' },
-  { name: 'Minimal Line', key: 'minimal-line', tier: 'free', layout: 'mobile-first', desc: 'Ultra-minimal.', accent: '#e8a0b0' },
-  { name: 'Single Needle', key: 'single-needle', tier: 'pro', layout: 'mobile-first', desc: 'Fine detail.', accent: '#3a5a7a' },
-  { name: 'Micro', key: 'micro', tier: 'pro', layout: 'mobile-first', desc: 'Tiny.', accent: '#c4957a' },
-  { name: 'Abstract', key: 'abstract', tier: 'pro', layout: 'mobile-first', desc: 'Abstract.', accent: '#aaff00' },
-  { name: 'Line Art', key: 'line-art', tier: 'free', layout: 'mobile-first', desc: 'Clean line.', accent: '#ff6b6b' },
-  { name: 'Sketch', key: 'sketch', tier: 'free', layout: 'mobile-first', desc: 'Pencil sketch.', accent: '#6a5a4a' },
-  { name: 'Negative Space', key: 'negative-space', tier: 'plus', layout: 'mobile-first', desc: 'Skin negative.', accent: '#ffffff' },
-  { name: 'White Ink', key: 'white-ink', tier: 'plus', layout: 'mobile-first', desc: 'White ink.', accent: '#cccccc' },
-  { name: 'Stick n Poke', key: 'stick-n-poke', tier: 'free', layout: 'mobile-first', desc: 'DIY.', accent: '#6a5a4a' },
-  { name: 'Letterhead', key: 'letterhead', tier: 'free', layout: 'social-proof', desc: 'Vintage letter.', accent: '#7a2a2a' },
-  { name: 'Script', key: 'script', tier: 'free', layout: 'social-proof', desc: 'Elegant script.', accent: '#c89a40' },
-  { name: 'Blackletter', key: 'blackletter', tier: 'pro', layout: 'social-proof', desc: 'Gothic letter.', accent: '#9a1a1a' },
-  { name: 'Old School', key: 'old-school', tier: 'free', layout: 'social-proof', desc: 'Flash.', accent: '#1a4a7a' },
-  { name: 'Flash', key: 'flash', tier: 'free', layout: 'social-proof', desc: 'Wall flash.', accent: '#ff4488' },
-  { name: 'Painterly', key: 'painterly', tier: 'plus', layout: 'social-proof', desc: 'Oil paint.', accent: '#4a7a5a' },
-  { name: 'Wash', key: 'wash', tier: 'pro', layout: 'social-proof', desc: 'Ink wash.', accent: '#3a5a7a' },
-  { name: 'Charcoal', key: 'charcoal', tier: 'free', layout: 'social-proof', desc: 'Charcoal.', accent: '#c48a3a' },
-  { name: 'Pastel', key: 'pastel', tier: 'free', layout: 'social-proof', desc: 'Pastel.', accent: '#f0a0b0' },
-  { name: 'Neo Academic', key: 'neo-academic', tier: 'plus', layout: 'social-proof', desc: 'Fine art.', accent: '#6a2a2a' },
-  { name: 'Avant Garde', key: 'avant-garde', tier: 'pro', layout: 'social-proof', desc: 'Experimental.', accent: '#00ff88' },
-  { name: 'Bauhaus', key: 'bauhaus', tier: 'pro', layout: 'social-proof', desc: 'Bauhaus.', accent: '#ffdd00' },
-  { name: 'Irezumi', key: 'irezumi', tier: 'pro', layout: 'process-funnel', desc: 'Japanese.', accent: '#cc2200' },
-  { name: 'Hannya', key: 'hannya', tier: 'pro', layout: 'process-funnel', desc: 'Demon mask.', accent: '#9a1a1a' },
-  { name: 'Dragon', key: 'dragon', tier: 'free', layout: 'process-funnel', desc: 'Dragon.', accent: '#2a8a3a' },
-  { name: 'Koi', key: 'koi', tier: 'free', layout: 'process-funnel', desc: 'Koi.', accent: '#e87a2a' },
-  { name: 'Tiger', key: 'tiger', tier: 'pro', layout: 'process-funnel', desc: 'Tiger.', accent: '#d4881a' },
-  { name: 'Oni', key: 'oni', tier: 'plus', layout: 'process-funnel', desc: 'Oni.', accent: '#aa2222' },
-  { name: 'Phoenix', key: 'phoenix', tier: 'free', layout: 'process-funnel', desc: 'Phoenix.', accent: '#cc4400' },
-  { name: 'Serpent', key: 'serpent', tier: 'pro', layout: 'process-funnel', desc: 'Serpent.', accent: '#1a8a4a' },
-  { name: 'Foo Dog', key: 'foo-dog', tier: 'free', layout: 'process-funnel', desc: 'Foo Dog.', accent: '#cc3300' },
-  { name: 'Geisha', key: 'geisha', tier: 'plus', layout: 'process-funnel', desc: 'Geisha.', accent: '#e86a8a' },
-  { name: 'Samurai', key: 'samurai', tier: 'pro', layout: 'process-funnel', desc: 'Samurai.', accent: '#aa2a2a' },
-  { name: 'Wave', key: 'wave', tier: 'free', layout: 'process-funnel', desc: 'Wave.', accent: '#1a6a8a' },
-  { name: 'Museum', key: 'museum', tier: 'plus', layout: 'full-experience', desc: 'Museum.', accent: '#6a5a4a' },
-  { name: 'Gallery', key: 'gallery', tier: 'pro', layout: 'full-experience', desc: 'Gallery.', accent: '#2a2a2a' },
-  { name: 'Collection', key: 'collection', tier: 'free', layout: 'full-experience', desc: 'Collection.', accent: '#c89a3a' },
-  { name: 'Anthology', key: 'anthology', tier: 'pro', layout: 'full-experience', desc: 'Anthology.', accent: '#c89aaa' },
-  { name: 'Monograph', key: 'monograph', tier: 'plus', layout: 'full-experience', desc: 'Monograph.', accent: '#4a4a4a' },
-  { name: 'Portfolio', key: 'portfolio', tier: 'free', layout: 'full-experience', desc: 'Portfolio.', accent: '#6a2a2a' },
-  { name: 'Retrospective', key: 'retrospective', tier: 'pro', layout: 'full-experience', desc: 'Retro.', accent: '#6a2a1a' },
-  { name: 'Showcase', key: 'showcase', tier: 'free', layout: 'full-experience', desc: 'Showcase.', accent: '#2a8a8a' },
-  { name: 'Compilation', key: 'compilation', tier: 'free', layout: 'full-experience', desc: 'Compilation.', accent: '#b8702a' },
-  { name: 'Treasury', key: 'treasury', tier: 'plus', layout: 'full-experience', desc: 'Treasury.', accent: '#c49a3a' },
-  { name: 'Compendium', key: 'compendium', tier: 'pro', layout: 'full-experience', desc: 'Compendium.', accent: '#5a6a5a' },
-  { name: 'Archive', key: 'archive', tier: 'free', layout: 'full-experience', desc: 'Archive.', accent: '#4a5a6a' },
+const T = [
+  { n: 'Minimal', k: 'minimal', t: 'free', l: 'classic', a: '#1a1a1a' },
+  { n: 'Vintage', k: 'vintage', t: 'free', l: 'classic', a: '#8b4513' },
+  { n: 'Moody', k: 'moody', t: 'free', l: 'classic', a: '#b8860b' },
+  { n: 'Desert', k: 'desert', t: 'free', l: 'classic', a: '#c4783a' },
+  { n: 'Retro Wave', k: 'retro-wave', t: 'plus', l: 'classic', a: '#ff6688' },
+  { n: 'Nordic', k: 'nordic', t: 'free', l: 'classic', a: '#7a9aaa' },
+  { n: 'Studio', k: 'studio', t: 'pro', l: 'hero-grid', a: '#d4a574' },
+  { n: 'Coastal', k: 'coastal', t: 'plus', l: 'hero-grid', a: '#2a8a8a' },
+  { n: 'Arctic', k: 'arctic', t: 'free', l: 'hero-grid', a: '#2a7aaa' },
+  { n: 'Watercolor', k: 'watercolor', t: 'plus', l: 'hero-grid', a: '#e88d9a' },
+  { n: 'Lavender', k: 'lavender', t: 'free', l: 'hero-grid', a: '#8a6aca' },
+  { n: 'Brutalist', k: 'brutalist', t: 'pro', l: 'link-bio', a: '#ffffff' },
+  { n: 'Tribal', k: 'tribal', t: 'free', l: 'link-bio', a: '#d4d4d4' },
+  { n: 'Punk', k: 'punk', t: 'pro', l: 'link-bio', a: '#ffee00' },
+  { n: 'Maori', k: 'maori', t: 'free', l: 'link-bio', a: '#cc2222' },
+  { n: 'Monochrome', k: 'monochrome', t: 'free', l: 'link-bio', a: '#666666' },
+  { n: 'Traditional', k: 'traditional', t: 'free', l: 'studio-roster', a: '#c41e1e' },
+  { n: 'Nature', k: 'nature', t: 'pro', l: 'studio-roster', a: '#4a8c3f' },
+  { n: 'Woodcut', k: 'woodcut', t: 'plus', l: 'studio-roster', a: '#cc9a4a' },
+  { n: 'Botanical', k: 'botanical', t: 'free', l: 'studio-roster', a: '#5a9e6a' },
+  { n: 'Tropical', k: 'tropical', t: 'pro', l: 'studio-roster', a: '#ff7744' },
+  { n: 'Edgy', k: 'edgy', t: 'pro', l: 'cards', a: '#ff0066' },
+  { n: 'Neon', k: 'neon', t: 'pro', l: 'cards', a: '#00ffff' },
+  { n: 'Metallic', k: 'metallic', t: 'plus', l: 'cards', a: '#9a9aaa' },
+  { n: 'Cyberpunk', k: 'cyberpunk', t: 'pro', l: 'cards', a: '#ff00aa' },
+  { n: 'New School', k: 'new-school', t: 'pro', l: 'cards', a: '#ff66cc' },
+  { n: 'Royal', k: 'royal', t: 'pro', l: 'split', a: '#7c3aed' },
+  { n: 'Midnight', k: 'midnight', t: 'free', l: 'split', a: '#4a80d0' },
+  { n: 'Celestial', k: 'celestial', t: 'plus', l: 'split', a: '#c8a040' },
+  { n: 'Sunset', k: 'sunset', t: 'pro', l: 'split', a: '#ff6622' },
+  { n: 'Chicano', k: 'chicano', t: 'pro', l: 'split', a: '#c4956a' },
+  { n: 'Gothic', k: 'gothic', t: 'plus', l: 'editorial', a: '#800020' },
+  { n: 'Japanese', k: 'japanese', t: 'pro', l: 'editorial', a: '#cc3300' },
+  { n: 'Steampunk', k: 'steampunk', t: 'plus', l: 'editorial', a: '#b8862a' },
+  { n: 'Neonoir', k: 'neonoir', t: 'pro', l: 'editorial', a: '#ff2244' },
+  { n: 'Halloween', k: 'halloween', t: 'free', l: 'editorial', a: '#ff6600' },
+  { n: 'Industrial', k: 'industrial', t: 'plus', l: 'minimal-bar', a: '#4682b4' },
+  { n: 'Urban', k: 'urban', t: 'plus', l: 'minimal-bar', a: '#ff6600' },
+  { n: 'Sakura', k: 'sakura', t: 'pro', l: 'minimal-bar', a: '#e86a8a' },
+  { n: 'Biomechanical', k: 'biomechanical', t: 'pro', l: 'minimal-bar', a: '#c0392b' },
+  { n: 'Trash Polka', k: 'trash-polka', t: 'plus', l: 'minimal-bar', a: '#cc2244' },
+  { n: 'Americana', k: 'americana', t: 'free', l: 'gallery-focus', a: '#c0262d' },
+  { n: 'Fine Line', k: 'fine-line', t: 'free', l: 'gallery-focus', a: '#1a1a2e' },
+  { n: 'Blackwork', k: 'blackwork', t: 'free', l: 'gallery-focus', a: '#ffffff' },
+  { n: 'Ornamental', k: 'ornamental', t: 'pro', l: 'gallery-focus', a: '#a67c52' },
+  { n: 'Geometric', k: 'geometric', t: 'pro', l: 'gallery-focus', a: '#2a7a9a' },
+  { n: 'Stipple', k: 'stipple', t: 'free', l: 'gallery-focus', a: '#bf8f60' },
+  { n: 'Etching', k: 'etching', t: 'plus', l: 'gallery-focus', a: '#4a3a2a' },
+  { n: 'Surrealism', k: 'surrealism', t: 'pro', l: 'gallery-focus', a: '#c84ad8' },
+  { n: 'Illustrative', k: 'illustrative', t: 'pro', l: 'gallery-focus', a: '#2a5a8a' },
+  { n: 'Photorealism', k: 'photorealism', t: 'plus', l: 'gallery-focus', a: '#6688aa' },
+  { n: 'Dotwork', k: 'dotwork', t: 'free', l: 'gallery-focus', a: '#c49a6a' },
+  { n: 'Micro Realism', k: 'micro-realism', t: 'plus', l: 'gallery-focus', a: '#7a7a7a' },
+  { n: 'Neo Tribal', k: 'neo-tribal', t: 'free', l: 'mobile-first', a: '#0099ff' },
+  { n: 'Patchwork', k: 'patchwork', t: 'free', l: 'mobile-first', a: '#ff4488' },
+  { n: 'Hand Poke', k: 'hand-poke', t: 'free', l: 'mobile-first', a: '#8a7a5a' },
+  { n: 'Minimal Line', k: 'minimal-line', t: 'free', l: 'mobile-first', a: '#e8a0b0' },
+  { n: 'Single Needle', k: 'single-needle', t: 'pro', l: 'mobile-first', a: '#3a5a7a' },
+  { n: 'Micro', k: 'micro', t: 'pro', l: 'mobile-first', a: '#c4957a' },
+  { n: 'Abstract', k: 'abstract', t: 'pro', l: 'mobile-first', a: '#aaff00' },
+  { n: 'Line Art', k: 'line-art', t: 'free', l: 'mobile-first', a: '#ff6b6b' },
+  { n: 'Sketch', k: 'sketch', t: 'free', l: 'mobile-first', a: '#6a5a4a' },
+  { n: 'Negative Space', k: 'negative-space', t: 'plus', l: 'mobile-first', a: '#ffffff' },
+  { n: 'White Ink', k: 'white-ink', t: 'plus', l: 'mobile-first', a: '#cccccc' },
+  { n: 'Stick n Poke', k: 'stick-n-poke', t: 'free', l: 'mobile-first', a: '#6a5a4a' },
+  { n: 'Letterhead', k: 'letterhead', t: 'free', l: 'social-proof', a: '#7a2a2a' },
+  { n: 'Script', k: 'script', t: 'free', l: 'social-proof', a: '#c89a40' },
+  { n: 'Blackletter', k: 'blackletter', t: 'pro', l: 'social-proof', a: '#9a1a1a' },
+  { n: 'Old School', k: 'old-school', t: 'free', l: 'social-proof', a: '#1a4a7a' },
+  { n: 'Flash', k: 'flash', t: 'free', l: 'social-proof', a: '#ff4488' },
+  { n: 'Painterly', k: 'painterly', t: 'plus', l: 'social-proof', a: '#4a7a5a' },
+  { n: 'Wash', k: 'wash', t: 'pro', l: 'social-proof', a: '#3a5a7a' },
+  { n: 'Charcoal', k: 'charcoal', t: 'free', l: 'social-proof', a: '#c48a3a' },
+  { n: 'Pastel', k: 'pastel', t: 'free', l: 'social-proof', a: '#f0a0b0' },
+  { n: 'Neo Academic', k: 'neo-academic', t: 'plus', l: 'social-proof', a: '#6a2a2a' },
+  { n: 'Avant Garde', k: 'avant-garde', t: 'pro', l: 'social-proof', a: '#00ff88' },
+  { n: 'Bauhaus', k: 'bauhaus', t: 'pro', l: 'social-proof', a: '#ffdd00' },
+  { n: 'Irezumi', k: 'irezumi', t: 'pro', l: 'process-funnel', a: '#cc2200' },
+  { n: 'Hannya', k: 'hannya', t: 'pro', l: 'process-funnel', a: '#9a1a1a' },
+  { n: 'Dragon', k: 'dragon', t: 'free', l: 'process-funnel', a: '#2a8a3a' },
+  { n: 'Koi', k: 'koi', t: 'free', l: 'process-funnel', a: '#e87a2a' },
+  { n: 'Tiger', k: 'tiger', t: 'pro', l: 'process-funnel', a: '#d4881a' },
+  { n: 'Oni', k: 'oni', t: 'plus', l: 'process-funnel', a: '#aa2222' },
+  { n: 'Phoenix', k: 'phoenix', t: 'free', l: 'process-funnel', a: '#cc4400' },
+  { n: 'Serpent', k: 'serpent', t: 'pro', l: 'process-funnel', a: '#1a8a4a' },
+  { n: 'Foo Dog', k: 'foo-dog', t: 'free', l: 'process-funnel', a: '#cc3300' },
+  { n: 'Geisha', k: 'geisha', t: 'plus', l: 'process-funnel', a: '#e86a8a' },
+  { n: 'Samurai', k: 'samurai', t: 'pro', l: 'process-funnel', a: '#aa2a2a' },
+  { n: 'Wave', k: 'wave', t: 'free', l: 'process-funnel', a: '#1a6a8a' },
+  { n: 'Museum', k: 'museum', t: 'plus', l: 'full-experience', a: '#6a5a4a' },
+  { n: 'Gallery', k: 'gallery', t: 'pro', l: 'full-experience', a: '#2a2a2a' },
+  { n: 'Collection', k: 'collection', t: 'free', l: 'full-experience', a: '#c89a3a' },
+  { n: 'Anthology', k: 'anthology', t: 'pro', l: 'full-experience', a: '#c89aaa' },
+  { n: 'Monograph', k: 'monograph', t: 'plus', l: 'full-experience', a: '#4a4a4a' },
+  { n: 'Portfolio', k: 'portfolio', t: 'free', l: 'full-experience', a: '#6a2a2a' },
+  { n: 'Retrospective', k: 'retrospective', t: 'pro', l: 'full-experience', a: '#6a2a1a' },
+  { n: 'Showcase', k: 'showcase', t: 'free', l: 'full-experience', a: '#2a8a8a' },
+  { n: 'Compilation', k: 'compilation', t: 'free', l: 'full-experience', a: '#b8702a' },
+  { n: 'Treasury', k: 'treasury', t: 'plus', l: 'full-experience', a: '#c49a3a' },
+  { n: 'Compendium', k: 'compendium', t: 'pro', l: 'full-experience', a: '#5a6a5a' },
+  { n: 'Archive', k: 'archive', t: 'free', l: 'full-experience', a: '#4a5a6a' },
 ];
-const GROUP_NAMES = { classic: 'Classic Scroll', 'hero-grid': 'Gallery Grid', 'link-bio': 'Link in Bio', 'studio-roster': 'Artist Roster', cards: 'Card Style', split: 'Split Screen', editorial: 'Magazine', 'minimal-bar': 'Sticky Bar', 'gallery-focus': 'Gallery Focus', 'mobile-first': 'Mobile First', 'social-proof': 'Social Proof', 'process-funnel': 'Process Funnel', 'full-experience': 'Full Experience' };
-const GROUP_ICONS = { classic: '📜', 'hero-grid': '🖼️', 'link-bio': '🔗', 'studio-roster': '👥', cards: '🃏', split: '↔️', editorial: '📰', 'minimal-bar': '📱', 'gallery-focus': '🖼️', 'mobile-first': '📱', 'social-proof': '⭐', 'process-funnel': '🔄', 'full-experience': '🌟' };
-const PALETTES = { classic: ['#1a1a1a','#8b4513','#b8860b','#c4783a','#ff6688'], 'hero-grid': ['#d4a574','#2a8a8a','#2a7aaa','#e88d9a','#8a6aca'], 'link-bio': ['#ffffff','#d4d4d4','#ffee00','#cc2222','#666666'], 'studio-roster': ['#c41e1e','#4a8c3f','#cc9a4a','#5a9e6a','#ff7744'], cards: ['#ff0066','#00ffff','#9a9aaa','#ff00aa','#ff66cc'], split: ['#7c3aed','#4a80d0','#c8a040','#ff6622','#c4956a'], editorial: ['#800020','#cc3300','#b8862a','#ff2244','#ff6600'], 'minimal-bar': ['#4682b4','#ff6600','#e86a8a','#c0392b','#cc2244'], 'gallery-focus': ['#c0262d','#1a1a2e','#a67c52','#2a7a9a','#c49a6a'], 'mobile-first': ['#0099ff','#ff4488','#8a7a5a','#aaff00','#ff6b6b'], 'social-proof': ['#7a2a2a','#c89a40','#9a1a1a','#1a4a7a','#ff4488'], 'process-funnel': ['#cc2200','#9a1a1a','#2a8a3a','#cc4400','#aa2222'], 'full-experience': ['#6a5a4a','#2a2a2a','#c89a3a','#c89aaa','#4a4a4a'] };
-const GROUPS = Object.keys(GROUP_NAMES);
+const GN = {classic:'Classic Scroll','hero-grid':'Gallery Grid','link-bio':'Link in Bio','studio-roster':'Artist Roster',cards:'Card Style',split:'Split Screen',editorial:'Magazine','minimal-bar':'Sticky Bar','gallery-focus':'Gallery Focus','mobile-first':'Mobile First','social-proof':'Social Proof','process-funnel':'Process Funnel','full-experience':'Full Experience'};
+const GI = {classic:'📜','hero-grid':'🖼️','link-bio':'🔗','studio-roster':'👥',cards:'🃏',split:'↔️',editorial:'📰','minimal-bar':'📱','gallery-focus':'🖼️','mobile-first':'📱','social-proof':'⭐','process-funnel':'🔄','full-experience':'🌟'};
+const PAL = {classic:['#1a1a1a','#8b4513','#b8860b','#c4783a','#ff6688'],'hero-grid':['#d4a574','#2a8a8a','#2a7aaa','#e88d9a','#8a6aca'],'link-bio':['#ffffff','#d4d4d4','#ffee00','#cc2222','#666666'],'studio-roster':['#c41e1e','#4a8c3f','#cc9a4a','#5a9e6a','#ff7744'],cards:['#ff0066','#00ffff','#9a9aaa','#ff00aa','#ff66cc'],split:['#7c3aed','#4a80d0','#c8a040','#ff6622','#c4956a'],editorial:['#800020','#cc3300','#b8862a','#ff2244','#ff6600'],'minimal-bar':['#4682b4','#ff6600','#e86a8a','#c0392b','#cc2244'],'gallery-focus':['#c0262d','#1a1a2e','#a67c52','#2a7a9a','#c49a6a'],'mobile-first':['#0099ff','#ff4488','#8a7a5a','#aaff00','#ff6b6b'],'social-proof':['#7a2a2a','#c89a40','#9a1a1a','#1a4a7a','#ff4488'],'process-funnel':['#cc2200','#9a1a1a','#2a8a3a','#cc4400','#aa2222'],'full-experience':['#6a5a4a','#2a2a2a','#c89a3a','#c89aaa','#4a4a4a']};
+const GROUPS = Object.keys(GN);
+const ALL = {};
+T.forEach(x => ALL[x.k] = x);
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="101 Tattoo Website Templates — InkFlow" description="Browse 101 tattoo studio templates. Choose your layout, pick colors, preview instantly." />
+  <SEOHead slot="head" title="101 Tattoo Website Templates — InkFlow" description="Browse 101 tattoo studio templates." />
   <Navbar />
-
   <section class="pt-24 pb-6 sm:pt-32">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-2">TEMPLATES</p>
@@ -124,40 +125,31 @@ const GROUPS = Object.keys(GROUP_NAMES);
       <p class="mt-2 text-gray-400">13 layouts — pick a template, choose your colors, preview live below.</p>
     </div>
   </section>
-
   <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">
-    {GROUPS.map(gkey => {
-      const gtemps = TEMPLATES.filter(t => t.layout === gkey);
-      return (
-      <div class="mb-8">
+    {GROUPS.map(gk => {
+      const gs = T.filter(x => x.l === gk);
+      return `<div class="mb-8">
         <div class="flex items-center gap-2 mb-3 sticky top-16 z-10 bg-ink-950 py-2 border-b border-ink-800/50">
-          <span>{GROUP_ICONS[gkey]}</span>
-          <h2 class="text-lg font-bold text-white">{GROUP_NAMES[gkey]}</h2>
-          <span class="text-xs text-gray-500">({gtemps.length})</span>
+          <span>{GI[gk]}</span>
+          <h2 class="text-lg font-bold text-white">{GN[gk]}</h2>
+          <span class="text-xs text-gray-500">({gs.length})</span>
         </div>
         <div class="flex flex-wrap gap-2">
-          {gtemps.map(t => (
-            <div class="group relative flex items-center gap-1.5 rounded-xl border border-ink-700 bg-ink-900/30 px-3 py-2 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all cursor-pointer"
-              data-key={t.key}
-              onclick={`pick('${t.key}','${t.name}','${t.tier}','${t.layout}')`}>
-              <span class="w-2.5 h-2.5 rounded-full" style={`background:${t.accent}`}></span>
-              <span class="text-sm font-medium text-white whitespace-nowrap">{t.name}</span>
-              {t.tier !== 'free' && <span class="text-[9px] font-medium" style={`color:${t.tier === 'plus' ? '#f59e0b' : '#a33a3a'}`}>{t.tier === 'pro' ? 'Pro' : '+'}</span>}
-            </div>
-          ))}
+          {gs.map(t => `<div class="group relative flex items-center gap-1.5 rounded-xl border border-ink-700 bg-ink-900/30 px-3 py-2 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all cursor-pointer" onclick="pk('${t.k}','${t.n}','${t.t}','${t.l}')" data-key={t.k}>
+            <span class="w-2.5 h-2.5 rounded-full" style="background:{t.a}"></span>
+            <span class="text-sm font-medium text-white whitespace-nowrap">{t.n}</span>
+            {t.t !== 'free' && `<span class="text-[9px] font-medium" style="color:${t.t === 'plus' ? '#f59e0b' : '#a33a3a'}">{t.t === 'pro' ? 'Pro' : '+'}</span>`}
+          </div>`)}
         </div>
-      </div>
-      );
+      </div>`;
     })}
   </div>
-
-  <!-- Preview + Color + Form Area -->
   <section class="border-t border-ink-800/50 py-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <div id="previewWrap" class="hidden">
         <div class="flex items-center gap-3 mb-4">
           <span class="w-4 h-4 rounded-full" id="dot"></span>
-          <h2 class="text-xl font-bold text-white" id="tName">—</h2>
+          <h2 class="text-xl font-bold text-white" id="tName"></h2>
           <span class="text-sm text-gray-500" id="tMeta"></span>
         </div>
         <p class="text-sm text-gray-400 mb-3">Choose accent color:</p>
@@ -166,69 +158,40 @@ const GROUPS = Object.keys(GROUP_NAMES);
           <iframe id="pv" class="w-full h-72 sm:h-96" style="pointer-events:none;border:none;"></iframe>
         </div>
       </div>
-
       <div class="max-w-md mx-auto text-center" id="formSec">
         <h2 class="text-xl font-bold text-white mb-2">Create Your Site</h2>
-        <p class="text-gray-400 text-sm mb-4" id="hint">Select a template above, pick a color, then fill this in.</p>
+        <p class="text-gray-400 text-sm mb-4">Select a template above, pick a color, then fill this in.</p>
         <div id="fields" class="text-left space-y-3">
           <input type="email" id="em" placeholder="Email *" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
           <input type="text" id="nm" placeholder="Studio Name *" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
           <input type="text" id="ig" placeholder="Instagram (optional)" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
-          <button onclick="gen()" id="gb" class="w-full py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400">Generate Free Preview →</button>
+          <button onclick="gs()" class="w-full py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400">Generate Free Preview →</button>
         </div>
         <div id="pres" class="hidden text-left">
           <iframe id="pf" class="w-full h-[450px] rounded-xl border border-ink-700" style="pointer-events:none"></iframe>
           <div class="mt-4 flex gap-3 justify-center">
-            <button onclick="pub('basic')" class="px-6 py-3 rounded-lg bg-accent-500 text-white font-semibold">Basic $9.99/yr</button>
-            <button onclick="pub('pro')" class="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold">Pro $19.99/yr</button>
+            <button onclick="pb('basic')" class="px-6 py-3 rounded-lg bg-accent-500 text-white font-semibold">Basic $9.99/yr</button>
+            <button onclick="pb('pro')" class="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold">Pro $19.99/yr</button>
           </div>
         </div>
       </div>
     </div>
   </section>
-
   <Footer />
 </BaseLayout>
 
-<div id="td" style="display:none" data-p={JSON.stringify(PALETTES)} data-t={JSON.stringify(TEMPLATES)} data-g={JSON.stringify(GROUP_NAMES)} data-i={JSON.stringify(GROUP_ICONS)}></div>
 <script is:inline>
-const P = JSON.parse(document.getElementById('td').dataset.p);
-const A = JSON.parse(document.getElementById('td').dataset.t);
-const GN = JSON.parse(document.getElementById('td').dataset.g);
-const GI = JSON.parse(document.getElementById('td').dataset.i);
+const P={},A={},G={},I={},ALL={};
+PAL=void 0;TMP=void 0;
+</script>
+<script>
+const PAL={JSON.stringify(PAL)},TMP={JSON.stringify(T)},GN={JSON.stringify(GN)},GI={JSON.stringify(GI)},A={};
+TMP.forEach(x=>A[x.k]=x);
 let k='',n='',ti='free',ly='',cc='';
-
-window.pick=function(key,name,tier,layout) {
-  k=key;n=name;ti=tier;ly=layout;
-  const t=A.find(x=>x.key===key);
-  cc=t?.accent||'#06b6d4';
-  document.getElementById('previewWrap').classList.remove('hidden');
-  document.getElementById('tName').textContent=name;
-  document.getElementById('tMeta').textContent=GN[layout]+' · '+tier;
-  document.getElementById('dot').style.background=cc;
-  const pal=P[layout]||[cc];
-  document.getElementById('colors').innerHTML=pal.map(c=>
-    `<button class="sw" style="background:${c};width:32px;height:32px;border-radius:50%;border:2px solid ${c===cc?'#fff':'transparent'};cursor:pointer" onclick="swatch('${c}')"></button>`
-  ).join('');
-  upv(key,cc);
-};
-
-window.swatch=function(c){cc=c;document.getElementById('dot').style.background=c;document.querySelectorAll('.sw').forEach(b=>b.style.borderColor=b.style.background===c?'#fff':'transparent');upv(k,c);};
-
-function upv(key,c){const u=new URL('https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/'+key);if(c)u.searchParams.set('accent',c);document.getElementById('pv').src=u.toString();}
-
-async function gen(){
-  const em=document.getElementById('em').value.trim(),nm=document.getElementById('nm').value.trim();
-  if(!em||!nm){alert('Email and Studio Name required');return;}
-  if(!k){alert('Select a template first');return;}
-  const btn=document.getElementById('gb');btn.disabled=true;btn.textContent='Generating...';
-  try{
-    const r=await fetch('https://ink-flow-api.snow368.workers.dev/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,name:nm,studioName:nm,plan:ti==='free'?'website_basic':'website_pro'})});
-    const d=await r.json();
-    if(!r.ok){alert('Error: '+(d.error||'Failed'));btn.disabled=false;btn.textContent='Generate Free Preview →';return;}
-    document.getElementById('pf').src='https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/'+k+'?accent='+cc;
-    document.getElementById('fields').classList.add('hidden');document.getElementById('pres').classList.remove('hidden');
-  }catch(e){alert('Network error');btn.disabled=false;btn.textContent='Generate Free Preview →';}
-}
-function pub(p){window.open('https://app.ink-flows.com/register?plan=website_'+p+'&template='+k+'&accent='+cc,'_blank');}
+const D=x=>document.getElementById(x);
+window.pk=function(key,name,tier,layout){k=key;n=name;ti=tier;ly=layout;const o=A[key];cc=o?.a||'#06b6d4';D('previewWrap').classList.remove('hidden');D('tName').textContent=name;D('tMeta').textContent=GN[layout]+' · '+tier;D('dot').style.background=cc;const pl=PAL[layout]||[cc];D('colors').innerHTML=pl.map(c=>'<button class="sw"style="background:'+c+';width:32px;height:32px;border-radius:50%;border:2px solid '+(c===cc?'#fff':'transparent')+';cursor:pointer"onclick="sw(\''+c+'\')"></button>').join('');up(key,cc);};
+window.sw=function(c){cc=c;D('dot').style.background=c;document.querySelectorAll('.sw').forEach(b=>b.style.borderColor=b.style.background===c?'#fff':'transparent');up(k,c);};
+function up(key,c){const u=new URL('https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/'+key);if(c)u.searchParams.set('accent',c);D('pv').src=u.toString();}
+async function gs(){const em=D('em').value.trim(),nm=D('nm').value.trim();if(!em||!nm){alert('Email and Studio Name required');return}if(!k){alert('Select a template first');return}const btn=D('gb');btn.disabled=true;btn.textContent='Generating...';try{const r=await fetch('https://ink-flow-api.snow368.workers.dev/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,name:nm,studioName:nm,plan:ti==='free'?'website_basic':'website_pro'})});const d=await r.json();if(!r.ok){alert('Error: '+(d.error||'Failed'));btn.disabled=false;btn.textContent='Generate Free Preview →';return}D('pf').src='https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/'+k+'?accent='+cc;D('fields').classList.add('hidden');D('pres').classList.remove('hidden')}catch(e){alert('Network error');btn.disabled=false;btn.textContent='Generate Free Preview →'}}
+function pb(p){window.open('https://app.ink-flows.com/register?plan=website_'+p+'&template='+k+'&accent='+cc,'_blank')}
 </script>
