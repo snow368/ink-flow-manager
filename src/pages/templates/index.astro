@@ -166,7 +166,7 @@ const PAL = {classic:['#1a1a1a','#8b4513','#b8860b','#c4783a','#ff6688'],'hero-g
         <div class="flex gap-2 mb-4" id="colors"></div>
         <div class="rounded-xl border border-ink-700 overflow-hidden mb-6" style="position:relative">
           <iframe id="pv" class="w-full h-72 sm:h-96" style="border:none;"></iframe>
-          <div id="pvOverlay" style="position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;border-radius:inherit;"></div>
+          <div id="pvOverlay" style="position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;border-radius:inherit;z-index:10;"></div>
         </div>
       </div>
       <div class="max-w-md mx-auto text-center">
@@ -224,14 +224,14 @@ document.addEventListener('click', function(e) {
       document.querySelectorAll('.cw').forEach(function(b) { b.style.borderColor = b.dataset.c === curColor ? '#fff' : 'transparent'; });
       // Overlay tint for background color change
       var ov = document.getElementById('pvOverlay');
-      ov.style.opacity = '0.2';
+      ov.style.opacity = '0.35';
       ov.style.background = curColor;
       document.getElementById('pv').src = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + selectedKey + '?accent=' + encodeURIComponent(curColor) + '&_t=' + Date.now();
     };
   });
   // Initial preview with default accent, reset overlay
   var ov = document.getElementById('pvOverlay');
-  ov.style.opacity = '0.2';
+  ov.style.opacity = '0.35';
   ov.style.background = accent;
   document.getElementById('pv').src = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + key + '?accent=' + encodeURIComponent(accent) + '&_t=' + Date.now();
 });
