@@ -190,11 +190,12 @@ const GROUPS = Object.keys(GROUP_NAMES);
   <Footer />
 </BaseLayout>
 
-<script is:inline define:vars={{ PALETTES, TEMPLATES, GROUP_NAMES, GROUP_ICONS }}>
-const P = PALETTES;
-const A = TEMPLATES;
-const GN = GROUP_NAMES;
-const GI = GROUP_ICONS;
+<div id="td" style="display:none" data-p={JSON.stringify(PALETTES)} data-t={JSON.stringify(TEMPLATES)} data-g={JSON.stringify(GROUP_NAMES)} data-i={JSON.stringify(GROUP_ICONS)}></div>
+<script is:inline>
+const P = JSON.parse(document.getElementById('td').dataset.p);
+const A = JSON.parse(document.getElementById('td').dataset.t);
+const GN = JSON.parse(document.getElementById('td').dataset.g);
+const GI = JSON.parse(document.getElementById('td').dataset.i);
 let k='',n='',ti='free',ly='',cc='';
 
 window.pick=function(key,name,tier,layout) {
