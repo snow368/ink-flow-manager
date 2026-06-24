@@ -798,6 +798,14 @@ export const TEMPLATE_TIERS: Record<string, string> = {
   compilation: 'plus', treasury: 'plus', compendium: 'free', archive: 'pro',
 };
 
+function lighten(hex: string): string {
+  hex = hex.replace('#', '');
+  const r = Math.min(255, parseInt(hex.slice(0,2), 16) + 30);
+  const g = Math.min(255, parseInt(hex.slice(2,4), 16) + 30);
+  const b = Math.min(255, parseInt(hex.slice(4,6), 16) + 30);
+  return '#' + [r,g,b].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+
 // ---- Helpers ----
 
 function stars(rating: number): string {
@@ -1118,7 +1126,7 @@ function layout(content: string, d: ShopData, t: ThemeVars, baseUrl: string): st
 
 export function renderShopPage(d: ShopData, baseUrl: string): string {
   const base = THEMES[d.template] || THEMES.traditional;
-  const t = d.accentOverride ? { ...base, accent: d.accentOverride, accentHover: d.accentOverride } : base;
+  const t = d.accentOverride ? { ...base, bg: d.accentOverride, bgAlt: lighten(d.accentOverride) } : base;
   const configKey = TEMPLATE_LAYOUTS[d.template] || 'classic';
 
   // Special layouts that have custom render functions

@@ -1,13 +1,13 @@
 name = "ink-flow-api"
 compatibility_date = "2025-12-01"
 main = "src/index.ts"
-account_id = "5ee6e81f1376d7f00c9dcfa141991816"
+account_id = "76a99ad37a968c6e5f743d8bb27825b3"
 
-# D1 database
-[[d1_databases]]
-binding = "DB"
-database_name = "inkflow-db"
-database_id = "167db98c-c926-45af-837b-04d53e2daaaf"
+# D1 database — uncomment when D1 is set up in account
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "inkflow-db"
+# database_id = "167db98c-c926-45af-837b-04d53e2daaaf"
 
 # Environment variables
 [vars]
