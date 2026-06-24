@@ -1907,6 +1907,7 @@ app.get('/api/content/analytics', async (c) => {
 // =============================================
 app.get('/api/template-preview/:key', async (c) => {
   const key = c.req.param('key');
+  const accent = c.req.query('accent') || '';
   const template = ALL_TEMPLATES.find(t => t.id === key);
   if (!template) { c.status(404); return c.text('Template not found'); }
 
@@ -1932,7 +1933,8 @@ app.get('/api/template-preview/:key', async (c) => {
     claimed: true,
     instagram: 'inkflow',
     priceRange: '$$',
-  };
+    accentOverride: accent || undefined,
+  } as ShopData;
 
   const html = renderShopPage(sampleData, 'https://app.ink-flows.com');
   return c.html(html);

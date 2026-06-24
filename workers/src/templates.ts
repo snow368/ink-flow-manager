@@ -25,6 +25,8 @@ export interface ShopData {
   instagram?: string;
   /** Layout pattern: classic | hero-grid | link-bio | studio-roster | cards | split | editorial | minimal-bar | gallery-focus | mobile-first | social-proof | process-funnel | full-experience */
   layout?: string;
+  /** Optional accent color override (hex) for live preview customization */
+  accentOverride?: string;
 }
 
 interface ThemeVars {
@@ -1115,7 +1117,8 @@ function layout(content: string, d: ShopData, t: ThemeVars, baseUrl: string): st
 // ---- Public API ----
 
 export function renderShopPage(d: ShopData, baseUrl: string): string {
-  const t = THEMES[d.template] || THEMES.traditional;
+  const base = THEMES[d.template] || THEMES.traditional;
+  const t = d.accentOverride ? { ...base, accent: d.accentOverride, accentHover: d.accentOverride } : base;
   const configKey = TEMPLATE_LAYOUTS[d.template] || 'classic';
 
   // Special layouts that have custom render functions
