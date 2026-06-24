@@ -1,23 +1,18 @@
 name = "ink-flow-api"
 compatibility_date = "2025-12-01"
 main = "src/index.ts"
-account_id = "76a99ad37a968c6e5f743d8bb27825b3"
+account_id = "5ee6e81f1376d7f00c9dcfa141991816"
 
-# R2 bucket for image storage
-[[r2_buckets]]
-binding = "INKFLOW_IMAGES"
-bucket_name = "inkflow-images"
-
-# D1 database (replaces JSON files)
+# D1 database
 [[d1_databases]]
 binding = "DB"
 database_name = "inkflow-db"
-database_id = "5e462ed0-9613-4e16-85c4-8bb0494c5f4a"
+database_id = "167db98c-c926-45af-837b-04d53e2daaaf"
 
 # Environment variables
 [vars]
 STRIPE_PLATFORM_FEE_PERCENT = "0"
 VAPID_SUBJECT = "mailto:hello@ink-flows.com"
-PUBLIC_URL = "https://ink-flow-api.snow368.workers.dev"
+PUBLIC_URL = "https://ink-flow-api.inkflowapp.workers.dev"
 SENDGRID_API_KEY = ""
 EMAIL_FROM = "hello@ink-flows.com"

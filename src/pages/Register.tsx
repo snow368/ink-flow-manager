@@ -374,27 +374,59 @@ export default function Register() {
                 );
               })}
             </div>
+            {/* Namecheap domain recommendation */}
+            <div style={{ background: '#1e2a4a', borderRadius: 8, padding: 10, marginTop: 8, border: '1px solid #2563eb44' }}>
+              <p style={{ fontSize: 11, color: '#93c5fd', margin: 0 }}>
+                💡 Need a custom domain? <a href="https://www.namecheap.com/?aff=138601" target="_blank" rel="noopener" style={{ color: '#60a5fa', fontWeight: 600 }}>Search Namecheap</a> — domains from $5.98/yr.
+              </p>
+            </div>
           </div>
         )}
         </>
       )}
 
-      <button
-        onClick={mode === 'register' ? handleRegister : handleLogin}
-        disabled={submitting || !email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))}
-        style={{
-          width: '100%',
-          padding: 14,
-          borderRadius: 12,
-          border: 'none',
-          background: (!email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))) ? '#4b5563' : '#e11d48',
-          color: 'white',
-          fontSize: 16,
-          fontWeight: 600,
-        }}
-      >
-        {submitting ? t(lang, 'processing') : mode === 'register' ? t(lang, 'register') : t(lang, 'login')}
-      </button>
+      {mode === 'register' && registerType === 'website' ? (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => window.open('https://ink-flows.com/pricing', '_blank')}
+            style={{
+              flex: 1, padding: 14, borderRadius: 12, border: '2px solid #6366f1',
+              background: '#6366f115', color: '#a5b4fc', fontSize: 14, fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            👁️ 查看模板
+          </button>
+          <button
+            onClick={handleRegister}
+            disabled={submitting || !email || !password || !name || !studioName.trim() || !confirmPassword || roles.length === 0}
+            style={{
+              flex: 2, padding: 14, borderRadius: 12, border: 'none',
+              background: (!email || !password || !name || !studioName.trim() || !confirmPassword || roles.length === 0) ? '#4b5563' : '#e11d48',
+              color: 'white', fontSize: 15, fontWeight: 600, cursor: submitting ? 'default' : 'pointer',
+            }}
+          >
+            {submitting ? '注册中...' : '注册并建站 →'}
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={mode === 'register' ? handleRegister : handleLogin}
+          disabled={submitting || !email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))}
+          style={{
+            width: '100%',
+            padding: 14,
+            borderRadius: 12,
+            border: 'none',
+            background: (!email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))) ? '#4b5563' : '#e11d48',
+            color: 'white',
+            fontSize: 16,
+            fontWeight: 600,
+          }}
+        >
+          {submitting ? t(lang, 'processing') : mode === 'register' ? t(lang, 'register') : t(lang, 'login')}
+        </button>
+      )}
 
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 14, color: '#94a3b8' }}>
         {mode === 'register' ? (

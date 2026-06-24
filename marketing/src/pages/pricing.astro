@@ -5,29 +5,38 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import PageSchema from '../components/PageSchema.astro';
 import FAQSchema from '../components/FAQSchema.astro';
+import { APP_PLANS, WEBSITE_PLANS, type PricingTier } from '../data/pricing';
+
+// Generate Product+Offer schema from data source
+const appOffers = APP_PLANS.map(p => ({
+  "@type": "Offer" as const,
+  "name": p.name,
+  "price": p.monthly.toString(),
+  "priceCurrency": "USD",
+  "description": `${p.features[0]}${p.features.length > 1 ? `, ${p.features.slice(1, 4).join(', ')}` : ''}`,
+}));
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "InkFlow Plans",
+  "brand": { "@type": "Brand", "name": "InkFlow" },
+  "description": "Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
+  "offers": appOffers,
+};
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="InkFlow Pricing — Free, Starter $9.99, Pro $29.99, Plus $49.99 | Tattoo Studio Software" description="Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo for multi-location. Annual plans available. Start free, upgrade when you grow." />
+  <SEOHead slot="head"
+    title="InkFlow Pricing — Free, Starter $9.99, Pro $29.99, Plus $49.99 | Tattoo Studio Software"
+    description="Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo for multi-location. Annual plans available. Start free, upgrade when you grow."
+  />
   <PageSchema type="software" data={{
     description: "Tattoo studio management software. Free forever, Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
     offers: { price: "0", currency: "USD" },
     aggregateRating: { value: "4.8", count: "127" },
   }} />
-  <!-- Pricing offers schema (all plans) -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "InkFlow Plans",
-    "brand": { "@type": "Brand", "name": "InkFlow" },
-    "description": "Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
-    "offers": [
-      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "USD", "description": "Forever free for 1 artist, basic manual tools" },
-      { "@type": "Offer", "name": "Starter", "price": "9.99", "priceCurrency": "USD", "description": "Online booking, digital waivers, CRM, SMS reminders, free website page" },
-      { "@type": "Offer", "name": "Pro", "price": "29.99", "priceCurrency": "USD", "description": "Up to 5 artists, commission splitting, aftercare automation, inventory, 10-page website" },
-      { "@type": "Offer", "name": "Plus", "price": "49.99", "priceCurrency": "USD", "description": "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
-    ]
-  })} />
+  <!-- Product schema (from data source) -->
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
   <FAQSchema questions={[
     { question: "Is there a free plan?", answer: "Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience." },
     { question: "What is the difference between Free and Starter?", answer: "Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection." },
@@ -47,87 +56,40 @@ import FAQSchema from '../components/FAQSchema.astro';
     </div>
   </section>
 
-  <!-- PLANS -->
+  <!-- APP PLANS -->
   <section class="pb-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="grid gap-8 md:grid-cols-4 max-w-6xl mx-auto">
 
-        <!-- FREE -->
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8 flex flex-col">
-          <h2 class="text-lg font-semibold text-white">Free</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$0</p>
-          <p class="mt-1 text-sm text-gray-400">Forever free — basic manual tools</p>
-          <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1 artist</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Manual client management</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Manual appointment booking</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Local-only (no cloud sync)</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
-        </div>
-
-        <!-- STARTER -->
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8 flex flex-col">
-          <h2 class="text-lg font-semibold text-white">Starter</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$9.99</p>
-          <p class="mt-1 text-sm text-gray-400">Per month — 1 artist</p>
-          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$99.99</strong>/year <span class="text-accent-400">(save $19.89)</span></p>
-          <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Online booking widget</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Digital waivers</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Client CRM + cloud sync</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> SMS & email reminders</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Deposit collection</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Payment links</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Free website page</strong> — basic listing</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Upgrade to Starter</a>
-        </div>
-
-        <!-- PRO -->
-        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 relative flex flex-col">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
-          <h2 class="text-lg font-semibold text-white">Pro</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
-          <p class="mt-1 text-sm text-gray-400">Per month — 1 shop, up to 5 artists</p>
-          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$299.99</strong>/year <span class="text-accent-400">(save $59.89)</span></p>
-          <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Starter</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Up to 5 artist accounts</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Commission splitting</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Aftercare automation</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Inventory tracking</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Staff management</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Enhanced website</strong> — 10 pages, all templates</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block w-full rounded-lg bg-accent-500 py-2.5 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Upgrade to Pro</a>
-        </div>
-
-        <!-- PLUS -->
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8 flex flex-col">
-          <h2 class="text-lg font-semibold text-white">Plus</h2>
-          <p class="mt-2 text-4xl font-bold text-white">$49.99</p>
-          <p class="mt-1 text-sm text-gray-400">First shop + $15/additional</p>
-          <p class="text-xs text-gray-500">or <strong class="text-gray-300">$499.99</strong>/year <span class="text-accent-400">(save $99.89)</span></p>
-          <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Everything in Pro</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Multi-location management</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Cross-shop analytics</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Priority support</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">+</span> <strong class="text-gray-300">Unlimited pages</strong> — custom domain, no branding</li>
-          </ul>
-          <div class="mt-6">
-            <p class="text-xs text-gray-500 mb-2">Multi-shop pricing:</p>
-            <div class="space-y-1 text-xs text-gray-400">
-              <p>2 shops → <strong class="text-white">$64.99</strong>/mo</p>
-              <p>3 shops → <strong class="text-white">$79.99</strong>/mo</p>
-              <p>5 shops → <strong class="text-white">$109.99</strong>/mo</p>
-            </div>
+        {APP_PLANS.map((plan) => (
+          <div class={`rounded-xl border ${plan.popular ? 'border-2 border-accent-500 bg-ink-900' : 'border-ink-800 bg-ink-900/30'} p-8 flex flex-col relative`}>
+            {plan.popular && (
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
+            )}
+            <h2 class="text-lg font-semibold text-white">{plan.name}</h2>
+            <p class="mt-2 text-4xl font-bold text-white">{plan.monthlyLabel}</p>
+            <p class="mt-1 text-sm text-gray-400">{plan.subtitle}</p>
+            {plan.annualSaving > 0 && (
+              <p class="text-xs text-gray-500">or <strong class="text-gray-300">{plan.annualLabel}</strong> <span class="text-accent-400">(save ${plan.annualSaving.toFixed(2)})</span></p>
+            )}
+            <ul class="mt-8 space-y-3 text-sm text-gray-400 flex-1">
+              {plan.features.map((feat) => (
+                <li class="flex items-start gap-2">
+                  <span class="mt-0.5 text-accent-400 shrink-0">{feat.startsWith('Everything') || feat.startsWith('Enhanced') || feat.startsWith('Unlimited') || feat.startsWith('Multi') ? '+' : '✓'}</span>
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+            <a href="https://app.ink-flows.com/register"
+               class={`mt-8 block w-full rounded-lg py-2.5 text-center text-sm font-medium transition-colors ${
+                 plan.popular
+                   ? 'bg-accent-500 text-ink-950 hover:bg-accent-400 font-semibold'
+                   : 'border border-ink-700 text-gray-300 hover:border-ink-500 hover:text-white'
+               }`}>
+              {plan.id === 'free' ? 'Get Started Free' : `Upgrade to ${plan.name}`}
+            </a>
           </div>
-          <a href="https://app.ink-flows.com/register" class="mt-5 block w-full rounded-lg border border-ink-700 py-2.5 text-center text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Upgrade to Plus</a>
-        </div>
+        ))}
 
       </div>
     </div>
@@ -168,6 +130,9 @@ import FAQSchema from '../components/FAQSchema.astro';
             <tr><td class="py-3 pr-4">No InkFlow branding</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 text-center text-green-400">✓</td></tr>
             <tr><td class="py-3 pr-4">Priority support</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-gray-600">✗</td><td class="py-3 pr-4 text-center text-green-400">✓</td><td class="py-3 text-center text-green-400">✓</td></tr>
           </tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
   <!-- WHICH PLAN -->
@@ -210,7 +175,7 @@ import FAQSchema from '../components/FAQSchema.astro';
     </div>
   </section>
 
-  <!-- WEBSITE ONLY PLAN -->
+  <!-- WEBSITE ONLY PLANS (from data source) -->
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-10">
@@ -219,39 +184,36 @@ import FAQSchema from '../components/FAQSchema.astro';
         <p class="mt-2 text-gray-400 max-w-xl mx-auto">Get a tattoo shop website in minutes. Auto-generated from templates, Instagram gallery connected.</p>
       </div>
       <div class="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 flex flex-col">
-          <h3 class="text-base font-semibold text-white">Website Basic</h3>
-          <p class="mt-2 text-3xl font-bold text-white">$9.99</p>
-          <p class="text-sm text-gray-400">per year</p>
-          <p class="text-xs text-gray-500">Single landing page · Billed annually · Renews at $9.99/yr</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> 1-page landing page</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All templates</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery (directly from IG)</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Google Maps embed</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Subdomain (slug.ink-flows.com)</li>
-          </ul>
-          <p class="mt-3 text-xs text-gray-500">Zero storage cost — uses your Instagram photos</p>
-          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_basic" class="mt-6 block w-full rounded-lg border border-ink-700 py-2 text-center text-sm font-medium text-gray-300 hover:border-ink-500 transition-colors">Get Basic</a>
-        </div>
-        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-6 flex flex-col relative">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-3 py-0.5 text-xs font-semibold text-ink-950">Popular</span>
-          <h3 class="text-base font-semibold text-white">Website Pro</h3>
-          <p class="mt-2 text-3xl font-bold text-white">$19.99</p>
-          <p class="text-sm text-gray-400">per year</p>
-          <p class="text-xs text-gray-500">Multi-page website · Billed annually · Renews at $19.99/yr</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Multi-page website</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> All templates</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Booking request form</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Instagram gallery (directly from IG)</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> Custom domain</li>
-            <li class="flex items-start gap-2"><span class="mt-0.5 text-accent-400">✓</span> No InkFlow branding</li>
-          </ul>
-          <p class="mt-3 text-xs text-gray-500">Zero storage cost — uses your Instagram photos</p>
-          <a href="https://app.ink-flows.com/register?type=website&amp;plan=website_pro" class="mt-6 block w-full rounded-lg bg-accent-500 py-2 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Get Pro</a>
-        </div>
+
+        {WEBSITE_PLANS.map((plan) => (
+          <div class={`rounded-xl border ${plan.popular ? 'border-2 border-accent-500 bg-ink-900' : 'border-ink-800 bg-ink-900/30'} p-6 flex flex-col relative`}>
+            {plan.popular && (
+              <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-3 py-0.5 text-xs font-semibold text-ink-950">Popular</span>
+            )}
+            <h3 class="text-base font-semibold text-white">{plan.name}</h3>
+            <p class="mt-2 text-3xl font-bold text-white">{plan.annualLabel}</p>
+            <p class="text-sm text-gray-400">{plan.subtitle}</p>
+            <p class="text-xs text-gray-500">{plan.id === 'website_basic' ? 'Single landing page · Billed annually' : 'Multi-page website · Billed annually'} · Renews at {plan.annualLabel}</p>
+            <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+              {plan.features.map((feat) => (
+                <li class="flex items-start gap-2">
+                  <span class="mt-0.5 text-accent-400 shrink-0">✓</span>
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+            <p class="mt-3 text-xs text-gray-500">Zero storage cost — uses your Instagram photos</p>
+            <a href={`https://app.ink-flows.com/register?type=website&plan=${plan.id}`}
+               class={`mt-6 block w-full rounded-lg py-2 text-center text-sm transition-colors ${
+                 plan.popular
+                   ? 'bg-accent-500 text-ink-950 hover:bg-accent-400 font-semibold'
+                   : 'border border-ink-700 text-gray-300 hover:border-ink-500'
+               }`}>
+              Get {plan.name === 'Website Basic' ? 'Basic' : 'Pro'}
+            </a>
+          </div>
+        ))}
+
       </div>
       <p class="mt-6 text-center text-xs text-gray-500">Already have an InkFlow app plan? Your website is included. <a href="/pricing/" class="text-accent-400 hover:underline">See app plans</a></p>
     </div>

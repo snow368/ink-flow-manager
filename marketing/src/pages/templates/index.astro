@@ -6,64 +6,128 @@ import Footer from '../../components/Footer.astro';
 
 const TEMPLATES = [
   // === classic ===
-  { name: 'Minimal', key: 'minimal', tier: 'free', layout: 'classic', desc: 'Clean single-page scroll. Perfect for solo artists.' },
-  { name: 'Vintage', key: 'vintage', tier: 'free', layout: 'classic', desc: 'Warm retro scroll. Great for traditional shops.' },
-  { name: 'Moody', key: 'moody', tier: 'free', layout: 'classic', desc: 'Dark dramatic scroll. Bold and atmospheric.' },
+  { name: 'Minimal', key: 'minimal', tier: 'free', layout: 'classic', desc: 'Clean white single-page scroll. Timeless for solo artists.' },
+  { name: 'Vintage', key: 'vintage', tier: 'free', layout: 'classic', desc: 'Warm retro scroll. Great for traditional tattoo shops.' },
+  { name: 'Moody', key: 'moody', tier: 'free', layout: 'classic', desc: 'Dark dramatic scroll with gold accents. Bold and atmospheric.' },
   { name: 'Desert', key: 'desert', tier: 'free', layout: 'classic', desc: 'Warm earthy tones. Relaxed southwest vibe.' },
-  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', layout: 'classic', desc: '80s neon synthwave. Loud and proud.' },
-  { name: 'Nordic', key: 'nordic', tier: 'free', layout: 'classic', desc: 'Cool minimal Scandi. Clean and modern.' },
-
+  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', layout: 'classic', desc: '80s neon synthwave scroll. Loud and proud.' },
+  { name: 'Nordic', key: 'nordic', tier: 'free', layout: 'classic', desc: 'Cool steel blue scroll. Clean Scandinavian modern.' },
   // === hero-grid ===
-  { name: 'Studio', key: 'studio', tier: 'pro', layout: 'hero-grid', desc: 'Full-screen hero + big photo grid. Gallery-first.' },
-  { name: 'Coastal', key: 'coastal', tier: 'plus', layout: 'hero-grid', desc: 'Light beachy gallery. Bright and airy.' },
-  { name: 'Arctic', key: 'arctic', tier: 'free', layout: 'hero-grid', desc: 'Ice blue gallery. Cool and minimalist.' },
-  { name: 'Watercolor', key: 'watercolor', tier: 'plus', layout: 'hero-grid', desc: 'Soft pastel gallery. Artistic and gentle.' },
-  { name: 'Lavender', key: 'lavender', tier: 'free', layout: 'hero-grid', desc: 'Purple tones gallery. Soft and elegant.' },
-
+  { name: 'Studio', key: 'studio', tier: 'pro', layout: 'hero-grid', desc: 'Full-screen hero + big photo grid. Gallery-first impact.' },
+  { name: 'Coastal', key: 'coastal', tier: 'plus', layout: 'hero-grid', desc: 'Light beachy gallery. Bright and airy coastal feel.' },
+  { name: 'Arctic', key: 'arctic', tier: 'free', layout: 'hero-grid', desc: 'Ice blue gallery. Cool and minimalist winter tones.' },
+  { name: 'Watercolor', key: 'watercolor', tier: 'plus', layout: 'hero-grid', desc: 'Soft pastel gallery. Artistic and gentle watercolor wash.' },
+  { name: 'Lavender', key: 'lavender', tier: 'free', layout: 'hero-grid', desc: 'Purple tones gallery. Soft and elegant floral energy.' },
   // === link-bio ===
-  { name: 'Brutalist', key: 'brutalist', tier: 'pro', layout: 'link-bio', desc: 'Bold black & white link page. IG bio perfect.' },
-  { name: 'Tribal', key: 'tribal', tier: 'free', layout: 'link-bio', desc: 'Black & grey link page. Clean and sharp.' },
-  { name: 'Punk', key: 'punk', tier: 'pro', layout: 'link-bio', desc: 'High-contrast yellow link page. Street edge.' },
-  { name: 'Maori', key: 'maori', tier: 'free', layout: 'link-bio', desc: 'Red & black link page. Tribal energy.' },
-  { name: 'Monochrome', key: 'monochrome', tier: 'free', layout: 'link-bio', desc: 'Greyscale link page. Timeless minimal.' },
-
+  { name: 'Brutalist', key: 'brutalist', tier: 'pro', layout: 'link-bio', desc: 'Bold black & white link page. IG bio perfect and stark.' },
+  { name: 'Tribal', key: 'tribal', tier: 'free', layout: 'link-bio', desc: 'Black & grey link page. Clean, sharp, minimal edge.' },
+  { name: 'Punk', key: 'punk', tier: 'pro', layout: 'link-bio', desc: 'High-contrast yellow link page. Street edge attitude.' },
+  { name: 'Maori', key: 'maori', tier: 'free', layout: 'link-bio', desc: 'Red & black link page. Tribal cultural energy.' },
+  { name: 'Monochrome', key: 'monochrome', tier: 'free', layout: 'link-bio', desc: 'Greyscale link page. Timeless minimal design.' },
   // === studio-roster ===
-  { name: 'Traditional', key: 'traditional', tier: 'free', layout: 'studio-roster', desc: 'Bold red roster. Classic American shop feel.' },
-  { name: 'Nature', key: 'nature', tier: 'pro', layout: 'studio-roster', desc: 'Forest green roster. Earthy and grounded.' },
-  { name: 'Woodcut', key: 'woodcut', tier: 'plus', layout: 'studio-roster', desc: 'Dark print roster. Vintage engraving style.' },
-  { name: 'Botanical', key: 'botanical', tier: 'free', layout: 'studio-roster', desc: 'Sage green roster. Fresh and natural.' },
+  { name: 'Traditional', key: 'traditional', tier: 'free', layout: 'studio-roster', desc: 'Bold American red roster. Classic shop feel.' },
+  { name: 'Nature', key: 'nature', tier: 'pro', layout: 'studio-roster', desc: 'Forest green roster. Earthy and grounded natural.' },
+  { name: 'Woodcut', key: 'woodcut', tier: 'plus', layout: 'studio-roster', desc: 'Dark print roster. Vintage engraving craft.' },
+  { name: 'Botanical', key: 'botanical', tier: 'free', layout: 'studio-roster', desc: 'Sage green roster. Fresh and natural botanical.' },
   { name: 'Tropical', key: 'tropical', tier: 'pro', layout: 'studio-roster', desc: 'Coral & teal roster. Island vacation vibe.' },
-
   // === cards ===
   { name: 'Edgy', key: 'edgy', tier: 'pro', layout: 'cards', desc: 'Neon pink cards. Modern streetwear energy.' },
-  { name: 'Neon', key: 'neon', tier: 'pro', layout: 'cards', desc: 'Cyan glow cards. Cyberpunk aesthetic.' },
-  { name: 'Metallic', key: 'metallic', tier: 'plus', layout: 'cards', desc: 'Silver chrome cards. Industrial sleek.' },
-  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', layout: 'cards', desc: 'Neon magenta cards. Futuristic bold.' },
-  { name: 'New School', key: 'new-school', tier: 'pro', layout: 'cards', desc: 'Cartoon bright cards. Fun and colorful.' },
-
+  { name: 'Neon', key: 'neon', tier: 'pro', layout: 'cards', desc: 'Cyan glow cards. Cyberpunk neon aesthetic.' },
+  { name: 'Metallic', key: 'metallic', tier: 'plus', layout: 'cards', desc: 'Silver chrome cards. Industrial sleek metal.' },
+  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', layout: 'cards', desc: 'Neon magenta cards. Futuristic bold vision.' },
+  { name: 'New School', key: 'new-school', tier: 'pro', layout: 'cards', desc: 'Cartoon bright cards. Fun, colorful, over-the-top.' },
   // === split ===
-  { name: 'Royal', key: 'royal', tier: 'pro', layout: 'split', desc: 'Purple & gold split. Luxurious feel.' },
-  { name: 'Midnight', key: 'midnight', tier: 'free', layout: 'split', desc: 'Deep blue split. Night sky elegance.' },
-  { name: 'Celestial', key: 'celestial', tier: 'plus', layout: 'split', desc: 'Gold on midnight split. Cosmic luxury.' },
-  { name: 'Sunset', key: 'sunset', tier: 'pro', layout: 'split', desc: 'Orange glow split. Warm sunset drama.' },
-  { name: 'Chicano', key: 'chicano', tier: 'pro', layout: 'split', desc: 'Brown & gold split. Chicano pride.' },
-
+  { name: 'Royal', key: 'royal', tier: 'pro', layout: 'split', desc: 'Purple & gold split. Luxurious royal aesthetic.' },
+  { name: 'Midnight', key: 'midnight', tier: 'free', layout: 'split', desc: 'Deep blue split. Night sky quiet elegance.' },
+  { name: 'Celestial', key: 'celestial', tier: 'plus', layout: 'split', desc: 'Gold on midnight split. Cosmic star luxury.' },
+  { name: 'Sunset', key: 'sunset', tier: 'pro', layout: 'split', desc: 'Orange glow split. Warm golden hour drama.' },
+  { name: 'Chicano', key: 'chicano', tier: 'pro', layout: 'split', desc: 'Brown & gold split. Chicano cultural pride.' },
   // === editorial ===
-  { name: 'Gothic', key: 'gothic', tier: 'plus', layout: 'editorial', desc: 'Ornate dark editorial. Moody magazine feel.' },
-  { name: 'Japanese', key: 'japanese', tier: 'pro', layout: 'editorial', desc: 'Irezumi red editorial. Traditional Japanese.' },
-  { name: 'Steampunk', key: 'steampunk', tier: 'plus', layout: 'editorial', desc: 'Brass & bronze editorial. Victorian industrial.' },
-  { name: 'Neonoir', key: 'neonoir', tier: 'pro', layout: 'editorial', desc: 'Red noir editorial. Dark film aesthetic.' },
-  { name: 'Halloween', key: 'halloween', tier: 'free', layout: 'editorial', desc: 'Orange & black editorial. Spooky style.' },
-
+  { name: 'Gothic', key: 'gothic', tier: 'plus', layout: 'editorial', desc: 'Ornate dark editorial. Moody magazine grandeur.' },
+  { name: 'Japanese', key: 'japanese', tier: 'pro', layout: 'editorial', desc: 'Irezumi red editorial. Traditional Japanese power.' },
+  { name: 'Steampunk', key: 'steampunk', tier: 'plus', layout: 'editorial', desc: 'Brass & bronze editorial. Victorian industrial romance.' },
+  { name: 'Neonoir', key: 'neonoir', tier: 'pro', layout: 'editorial', desc: 'Red noir editorial. Dark film noir aesthetic.' },
+  { name: 'Halloween', key: 'halloween', tier: 'free', layout: 'editorial', desc: 'Orange & black editorial. Spooky playful energy.' },
   // === minimal-bar ===
-  { name: 'Industrial', key: 'industrial', tier: 'plus', layout: 'minimal-bar', desc: 'Steel bar layout. Factory rugged.' },
+  { name: 'Industrial', key: 'industrial', tier: 'plus', layout: 'minimal-bar', desc: 'Steel & concrete bar. Factory rugged minimal.' },
   { name: 'Urban', key: 'urban', tier: 'plus', layout: 'minimal-bar', desc: 'Graffiti bar layout. City street energy.' },
-  { name: 'Sakura', key: 'sakura', tier: 'pro', layout: 'minimal-bar', desc: 'Cherry blossom bar. Delicate and feminine.' },
-  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', layout: 'minimal-bar', desc: 'Metallic red bar. Sci-fi organic.' },
-  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', layout: 'minimal-bar', desc: 'Collage chaos bar. Surreal art.' },
+  { name: 'Sakura', key: 'sakura', tier: 'pro', layout: 'minimal-bar', desc: 'Cherry blossom bar. Delicate feminine spring.' },
+  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', layout: 'minimal-bar', desc: 'Metallic red bar. Sci-fi organic machinery.' },
+  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', layout: 'minimal-bar', desc: 'Collage chaos bar. Surreal art fusion.' },
+
+  // ====== NEW: Gallery Focus (gallery-first layouts) ======
+  { name: 'Americana', key: 'americana', tier: 'free', layout: 'gallery-focus', desc: 'Classic star-spangled gallery. Bold and patriotic.' },
+  { name: 'Fine Line', key: 'fine-line', tier: 'free', layout: 'gallery-focus', desc: 'Delicate line gallery. Elegant and precise.' },
+  { name: 'Blackwork', key: 'blackwork', tier: 'free', layout: 'gallery-focus', desc: 'Pure B&W gallery. High contrast bold geometry.' },
+  { name: 'Ornamental', key: 'ornamental', tier: 'pro', layout: 'gallery-focus', desc: 'Intricate pattern gallery. Sacred geometry details.' },
+  { name: 'Geometric', key: 'geometric', tier: 'pro', layout: 'gallery-focus', desc: 'Sharp shape gallery. Modern abstract precision.' },
+  { name: 'Stipple', key: 'stipple', tier: 'free', layout: 'gallery-focus', desc: 'Dotwork shading gallery. Textured pointillism art.' },
+  { name: 'Etching', key: 'etching', tier: 'plus', layout: 'gallery-focus', desc: 'Crosshatch engraving gallery. Vintage print craft.' },
+  { name: 'Surrealism', key: 'surrealism', tier: 'pro', layout: 'gallery-focus', desc: 'Dreamlike gallery. Dali-esque imagination.' },
+  { name: 'Illustrative', key: 'illustrative', tier: 'pro', layout: 'gallery-focus', desc: 'Comic book gallery. Bold line illustration style.' },
+  { name: 'Photorealism', key: 'photorealism', tier: 'plus', layout: 'gallery-focus', desc: 'Photo-real gallery. Lifelike portrait mastery.' },
+  { name: 'Dotwork', key: 'dotwork', tier: 'free', layout: 'gallery-focus', desc: 'Mandala dot gallery. Meditative pattern art.' },
+  { name: 'Micro Realism', key: 'micro-realism', tier: 'plus', layout: 'gallery-focus', desc: 'Tiny detail gallery. Precision miniature work.' },
+
+  // ====== NEW: Mobile First (compact phone-optimized) ======
+  { name: 'Neo Tribal', key: 'neo-tribal', tier: 'free', layout: 'mobile-first', desc: 'Modern tribal mobile. Sharp black shapes.' },
+  { name: 'Patchwork', key: 'patchwork', tier: 'free', layout: 'mobile-first', desc: 'Mixed style mobile. Eclectic collection grid.' },
+  { name: 'Hand Poke', key: 'hand-poke', tier: 'free', layout: 'mobile-first', desc: 'Raw hand-poked mobile. Organic natural feel.' },
+  { name: 'Minimal Line', key: 'minimal-line', tier: 'free', layout: 'mobile-first', desc: 'Single line mobile. Ultra-minimalist clarity.' },
+  { name: 'Single Needle', key: 'single-needle', tier: 'pro', layout: 'mobile-first', desc: 'Fine detail mobile. Precision single line.' },
+  { name: 'Micro', key: 'micro', tier: 'pro', layout: 'mobile-first', desc: 'Tiny tattoo mobile. Small scale mastery.' },
+  { name: 'Abstract', key: 'abstract', tier: 'pro', layout: 'mobile-first', desc: 'Artistic abstract mobile. Modern fine art feel.' },
+  { name: 'Line Art', key: 'line-art', tier: 'free', layout: 'mobile-first', desc: 'Clean line mobile. Minimal contour drawing.' },
+  { name: 'Sketch', key: 'sketch', tier: 'free', layout: 'mobile-first', desc: 'Pencil sketch mobile. Raw artistic energy.' },
+  { name: 'Negative Space', key: 'negative-space', tier: 'plus', layout: 'mobile-first', desc: 'Skin negative mobile. Clever empty space use.' },
+  { name: 'White Ink', key: 'white-ink', tier: 'plus', layout: 'mobile-first', desc: 'White ink mobile. Subtle ethereal glow.' },
+  { name: 'Stick n Poke', key: 'stick-n-poke', tier: 'free', layout: 'mobile-first', desc: 'DIY handpoked mobile. Authentic street feel.' },
+
+  // ====== NEW: Social Proof (reviews/trust builders) ======
+  { name: 'Letterhead', key: 'letterhead', tier: 'free', layout: 'social-proof', desc: 'Vintage letter social. Classic correspondence feel.' },
+  { name: 'Script', key: 'script', tier: 'free', layout: 'social-proof', desc: 'Elegant script social. Flowing calligraphy grace.' },
+  { name: 'Blackletter', key: 'blackletter', tier: 'pro', layout: 'social-proof', desc: 'Gothic letter social. Old world typography.' },
+  { name: 'Old School', key: 'old-school', tier: 'free', layout: 'social-proof', desc: 'Flash style social. Classic sailor jerry vibe.' },
+  { name: 'Flash', key: 'flash', tier: 'free', layout: 'social-proof', desc: 'Wall flash social. Traditional shop wall feel.' },
+  { name: 'Painterly', key: 'painterly', tier: 'plus', layout: 'social-proof', desc: 'Oil paint social. Rich canvas texture feel.' },
+  { name: 'Wash', key: 'wash', tier: 'pro', layout: 'social-proof', desc: 'Ink wash social. Sumi-e brush painting.' },
+  { name: 'Charcoal', key: 'charcoal', tier: 'free', layout: 'social-proof', desc: 'Charcoal drawing social. Smudged graphite art.' },
+  { name: 'Pastel', key: 'pastel', tier: 'free', layout: 'social-proof', desc: 'Soft pastel social. Gentle chalk tones.' },
+  { name: 'Neo Academic', key: 'neo-academic', tier: 'plus', layout: 'social-proof', desc: 'Modern academic social. Contemporary fine art.' },
+  { name: 'Avant Garde', key: 'avant-garde', tier: 'pro', layout: 'social-proof', desc: 'Experimental social. Boundary-pushing design.' },
+  { name: 'Bauhaus', key: 'bauhaus', tier: 'pro', layout: 'social-proof', desc: 'Bauhaus social. Geometric primary color art.' },
+
+  // ====== NEW: Process Funnel (step-by-step booking) ======
+  { name: 'Irezumi', key: 'irezumi', tier: 'pro', layout: 'process-funnel', desc: 'Traditional Japanese funnel. Dragon and koi flow.' },
+  { name: 'Hannya', key: 'hannya', tier: 'pro', layout: 'process-funnel', desc: 'Demon mask funnel. Intense Noh theater energy.' },
+  { name: 'Dragon', key: 'dragon', tier: 'free', layout: 'process-funnel', desc: 'Eastern dragon funnel. Powerful serpent flow.' },
+  { name: 'Koi', key: 'koi', tier: 'free', layout: 'process-funnel', desc: 'Koi fish funnel. Perseverance and grace.' },
+  { name: 'Tiger', key: 'tiger', tier: 'pro', layout: 'process-funnel', desc: 'Tiger funnel. Strength and fierce protection.' },
+  { name: 'Oni', key: 'oni', tier: 'plus', layout: 'process-funnel', desc: 'Demon spirit funnel. Japanese ogre intensity.' },
+  { name: 'Phoenix', key: 'phoenix', tier: 'free', layout: 'process-funnel', desc: 'Fire bird funnel. Rebirth and rising energy.' },
+  { name: 'Serpent', key: 'serpent', tier: 'pro', layout: 'process-funnel', desc: 'Snake funnel. Sinuous transformative flow.' },
+  { name: 'Foo Dog', key: 'foo-dog', tier: 'free', layout: 'process-funnel', desc: 'Guardian lion funnel. Protective imperial energy.' },
+  { name: 'Geisha', key: 'geisha', tier: 'plus', layout: 'process-funnel', desc: 'Geisha funnel. Elegant Japanese beauty.' },
+  { name: 'Samurai', key: 'samurai', tier: 'pro', layout: 'process-funnel', desc: 'Warrior funnel. Bushido honor strength.' },
+  { name: 'Wave', key: 'wave', tier: 'free', layout: 'process-funnel', desc: 'Great wave funnel. Floating world ukiyo-e art.' },
+
+  // ====== NEW: Full Experience (comprehensive) ======
+  { name: 'Museum', key: 'museum', tier: 'plus', layout: 'full-experience', desc: 'Gallery museum full. Curated exhibition feel.' },
+  { name: 'Gallery', key: 'gallery', tier: 'pro', layout: 'full-experience', desc: 'Art gallery full. White cube minimalism.' },
+  { name: 'Collection', key: 'collection', tier: 'free', layout: 'full-experience', desc: 'Curated collection full. Thematic portfolio show.' },
+  { name: 'Anthology', key: 'anthology', tier: 'pro', layout: 'full-experience', desc: 'Story anthology full. Narrative journey design.' },
+  { name: 'Monograph', key: 'monograph', tier: 'plus', layout: 'full-experience', desc: 'Artist monograph full. Deep dive solo show.' },
+  { name: 'Portfolio', key: 'portfolio', tier: 'free', layout: 'full-experience', desc: 'Master portfolio full. Comprehensive best works.' },
+  { name: 'Retrospective', key: 'retrospective', tier: 'pro', layout: 'full-experience', desc: 'Career retrospective full. Life work showcase.' },
+  { name: 'Showcase', key: 'showcase', tier: 'free', layout: 'full-experience', desc: 'Grand showcase full. Premium studio presence.' },
+  { name: 'Compilation', key: 'compilation', tier: 'free', layout: 'full-experience', desc: 'Works compilation full. Artist best hits album.' },
+  { name: 'Treasury', key: 'treasury', tier: 'plus', layout: 'full-experience', desc: 'Treasury vault full. Premium collection archive.' },
+  { name: 'Compendium', key: 'compendium', tier: 'pro', layout: 'full-experience', desc: 'Complete compendium full. Exhaustive master index.' },
+  { name: 'Archive', key: 'archive', tier: 'free', layout: 'full-experience', desc: 'Digital archive full. Historical record design.' },
 ];
 
 const LAYOUT_GROUPS = [
+  // Original 8
   { key: 'classic', name: 'Classic Scroll', icon: '📜', desc: 'Full single-page scrolling layout — hero, services, gallery, map. Clean and professional.' },
   { key: 'hero-grid', name: 'Gallery Grid', icon: '🖼️', desc: 'Full-screen hero image with masonry photo grid. Best for visual portfolios.' },
   { key: 'link-bio', name: 'Link in Bio', icon: '🔗', desc: 'Linktree-style page with buttons. Perfect for Instagram bio link.' },
@@ -72,18 +136,24 @@ const LAYOUT_GROUPS = [
   { key: 'split', name: 'Split Screen', icon: '↔️', desc: 'Image and text side by side. Bold, editorial layouts.' },
   { key: 'editorial', name: 'Magazine', icon: '📰', desc: 'Full-bleed images with story-like text. Large, dramatic typography.' },
   { key: 'minimal-bar', name: 'Sticky Bar', icon: '📱', desc: 'Minimal page with sticky bottom action bar. Call, book, and IG in one tap.' },
+  // New 5
+  { key: 'gallery-focus', name: 'Gallery Focus', icon: '🖼️', desc: 'Gallery-first layouts that let your tattoo work take center stage.' },
+  { key: 'mobile-first', name: 'Mobile First', icon: '📱', desc: 'Compact, phone-optimized designs with easy thumb-reach CTAs.' },
+  { key: 'social-proof', name: 'Social Proof', icon: '⭐', desc: 'Reviews, testimonials, and stats placed prominently to build trust.' },
+  { key: 'process-funnel', name: 'Process Funnel', icon: '🔄', desc: 'Lead clients through your process step-by-step toward booking.' },
+  { key: 'full-experience', name: 'Full Experience', icon: '🌟', desc: 'Comprehensive single-page sites with every section your studio needs.' },
 ];
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="41 Tattoo Website Templates — InkFlow" description="Choose from 41 tattoo studio website templates across 8 unique layouts. Each with multiple color themes. Mobile-friendly, SEO-optimized, ready in minutes." />
+  <SEOHead slot="head" title="101 Tattoo Website Templates — InkFlow" description="Choose from 101 tattoo studio website templates across 13 unique layouts. Mobile-friendly, SEO-optimized, ready in minutes." />
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">TEMPLATES</p>
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">8 Layouts · 41 Color Themes</h1>
-      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Choose a layout style, then pick your color theme. Every combination is mobile-friendly, SEO-optimized, and ready in minutes.</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">13 Layouts · 101 Templates</h1>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Choose a layout style, then pick your template. Every combination is mobile-friendly, SEO-optimized, and ready in minutes.</p>
     </div>
   </section>
 
@@ -103,17 +173,16 @@ const LAYOUT_GROUPS = [
         <!-- Layout preview card (big) -->
         <div class="rounded-xl border border-ink-700 bg-ink-900/50 overflow-hidden mb-6">
           <div class="h-64 sm:h-96 bg-ink-800/50 flex items-center justify-center">
-            <iframe src={`https://ink-flow-api.snow368.workers.dev/api/template-preview/${groupTemplates[0].key}`} class="w-full h-full" loading="lazy" title={`${group.name} preview`} style="pointer-events:none;border:none;" />
+            <iframe src={`https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/${groupTemplates[0].key}`} class="w-full h-full" loading="lazy" title={`${group.name} preview`} style="pointer-events:none;border:none;" />
           </div>
         </div>
 
-        <!-- Color themes row -->
-        <div class="flex flex-wrap gap-3">
+        <!-- Template names row (compact chips) -->
+        <div class="flex flex-wrap gap-2">
           {groupTemplates.map(t => (
-            <div class="color-swatch group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-4 py-3 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all min-w-[140px] cursor-pointer" data-key={t.key} data-tier={t.tier} data-name={t.name} style={`border-color: ${t.tier === 'plus' ? '#f59e0b' : t.tier === 'pro' ? 'rgb(163 58 58)' : 'rgb(34 197 94)'}40`}>
-              <div class="w-5 h-5 rounded-full shrink-0" style={`background: ${['minimal','studio','traditional','brutalist'].includes(t.key) ? '#fff' : '#1a1a1a'}`}></div>
-              <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors">{t.name}</p>
-              <span class="text-[10px] font-medium" style={`color: ${t.tier === 'plus' ? '#f59e0b' : t.tier === 'pro' ? 'rgb(163 58 58)' : 'rgb(34 197 94)'}`}>{t.tier === 'free' ? '' : t.tier === 'pro' ? 'Pro' : '+'}</span>
+            <div class="color-swatch group relative flex items-center gap-1.5 rounded-xl border border-ink-700 bg-ink-900/30 px-3 py-2 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all cursor-pointer" data-key={t.key} data-tier={t.tier} data-name={t.name} style={`border-color: ${t.tier === 'plus' ? '#f59e0b40' : t.tier === 'pro' ? '#a33a3a40' : '#22c55e40'}`}>
+              <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors whitespace-nowrap">{t.name}</p>
+              {t.tier !== 'free' && <span class="text-[10px] font-medium" style={`color: ${t.tier === 'plus' ? '#f59e0b' : '#a33a3a'}`}>{t.tier === 'pro' ? 'Pro' : '+'}</span>}
             </div>
           ))}
         </div>
@@ -149,7 +218,7 @@ const LAYOUT_GROUPS = [
             <textarea id="fieldBio" rows="2" placeholder="Tell clients about your studio..." class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm focus:border-accent-500 outline-none"></textarea>
           </div>
           <button onclick="generateSite()" id="generateBtn" class="w-full py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400 transition-colors">Generate Free Preview →</button>
-          <p class="text-xs text-gray-600 text-center" id="pricingHint">Free preview. Basic ($9.99/yr) gets all free templates. Pro ($19.99/yr) unlocks all 41.</p>
+          <p class="text-xs text-gray-600 text-center" id="pricingHint">Free preview. Basic ($9.99/yr) gets all free templates. Pro ($19.99/yr) unlocks all 101.</p>
         </div>
       </div>
 
@@ -179,7 +248,6 @@ const LAYOUT_GROUPS = [
     selectedTier = tier || 'free';
     document.getElementById('selectedTemplate').textContent = '✓ Selected: ' + name;
 
-    // Highlight selected swatch
     document.querySelectorAll('.color-swatch').forEach(el => {
       el.style.borderColor = '';
       el.style.background = '';
@@ -190,7 +258,6 @@ const LAYOUT_GROUPS = [
       swatch.style.background = '#06b6d415';
     }
 
-    // Update the preview iframe in the same layout group
     const groupSection = swatch?.closest('section');
     const iframe = groupSection?.querySelector('iframe');
     if (iframe) {
@@ -210,7 +277,6 @@ const LAYOUT_GROUPS = [
       window.selectTemplate(key, name, tier);
     }
   });
-</script>
 
   async function generateSite() {
     const email = document.getElementById('fieldEmail').value.trim();
@@ -224,7 +290,6 @@ const LAYOUT_GROUPS = [
     btn.disabled = true; btn.textContent = 'Generating...';
 
     try {
-      // Register via API
       const res = await fetch('https://ink-flow-api.snow368.workers.dev/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -233,8 +298,7 @@ const LAYOUT_GROUPS = [
       const data = await res.json();
       if (!res.ok) { alert('Error: ' + (data.error || 'Registration failed')); btn.disabled = false; btn.textContent = 'Generate Free Preview →'; return; }
 
-      // Generate preview via template-preview API
-      const previewUrl = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + selectedTemplate;
+      const previewUrl = 'https://ink-flow-api.inkflowapp.workers.dev/api/template-preview/' + selectedTemplate;
       document.getElementById('previewFrame').src = previewUrl;
       document.getElementById('stepForm').classList.add('hidden');
       document.getElementById('stepPreview').classList.remove('hidden');
@@ -245,12 +309,10 @@ const LAYOUT_GROUPS = [
   }
 
   function publishSite() {
-    const plan = 'website_basic';
-    window.open('https://app.ink-flows.com/register?plan=' + plan + '&template=' + selectedTemplate, '_blank');
+    window.open('https://app.ink-flows.com/register?plan=website_basic&template=' + selectedTemplate, '_blank');
   }
 
   function publishSitePro() {
-    const plan = 'website_pro';
-    window.open('https://app.ink-flows.com/register?plan=' + plan + '&template=' + selectedTemplate, '_blank');
+    window.open('https://app.ink-flows.com/register?plan=website_pro&template=' + selectedTemplate, '_blank');
   }
 </script>
