@@ -9,11 +9,11 @@ import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
 
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Meaning Finder — Search Symbolism &amp; Design Meanings" description="Discover the meaning behind popular tattoo symbols, flowers, animals, and cultural designs. Free search tool. No signup required." />
-  <FAQSchema data={{ questions: [
+  <FAQSchema questions={[
     { question: "What symbols are included?", answer: "Hundreds of symbols across categories: animals, flowers, mythological, geometric, religious, cultural, and modern designs." },
     { question: "Can I suggest a meaning to add?", answer: "Yes. Contact us with your suggestion and source. We review and add new meanings regularly." },
     { question: "Are meanings based on cultural accuracy?", answer: "We cite cultural and historical sources for traditional meanings. Modern interpretations are labeled as such." },
-  ]}} />
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">
