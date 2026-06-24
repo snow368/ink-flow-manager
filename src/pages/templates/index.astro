@@ -172,22 +172,22 @@ const LAYOUT_GROUPS = [
       const isFirst = gi === 0;
       return (
       <div class="border border-ink-800/50 rounded-xl mb-3 overflow-hidden" data-group={group.key}>
-        <button class="accordion-header w-full flex items-center gap-3 px-5 py-4 bg-ink-900/50 hover:bg-ink-800/50 transition-colors text-left" onclick="toggleAccordion('{group.key}')">
+        <button class="accordion-header w-full flex items-center gap-3 px-5 py-4 bg-ink-900/50 hover:bg-ink-800/50 transition-colors text-left" onclick={`toggleAccordion('${group.key}')`}>
           <span class="text-2xl">{group.icon}</span>
           <div class="flex-1">
             <span class="font-bold text-white text-lg">{group.name}</span>
             <span class="text-sm text-gray-500 ml-2">({groupTemplates.length})</span>
           </div>
-          <span class="text-gray-500 text-sm" id="arrow-{group.key}">{isFirst ? '▼' : '▶'}</span>
+          <span class="text-gray-500 text-sm" id={`arrow-${group.key}`}>{isFirst ? '▼' : '▶'}</span>
         </button>
-        <div class={`${isFirst ? '' : 'hidden'}`} id="content-{group.key}">
+        <div class={`${isFirst ? '' : 'hidden'}`} id={`content-${group.key}`}>
           <div class="p-5 pt-3">
             <p class="text-sm text-gray-400 mb-4">{group.desc}</p>
             <div class="flex flex-wrap gap-2 mb-4">
               {groupTemplates.map(t => (
                 <div class="template-chip group relative flex items-center gap-2 rounded-xl border border-ink-700 bg-ink-900/30 px-3 py-2 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all cursor-pointer"
                   data-key={t.key} data-tier={t.tier} data-layout={t.layout} data-accent={t.accent}
-                  onclick="selectTemplate('{t.key}', '{t.name}', '{t.tier}', '{t.layout}')">
+                  onclick={`selectTemplate('${t.key}', '${t.name}', '${t.tier}', '${t.layout}')`}>
                   <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:{t.accent}"></span>
                   <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors whitespace-nowrap">{t.name}</p>
                   {t.tier !== 'free' && <span class="text-[10px] font-medium px-1 py-0.5 rounded" style={`color: ${t.tier === 'plus' ? '#f59e0b' : '#a33a3a'}; background: ${t.tier === 'plus' ? '#f59e0b15' : '#a33a3a15'}`}>{t.tier === 'pro' ? 'PRO' : 'PLUS'}</span>}
