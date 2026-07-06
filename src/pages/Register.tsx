@@ -5,6 +5,7 @@ import { db, type StudioLocationRecord } from '../db';
 import { detectInitialLanguage, t } from '../lib/i18n';
 import { hashPassword } from '../lib/auth';
 import { getBackendUrl } from '../lib/backendApi';
+import GoogleSignIn from '../components/GoogleSignIn';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -197,7 +198,12 @@ export default function Register() {
       /* 🚀 REDIRECT FIRST — before any IndexedDB ops (Safari may hang on IndexedDB) */
       clearTimeout(timeout);
       navigatedRef.current = true;
-      const targetUrl = registerType === 'website' ? '/website-wizard?welcome=1' : (upgradePlan === 'pro_plus' ? '/pro-plus-setup' : '/today?welcome=1');
+      // Artist users → portfolio upload flow; others → today dashboard
+      const isArtist = roles?.includes('artist');
+      const targetUrl = registerType === 'website' ? '/website-wizard?welcome=1'
+        : upgradePlan === 'pro_plus' ? '/pro-plus-setup'
+        : isArtist ? '/portfolio?welcome=1'
+        : '/today?welcome=1';
       window.location.href = targetUrl;
     } catch (err) {
       clearTimeout(timeout);
@@ -443,22 +449,51 @@ export default function Register() {
         </>
       )}
 
-      <button
-        onClick={mode === 'register' ? handleRegister : handleLogin}
-        disabled={submitting || !email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))}
-        style={{
-          width: '100%',
-          padding: 14,
-          borderRadius: 12,
-          border: 'none',
-          background: (!email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))) ? '#4b5563' : '#e11d48',
-          color: 'white',
-          fontSize: 16,
-          fontWeight: 600,
-        }}
-      >
-        {submitting ? t(lang, 'processing') : mode === 'register' ? t(lang, 'register') : t(lang, 'login')}
-      </button>
+      {mode === 'login' && <GoogleSignIn mode="login" />}
+      {mode === 'register' && <GoogleSignIn mode="register" />}
+
+      {mode === 'register' && registerType === 'website' ? (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => window.open('https://ink-flows.com/pricing', '_blank')}
+            style={{
+              flex: 1, padding: 14, borderRadius: 12, border: '2px solid #6366f1',
+              background: '#6366f115', color: '#a5b4fc', fontSize: 14, fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            👁️ 查看模板
+          </button>
+          <button
+            onClick={handleRegister}
+            disabled={submitting || !email || !password || !name || !studioName.trim() || !confirmPassword || roles.length === 0}
+            style={{
+              flex: 2, padding: 14, borderRadius: 12, border: 'none',
+              background: (!email || !password || !name || !studioName.trim() || !confirmPassword || roles.length === 0) ? '#4b5563' : '#e11d48',
+              color: 'white', fontSize: 15, fontWeight: 600, cursor: submitting ? 'default' : 'pointer',
+            }}
+          >
+            {submitting ? '注册中...' : '注册并建站 →'}
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={mode === 'register' ? handleRegister : handleLogin}
+          disabled={submitting || !email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))}
+          style={{
+            width: '100%',
+            padding: 14,
+            borderRadius: 12,
+            border: 'none',
+            background: (!email || !password || (mode === 'register' && (!name || !studioName.trim() || !confirmPassword || roles.length === 0))) ? '#4b5563' : '#e11d48',
+            color: 'white',
+            fontSize: 16,
+            fontWeight: 600,
+          }}
+        >
+          {submitting ? t(lang, 'processing') : mode === 'register' ? t(lang, 'register') : t(lang, 'login')}
+        </button>
+      )}
 
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 14, color: '#94a3b8' }}>
         {mode === 'register' ? (

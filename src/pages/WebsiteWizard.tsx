@@ -144,7 +144,8 @@ export default function WebsiteWizard() {
   };
 
   const theme = THEMES.find(t => t.key === themeKey) || THEMES[0];
-  const previewUrl = slug ? `https://${slug}.ink-flows.com` : '';
+  const shortLink = slug ? `https://app.ink-flows.com/s/${slug}` : '';
+  const previewUrl = slug ? `https://app.ink-flows.com/s/${slug}` : '';
   const domainUrl = customDomain.trim() ? `https://${customDomain.trim()}` : '';
 
   if (done) {
@@ -152,27 +153,48 @@ export default function WebsiteWizard() {
       <div style={{ minHeight: '100vh', background: '#0f172a', color: 'white', padding: 40, textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
         <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Your site is live!</h2>
-        {previewUrl && (
+        {shortLink && (
           <>
-            <p style={{ color: '#94a3b8', marginBottom: 8 }}>Your page is live at:</p>
-            <a href={previewUrl} target="_blank" rel="noopener"
-              style={{ color: '#60a5fa', fontSize: 16, fontWeight: 600, textDecoration: 'underline', display: 'block', marginBottom: 4 }}>
-              {previewUrl}
+            <p style={{ color: '#94a3b8', marginBottom: 4, fontSize: 13 }}>Share your short link — perfect for IG bio, cards, or Google Business:</p>
+            <a href={shortLink} target="_blank" rel="noopener"
+              style={{ color: '#60a5fa', fontSize: 18, fontWeight: 700, textDecoration: 'underline', display: 'block', marginBottom: 8 }}>
+              {shortLink.replace(/^https?:\/\//, '')}
             </a>
-            <button onClick={() => navigator.clipboard.writeText(previewUrl)}
-              style={{ marginTop: 4, padding: '8px 18px', borderRadius: 8, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 13, cursor: 'pointer', marginBottom: 12 }}>
-              Copy Link
-            </button>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+              <button onClick={() => navigator.clipboard.writeText(shortLink)}
+                style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid #334155', background: '#1e293b', color: '#60a5fa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                📋 Copy Short Link
+              </button>
+              <button onClick={() => {
+                const text = `Book a tattoo with me: ${shortLink}`;
+                if (navigator.share) { navigator.share({ title: 'Book an Appointment', text, url: shortLink }); }
+                else { navigator.clipboard.writeText(shortLink); }
+              }}
+                style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: '#22c55e', color: '#052e16', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                📱 Share
+              </button>
+              <button onClick={() => {
+                window.open(`https://wa.me/?text=${encodeURIComponent(`Book a tattoo with me: ${shortLink}`)}`, '_blank');
+              }}
+                style={{ padding: '10px 20px', borderRadius: 10, border: 'none', background: '#2563eb', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                💬 WhatsApp
+              </button>
+            </div>
+            <p style={{ color: '#94a3b8', marginBottom: 4, fontSize: 13 }}>Full page preview:</p>
+            <a href={shortLink} target="_blank" rel="noopener"
+              style={{ color: '#64748b', fontSize: 13, textDecoration: 'underline', display: 'block', marginBottom: 12 }}>
+              {shortLink}
+            </a>
             {domainUrl && (
               <>
-                <p style={{ color: '#94a3b8', marginBottom: 4 }}>Custom domain:</p>
+                <p style={{ color: '#94a3b8', marginBottom: 4, fontSize: 13 }}>Custom domain:</p>
                 <p style={{ color: '#22c55e', fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{domainUrl}</p>
                 <p style={{ fontSize: 11, color: '#64748b' }}>DNS propagation may take a few minutes.</p>
               </>
             )}
           </>
         )}
-        <br /><br />
+        <br />
         <button onClick={() => navigate('/me')}
           style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: '#e11d48', color: 'white', fontSize: 14, cursor: 'pointer' }}>
           Back to Profile

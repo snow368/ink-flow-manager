@@ -107,6 +107,66 @@ app.post('/api/auth/login', async (c) => {
   }
 });
 
+/** Auth: Google Sign-In — verify ID token, create/find user */
+app.post('/api/auth/google', async (c) => {
+  try {
+    const { credential, mode } = await c.req.json();
+    if (!credential) { c.status(400); return c.json({ error: 'Missing credential' }); }
+    const clientId = String(c.env.GOOGLE_CLIENT_ID || '');
+    if (!clientId) { c.status(500); return c.json({ error: 'Google Sign-In not configured' }); }
+
+    /* Verify token against Google's tokeninfo endpoint */
+    const verifyUrl = `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${encodeURIComponent(credential)}`;
+    const verifyRes = await fetch(verifyUrl);
+    if (!verifyRes.ok) { c.status(401); return c.json({ error: 'Invalid Google token' }); }
+
+    const payload = await verifyRes.json() as any;
+
+    /* Verify audience matches our client ID */
+    if (payload.aud !== clientId) { c.status(401); return c.json({ error: 'Token audience mismatch' }); }
+
+    const googleId = payload.sub;
+    const email = String(payload.email || '').toLowerCase();
+    const name = payload.name || payload.given_name || email.split('@')[0] || 'Google User';
+
+    /* Check if user exists by googleId or email */
+    let user = await c.env.DB.prepare('SELECT * FROM users WHERE googleId = ?').bind(googleId).first() as any;
+    if (!user && email) {
+      user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first() as any;
+    }
+
+    const ts = now();
+
+    if (user) {
+      /* Link Google ID to existing account */
+      await c.env.DB.prepare(
+        'UPDATE users SET googleId = ?, updatedAt = ? WHERE id = ?'
+      ).bind(googleId, ts, user.id).run();
+      return c.json({
+        ok: true, userId: user.id, email: user.email, name: user.name,
+        roles: JSON.parse(user.roles || '[]'), plan: user.plan || 'free', studioName: user.studioName || '',
+      });
+    }
+
+    /* Create new user */
+    const id = generateId('user');
+    const studioName = name + '\'s Studio';
+    await c.env.DB.prepare(
+      'INSERT INTO users (id, email, name, roles, studioName, googleId, plan, verified, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)'
+    ).bind(id, email, name, JSON.stringify(['artist']), studioName, googleId, 'free', ts, ts).run();
+
+    await audit(c.env, 'user_created_google', { userId: id, email });
+
+    return c.json({
+      ok: true, userId: id, email, name,
+      roles: ['artist'], plan: 'free', studioName,
+    });
+  } catch (e: any) {
+    c.status(500);
+    return c.json({ error: e.message || 'Google sign-in failed' });
+  }
+});
+
 /** Auth: delete user account (unregister) */
 app.delete('/api/auth/unregister', async (c) => {
   if (!requireAuth(c, c.env)) return;

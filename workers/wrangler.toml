@@ -21,3 +21,5 @@ VAPID_SUBJECT = "mailto:admin@inkflow.app"
 PUBLIC_URL = "https://ink-flow-api.snow368.workers.dev"
 SENDGRID_API_KEY = ""
 EMAIL_FROM = "hello@ink-flows.com"
+# Google OAuth — get from https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID = ""

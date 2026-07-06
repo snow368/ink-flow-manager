@@ -7,3 +7,7 @@
 /r/*       /app/r/:splat      200
 /intake/*  /app/intake/:splat  200
 /pay/*     /app/pay/:splat     200
+
+# Shop short links — render via worker at /s/:slug
+# NOTE: also need Cloudflare route rule sending ink-flows.com/s/* → ink-flow-api worker
+/s/*       /s/:splat           200
