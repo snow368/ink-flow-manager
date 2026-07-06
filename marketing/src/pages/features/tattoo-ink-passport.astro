@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Ink Passport — EU REACH Compliance &amp; Digital Ink Records" description="Generate digital ink passports for every session. Record ink brand, batch, lot number, and expiration. EU REACH compliant. Built into InkFlow studio management. Start free." />
+  <FAQSchema questions={[
+    { question: "What is an ink passport?", answer: "An ink passport is a digital record of all inks used during a tattoo session, including brand, color, batch/lot number, and expiration date. Required under EU standard EN17169:2020." },
+    { question: "Is ink passport mandatory?", answer: "Yes, in several EU countries (e.g., Netherlands enforced by GGD). Other EU member states are adopting the requirement. InkFlow helps studios stay compliant." },
+    { question: "How does InkFlow generate ink passports?", answer: "After each session, the artist fills in the ink details. InkFlow auto-generates a PDF ink passport and emails it to the client alongside aftercare instructions." },
+    { question: "Can I export ink passports?", answer: "Yes. All ink passports are stored in the client's record and can be exported as PDF for health department inspections or client records." },
+    { question: "Does InkFlow track batch and lot numbers?", answer: "Yes. Record brand, supplier, color, batch/lot number, and expiration date for each ink used. Recall alerts notify you if an ink is recalled." },
+  ]} />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO INK PASSPORT</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Ink Passport: Digital Ink Records for EU REACH Compliance</h1>
+      <p class="mt-6 text-lg text-gray-400">InkFlow generates digital ink passports for every tattoo session. Record ink brand, batch/lot numbers, and expiration dates — fully compliant with EU standard EN17169:2020. Automatically emailed to clients with aftercare instructions.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-8">Why Ink Passports Matter</h2>
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div class="rounded-lg bg-ink-800/40 p-6 border border-ink-700/50">
+          <h3 class="text-lg font-semibold text-white mb-2">EU REACH Compliance</h3>
+          <p class="text-gray-400 text-sm">EU regulation REACH restricts harmful chemicals in tattoo inks. Studios must document every ink used per session. InkFlow automates this.</p>
+        </div>
+        <div class="rounded-lg bg-ink-800/40 p-6 border border-ink-700/50">
+          <h3 class="text-lg font-semibold text-white mb-2">Client Safety</h3>
+          <p class="text-gray-400 text-sm">If a client has a reaction, the exact ink batch can be identified immediately. Recall alerts notify you if an ink is recalled.</p>
+        </div>
+        <div class="rounded-lg bg-ink-800/40 p-6 border border-ink-700/50">
+          <h3 class="text-lg font-semibold text-white mb-2">Automatic PDF Generation</h3>
+          <p class="text-gray-400 text-sm">After each session, fill in ink details once. InkFlow generates a PDF ink passport and emails it to the client along with aftercare.</p>
+        </div>
+        <div class="rounded-lg bg-ink-800/40 p-6 border border-ink-700/50">
+          <h3 class="text-lg font-semibold text-white mb-2">Inspection Ready</h3>
+          <p class="text-gray-400 text-sm">All ink passports stored with timestamps. Exportable for health department inspections. No more paper records.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">What's Recorded in an Ink Passport</h2>
+      <div class="overflow-hidden rounded-lg border border-ink-700/50 bg-ink-800/20">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-ink-700/50 bg-ink-800/40">
+              <th class="px-4 py-3 text-left font-semibold text-gray-300">Field</th>
+              <th class="px-4 py-3 text-left font-semibold text-gray-300">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Ink Brand</td><td class="px-4 py-3 text-gray-400">Manufacturer or supplier name</td></tr>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Ink Name &amp; Color</td><td class="px-4 py-3 text-gray-400">Product name and color identifier</td></tr>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Batch / Lot Number</td><td class="px-4 py-3 text-gray-400">Manufacturer batch number for traceability</td></tr>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Expiration Date</td><td class="px-4 py-3 text-gray-400">Ink expiration date</td></tr>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Artist</td><td class="px-4 py-3 text-gray-400">Tattoo artist who performed the session</td></tr>
+            <tr class="border-b border-ink-700/50"><td class="px-4 py-3 text-gray-400">Date</td><td class="px-4 py-3 text-gray-400">Session date</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white mb-4">Ready to Stay Compliant?</h2>
+      <p class="text-gray-400 mb-8">InkFlow makes ink passport compliance automatic. Start free, no credit card required.</p>
+      <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
