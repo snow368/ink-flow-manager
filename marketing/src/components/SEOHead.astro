@@ -9,6 +9,7 @@ interface Props {
 const { title, description, canonical } = Astro.props;
 const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
 const site = 'https://ink-flows.com';
+const href = canonical || Astro.url.href;
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -38,10 +39,12 @@ const jsonLd = JSON.stringify({
 <slot name="head" />
 <title>{title} | InkFlow</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical || Astro.url.href} />
+<link rel="canonical" href={href} />
+<link rel="alternate" hreflang="x-default" href={href} />
+<link rel="alternate" hreflang="en" href={href} />
 <meta property="og:title" content={`${title} | InkFlow`} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonical || Astro.url.href} />
+<meta property="og:url" content={href} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
