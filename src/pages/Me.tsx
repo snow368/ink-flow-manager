@@ -124,6 +124,13 @@ export default function Me() {
           color="#3b82f6"
         />
         <NavCard
+          emoji="🪪"
+          title="Ink Passport"
+          desc="Digital ink records for EU REACH compliance"
+          onClick={() => navigate('/ink-passport')}
+          color="#a855f7"
+        />
+        <NavCard
           emoji="🎨"
           title="Social Content Studio"
           desc="Grid layouts, captions, copy all — share to IG/FB/Pin"
