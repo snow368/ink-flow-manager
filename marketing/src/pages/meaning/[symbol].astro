@@ -4,6 +4,7 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import { ALL_MEANINGS, getMeaningBySlug, TATTOO_CATEGORIES } from '../../data/tattoo-meanings';
+import { CUSTOM_SECTIONS } from '../../data/tattoo-meanings-custom-sections';
 
 export async function getStaticPaths() {
   return ALL_MEANINGS.map(m => ({
@@ -100,8 +101,8 @@ const pageDesc = `${meaning.name} tattoo meaning: ${meaning.meaning}. Learn abou
     </section>
   )}
 
-  <!-- Custom Sections -->
-  {meaning.customSections?.map(section => (
+  <!-- Custom Sections (inline + external) -->
+  {(meaning.customSections || CUSTOM_SECTIONS[meaning.slug] || []).map(section => (
     <section class="border-t border-ink-800/50 py-10">
       <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <h2 class="text-xl font-bold text-white">{section.heading}</h2>
