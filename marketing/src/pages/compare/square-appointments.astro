@@ -6,37 +6,106 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="InkFlow vs Square Appointments — Full Comparison for Tattoo Studios" description="Compare InkFlow vs Square Appointments for tattoo studios. Square is great for retail — but tattoo studios need deposit booking, waivers, and aftercare that Square doesn't offer." />
+<BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
+  <SEOHead slot="head" title="InkFlow vs Square Appointments for Tattoo Studios (2026) — Full Comparison" description="Square Appointments is free for solo artists but costs $110-140/mo with integrations. See the pricing breakdown, feature comparison, and migration guide." canonical="https://ink-flows.com/compare/square-appointments/" />
   <FAQSchema questions={[
     { question: "Can Square Appointments handle tattoo studio booking?", answer: "Square Appointments handles basic scheduling but lacks tattoo-specific features: deposit-based booking (Square uses card-on-file), digital consent forms, multi-artist commission splitting, ink/needle inventory tracking, and aftercare automation. You'd need Square for Payments, Square for Retail, and third-party tools to cover what InkFlow offers in one platform." },
     { question: "Is Square Appointments free for tattoo studios?", answer: "Square Appointments has a Free plan with basic scheduling, but you'll quickly need Square Payments (2.6% + $0.10), Square for Retail ($60/month for inventory), a separate waiver app ($35-50/month), and an aftercare tool ($15-30/month). The total cost of 4+ Square products and integrations typically exceeds InkFlow's paid plans while still missing tattoo-specific workflows." },
     { question: "Does Square have tattoo waiver forms?", answer: "No. Square does not offer digital tattoo waivers or consent forms. Studios must integrate third-party waiver software and manually sync client data between systems — creating data fragmentation and additional monthly costs." },
-    { question: "InkFlow or Square for a tattoo studio?", answer: "Choose InkFlow if you want one platform that handles booking, deposits, waivers, commission splits, inventory, aftercare, and CRM — purpose-built for tattoo. Choose Square if you already use Square for retail payments and don't mind managing 3-4 separate tools and dealing with data fragmentation." },
+    { question: "Should I use InkFlow or Square for my tattoo studio?", answer: "Choose InkFlow if you want one platform that handles booking, deposits, waivers, commission splits, inventory, aftercare, and CRM — purpose-built for tattoo. Choose Square if you already use Square for retail payments and don't mind managing 3-4 separate tools and dealing with data fragmentation." },
   ]} />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
+  <!-- Comparison Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "InkFlow vs Square Appointments",
+    "description": "InkFlow vs Square Appointments for tattoo studio management. Square is free to start but costs $110-140/mo with necessary integrations.",
+    "brand": { "@type": "Brand", "name": "InkFlow" },
+    "category": "Tattoo Studio Software",
+  })} />
+
+  <!-- Hero -->
+  <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-3xl">
-        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Square Appointments for Tattoo Studios</h1>
-        <p class="mt-4 text-lg text-gray-400">Square is a powerful ecosystem for retail businesses. Square Appointments handles basic scheduling well — but tattoo studios need deposit-based booking, digital waivers, multi-artist commission tracking, and aftercare automation that Square's general platform wasn't designed to provide.</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Square Appointments for Tattoo Studios (2026)</h1>
+        <p class="mt-4 text-lg text-gray-400">Square is a powerful ecosystem for retail — and Square Appointments handles basic scheduling well. But tattoo studios need deposit-based booking, digital waivers, commission tracking, and aftercare that Squares general platform wasnt designed to provide.</p>
       </div>
     </div>
   </section>
 
-  <!-- Comparison Table -->
+  <!-- Quick Verdict -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
+        <h2 class="text-xl font-bold text-white">Quick Verdict</h2>
+        <p class="mt-4 text-gray-400">
+          Square Appointments is a solid choice for solo artists who need simple scheduling tied to Square Payments. The free starter plan is genuinely useful — for a single artist with basic needs.
+        </p>
+        <p class="mt-3 text-gray-400">
+          For any studio with multiple artists, the picture changes. <strong class="text-accent-300">InkFlow</strong> replaces Square Appointments, Square for Retail, a separate waiver app, and an email marketing tool — four products replaced by one. Including features Square doesn't offer at any price: deposit-based booking that actually collects payment, artist commission splitting, and tattoo aftercare automation.
+        </p>
+        <div class="mt-6">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Breakdown -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Pricing Breakdown</h2>
+      <p class="mt-2 text-gray-400 text-sm">The real cost comparison — InkFlow vs the full Square stack needed for a tattoo studio.</p>
+      <div class="mt-8 space-y-6">
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 1: Solo Artist</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Free</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$0</p>
+              <p class="text-xs text-gray-500 mt-1">Booking, waivers, CRM, aftercare tools</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Square Free + add-ons</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$50+/mo</p>
+              <p class="text-xs text-gray-600 mt-1">Waivers $35 + aftercare $15, no inventory</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 2: 3-Artist Studio</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Pro</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$29.99/mo</p>
+              <p class="text-xs text-gray-500 mt-1">10 artists, all features included</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Square Plus + integrations</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$140+/mo</p>
+              <p class="text-xs text-gray-600 mt-1">$50 Appts + $60 Retail + waivers + aftercare</p>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-gray-500">At 3 artists, Square costs 4.7× more than InkFlow — and still lacks tattoo-specific features.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Table -->
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Feature Comparison</h2>
       <div class="overflow-hidden rounded-xl border border-ink-800">
         <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-ink-800 bg-ink-900/50">
-              <th class="p-4 text-left font-semibold text-white w-1/3">Feature</th>
-              <th class="p-4 text-center font-semibold text-accent-400 w-1/3">InkFlow</th>
-              <th class="p-4 text-center font-semibold text-gray-400 w-1/3">Square Appts</th>
-            </tr>
-          </thead>
+          <thead><tr class="border-b border-ink-800 bg-ink-900/50">
+            <th class="p-4 text-left font-semibold text-white w-1/3">Feature</th>
+            <th class="p-4 text-center font-semibold text-accent-400 w-1/3">InkFlow</th>
+            <th class="p-4 text-center font-semibold text-gray-400 w-1/3">Square Appts</th>
+          </tr></thead>
           <tbody class="divide-y divide-ink-800/50">
             {[
               { f: 'Purpose-built for tattoo', i: '✅ Yes', b: '❌ General retail' },
@@ -66,54 +135,87 @@ import FAQSchema from '../../components/FAQSchema.astro';
     </div>
   </section>
 
-  <!-- Hidden cost analysis -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">The Real Cost of "Free" Square Appointments for Tattoo Studios</h2>
-      <p class="mt-4 text-gray-400 text-center">Square's Free plan looks attractive, but tattoo studios hit its limitations fast. Here's what the full Square stack costs vs InkFlow:</p>
-      <div class="mt-8 overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-ink-700">
-              <th class="text-left py-3 text-gray-400 font-medium">Item</th>
-              <th class="text-right py-3 text-gray-400 font-medium">Square Stack</th>
-              <th class="text-right py-3 text-accent-400 font-medium">InkFlow</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-ink-800/50">
-            <tr><td class="py-3 text-white">Scheduling</td><td class="text-right text-gray-500">$0 (limited)</td><td class="text-right text-accent-300">$0</td></tr>
-            <tr><td class="py-3 text-white">Payment processing</td><td class="text-right text-gray-500">2.6% + $0.10</td><td class="text-right text-accent-300">2.9% + $0.30</td></tr>
-            <tr><td class="py-3 text-white">Digital waivers</td><td class="text-right text-gray-500">$35-50/mo (3rd party)</td><td class="text-right text-accent-300">$0</td></tr>
-            <tr><td class="py-3 text-white">Inventory</td><td class="text-right text-gray-500">$60/mo (Square Retail)</td><td class="text-right text-accent-300">$0</td></tr>
-            <tr><td class="py-3 text-white">Aftercare emails</td><td class="text-right text-gray-500">$15-30/mo (3rd party)</td><td class="text-right text-accent-300">$0</td></tr>
-            <tr><td class="py-3 text-white">CRM 360°</td><td class="text-right text-gray-500">Not available</td><td class="text-right text-accent-300">$0</td></tr>
-            <tr class="border-t-2 border-ink-600">
-              <td class="py-3 font-bold text-white">Total monthly cost</td>
-              <td class="text-right font-bold text-gray-400">$110-140/mo + fees</td>
-              <td class="text-right font-bold text-accent-400">$0-49.99/mo + fees</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Who Is Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is Square Best For?</h2>
+        <p class="mt-3 text-gray-400">Square is a strong choice for <strong class="text-white">solo artists and walk-in studios</strong> that already use Square for payments and don't need tattoo-specific features. The free Square Appointments plan plus Square Payments gives you basic scheduling and payment processing at zero subscription cost. If your studio is simple, you're one person, and clients walk in rather than book online, Square works fine.</p>
+        <p class="mt-2 text-gray-400">Square also excels if you sell retail products (t-shirts, aftercare products) alongside services — their POS ecosystem is mature and reliable for retail inventory.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is InkFlow Best For?</h2>
+        <p class="mt-3 text-gray-400">InkFlow is built for <strong class="text-white">tattoo studios that want one platform</strong> instead of 4+ tools. You're a good fit if you need:</p>
+        <ul class="mt-3 space-y-2 text-gray-400">
+          <li class="flex gap-2">• <strong>Deposit-based booking</strong> — collect real payments at booking, not just card-on-file</li>
+          <li class="flex gap-2">• <strong>Digital waivers</strong> — included in all plans, no third-party integration needed</li>
+          <li class="flex gap-2">• <strong>Multi-artist commission</strong> — auto-calculated per artist per transaction</li>
+          <li class="flex gap-2">• <strong>Ink/needle inventory</strong> — without paying $60/mo for Square Retail</li>
+          <li class="flex gap-2">• <strong>Aftercare automation</strong> — check-ins at day 3/7/14 + healed photo requests</li>
+        </ul>
       </div>
     </div>
   </section>
 
-  <!-- Quick Verdict -->
+  <!-- Real Talk -->
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
-        <h2 class="text-xl font-bold text-white">The Bottom Line</h2>
-        <p class="mt-4 text-gray-400">
-          Square is excellent for retail, cafes, and pop-ups. For tattoo studios, the "free" plan hides $110-140/month in necessary integrations — and you still won't get tattoo-specific features like commission splitting or aftercare automation.
-        </p>
-        <p class="mt-2 text-gray-400">
-          <strong class="text-accent-300">InkFlow</strong> replaces Square Appointments, Square for Retail, JotForm, and Mailchimp with one platform built for your studio. Including features Square doesn't offer at any price: deposit-based booking, artist commission splitting, and tattoo aftercare automation.
-        </p>
-        <div class="mt-6">
-          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
-          <a href="/pricing" class="ml-3 rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800 transition-all">See Pricing →</a>
+      <h2 class="text-2xl font-bold text-white">Real Talk: What Square Does Better</h2>
+      <p class="mt-2 text-gray-400 text-sm">Square has advantages in specific areas that matter for some studios.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Card-present processing rates</h3>
+          <p class="mt-2 text-sm text-gray-400">Square charges 2.6% + $0.10 for card-present transactions vs InkFlow's 2.9% + $0.30 (Stripe). For high-volume walk-in studios, Square saves ~$20-50/month on processing fees. However, for deposit-based booking (most tattoo studios), most transactions are online where Square charges 2.9% + $0.30 — same as Stripe.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Retail POS ecosystem</h3>
+          <p class="mt-2 text-sm text-gray-400">Square offers hardware terminals, barcode scanners, and receipt printers for retail sales. If you run a retail shop alongside your studio, Square's POS hardware ecosystem is more mature than InkFlow's link-based payment approach.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Payroll & team management</h3>
+          <p class="mt-2 text-sm text-gray-400">Square offers integrated payroll and team management tools. InkFlow focuses on studio operations — payroll integration is on the roadmap but not yet available.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Migration Guide -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Migrating from Square to InkFlow</h2>
+      <p class="mt-2 text-gray-400 text-sm">Moving your studio data takes about 20 minutes.</p>
+      <ol class="mt-8 space-y-4">
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">1</span>
+          <div><strong class="text-white">Export client data from Square</strong><p class="text-sm text-gray-400 mt-1">Square Appointments → Customers → Export. Download your client list as CSV.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">2</span>
+          <div><strong class="text-white">Create InkFlow account</strong><p class="text-sm text-gray-400 mt-1"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Sign up free</a>. Add your studio profile, artists, and services.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">3</span>
+          <div><strong class="text-white">Import clients</strong><p class="text-sm text-gray-400 mt-1">Use InkFlow CSV import to upload your client database. Set up your service menu and deposit amounts.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">4</span>
+          <div><strong class="text-white">Connect Stripe and go live</strong><p class="text-sm text-gray-400 mt-1">Connect your Stripe account (or create one). Your booking page is live immediately. Keep Square running for existing appointments during a 1-2 week transition.</p></div>
+        </li>
+      </ol>
+      <div class="mt-6 rounded-lg bg-ink-900/50 border border-ink-800 p-4">
+        <p class="text-sm text-gray-400">📞 <strong class="text-white">Need help?</strong> We offer free migration assistance. Email hello@ink-flows.com.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Replace 4 Square Products With One Platform</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Free to start. No hardware. No contracts. Built for tattoo studios.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+    <p class="mt-4 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+  </section>
+
+  <!-- Methodology -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs text-gray-600">Methodology: Pricing based on publicly available Square pricing (US) and InkFlow pricing as of July 2026. Square Appointments Free plan limitations verified via Square official website. Third-party waiver pricing based on WaiverSign and Jotform published rates. Actual costs may vary based on features selected and geographic location. Last updated July 2026.</p>
     </div>
   </section>
 
