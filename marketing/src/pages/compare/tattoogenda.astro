@@ -5,52 +5,220 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="InkFlow vs Tattoogenda — Full Comparison" description="Compare InkFlow vs Tattoogenda for your tattoo studio. Modern interface, aftercare automation, and free plan — vs Tattoogenda's EU-focused platform." />
+<BaseLayout lastUpdated="2026-07-06" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
+  <SEOHead slot="head" title="InkFlow vs Tattoogenda — Full Comparison for Tattoo Studios (2026)" description="Compare InkFlow vs Tattoogenda head-to-head. Aftercare automation, inventory management, multi-language — see which platform fits your studio. Start free." />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Tattoogenda</h1>
-      <p class="mt-4 text-lg text-gray-400">A straight comparison for tattoo studio owners.</p>
-    </div>
-  </section>
-
-  <section class="border-t border-ink-800/50 py-8">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
-        <h2 class="text-lg font-bold text-white">Quick Verdict</h2>
-        <p class="mt-2 text-sm text-gray-400">Both platforms are built specifically for tattoo studios. InkFlow offers a more modern interface, better automation features, and a generous free plan. Tattoogenda is strong for multi-location franchises.</p>
+  <!-- Hero -->
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Tattoogenda (2026)</h1>
+        <p class="mt-4 text-lg text-gray-400">Tattoogenda is a popular choice among European studios. InkFlow is a newer platform built with modern features. Here's an honest comparison to help you choose.</p>
       </div>
     </div>
   </section>
 
-  <section class="py-12">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <h2 class="mb-6 text-2xl font-bold text-white">Feature Comparison</h2>
-      <div class="overflow-x-auto rounded-xl border border-ink-800">
+  <!-- Quick Verdict -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
+        <h2 class="text-xl font-bold text-white">Quick Verdict</h2>
+        <p class="mt-4 text-gray-400">
+          If you're a studio based in Europe and need VAT-compliant invoicing with multi-currency support, Tattoogenda is a strong contender. Their platform is purpose-built for tattoo studios and has years of market presence.
+        </p>
+        <p class="mt-3 text-gray-400">
+          However, <strong class="text-accent-300">InkFlow</strong> offers features Tattoogenda doesn't — aftercare automation, inventory management, and a truly free plan. For studios that want modern automation and global reach (7 languages, USD/EUR), InkFlow provides better value at every tier.
+        </p>
+        <div class="mt-6">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Breakdown -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Pricing Breakdown</h2>
+      <p class="mt-2 text-gray-400 text-sm">What each platform costs for real-world studio scenarios.</p>
+      <div class="mt-8 space-y-6">
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 1: Solo Artist</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Free</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$0</p>
+              <p class="text-xs text-gray-500 mt-1">All core features, no time limit</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Tattoogenda Free</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">€0</p>
+              <p class="text-xs text-gray-600 mt-1">Limited features, 2 artists</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 2: 3-Artist Studio</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Pro</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$29.99/mo</p>
+              <p class="text-xs text-gray-500 mt-1">Up to 10 artists, all features</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Tattoogenda Growth</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">€24/mo</p>
+              <p class="text-xs text-gray-600 mt-1">Up to 3 artists, no inventory</p>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-gray-500">At 3 artists, Tattoogenda is slightly cheaper in EUR, but lacks inventory management and aftercare automation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Table -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Feature Comparison</h2>
+      <div class="overflow-hidden rounded-xl border border-ink-800">
         <table class="w-full text-sm">
           <thead>
             <tr class="border-b border-ink-800 bg-ink-900/50">
-              <th class="px-6 py-4 text-left text-gray-300">Feature</th>
-              <th class="px-6 py-4 text-center text-accent-400">InkFlow</th>
-              <th class="px-6 py-4 text-center text-gray-300">Tattoogenda</th>
+              <th class="p-4 text-left font-semibold text-white w-1/3">Feature</th>
+              <th class="p-4 text-center font-semibold text-accent-400 w-1/3">InkFlow</th>
+              <th class="p-4 text-center font-semibold text-gray-400 w-1/3">Tattoogenda</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-ink-800">
-            <tr><td class="px-6 py-4 text-gray-400">Free Plan</td><td class="px-6 py-4 text-center text-accent-400">✅ Forever</td><td class="px-6 py-4 text-center text-gray-400">⚠️ Limited free tier</td></tr>
-            <tr><td class="px-6 py-4 text-gray-400">Aftercare Automation</td><td class="px-6 py-4 text-center text-accent-400">✅</td><td class="px-6 py-4 text-center text-gray-400">❌</td></tr>
-            <tr><td class="px-6 py-4 text-gray-400">Inventory Management</td><td class="px-6 py-4 text-center text-accent-400">✅</td><td class="px-6 py-4 text-center text-gray-400">❌</td></tr>
-            <tr><td class="px-6 py-4 text-gray-400">Digital Waivers</td><td class="px-6 py-4 text-center text-accent-400">✅</td><td class="px-6 py-4 text-center text-gray-400">✅</td></tr>
+          <tbody class="divide-y divide-ink-800/50">
+            {[
+              { f: 'Free Plan', i: '✅ Forever (unlimited features)', b: '⚠️ Limited free tier' },
+              { f: 'Aftercare Automation', i: '✅ Built-in', b: '❌ Not available' },
+              { f: 'Inventory Management', i: '✅ Ink, needles, supplies', b: '❌ Not available' },
+              { f: 'Digital Waivers', i: '✅ Included', b: '✅ Included' },
+              { f: 'Online Booking', i: '✅ Custom link', b: '✅ Custom link' },
+              { f: 'Multi-Language', i: '✅ 7 languages', b: '⚠️ Limited' },
+              { f: 'VAT Invoicing', i: '⚠️ Via Stripe', b: '✅ Built-in (EU)' },
+              { f: 'Multi-Currency', i: '✅ USD, EUR, GBP, CAD', b: '✅ EUR, GBP' },
+              { f: 'SMS Reminders', i: '✅ Unlimited', b: '✅ Limited' },
+              { f: 'Commission Split', i: '✅ Auto-calculated', b: '✅ Manual' },
+              { f: 'Free Website', i: '✅ Included', b: '✅ Included' },
+              { f: 'Client Portal', i: '✅ Client app', b: '✅ Client portal' },
+            ].map(row => (
+              <tr class="hover:bg-ink-900/30 transition-colors">
+                <td class="p-4 text-gray-300 font-medium">{row.f}</td>
+                <td class="p-4 text-center text-accent-300">{row.i}</td>
+                <td class="p-4 text-center text-gray-500">{row.b}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <section class="py-12 text-center border-t border-ink-800/50">
-    <h2 class="text-2xl font-bold text-white">Try InkFlow Free</h2>
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
+  <!-- Who Is Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is Tattoogenda Best For?</h2>
+        <p class="mt-3 text-gray-400">Tattoogenda is a strong choice for <strong class="text-white">European studios</strong> that need built-in VAT invoicing and multi-currency support in EUR/GBP. They have a well-established presence in the Netherlands, Belgium, Germany, and France. Their client portal is polished and their booking widget integrates smoothly with existing websites.</p>
+        <p class="mt-2 text-gray-400">Tattoogenda also offers an "InkPassport" feature for tracking client ink usage, which is unique in the market.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is InkFlow Best For?</h2>
+        <p class="mt-3 text-gray-400">InkFlow is ideal for studios that want <strong class="text-white">modern automation features that Tattoogenda doesn't offer</strong>:</p>
+        <ul class="mt-3 space-y-2 text-gray-400">
+          <li class="flex gap-2">• <strong class="text-white">Aftercare automation</strong> — send care instructions and product reminders automatically after each appointment</li>
+          <li class="flex gap-2">• <strong class="text-white">Inventory management</strong> — track ink, needles, and supplies with low-stock alerts</li>
+          <li class="flex gap-2">• <strong class="text-white">Truly free plan</strong> — not feature-capped. Use InkFlow Free indefinitely with all core features</li>
+          <li class="flex gap-2">• <strong class="text-white">Global language support</strong> — 7 languages including English, Spanish, French, German, Portuguese, Japanese, Chinese</li>
+          <li class="flex gap-2">• <strong class="text-white">Modern mobile-first interface</strong> — works on any device without a native app</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Talk -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Real Talk: What Tattoogenda Does Better</h2>
+      <p class="mt-2 text-gray-400 text-sm">Honest assessment of where Tattoogenda has the edge.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">EU Compliance</h3>
+          <p class="mt-2 text-sm text-gray-400">Tattoogenda has built-in VAT-compliant invoicing for EU countries. InkFlow relies on Stripe for invoicing, which may not cover all EU-specific tax requirements. For EU-based studios, this is a meaningful advantage.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">InkPassport Feature</h3>
+          <p class="mt-2 text-sm text-gray-400">Tattoogenda's InkPassport tracks the total ink volume used on each client over time. This is a unique feature that InkFlow doesn't yet offer but is in development.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">European Market Presence</h3>
+          <p class="mt-2 text-sm text-gray-400">Tattoogenda has more case studies, localized support, and community presence in European countries. Their platform is translated into Dutch, French, German, and Spanish — all optimized for EU users.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Migration Guide -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Migrating from Tattoogenda to InkFlow</h2>
+      <p class="mt-2 text-gray-400 text-sm">Switching takes less than an hour.</p>
+      <ol class="mt-8 space-y-4">
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">1</span>
+          <div><strong class="text-white">Export from Tattoogenda</strong><p class="text-sm text-gray-400 mt-1">Go to Settings → Export → Download client data as CSV.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">2</span>
+          <div><strong class="text-white">Set up InkFlow</strong><p class="text-sm text-gray-400 mt-1"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Create a free account</a>. Add your studio info, artists, and services.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">3</span>
+          <div><strong class="text-white">Import and go live</strong><p class="text-sm text-gray-400 mt-1">Upload your CSV to InkFlow. Connect Stripe and start booking. Run both platforms for 1-2 weeks during transition.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- FAQ + Schema -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does Tattoogenda have aftercare automation?</summary>
+          <p class="mt-2 text-sm text-gray-400">No. Tattoogenda does not offer aftercare automation. This is InkFlow's standout feature — automated aftercare instructions, healing timeline reminders, and product recommendations sent via SMS or email.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use InkFlow in Europe?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. InkFlow supports EUR and multi-language interfaces. However, if automated VAT invoicing is critical, Tattoogenda's EU-native solution may be a better fit until InkFlow adds native EU tax compliance.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Which platform has better booking features?</summary>
+          <p class="mt-2 text-sm text-gray-400">Both platforms offer robust online booking with deposit collection, custom booking links, and calendar sync. InkFlow has the edge with unlimited SMS reminders included in all plans.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is there a contract with InkFlow?</summary>
+          <p class="mt-2 text-sm text-gray-400">No contracts. No cancellation fees. You can downgrade or cancel anytime. Tattoogenda also offers month-to-month billing.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Features You Won't Find in Tattoogenda</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Aftercare automation, inventory management, a truly free plan — InkFlow has what modern studios need. Free to start, no credit card required.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+    <p class="mt-4 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+  </section>
+
+  <!-- Methodology -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs text-gray-600">Methodology: Comparison based on publicly available pricing and feature information as of July 2026. Sources include Tattoogenda's official website, Stripe pricing page, and InkFlow internal data. Features and pricing may change. Last updated July 2026.</p>
+    </div>
   </section>
 
   <Footer />

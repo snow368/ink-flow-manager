@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import Stripe from 'stripe';
 import { Env, initDB, generateId, now } from './db';
-import { renderShopPage, guessTemplate, ShopData } from './templates';
+import { renderShopPage, guessTemplate, ALL_TEMPLATES, ShopData } from './templates';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -1269,24 +1269,7 @@ app.put('/api/booking-requests/:slug/:id/contacted', async (c) => {
 });
 
 /** Template management: list available + switch */
-const TEMPLATES_META = [
-  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless' },
-  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red' },
-  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel' },
-  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold accents' },
-  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black' },
-  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones' },
-  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white' },
-  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green' },
-  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold' },
-  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan glow on dark' },
-  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete' },
-  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like' },
-  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels' },
-  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark' },
-  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy' },
-  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold' },
-];
+const TEMPLATES_META = ALL_TEMPLATES;
 
 app.get('/api/templates', async (c) => {
   if (!requireAuth(c, c.env)) return;

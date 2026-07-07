@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout>
+<BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
   <SEOHead slot="head" title="Tattoo Client Portal — Appointments, Waivers &amp; History in One Place" description="InkFlow's tattoo client portal gives clients access to their appointment history, signed waivers, and upcoming bookings. No more 'can you send me my waiver?' Start free." />
   <FAQSchema questions={[
     { question: "What can clients see in the portal?", answer: "Clients can view their appointment history, signed waivers, upcoming bookings, and past tattoo photos. They can also reschedule or cancel appointments." },
@@ -19,7 +19,9 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
       <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO CLIENT PORTAL</p>
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Client Portal: Appointments, Waivers &amp; History in One Place</h1>
-      <p class="mt-6 text-lg text-gray-400">InkFlow's client portal gives every client access to their appointment history, signed waivers, and upcoming bookings — all from their phone. No more "can you send me my waiver?" requests.</p>
+      <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Clients constantly message "can you send me my waiver?" or "what time was my appointment?" Your front desk spends hours on these requests.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow client portal gives every client access to their appointment history, signed waivers, and upcoming bookings — all from their phone. Self-service, always available.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> One 3-artist studio reduced front desk waiver requests by 80% in the first month. Clients love having everything in one place.</p>
       <div class="mt-8 flex flex-wrap gap-4">
         <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
       </div>
