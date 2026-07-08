@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
+  <SEOHead slot="head" title="InkFlow vs Mindbody for Tattoo Studios 2026" description="Mindbody has zero tattoo pages. InkFlow offers deposit booking, waivers, and aftercare built for studios. Start free." canonical="https://ink-flows.com/compare/mindbody/" />
+  <FAQSchema questions={[
+    { question: "Can Mindbody handle tattoo studio booking?", answer: "Mindbody was built for fitness studios, yoga classes, and salon appointments. It lacks deposit-based booking (collects payment at booking, not card-on-file), tattoo-specific digital waivers, aftercare automation, and ink/needle inventory tracking. Tattoo studios using Mindbody need 3-5 additional integrations to cover missing features." },
+    { question: "Is Mindbody cheaper than InkFlow for tattoo studios?", answer: "Mindbody's Essential plan starts around $30/month but requires multi-year contracts. Waiver software adds $35-50/month, aftercare automation another $15-30/month, and SMS reminders cost extra. InkFlow's free plan includes all of these features â€?no contracts, no hidden fees." },
+    { question: "Does Mindbody have tattoo waiver forms?", answer: "No. Mindbody does not include digital tattoo waivers or consent forms. Studios must integrate third-party waiver software like JotForm or WaiverSign at additional cost and manage the data sync manually between systems." },
+    { question: "Why choose InkFlow over Mindbody for a tattoo studio?", answer: "InkFlow is purpose-built for tattoo studios â€?deposit-based booking, multi-artist commission splitting, digital waivers, ink/needle inventory, aftercare automation, and client CRM with tattoo history. Mindbody handles general wellness booking well but requires extensive customization and integrations to serve a tattoo shop." },
+  ]} />
+  <Navbar />
+
+  <!-- Comparison Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "InkFlow vs Mindbody",
+    "description": "InkFlow vs Mindbody for tattoo studio management. Mindbody has zero tattoo content across 2,084 indexed pages.",
+    "brand": { "@type": "Brand", "name": "InkFlow" },
+    "category": "Tattoo Studio Software",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+  })} />
+
+  <!-- Hero -->
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Mindbody for Tattoo Studios (2026)</h1>
+        <p class="mt-4 text-lg text-gray-400">Mindbody is a dominant platform across fitness, wellness, and salon verticals â€?but their sitemap shows zero pages dedicated to tattoo studios. Here's how the two platforms compare for tattoo-specific workflows.</p>
+        <p class="mt-2 text-xs text-gray-600">Analysis includes sitemap data: Mindbody indexes 2,084 URLs covering fitness, spa, salon, yoga, Pilates, and 12+ verticals â€?but zero tattoo or piercing content as of July 2026.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Verdict -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
+        <h2 class="text-xl font-bold text-white">Quick Verdict</h2>
+        <p class="mt-4 text-gray-400">
+          Mindbody is excellent for yoga studios, gyms, and spas. For tattoo studios, it's a square peg in a round hole â€?missing core features you need and charging for ones you don't.
+        </p>
+        <p class="mt-3 text-gray-400">
+          <strong class="text-accent-300">InkFlow</strong> was purpose-built for tattoo shops: deposit-based booking, digital waivers, multi-artist commission splitting, ink/needle inventory, aftercare automation, and a CRM that tracks tattoo history â€?all included. No multi-year contracts. No per-text fees. No integration puzzle.
+        </p>
+        <div class="mt-6">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Breakdown -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Pricing Breakdown</h2>
+      <p class="mt-2 text-gray-400 text-sm">Mindbody's hidden costs â€?multi-year contracts and required integrations add up fast.</p>
+      <div class="mt-8 space-y-6">
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 1: Solo Artist</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Free</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$0</p>
+              <p class="text-xs text-gray-500 mt-1">All core features, no contract</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Mindbody Essential</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$30/mo*</p>
+              <p class="text-xs text-gray-600 mt-1">* 1-3 year contract + $50-80/mo integrations</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 2: 5-Artist Studio</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Pro</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$29.99/mo</p>
+              <p class="text-xs text-gray-500 mt-1">Up to 10 artists, all features</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Mindbody Accelerate</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$65-125/mo</p>
+              <p class="text-xs text-gray-600 mt-1">+$0.08/text SMS + $50-80 integrations</p>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-gray-500">At 5 artists, Mindbody costs 5-7Ã— more than InkFlow â€?with required contracts, per-text fees, and separate tools for waivers and aftercare.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Table -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Feature Comparison</h2>
+      <div class="overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead><tr class="border-b border-ink-800 bg-ink-900/50">
+            <th class="p-4 text-left font-semibold text-white w-1/3">Feature</th>
+            <th class="p-4 text-center font-semibold text-accent-400 w-1/3">InkFlow</th>
+            <th class="p-4 text-center font-semibold text-gray-400 w-1/3">Mindbody</th>
+          </tr></thead>
+          <tbody class="divide-y divide-ink-800/50">
+            {[
+              { f: 'Purpose-built for tattoo', i: 'âœ?Yes', b: 'â?General wellness/salon' },
+              { f: 'Tattoo industry pages', i: 'âœ?10+ dedicated pages', b: 'â?0 pages' },
+              { f: 'Deposit at booking', i: 'âœ?Real payment collected', b: 'âš ï¸ Card on file only' },
+              { f: 'Digital tattoo waivers', i: 'âœ?Included', b: 'â?Not available' },
+              { f: 'Commission splitting', i: 'âœ?Auto per transaction', b: 'âœ?Available' },
+              { f: 'Ink/needle inventory', i: 'âœ?Included', b: 'â?Not available' },
+              { f: 'Aftercare automation', i: 'âœ?Built-in templates', b: 'â?Not available' },
+              { f: 'Client CRM 360Â°', i: 'âœ?Tattoo history + photos', b: 'âš ï¸ Basic profiles' },
+              { f: 'Starting Price', i: '$0/mo (Free plan)', b: '$30-50/mo (contract)' },
+              { f: 'Contract length', i: 'âœ?Month-to-month', b: 'âš ï¸ 1-3 year terms' },
+              { f: 'SMS included', i: 'âœ?Unlimited', b: 'â?$0.08/text' },
+              { f: 'Setup time', i: 'âœ?5 minutes', b: 'âš ï¸ Weeks (onboarding)' },
+              { f: 'Free trial', i: 'âœ?No credit card', b: 'âœ?Demo required' },
+              { f: 'Multi-location', i: 'âœ?Available', b: 'âœ?Enterprise only' },
+            ].map(row => (
+              <tr class="hover:bg-ink-900/30 transition-colors">
+                <td class="p-4 text-gray-300 font-medium">{row.f}</td>
+                <td class="p-4 text-center text-accent-300">{row.i}</td>
+                <td class="p-4 text-center text-gray-500">{row.b}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Who Is Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is Mindbody Best For?</h2>
+        <p class="mt-3 text-gray-400">Mindbody is the right choice for <strong class="text-white">fitness studios, yoga studios, and traditional salon/spa businesses</strong> that need class-based scheduling, membership management, and retail POS. Their platform excels at recurring sessions (yoga classes, fitness bootcamps) and membership models (monthly auto-pay, class packs).</p>
+        <p class="mt-2 text-gray-400">If you run a yoga studio or a hair salon with retail product sales and membership packages, Mindbody is a mature, proven platform.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is InkFlow Best For?</h2>
+        <p class="mt-3 text-gray-400">InkFlow is for <strong class="text-white">tattoo studios that want a platform built for their workflow</strong> â€?not a general wellness tool they have to adapt:</p>
+        <ul class="mt-3 space-y-2 text-gray-400">
+          <li class="flex gap-2">â€?<strong>Deposit-based booking</strong> â€?collect real payments, not card-on-file</li>
+          <li class="flex gap-2">â€?<strong>Digital waivers</strong> â€?purpose-built for tattoo consent forms</li>
+          <li class="flex gap-2">â€?<strong>Aftercare automation</strong> â€?Mindbody doesn't offer this at any tier</li>
+          <li class="flex gap-2">â€?<strong>Ink/needle inventory</strong> â€?track supplies without separate retail software</li>
+          <li class="flex gap-2">â€?<strong>No contracts</strong> â€?month-to-month, no penalties</li>
+        </ul>
+        <p class="mt-3 text-sm text-gray-500">Related: <a href="/compare/square-appointments" class="text-accent-400 hover:underline">InkFlow vs Square Appointments</a> Â· <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">Tattoo booking features</a> Â· <a href="/pricing" class="text-accent-400 hover:underline">See pricing</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Talk -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Real Talk: What Mindbody Does Better</h2>
+      <p class="mt-2 text-gray-400 text-sm">Honest assessment of where Mindbody has the edge.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Enterprise scale</h3>
+          <p class="mt-2 text-sm text-gray-400">Mindbody supports multi-location chains with 50+ employees, dedicated account management, and custom enterprise contracts. InkFlow is optimized for 1-10 artist studios. For very large operations, Mindbody's infrastructure is more mature.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Membership & class management</h3>
+          <p class="mt-2 text-sm text-gray-400">Mindbody has sophisticated membership, class pass, and recurring billing features built for yoga and fitness studios. InkFlow focuses on appointment-based tattooing â€?memberships are not yet supported.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Consumer marketplace</h3>
+          <p class="mt-2 text-sm text-gray-400">Mindbody operates a consumer-facing marketplace (Mindbody app) where clients discover and book studios. This provides free customer acquisition for businesses on the platform. InkFlow does not have a consumer marketplace.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Migration Guide -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Migrating from Mindbody to InkFlow</h2>
+      <p class="mt-2 text-gray-400 text-sm">Switching from Mindbody to InkFlow takes about 30 minutes. No early termination fees on our side (we don't have contracts).</p>
+      <ol class="mt-8 space-y-4">
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">1</span>
+          <div><strong class="text-white">Export data from Mindbody</strong><p class="text-sm text-gray-400 mt-1">Mindbody â†?Reports â†?Client Export â†?CSV. Includes client names, emails, and appointment history.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">2</span>
+          <div><strong class="text-white">Create InkFlow account</strong><p class="text-sm text-gray-400 mt-1"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Sign up free</a>. Set up your studio in 5 minutes.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">3</span>
+          <div><strong class="text-white">Import and configure</strong><p class="text-sm text-gray-400 mt-1">Upload your CSV. Set up services, artists, deposit amounts. Configure waiver templates and aftercare sequences.</p></div>
+        </li>
+        <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">4</span>
+          <div><strong class="text-white">Go live</strong><p class="text-sm text-gray-400 mt-1">Connect Stripe, update your booking link. Run both platforms for 1-2 weeks during transition. Mindbody contract termination is your responsibility â€?we recommend checking your contract terms.</p></div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Stop Paying for Features You Don't Need</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">No contracts. No per-text fees. No integration puzzle. Purpose-built for tattoo studios.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
+    <p class="mt-4 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">See pricing</a></p>
+  </section>
+
+  <!-- Methodology -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs text-gray-600">Methodology: Pricing based on publicly available Mindbody pricing (US) and InkFlow pricing as of July 2026. Mindbody sitemap data (2,084 URLs, zero tattoo pages) verified via sitemap analysis. Third-party waiver pricing based on published rates. Features and pricing may change. Last updated July 2026.</p>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

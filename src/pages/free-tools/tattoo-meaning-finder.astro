@@ -16,6 +16,38 @@ import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
   ]} />
   <Navbar />
 
+
+  <!-- HowTo Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+  "name": "Tattoo Meaning Finder",
+  "description": "Discover the meaning behind popular tattoo symbols and designs.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Browse categories",
+      "text": "Explore animals, flowers, mythological, cultural."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Select a symbol",
+      "text": "Click for detailed meaning and origin."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Learn symbolism",
+      "text": "Read history, variations, cultural context."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Get inspired",
+      "text": "Find the perfect design for your next tattoo."
+    }
+  ]
+})} />
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>

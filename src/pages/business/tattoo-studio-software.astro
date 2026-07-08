@@ -1,0 +1,230 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import PageSchema from '../../components/PageSchema.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout pageTitle="Tattoo Studio Software">
+  <SEOHead slot="head" title="Tattoo Studio Software — All-in-One Management for Tattoo Shops" description="Tattoo studio software built for artists, not salons. Booking with deposits, digital waivers, CRM, commission splits, inventory, POS, and aftercare automation — no integrations needed. Start free." />
+  <PageSchema type="software" data={{
+    description: "Complete tattoo studio management platform. Booking with deposits, digital waivers, multi-artist CRM, commission tracking, inventory, POS, and aftercare automation — purpose-built for tattoo shops.",
+    offers: { price: "0", currency: "USD" }
+  }} />
+  <FAQSchema questions={[
+    { question: "What is tattoo studio software and how does it work?", answer: "Tattoo studio software is a specialized platform that combines booking, client management, payments, and workflow tools designed for tattoo shops. Unlike general salon software, it includes deposit-based scheduling, digital consent forms, multi-artist commission splitting, inventory tracking for inks and needles, and aftercare automation — all in one system. InkFlow is purpose-built for tattoo studios with no third-party integrations required." },
+    { question: "How much does tattoo studio software cost?", answer: "Tattoo studio software ranges from $0/month for basic solo artist plans to $50-100/month for multi-artist studios with full features. InkFlow offers a free plan for solo artists and paid plans starting at $19.99/month for multi-artist studios — including digital waivers, SMS reminders, and client CRM that would cost $50+ extra on platforms like Booksy or Vagaro." },
+    { question: "What features should I look for in tattoo studio software?", answer: "Essential features include: deposit collection at booking to cut no-shows, digital tattoo waiver forms that comply with state regulations, multi-artist scheduling with individual booking links, commission splitting across artists and guest artists, inventory tracking for inks/needles/supplies, integrated payment processing, automated SMS/email reminders, client CRM with tattoo history and photo galleries, aftercare email automation, and a POS system that handles deposits, tattoo services, and retail in one transaction." },
+    { question: "Can tattoo studio software reduce no-shows?", answer: "Yes. The most effective way to cut no-shows is requiring a deposit at the time of booking. Studios using deposit-based tattoo booking software report 50-80% fewer no-shows compared to phone-only booking or card-on-file systems. Combined with automated SMS reminders at 48h, 24h, and 1h before appointments, and two-way confirmation requirements, no-show rates drop dramatically." },
+    { question: "Do I need separate software for booking, waivers, and payments?", answer: "No — that's the problem with general tools. With InkFlow, booking, digital waivers, payment processing, client CRM, inventory tracking, and aftercare automation are all in one platform. You don't need to juggle Acuity for scheduling, JotForm for waivers, Square for payments, and spreadsheets for inventory. One login, one database, one support team." },
+    { question: "Is tattoo studio software worth it for a solo artist?", answer: "Yes. Even solo artists benefit from deposit-based booking, digital consent forms, automated reminders, and aftercare emails. InkFlow's free plan gives solo artists booking, waivers, and CRM at no cost — no credit card required. The time saved on admin and the revenue recovered from fewer no-shows typically pays for itself immediately." },
+    { question: "Can I migrate my existing client data to new tattoo studio software?", answer: "Most platforms offer migration support. InkFlow helps you import client contact info, appointment history, service menus, and artist schedules from your current system. Most studios with full history are migrated in under an hour. You can run both systems in parallel during transition." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO: GEO 首句即答案 -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO STUDIO SOFTWARE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Studio Software — All-in-One Management for Tattoo Shops</h1>
+        <p class="mt-6 text-lg text-gray-400">Tattoo studio software replaces the fragmented toolkit most shops run — one app for booking, another for waivers, a third for payments, and spreadsheets for inventory. InkFlow combines scheduling, digital consent forms, multi-artist CRM, commission splitting, inventory tracking, POS, and aftercare automation into a single platform built specifically for tattoo studios — not repurposed salon software.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+          <a href="/compare/best-tattoo-studio-software" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Compare Top Software</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div><p class="text-3xl font-bold text-accent-400">80%</p><p class="mt-1 text-sm text-gray-500">Fewer no-shows with deposits</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">5 min</p><p class="mt-1 text-sm text-gray-500">Studio setup time</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">6-in-1</p><p class="mt-1 text-sm text-gray-500">Platform vs 6 separate tools</p></div>
+        <div><p class="text-3xl font-bold text-accent-400">98%</p><p class="mt-1 text-sm text-gray-500">SMS reminder open rate</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM: Why general software fails tattoo studios -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why General-Purpose Booking Software Fails Tattoo Studios</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Salon software lacks tattoo-specific workflows.</h3>
+          <p class="mt-1 text-sm text-gray-400">Mindbody, Booksy, and Vagaro were built for hair salons and fitness studios. They don't handle digital consent forms, multi-artist commission splits based on tattoo revenue, or shop supply inventory for inks, needles, and tubes. Tattoo studios adapting general software spend hours on workarounds, manual spreadsheet tracking, and stitching together third-party apps for missing features like aftercare automation.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">"Card on file" doesn't prevent no-shows.</h3>
+          <p class="mt-1 text-sm text-gray-400">Acuity and Calendly store credit card details but don't charge at booking time. A no-show costs you the appointment slot with no compensation. Deposit-based tattoo studio software collects payment immediately — typically 25-50% of the session price — so the client has real financial commitment. Studios that switched from card-on-file to deposit booking report 50-80% fewer no-shows within the first month.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Fragmented tools create admin overhead.</h3>
+          <p class="mt-1 text-sm text-gray-400">Running booking on Square, waivers on JotForm, payments on Stripe, inventory in Google Sheets, and aftercare in Mailchimp means your team manages 5 logins, data never syncs, and client history is scattered. A unified tattoo studio management platform eliminates this fragmentation — one database where every appointment, waiver, payment, and communication is linked to the same client profile.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORE FEATURES: Fan-Out 可提取段落 -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What Does Tattoo Studio Software Include?</h2>
+      <p class="mt-3 text-center text-gray-400">Tattoo studio software covers the full client lifecycle — from first discovery to booking, the appointment itself, payment, and post-visit follow-up. Here's what each stage includes and why general tools fall short.</p>
+
+      <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <!-- Deposit Booking -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">How does deposit-based tattoo booking work?</h3>
+          <p class="mt-3 text-sm text-gray-400">Tattoo booking with deposits requires clients to pay a percentage or flat fee when they schedule an appointment — not just provide a credit card number. InkFlow collects deposits through Stripe at the time of booking, with flexible rules per service, per artist, or globally. Flat fees of $50-100 work well for flash and small tattoos, while 25-50% deposits suit custom designs and full-day sessions. Deposits settle in your Stripe account within 2 business days — a studio booking 10 appointments at $75 each collects $750 within 48 hours.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, Stripe, Square Appointments, Acuity, Booksy, Vagaro, deposit, flash tattoo, custom design, $75 deposit, 48h settlement, no-show reduction, card-on-file, waitlist management, refund policy</p>
+          <a href="/features/tattoo-booking-software" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Learn about booking →</a>
+        </div>
+
+        <!-- Digital Waivers -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Why do tattoo studios need digital waiver software?</h3>
+          <p class="mt-3 text-sm text-gray-400">Tattoo waiver software replaces paper consent forms with digital versions that clients sign on their phone before arriving. Digital waivers capture medical history, design approval, photo consent, and aftercare acknowledgment in a legally binding format. InkFlow's waiver system includes state-specific language for health department compliance, automatic updates when regulations change, and secure cloud storage that eliminates lost paperwork. Clients complete waivers through a mobile-friendly link before their appointment — no clipboard at the front desk.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, JotForm, WaiverSign, SmartWaiver, Acuity, HIPAA, GDPR, health department, medical history, design approval, photo consent, aftercare acknowledgment, cloud storage, mobile-friendly, digital signature</p>
+          <a href="/features/tattoo-waiver-software" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Learn about waivers →</a>
+        </div>
+
+        <!-- Multi-Artist CRM -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">How does tattoo CRM differ from standard salon CRM?</h3>
+          <p class="mt-3 text-sm text-gray-400">Tattoo client management software tracks every interaction across the client lifecycle — initial inquiry, consultation notes, appointment history, tattoo photos, waiver versions, aftercare communications, and retail purchases — all linked to one client profile. InkFlow's CRM gives each artist their own client roster with full 360° history including reference photos of healed work, ink brands used, and body placement maps. Multi-artist studios get shared visibility when clients book with different artists, while each artist maintains their own client relationships through individual booking links and communication history.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, Salesforce, HubSpot, Mindbody, Booksy, Vagaro, CRM, 360° history, consultation notes, reference photos, healed work, body placement, booking links, client roster, multi-artist, communication history</p>
+          <a href="/features/tattoo-crm-software" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Learn about CRM →</a>
+        </div>
+
+        <!-- Commission -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">How does tattoo commission tracking work in practice?</h3>
+          <p class="mt-3 text-sm text-gray-400">Commission splitting for tattoo studios involves dividing session revenue between the artist, shop owner, and sometimes guest artists or apprentices — typically based on percentage splits (60/40, 70/30) or booth rent models. InkFlow automates this calculation per transaction, tracking deposits and final payments separately so artists see their exact take-home after shop cut, tax withholding, and supply deductions. Guest artist commissions are calculated automatically when they book using their own InkFlow profile. Monthly payout summaries include per-artist breakdowns that eliminate manual spreadsheet reconciliation.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, Square, Vagaro, Booksy, Mindbody, commission splitting, 60/40 split, 70/30 split, booth rent, guest artist, deposit tracking, tax withholding, supply deductions, payout summary, spreadsheet reconciliation</p>
+          <a href="/blog/multi-artist-commission-tracking" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Read about commission tracking →</a>
+        </div>
+
+        <!-- Inventory -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Can tattoo studio software track ink and needle inventory?</h3>
+          <p class="mt-3 text-sm text-gray-400">Tattoo inventory management tracks supply usage across inks, needles, tubes, grips, stencil paper, gloves, and aftercare products — typically hundreds of SKUs per shop. InkFlow's inventory module records consumption per tattoo session, tracks low-stock alerts at customizable reorder points, and supports barcode scanning for quick check-in of supply deliveries. Unlike general inventory tools built for retail, tattoo-specific inventory management associates supply costs with individual appointments to calculate per-session margin, identifies which ink brands and needle configurations are used most frequently, and generates purchase orders based on actual usage velocity.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, QuickBooks, TradeGecko, Zoho Inventory, FIFO, barcode scanning, reorder point, low-stock alert, SKU management, per-session margin, ink brands, needle configuration, purchase order, supply cost</p>
+          <a href="/features/tattoo-inventory-management" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Learn about inventory →</a>
+        </div>
+
+        <!-- Aftercare -->
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">How does automated tattoo aftercare work for studios?</h3>
+          <p class="mt-3 text-sm text-gray-400">Tattoo aftercare automation sends clients a timed series of post-appointment emails with healing instructions, product recommendations, and check-in prompts — typically day 1, day 3, day 7, day 14, and day 30 post-session. InkFlow's aftercare module includes pre-written templates for different tattoo types (color, black-and-gray, cover-up, touch-up) with customizable branding. Automated follow-ups include a healed photo request at 30 days that feeds directly into the client's portfolio gallery. Studios using automated aftercare report 40% higher client retention rates compared to manual follow-up.</p>
+          <p class="mt-2 text-xs text-gray-600">Entities: InkFlow, Mailchimp, Klaviyo, HubSpot, aftercare automation, healing instructions, product recommendations, healed photo, portfolio gallery, 40% retention increase, color tattoo, black-and-gray, cover-up, touch-up, day 30 check-in</p>
+          <a href="/features/tattoo-aftercare-software-automation" class="mt-3 inline-block text-sm text-accent-400 hover:underline">Learn about aftercare →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON: InkFlow vs general platforms -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Tattoo Studio Software Comparison: InkFlow vs General Platforms</h2>
+      <p class="mt-3 text-center text-gray-400">Most studios start with general booking software and discover the gaps after paying for 3-4 separate subscriptions. This comparison shows what each platform actually delivers for tattoo-specific workflows.</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium">Tattoo-Specific Feature</th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Booksy</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Vagaro</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Mindbody</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Deposit at booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Card on file</td><td class="text-center py-3 pr-4 text-gray-600">Card on file</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Digital tattoo waivers</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Commission splitting</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Manual only</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Ink/needle inventory</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Aftercare automation</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">SMS reminders (included)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">$0.07/text</td><td class="text-center py-3 pr-4 text-gray-600">$0.05/text</td><td class="text-center py-3 text-gray-600">$0.08/text</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">POS with deposit handling</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Basic</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Client 360° tattoo history</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Basic</td><td class="text-center py-3 pr-4 text-gray-600">Basic</td><td class="text-center py-3 text-gray-600">Basic</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Tattoo-specific free plan</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Integrations required</td><td class="text-center py-3 pr-4 text-accent-400">Zero</td><td class="text-center py-3 pr-4 text-gray-600">3-5 apps</td><td class="text-center py-3 pr-4 text-gray-600">2-4 apps</td><td class="text-center py-3 text-gray-600">3-5 apps</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER'S GUIDE: Which software for which studio -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Tattoo Studio Software Should You Choose?</h2>
+      <p class="mt-3 text-center text-gray-400">The right platform depends on your shop size, number of artists, budget, and whether you need retail POS and inventory tracking. Here's the decision framework InkFlow uses when helping studios evaluate their options.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Solo artist building your client base</h3>
+          <p class="text-sm text-gray-400 mt-1">Start with InkFlow's free plan — booking, digital waivers, CRM, SMS reminders, and aftercare automation at no cost. You'd pay $50-80/month for equivalent features across Booksy ($29.99 + $20/addon), JotForm ($35 for waivers), and Mailchimp ($15 for aftercare). As you grow, upgrade to paid plans for POS and inventory without migrating platforms.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Multi-artist shop (2-10 artists)</h3>
+          <p class="text-sm text-gray-400 mt-1">InkFlow Pro covers multi-artist scheduling with individual booking links, automated commission splitting across artist tiers, inventory tracking for shared supplies, and branded client communications. Vagaro and Mindbody work here but lack tattoo-specific workflows — you'll need separate waiver software ($35-50/month) and a workaround for aftercare.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">High-volume studio with retail and appointments</h3>
+          <p class="text-sm text-gray-400 mt-1">Only InkFlow combines booking, POS, inventory, and aftercare in one system purpose-built for tattoo. Mindbody and Vagaro have POS but no ink inventory or aftercare. Square for Retail handles inventory but has no tattoo booking features. The integration cost of connecting all these tools typically exceeds InkFlow's paid plan within 3 months.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Tattoo Studio Software FAQs</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">What is tattoo studio software and how does it work?</summary>
+          <p class="mt-2 text-sm text-gray-400">Tattoo studio software combines booking, client management, payments, and operations tools purpose-built for tattoo shops. Unlike general salon platforms, it includes deposit-based scheduling, digital consent forms, multi-artist commission tracking, inventory for inks/needles, automated aftercare, and a POS that handles both services and retail in one transaction. InkFlow is a complete platform with no third-party integrations required.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How much does tattoo studio software cost?</summary>
+          <p class="mt-2 text-sm text-gray-400">Prices range from free (InkFlow solo plan) to $30-100/month per location for multi-artist studios. General platforms like Booksy start at $29.99/month plus $20/additional provider, with waiver software ($35-50/month) and SMS charges ($0.05-0.08/text) on top. InkFlow's all-in-one pricing includes booking, waivers, CRM, and SMS with no per-text fees — see <a href="/pricing" class="text-accent-400 hover:underline">pricing page</a> for details.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">What features should I look for in tattoo studio software?</summary>
+          <p class="mt-2 text-sm text-gray-400">Essential features: deposit collection at booking, digital waiver forms compliant with health department regulations, multi-artist scheduling with individual booking links, commission splitting, inventory tracking for tattoo supplies, integrated payment processing, automated SMS/email reminders, client CRM with tattoo history and photo galleries, aftercare automation, and a POS system that handles deposits, services, and retail. Most general platforms cover 3-4 of these — InkFlow covers all 10.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use Square or Booksy for my tattoo studio?</summary>
+          <p class="mt-2 text-sm text-gray-400">You can, but you'll need integrations. Square Appointments handles scheduling but lacks tattoo waivers, commission splits, ink inventory, and aftercare. Booksy works for booking but charges per SMS and requires separate tools for waivers and aftercare — expect $50-100/month in extra costs and manual data transfer between systems. See our <a href="/compare/booksy/" class="text-accent-400 hover:underline">InkFlow vs Booksy</a> and <a href="/compare/vagaro/" class="text-accent-400 hover:underline">vs Vagaro</a> comparisons for details.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is tattoo studio software worth it for a solo artist?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. A solo artist losing 2 appointments per month to no-shows at $200/session loses $4,800/year. Deposit-based booking alone recovers most of that. InkFlow's free plan includes booking, waivers, CRM, and aftercare — features that cost solo artists $50-80/month on general platforms. The time saved on admin (estimated 5-8 hours/week on scheduling, follow-ups, and paperwork) is additional value that compounds as your client base grows.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I migrate my client data to new tattoo studio software?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. InkFlow offers migration support for client contact info, appointment history, service menus, and artist schedules from most platforms including Booksy, Vagaro, Square Appointments, Acuity, and Calendly. Most studios are fully migrated and running in under an hour. We recommend running both systems in parallel for a week during transition to ensure data completeness.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center bg-ink-900/20">
+    <h2 class="text-2xl font-bold text-white">Ready to Move Beyond General Salon Software?</h2>
+    <p class="mt-3 text-gray-400">Join tattoo studios switching from fragmented tools to one platform built for your workflow. Free plan includes booking, waivers, CRM, and aftercare.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+    <p class="mt-3 text-sm text-gray-600">No credit card · 5 min setup · <a href="/pricing" class="text-accent-400 hover:underline">See plans</a> · <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">Compare alternatives</a></p>
+  </section>
+
+  <Footer />
+</BaseLayout>

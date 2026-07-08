@@ -2,6 +2,7 @@
 import DevGate from "../components/DevGate.astro";
 import PageSchema from "../components/PageSchema.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
+import PageMeta from "../components/PageMeta.astro";
 
 interface BreadcrumbItem {
   label: string;
@@ -13,9 +14,15 @@ interface Props {
   breadcrumbs?: BreadcrumbItem[];
   /** 当前页面标题（用于面包屑最后一项） */
   pageTitle?: string;
+  /** EEAT: 页面最后更新日期 YYYY-MM-DD */
+  lastUpdated?: string;
+  /** EEAT: 作者名 */
+  author?: string;
+  /** EEAT: 审核者 */
+  reviewedBy?: string;
 }
 
-const { breadcrumbs, pageTitle } = Astro.props as Props;
+const { breadcrumbs, pageTitle, lastUpdated, author, reviewedBy } = Astro.props as Props;
 
 // 自动从 URL 路径生成面包屑
 function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
@@ -39,12 +46,21 @@ function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
 
 const crumbs = breadcrumbs || autoBreadcrumbs(Astro.url.pathname, pageTitle);
 const showBreadcrumb = Astro.url.pathname !== "/";  // 首页不显示
+
+// EEAT: 路径排除规则 — 首页/定价/About 等不显示 PageMeta
+const excludePageMeta = ["/", "/pricing", "/about", "/contact", "/privacy", "/terms", "/templates", "/blog"]
+  .some((p) => Astro.url.pathname === p || Astro.url.pathname.startsWith(p + "/"));
+const showPageMeta = !!lastUpdated && !excludePageMeta;
 ---
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="canonical" href="https://ink-flows.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -54,6 +70,7 @@ const showBreadcrumb = Astro.url.pathname !== "/";  // 首页不显示
   <body class="bg-ink-950 text-gray-100 font-sans antialiased">
     <DevGate>
       {showBreadcrumb && <Breadcrumb items={crumbs} />}
+      <PageMeta lastUpdated={lastUpdated} author={author} reviewedBy={reviewedBy} visible={showPageMeta} />
       <slot />
     </DevGate>
   </body>

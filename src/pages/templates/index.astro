@@ -4,187 +4,138 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 
+// 41 templates — same as WebsiteWizard.tsx
 const TEMPLATES = [
-  { name: 'Minimal', key: 'minimal', tier: 'free', layout: 'classic', accent: '#1a1a1a' },
-  { name: 'Vintage', key: 'vintage', tier: 'free', layout: 'classic', accent: '#8b4513' },
-  { name: 'Moody', key: 'moody', tier: 'free', layout: 'classic', accent: '#b8860b' },
-  { name: 'Desert', key: 'desert', tier: 'free', layout: 'classic', accent: '#c4783a' },
-  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', layout: 'classic', accent: '#ff6688' },
-  { name: 'Nordic', key: 'nordic', tier: 'free', layout: 'classic', accent: '#7a9aaa' },
-  { name: 'Studio', key: 'studio', tier: 'pro', layout: 'hero-grid', accent: '#d4a574' },
-  { name: 'Coastal', key: 'coastal', tier: 'plus', layout: 'hero-grid', accent: '#2a8a8a' },
-  { name: 'Arctic', key: 'arctic', tier: 'free', layout: 'hero-grid', accent: '#2a7aaa' },
-  { name: 'Watercolor', key: 'watercolor', tier: 'plus', layout: 'hero-grid', accent: '#e88d9a' },
-  { name: 'Lavender', key: 'lavender', tier: 'free', layout: 'hero-grid', accent: '#8a6aca' },
-  { name: 'Brutalist', key: 'brutalist', tier: 'pro', layout: 'link-bio', accent: '#ffffff' },
-  { name: 'Tribal', key: 'tribal', tier: 'free', layout: 'link-bio', accent: '#d4d4d4' },
-  { name: 'Punk', key: 'punk', tier: 'pro', layout: 'link-bio', accent: '#ffee00' },
-  { name: 'Maori', key: 'maori', tier: 'free', layout: 'link-bio', accent: '#cc2222' },
-  { name: 'Monochrome', key: 'monochrome', tier: 'free', layout: 'link-bio', accent: '#666666' },
-  { name: 'Traditional', key: 'traditional', tier: 'free', layout: 'studio-roster', accent: '#c41e1e' },
-  { name: 'Nature', key: 'nature', tier: 'pro', layout: 'studio-roster', accent: '#4a8c3f' },
-  { name: 'Woodcut', key: 'woodcut', tier: 'plus', layout: 'studio-roster', accent: '#cc9a4a' },
-  { name: 'Botanical', key: 'botanical', tier: 'free', layout: 'studio-roster', accent: '#5a9e6a' },
-  { name: 'Tropical', key: 'tropical', tier: 'pro', layout: 'studio-roster', accent: '#ff7744' },
-  { name: 'Edgy', key: 'edgy', tier: 'pro', layout: 'cards', accent: '#ff0066' },
-  { name: 'Neon', key: 'neon', tier: 'pro', layout: 'cards', accent: '#00ffff' },
-  { name: 'Metallic', key: 'metallic', tier: 'plus', layout: 'cards', accent: '#9a9aaa' },
-  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', layout: 'cards', accent: '#ff00aa' },
-  { name: 'New School', key: 'new-school', tier: 'pro', layout: 'cards', accent: '#ff66cc' },
-  { name: 'Royal', key: 'royal', tier: 'pro', layout: 'split', accent: '#7c3aed' },
-  { name: 'Midnight', key: 'midnight', tier: 'free', layout: 'split', accent: '#4a80d0' },
-  { name: 'Celestial', key: 'celestial', tier: 'plus', layout: 'split', accent: '#c8a040' },
-  { name: 'Sunset', key: 'sunset', tier: 'pro', layout: 'split', accent: '#ff6622' },
-  { name: 'Chicano', key: 'chicano', tier: 'pro', layout: 'split', accent: '#c4956a' },
-  { name: 'Gothic', key: 'gothic', tier: 'plus', layout: 'editorial', accent: '#800020' },
-  { name: 'Japanese', key: 'japanese', tier: 'pro', layout: 'editorial', accent: '#cc3300' },
-  { name: 'Steampunk', key: 'steampunk', tier: 'plus', layout: 'editorial', accent: '#b8862a' },
-  { name: 'Neonoir', key: 'neonoir', tier: 'pro', layout: 'editorial', accent: '#ff2244' },
-  { name: 'Halloween', key: 'halloween', tier: 'free', layout: 'editorial', accent: '#ff6600' },
-  { name: 'Industrial', key: 'industrial', tier: 'plus', layout: 'minimal-bar', accent: '#4682b4' },
-  { name: 'Urban', key: 'urban', tier: 'plus', layout: 'minimal-bar', accent: '#ff6600' },
-  { name: 'Sakura', key: 'sakura', tier: 'pro', layout: 'minimal-bar', accent: '#e86a8a' },
-  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', layout: 'minimal-bar', accent: '#c0392b' },
-  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', layout: 'minimal-bar', accent: '#cc2244' },
-  { name: 'Americana', key: 'americana', tier: 'free', layout: 'gallery-focus', accent: '#c0262d' },
-  { name: 'Fine Line', key: 'fine-line', tier: 'free', layout: 'gallery-focus', accent: '#1a1a2e' },
-  { name: 'Blackwork', key: 'blackwork', tier: 'free', layout: 'gallery-focus', accent: '#ffffff' },
-  { name: 'Ornamental', key: 'ornamental', tier: 'pro', layout: 'gallery-focus', accent: '#a67c52' },
-  { name: 'Geometric', key: 'geometric', tier: 'pro', layout: 'gallery-focus', accent: '#2a7a9a' },
-  { name: 'Stipple', key: 'stipple', tier: 'free', layout: 'gallery-focus', accent: '#bf8f60' },
-  { name: 'Etching', key: 'etching', tier: 'plus', layout: 'gallery-focus', accent: '#4a3a2a' },
-  { name: 'Surrealism', key: 'surrealism', tier: 'pro', layout: 'gallery-focus', accent: '#c84ad8' },
-  { name: 'Illustrative', key: 'illustrative', tier: 'pro', layout: 'gallery-focus', accent: '#2a5a8a' },
-  { name: 'Photorealism', key: 'photorealism', tier: 'plus', layout: 'gallery-focus', accent: '#6688aa' },
-  { name: 'Dotwork', key: 'dotwork', tier: 'free', layout: 'gallery-focus', accent: '#c49a6a' },
-  { name: 'Micro Realism', key: 'micro-realism', tier: 'plus', layout: 'gallery-focus', accent: '#7a7a7a' },
-  { name: 'Neo Tribal', key: 'neo-tribal', tier: 'free', layout: 'mobile-first', accent: '#0099ff' },
-  { name: 'Patchwork', key: 'patchwork', tier: 'free', layout: 'mobile-first', accent: '#ff4488' },
-  { name: 'Hand Poke', key: 'hand-poke', tier: 'free', layout: 'mobile-first', accent: '#8a7a5a' },
-  { name: 'Minimal Line', key: 'minimal-line', tier: 'free', layout: 'mobile-first', accent: '#e8a0b0' },
-  { name: 'Single Needle', key: 'single-needle', tier: 'pro', layout: 'mobile-first', accent: '#3a5a7a' },
-  { name: 'Micro', key: 'micro', tier: 'pro', layout: 'mobile-first', accent: '#c4957a' },
-  { name: 'Abstract', key: 'abstract', tier: 'pro', layout: 'mobile-first', accent: '#aaff00' },
-  { name: 'Line Art', key: 'line-art', tier: 'free', layout: 'mobile-first', accent: '#ff6b6b' },
-  { name: 'Sketch', key: 'sketch', tier: 'free', layout: 'mobile-first', accent: '#6a5a4a' },
-  { name: 'Negative Space', key: 'negative-space', tier: 'plus', layout: 'mobile-first', accent: '#ffffff' },
-  { name: 'White Ink', key: 'white-ink', tier: 'plus', layout: 'mobile-first', accent: '#cccccc' },
-  { name: 'Stick n Poke', key: 'stick-n-poke', tier: 'free', layout: 'mobile-first', accent: '#6a5a4a' },
-  { name: 'Letterhead', key: 'letterhead', tier: 'free', layout: 'social-proof', accent: '#7a2a2a' },
-  { name: 'Script', key: 'script', tier: 'free', layout: 'social-proof', accent: '#c89a40' },
-  { name: 'Blackletter', key: 'blackletter', tier: 'pro', layout: 'social-proof', accent: '#9a1a1a' },
-  { name: 'Old School', key: 'old-school', tier: 'free', layout: 'social-proof', accent: '#1a4a7a' },
-  { name: 'Flash', key: 'flash', tier: 'free', layout: 'social-proof', accent: '#ff4488' },
-  { name: 'Painterly', key: 'painterly', tier: 'plus', layout: 'social-proof', accent: '#4a7a5a' },
-  { name: 'Wash', key: 'wash', tier: 'pro', layout: 'social-proof', accent: '#3a5a7a' },
-  { name: 'Charcoal', key: 'charcoal', tier: 'free', layout: 'social-proof', accent: '#c48a3a' },
-  { name: 'Pastel', key: 'pastel', tier: 'free', layout: 'social-proof', accent: '#f0a0b0' },
-  { name: 'Neo Academic', key: 'neo-academic', tier: 'plus', layout: 'social-proof', accent: '#6a2a2a' },
-  { name: 'Avant Garde', key: 'avant-garde', tier: 'pro', layout: 'social-proof', accent: '#00ff88' },
-  { name: 'Bauhaus', key: 'bauhaus', tier: 'pro', layout: 'social-proof', accent: '#ffdd00' },
-  { name: 'Irezumi', key: 'irezumi', tier: 'pro', layout: 'process-funnel', accent: '#cc2200' },
-  { name: 'Hannya', key: 'hannya', tier: 'pro', layout: 'process-funnel', accent: '#9a1a1a' },
-  { name: 'Dragon', key: 'dragon', tier: 'free', layout: 'process-funnel', accent: '#2a8a3a' },
-  { name: 'Koi', key: 'koi', tier: 'free', layout: 'process-funnel', accent: '#e87a2a' },
-  { name: 'Tiger', key: 'tiger', tier: 'pro', layout: 'process-funnel', accent: '#d4881a' },
-  { name: 'Oni', key: 'oni', tier: 'plus', layout: 'process-funnel', accent: '#aa2222' },
-  { name: 'Phoenix', key: 'phoenix', tier: 'free', layout: 'process-funnel', accent: '#cc4400' },
-  { name: 'Serpent', key: 'serpent', tier: 'pro', layout: 'process-funnel', accent: '#1a8a4a' },
-  { name: 'Foo Dog', key: 'foo-dog', tier: 'free', layout: 'process-funnel', accent: '#cc3300' },
-  { name: 'Geisha', key: 'geisha', tier: 'plus', layout: 'process-funnel', accent: '#e86a8a' },
-  { name: 'Samurai', key: 'samurai', tier: 'pro', layout: 'process-funnel', accent: '#aa2a2a' },
-  { name: 'Wave', key: 'wave', tier: 'free', layout: 'process-funnel', accent: '#1a6a8a' },
-  { name: 'Museum', key: 'museum', tier: 'plus', layout: 'full-experience', accent: '#6a5a4a' },
-  { name: 'Gallery', key: 'gallery', tier: 'pro', layout: 'full-experience', accent: '#2a2a2a' },
-  { name: 'Collection', key: 'collection', tier: 'free', layout: 'full-experience', accent: '#c89a3a' },
-  { name: 'Anthology', key: 'anthology', tier: 'pro', layout: 'full-experience', accent: '#c89aaa' },
-  { name: 'Monograph', key: 'monograph', tier: 'plus', layout: 'full-experience', accent: '#4a4a4a' },
-  { name: 'Portfolio', key: 'portfolio', tier: 'free', layout: 'full-experience', accent: '#6a2a2a' },
-  { name: 'Retrospective', key: 'retrospective', tier: 'pro', layout: 'full-experience', accent: '#6a2a1a' },
-  { name: 'Showcase', key: 'showcase', tier: 'free', layout: 'full-experience', accent: '#2a8a8a' },
-  { name: 'Compilation', key: 'compilation', tier: 'free', layout: 'full-experience', accent: '#b8702a' },
-  { name: 'Treasury', key: 'treasury', tier: 'plus', layout: 'full-experience', accent: '#c49a3a' },
-  { name: 'Compendium', key: 'compendium', tier: 'pro', layout: 'full-experience', accent: '#5a6a5a' },
-  { name: 'Archive', key: 'archive', tier: 'free', layout: 'full-experience', accent: '#4a5a6a' },
+  // Free (14)
+  { name: 'Minimal', key: 'minimal', tier: 'free', desc: 'Clean white, timeless', primary: '#1a1a1a', bg: '#ffffff', card: '#ffffff', text: '#1a1a1a' },
+  { name: 'Traditional', key: 'traditional', tier: 'free', desc: 'Bold American red', primary: '#c41e1e', bg: '#0a0a0a', card: '#141414', text: '#f5f0e8' },
+  { name: 'Vintage', key: 'vintage', tier: 'free', desc: 'Warm retro feel', primary: '#8b4513', bg: '#f5f0e8', card: '#faf5ee', text: '#2c2418' },
+  { name: 'Moody', key: 'moody', tier: 'free', desc: 'Dark with gold', primary: '#b8860b', bg: '#0d0d0d', card: '#141414', text: '#e8e0d8' },
+  { name: 'Midnight', key: 'midnight', tier: 'free', desc: 'Deep blue night', primary: '#4a80d0', bg: '#080c14', card: '#101826', text: '#d8e0f0' },
+  { name: 'Botanical', key: 'botanical', tier: 'free', desc: 'Sage green', primary: '#5a9e6a', bg: '#0f1a12', card: '#1a2a1e', text: '#dce8d8' },
+  { name: 'Arctic', key: 'arctic', tier: 'free', desc: 'Cool ice blue', primary: '#2a7aaa', bg: '#e8f0f5', card: '#ffffff', text: '#1a2a3a' },
+  { name: 'Desert', key: 'desert', tier: 'free', desc: 'Warm desert tones', primary: '#c4783a', bg: '#e8e0d0', card: '#f5f0e8', text: '#2a2218' },
+  { name: 'Tribal', key: 'tribal', tier: 'free', desc: 'Black & grey', primary: '#d4d4d4', bg: '#050505', card: '#0d0d0d', text: '#e8e8e8' },
+  { name: 'Lavender', key: 'lavender', tier: 'free', desc: 'Soft purple', primary: '#8a6aca', bg: '#f0ecf5', card: '#ffffff', text: '#2a203a' },
+  { name: 'Maori', key: 'maori', tier: 'free', desc: 'Tribal red & black', primary: '#cc2222', bg: '#080808', card: '#111111', text: '#e8e8e8' },
+  { name: 'Halloween', key: 'halloween', tier: 'free', desc: 'Orange & black', primary: '#ff6600', bg: '#0a0808', card: '#141010', text: '#e8d8c8' },
+  { name: 'Nordic', key: 'nordic', tier: 'free', desc: 'Cool steel blue', primary: '#7a9aaa', bg: '#0c1018', card: '#161c28', text: '#d8e0e8' },
+  { name: 'Monochrome', key: 'monochrome', tier: 'free', desc: 'Clean grey scale', primary: '#666666', bg: '#080808', card: '#141414', text: '#cccccc' },
+  // Pro (11)
+  { name: 'Edgy', key: 'edgy', tier: 'pro', desc: 'Neon pink on black', primary: '#ff0066', bg: '#0a0a0a', card: '#111', text: '#f0f0f0' },
+  { name: 'Studio', key: 'studio', tier: 'pro', desc: 'Gallery warm tones', primary: '#d4a574', bg: '#f8f8f8', card: '#ffffff', text: '#222' },
+  { name: 'Brutalist', key: 'brutalist', tier: 'pro', desc: 'Heavy black & white', primary: '#ffffff', bg: '#000000', card: '#0a0a0a', text: '#ffffff' },
+  { name: 'Nature', key: 'nature', tier: 'pro', desc: 'Forest green', primary: '#4a8c3f', bg: '#0f1a0e', card: '#1a2a18', text: '#e0ecd8' },
+  { name: 'Royal', key: 'royal', tier: 'pro', desc: 'Deep purple & gold', primary: '#7c3aed', bg: '#0e0a1a', card: '#1a1528', text: '#e8e0f0' },
+  { name: 'Neon', key: 'neon', tier: 'pro', desc: 'Cyan on dark', primary: '#00ffff', bg: '#0a0a12', card: '#12121e', text: '#f0f0f8' },
+  { name: 'Japanese', key: 'japanese', tier: 'pro', desc: 'Traditional irezumi red', primary: '#cc3300', bg: '#0f0a08', card: '#1a1410', text: '#f0e8e0' },
+  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', desc: 'Neon magenta cyber', primary: '#ff00aa', bg: '#0a0515', card: '#140a24', text: '#e0d8f0' },
+  { name: 'Sunset', key: 'sunset', tier: 'pro', desc: 'Warm orange glow', primary: '#ff6622', bg: '#1a0e0a', card: '#2a1810', text: '#f0e0d8' },
+  { name: 'Sakura', key: 'sakura', tier: 'pro', desc: 'Cherry blossom pink', primary: '#e86a8a', bg: '#1a1018', card: '#2a1a24', text: '#f0e0e8' },
+  { name: 'Punk', key: 'punk', tier: 'pro', desc: 'High-contrast yellow', primary: '#ffee00', bg: '#0a0a0a', card: '#141010', text: '#f0f0f0' },
+  { name: 'Neonoir', key: 'neonoir', tier: 'pro', desc: 'Red noir dramatic', primary: '#ff2244', bg: '#080808', card: '#111114', text: '#e0e0e0' },
+  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', desc: 'Metallic red & grey', primary: '#c0392b', bg: '#0d0d0f', card: '#161618', text: '#e0e0e2' },
+  { name: 'Chicano', key: 'chicano', tier: 'pro', desc: 'Warm brown & gold', primary: '#c4956a', bg: '#1a1410', card: '#261e18', text: '#e8ddd0' },
+  { name: 'New School', key: 'new-school', tier: 'pro', desc: 'Bright neon cartoon', primary: '#ff66cc', bg: '#0a0a20', card: '#151530', text: '#e8e8f0' },
+  { name: 'Tropical', key: 'tropical', tier: 'pro', desc: 'Coral & teal', primary: '#ff7744', bg: '#0a1414', card: '#142020', text: '#dce8e0' },
+  // Plus (6)
+  { name: 'Industrial', key: 'industrial', tier: 'plus', desc: 'Steel & concrete', primary: '#4682b4', bg: '#121212', card: '#1c1c1c', text: '#d8d8d8' },
+  { name: 'Woodcut', key: 'woodcut', tier: 'plus', desc: 'Dark print-like', primary: '#cc9a4a', bg: '#1a1410', card: '#26201a', text: '#e0d8cc' },
+  { name: 'Watercolor', key: 'watercolor', tier: 'plus', desc: 'Soft pastels', primary: '#e88d9a', bg: '#f8f4f0', card: '#ffffff', text: '#2a2420' },
+  { name: 'Gothic', key: 'gothic', tier: 'plus', desc: 'Ornate dark', primary: '#800020', bg: '#0a0808', card: '#141010', text: '#d8d0c8' },
+  { name: 'Coastal', key: 'coastal', tier: 'plus', desc: 'Light & breezy', primary: '#2a8a8a', bg: '#f0f5f5', card: '#ffffff', text: '#1a2a2a' },
+  { name: 'Metallic', key: 'metallic', tier: 'plus', desc: 'Silver chrome', primary: '#9a9aaa', bg: '#0e0e10', card: '#18181c', text: '#e0e0e4' },
+  { name: 'Steampunk', key: 'steampunk', tier: 'plus', desc: 'Brass & bronze', primary: '#b8862a', bg: '#14100a', card: '#1e1a14', text: '#e0d8cc' },
+  { name: 'Celestial', key: 'celestial', tier: 'plus', desc: 'Gold on midnight', primary: '#c8a040', bg: '#080818', card: '#101028', text: '#e0d8f0' },
+  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', desc: 'Collage red chaos', primary: '#cc2244', bg: '#0a0a0a', card: '#141414', text: '#f0f0f0' },
+  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', desc: '80s sunset neon', primary: '#ff6688', bg: '#0a0a30', card: '#151545', text: '#e0d8f8' },
 ];
-const LAYOUTS = ['classic','hero-grid','link-bio','studio-roster','cards','split','editorial','minimal-bar','gallery-focus','mobile-first','social-proof','process-funnel','full-experience'];
-const GNAME = {classic:'Classic Scroll','hero-grid':'Gallery Grid','link-bio':'Link in Bio','studio-roster':'Artist Roster',cards:'Card Style',split:'Split Screen',editorial:'Magazine','minimal-bar':'Sticky Bar','gallery-focus':'Gallery Focus','mobile-first':'Mobile First','social-proof':'Social Proof','process-funnel':'Process Funnel','full-experience':'Full Experience'};
-const GICON = {classic:'📜','hero-grid':'🖼️','link-bio':'🔗','studio-roster':'👥',cards:'🃏',split:'↔️',editorial:'📰','minimal-bar':'📱','gallery-focus':'🖼️','mobile-first':'📱','social-proof':'⭐','process-funnel':'🔄','full-experience':'🌟'};
-const PAL = {classic:['#1a1a1a','#8b4513','#b8860b','#c4783a','#ff6688'],'hero-grid':['#d4a574','#2a8a8a','#2a7aaa','#e88d9a','#8a6aca'],'link-bio':['#ffffff','#d4d4d4','#ffee00','#cc2222','#666666'],'studio-roster':['#c41e1e','#4a8c3f','#cc9a4a','#5a9e6a','#ff7744'],cards:['#ff0066','#00ffff','#9a9aaa','#ff00aa','#ff66cc'],split:['#7c3aed','#4a80d0','#c8a040','#ff6622','#c4956a'],editorial:['#800020','#cc3300','#b8862a','#ff2244','#ff6600'],'minimal-bar':['#4682b4','#ff6600','#e86a8a','#c0392b','#cc2244'],'gallery-focus':['#c0262d','#1a1a2e','#a67c52','#2a7a9a','#c49a6a'],'mobile-first':['#0099ff','#ff4488','#8a7a5a','#aaff00','#ff6b6b'],'social-proof':['#7a2a2a','#c89a40','#9a1a1a','#1a4a7a','#ff4488'],'process-funnel':['#cc2200','#9a1a1a','#2a8a3a','#cc4400','#aa2222'],'full-experience':['#6a5a4a','#2a2a2a','#c89a3a','#c89aaa','#4a4a4a']};
+
+const tiers = [
+  { key: 'free', label: 'Free', badge: 'Free Forever' },
+  { key: 'pro', label: 'Pro', badge: 'Pro', color: 'var(--accent)' },
+  { key: 'plus', label: 'Plus', badge: 'Plus', color: '#f59e0b' },
+];
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="101 Tattoo Website Templates — InkFlow" />
+  <SEOHead slot="head" title="41 Tattoo Shop Website Templates — InkFlow" description="Choose from 41 stunning website templates for your tattoo studio. Free templates available. All templates are mobile-friendly and ready in minutes." />
   <Navbar />
-  <section class="pt-24 pb-6 sm:pt-32">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-      <p class="text-sm font-semibold text-accent-400 mb-2">TEMPLATES</p>
-      <h1 class="text-3xl font-extrabold text-white sm:text-4xl">101 Tattoo Website Templates</h1>
-      <p class="mt-2 text-gray-400">13 layouts — pick a template, choose your colors, preview live below.</p>
+
+  <!-- HERO -->
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TEMPLATES</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">41 Stunning Templates for Your Studio</h1>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Every template is mobile-friendly, SEO-optimized, and ready in minutes. Pick your style, connect your Instagram, and start booking clients.</p>
     </div>
   </section>
 
-  {LAYOUTS.map(gk => {
-    const gs = TEMPLATES.filter(t => t.layout === gk);
-    return (
-    <div class="mb-8">
-      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center gap-2 mb-3 sticky top-16 z-10 bg-ink-950 py-2 border-b border-ink-800/50">
-          <span>{GICON[gk]}</span>
-          <h2 class="text-lg font-bold text-white">{GNAME[gk]}</h2>
-          <span class="text-xs text-gray-500">({gs.length})</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-ink-900/50 overflow-hidden mb-4">
-          <div class="h-48 sm:h-64 bg-ink-800/50 flex items-center justify-center">
-            <iframe src={`https://ink-flow-api.snow368.workers.dev/api/template-preview/${gs[0].key}`} class="w-full h-full" loading="lazy" title={`${GNAME[gk]} preview`} style="border:none;" />
-          </div>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          {gs.map(t => (
-            <div class="color-swatch group relative flex items-center gap-1.5 rounded-xl border border-ink-700 bg-ink-900/30 px-3 py-2 hover:border-accent-500/50 hover:bg-ink-800/50 transition-all cursor-pointer"
-              data-key={t.key} data-tier={t.tier} data-name={t.name} data-layout={t.layout} data-accent={t.accent}
-              style={`border-color: ${t.tier === 'plus' ? '#f59e0b40' : t.tier === 'pro' ? '#a33a3a40' : '#22c55e40'}`}>
-              <p class="text-sm font-medium text-white group-hover:text-accent-400 transition-colors whitespace-nowrap">{t.name}</p>
-              {t.tier !== 'free' && <span class="text-[10px] font-medium" style={`color: ${t.tier === 'plus' ? '#f59e0b' : '#a33a3a'}`}>{t.tier === 'pro' ? 'Pro' : '+'}</span>}
-            </div>
-          ))}
-        </div>
+  <!-- TIER FILTER -->
+  <section class="pb-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap gap-3 justify-center" id="tier-filters">
+        <button class="tier-btn active px-5 py-2 rounded-full text-sm font-medium border border-ink-700 text-white bg-ink-800 hover:bg-ink-700 transition-all" data-tier="all">All ({TEMPLATES.length})</button>
+        {tiers.map(t => (
+          <button class="tier-btn px-5 py-2 rounded-full text-sm font-medium border border-ink-700 text-gray-400 hover:text-white hover:bg-ink-800 transition-all" data-tier={t.key}>
+            {t.label} ({TEMPLATES.filter(tm => tm.tier === t.key).length})
+          </button>
+        ))}
       </div>
     </div>
-    );
-  })}
+  </section>
 
-  <section class="border-t border-ink-800/50 py-10">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <div id="previewWrap" class="hidden">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="w-4 h-4 rounded-full" id="dot"></span>
-          <h2 class="text-xl font-bold text-white" id="tName"></h2>
-          <span class="text-sm text-gray-500" id="tMeta"></span>
-        </div>
-        <p class="text-sm text-gray-400 mb-3">Pick an accent color:</p>
-        <div class="flex gap-2 mb-4" id="colors"></div>
-        <div class="rounded-xl border border-ink-700 overflow-hidden mb-6" style="position:relative">
-          <iframe id="pv" class="w-full h-72 sm:h-96" style="border:none;"></iframe>
-          <div id="pvOverlay" style="position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;border-radius:inherit;z-index:10;"></div>
-        </div>
-      </div>
-      <div class="max-w-md mx-auto text-center">
-        <h2 class="text-xl font-bold text-white mb-2">Create Your Site</h2>
-        <p class="text-gray-400 text-sm mb-4" id="hint">Select a template, pick a color, fill in your info.</p>
-        <div id="fields" class="text-left space-y-3">
-          <input type="email" id="em" placeholder="Email *" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
-          <input type="text" id="nm" placeholder="Studio Name *" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
-          <input type="text" id="ig" placeholder="Instagram (optional)" class="w-full px-4 py-2.5 rounded-lg border border-ink-700 bg-ink-900 text-white text-sm">
-          <button onclick="genSite()" class="w-full py-3 rounded-lg bg-accent-500 text-white font-semibold hover:bg-accent-400">Generate Free Preview →</button>
-        </div>
-        <div id="pres" class="hidden text-left">
-          <iframe id="pf" class="w-full h-[450px] rounded-xl border border-ink-700" style="pointer-events:none"></iframe>
-          <div class="mt-4 flex gap-3 justify-center">
-            <button onclick="pub('basic')" class="px-6 py-3 rounded-lg bg-accent-500 text-white font-semibold">Basic $9.99/yr</button>
-            <button onclick="pub('pro')" class="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold">Pro $19.99/yr</button>
+  <!-- TEMPLATES GRID -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="template-grid">
+        {TEMPLATES.map(t => (
+          <div class="template-card rounded-xl border border-ink-800 bg-ink-900/30 overflow-hidden hover:border-accent-500/50 transition-all duration-300 hover:-translate-y-1" data-tier={t.tier}>
+            <!-- Mini preview -->
+            <div class="h-40 relative" style={`background: ${t.bg}`}>
+              <div class="absolute top-3 left-3 right-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={`background: ${t.primary}; color: ${t.bg === '#ffffff' || t.bg === '#f5f0e8' || t.bg === '#e8f0f5' || t.bg === '#f8f4f0' || t.bg === '#f0f5f5' || t.bg === '#f0ecf5' || t.bg === '#e8e0d0' || t.bg === '#f8f8f8' || t.bg === '#f8f4f0' || t.bg === '#f8f4f0' || t.bg === '#e8f0f5' ? t.bg === '#ffffff' || t.bg === '#f5f0e8' ? '#1a1a1a' : '#333' : '#fff'}`}>IF</div>
+                  <div class="text-xs font-semibold" style={`color: ${t.primary}`}>{t.name}</div>
+                </div>
+                <div class="flex gap-1.5">
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.primary}`}></div>
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.text}`}></div>
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.card}`}></div>
+                </div>
+                <div class="flex gap-2 mt-2">
+                  <div class="h-1.5 w-1.5 rounded-full" style={`background: ${t.primary}`}></div>
+                  <div class="h-1.5 flex-1" style={`background: ${t.text}20`}></div>
+                  <div class="h-1.5 flex-1" style={`background: ${t.text}20`}></div>
+                </div>
+                <div class="flex gap-2 mt-1.5">
+                  <div class="h-6 w-16 rounded text-[10px] flex items-center justify-center font-bold" style={`background: ${t.primary}; color: ${['#ffffff','#f5f0e8','#e8f0f5','#f8f4f0','#f0f5f5','#f0ecf5','#e8e0d0','#f8f8f8'].includes(t.bg) ? '#fff' : '#fff'}`}>Book</div>
+                  <div class="h-6 w-16 rounded text-[10px] flex items-center justify-center font-medium" style={`border: 1.5px solid ${t.primary}; color: ${t.primary}`}>Call</div>
+                </div>
+              </div>
+            </div>
+            <!-- Info -->
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-semibold text-white text-sm">{t.name}</h3>
+                <span class={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${t.tier === 'free' ? 'bg-green-900/50 text-green-400' : t.tier === 'pro' ? 'bg-accent-500/10 text-accent-400' : 'bg-amber-900/50 text-amber-400'}`}>{t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}</span>
+              </div>
+              <p class="text-xs text-gray-500">{t.desc}</p>
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <div class="rounded-2xl border border-accent-500/20 bg-gradient-to-b from-accent-500/5 to-transparent p-8 sm:p-12">
+        <h2 class="text-2xl font-bold text-white sm:text-3xl">Ready to Build Your Studio Website?</h2>
+        <p class="mt-3 text-gray-400">All templates included. Pick one, connect your Instagram, and go live in minutes.</p>
+        <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3 text-sm font-bold text-white hover:bg-accent-400 transition-colors">Get Started Free →</a>
+        <p class="mt-3 text-xs text-gray-600">No credit card required · Free plan forever</p>
       </div>
     </div>
   </section>
@@ -192,62 +143,23 @@ const PAL = {classic:['#1a1a1a','#8b4513','#b8860b','#c4783a','#ff6688'],'hero-g
   <Footer />
 </BaseLayout>
 
-<script is:inline data-cfasync="false">
-var PALETTES = {"classic":["#1a1a1a","#8b4513","#b8860b","#c4783a","#ff6688"],"hero-grid":["#d4a574","#2a8a8a","#2a7aaa","#e88d9a","#8a6aca"],"link-bio":["#ffffff","#d4d4d4","#ffee00","#cc2222","#666666"],"studio-roster":["#c41e1e","#4a8c3f","#cc9a4a","#5a9e6a","#ff7744"],cards:["#ff0066","#00ffff","#9a9aaa","#ff00aa","#ff66cc"],split:["#7c3aed","#4a80d0","#c8a040","#ff6622","#c4956a"],editorial:["#800020","#cc3300","#b8862a","#ff2244","#ff6600"],"minimal-bar":["#4682b4","#ff6600","#e86a8a","#c0392b","#cc2244"],"gallery-focus":["#c0262d","#1a1a2e","#a67c52","#2a7a9a","#c49a6a"],"mobile-first":["#0099ff","#ff4488","#8a7a5a","#aaff00","#ff6b6b"],"social-proof":["#7a2a2a","#c89a40","#9a1a1a","#1a4a7a","#ff4488"],"process-funnel":["#cc2200","#9a1a1a","#2a8a3a","#cc4400","#aa2222"],"full-experience":["#6a5a4a","#2a2a2a","#c89a3a","#c89aaa","#4a4a4a"]};
-var selectedKey = '', curColor = '';
-
-// Event delegation for template chips
-document.addEventListener('click', function(e) {
-  var chip = e.target.closest('.color-swatch');
-  if (!chip) return;
-  var key = chip.dataset.key, name = chip.dataset.name, tier = chip.dataset.tier, layout = chip.dataset.layout, accent = chip.dataset.accent;
-  selectedKey = key; curColor = accent || '#06b6d4';
-
-  // Highlight chip
-  document.querySelectorAll('.color-swatch').forEach(function(el) { el.style.borderColor = ''; el.style.background = ''; });
-  chip.style.borderColor = '#06b6d4'; chip.style.background = '#06b6d415';
-
-  // Show preview + color picker
-  document.getElementById('previewWrap').style.display = 'block';
-  document.getElementById('tName').textContent = name;
-  document.getElementById('tMeta').textContent = (GNAME[layout] || layout) + ' · ' + tier;
-  document.getElementById('dot').style.background = curColor;
-  var pal = PALETTES[layout] || [accent];
-  document.getElementById('colors').innerHTML = pal.map(function(c) {
-    return '<button class="cw" style="background:' + c + ';width:32px;height:32px;border-radius:50%;border:2px solid ' + (c === curColor ? '#fff' : 'transparent') + ';cursor:pointer;margin-right:6px" data-c="' + c + '"></button>';
-  }).join('');
-  // Attach color click
-  document.querySelectorAll('.cw').forEach(function(btn) {
-    btn.onclick = function() {
-      curColor = this.dataset.c;
-      document.getElementById('dot').style.background = curColor;
-      document.querySelectorAll('.cw').forEach(function(b) { b.style.borderColor = b.dataset.c === curColor ? '#fff' : 'transparent'; });
-      // Overlay tint for background color change
-      var ov = document.getElementById('pvOverlay');
-      ov.style.opacity = '0.35';
-      ov.style.background = curColor;
-      document.getElementById('pv').src = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + selectedKey + '?accent=' + encodeURIComponent(curColor) + '&_t=' + Date.now();
-    };
+<script>
+  // Tier filter
+  const filterBtns = document.querySelectorAll('.tier-btn');
+  const cards = document.querySelectorAll('.template-card');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => { b.classList.remove('active', 'bg-ink-800', 'text-white'); b.classList.add('text-gray-400'); });
+      btn.classList.add('active', 'bg-ink-800', 'text-white');
+      const tier = btn.dataset.tier;
+      cards.forEach(c => {
+        c.style.display = tier === 'all' || c.dataset.tier === tier ? '' : 'none';
+      });
+    });
   });
-  // Initial preview with default accent, reset overlay
-  var ov = document.getElementById('pvOverlay');
-  ov.style.opacity = '0.35';
-  ov.style.background = accent;
-  document.getElementById('pv').src = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + key + '?accent=' + encodeURIComponent(accent) + '&_t=' + Date.now();
-});
-
-// Generate preview (no registration)
-window.genSite = function() {
-  var em = document.getElementById('em').value.trim();
-  var nm = document.getElementById('nm').value.trim();
-  if (!em || !nm) { alert('Email and Studio Name required'); return; }
-  if (!selectedKey) { alert('Select a template first'); return; }
-  document.getElementById('pf').src = 'https://ink-flow-api.snow368.workers.dev/api/template-preview/' + selectedKey + '?accent=' + encodeURIComponent(curColor);
-  document.getElementById('fields').style.display = 'none';
-  document.getElementById('pres').style.display = 'block';
-};
-
-window.pub = function(p) {
-  window.open('https://app.ink-flows.com/register?plan=website_' + p + '&template=' + selectedKey + '&accent=' + encodeURIComponent(curColor), '_blank');
-};
 </script>
+
+<style>
+  .template-card:hover { box-shadow: 0 8px 32px rgba(163, 58, 58, 0.15); }
+  .tier-btn.active { background: rgb(163 58 58); border-color: rgb(163 58 58); color: white; }
+</style>

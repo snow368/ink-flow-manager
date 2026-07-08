@@ -1,4 +1,4 @@
----
+﻿---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
@@ -6,9 +6,28 @@ import Footer from '../../components/Footer.astro';
 ---
 
 <BaseLayout>
-  <SEOHead slot="head" title="InkFlow vs Booksy — The Full Comparison" description="Compare InkFlow vs Booksy for tattoo studios. See how they stack up on booking, deposits, waivers, commission tracking, pricing, and tattoo-specific features." />
+  <SEOHead slot="head" title="InkFlow vs Booksy — Full Comparison for Studios" description="Compare InkFlow vs Booksy for tattoo studios. Booking, deposits, waivers, and commission tracking. See which fits. Start free." />
   <Navbar />
 
+
+  <!-- Comparison Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "InkFlow vs Booksy",
+  "description": "InkFlow vs Booksy - Comparison for tattoo studio management. Booksy is for salons, InkFlow is for tattoo shops.",
+  "brand": {
+    "@type": "Brand",
+    "name": "InkFlow"
+  },
+  "category": "Tattoo Studio Software",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+})} />
   <section class="pt-24 pb-16 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-3xl">
@@ -68,7 +87,7 @@ import Footer from '../../components/Footer.astro';
           Booksy works for solo artists who need basic booking and discoverability through their marketplace. But as your studio grows, the cost adds up ($20/additional provider) and you'll miss tattoo-specific features like digital waivers, aftercare automation, and inventory tracking that Booksy doesn't offer at all.
         </p>
         <p class="mt-2 text-gray-400">
-          <strong class="text-accent-300">InkFlow</strong> gives you everything a tattoo studio needs — booking, deposits, waivers, CRM, payments, inventory, aftercare — for less than Booksy's base plan. And it's built by people who understand tattoo studios.
+          <strong class="text-accent-300">InkFlow</strong> gives you everything a tattoo studio needs — booking, deposits, waivers, CRM, payments, inventory, aftercare — for less than Booksy's base plan. And it's built by people who understand tattoo studios. See how our <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">deposit-based tattoo booking software eliminates no-shows</a> and why it's built differently than general salon platforms.
         </p>
         <div class="mt-6">
           <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>

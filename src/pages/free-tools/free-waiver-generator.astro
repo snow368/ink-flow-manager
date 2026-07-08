@@ -17,6 +17,38 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
   ]} />
   <Navbar />
 
+
+  <!-- HowTo Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+  "name": "Free Tattoo Waiver Generator",
+  "description": "Generate a free tattoo waiver form for your studio.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Enter studio details",
+      "text": "Fill in studio name and address."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Select waiver fields",
+      "text": "Choose medical questions, consent, photo release."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Generate waiver",
+      "text": "Printable PDF or shareable link generated."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Collect signature",
+      "text": "Client signs digitally. Stored with audit trail."
+    }
+  ]
+})} />
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
