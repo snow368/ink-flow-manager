@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+<BaseLayout>
+  <SEOHead slot="head" title="Full Test" description="test" />
+  <Navbar />
+  <h1 class="text-white text-4xl pt-24 px-4">Full Test Works</h1>
+  <Footer />
+</BaseLayout>

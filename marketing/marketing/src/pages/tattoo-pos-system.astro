@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo POS System" description="Accept payments, sell products, manage retail inventory from your iPad or phone." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo POS System for Walk-Ins and Retail</h1>
+      <p class="mt-6 text-lg text-gray-400 max-w-2xl mx-auto">A POS that understands tattoo studios.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="/pricing" class="rounded-lg bg-accent-600 px-6 py-3 text-sm font-semibold text-white hover:bg-accent-500">Start Free Trial</a>
+        <a href="/contact" class="rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-gray-300 hover:bg-ink-800">Book a Demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-8 text-center">POS for Tattoo Studios</h2>
+      <div class="grid gap-8 md:grid-cols-3">
+                <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Retail Sales</h3>
+          <p class="mt-3 text-gray-400">Sell aftercare products and gift cards.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Split Payments</h3>
+          <p class="mt-3 text-gray-400">Deposit + balance. Flexible options.</p>
+        </div>
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Receipts and Invoices</h3>
+          <p class="mt-3 text-gray-400">Professional invoices for clients.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/30">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white">Modernize Your Checkout</h2>
+      <p class="mt-4 text-lg text-gray-400">Replace your clunky POS.</p>
+      <div class="mt-8">
+        <a href="/pricing" class="rounded-lg bg-accent-600 px-8 py-4 text-base font-semibold text-white hover:bg-accent-500">Get Started Free</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

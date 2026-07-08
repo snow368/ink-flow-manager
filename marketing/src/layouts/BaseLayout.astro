@@ -1,4 +1,4 @@
----
+﻿---
 import DevGate from "../components/DevGate.astro";
 import PageSchema from "../components/PageSchema.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
@@ -10,21 +10,21 @@ interface BreadcrumbItem {
 }
 
 interface Props {
-  /** 覆盖自动生成的面包屑。不传则根据 URL 路径自动生成 */
+  /** 瑕嗙洊鑷姩鐢熸垚鐨勯潰鍖呭睉銆備笉浼犲垯鏍规嵁 URL 璺緞鑷姩鐢熸垚 */
   breadcrumbs?: BreadcrumbItem[];
-  /** 当前页面标题（用于面包屑最后一项） */
+  /** 褰撳墠椤甸潰鏍囬锛堢敤浜庨潰鍖呭睉鏈€鍚庝竴椤癸級 */
   pageTitle?: string;
-  /** EEAT: 页面最后更新日期 YYYY-MM-DD */
+  /** EEAT: 椤甸潰鏈€鍚庢洿鏂版棩鏈?YYYY-MM-DD */
   lastUpdated?: string;
-  /** EEAT: 作者名 */
+  /** EEAT: 浣滆€呭悕 */
   author?: string;
-  /** EEAT: 审核者 */
+  /** EEAT: 瀹℃牳鑰?*/
   reviewedBy?: string;
 }
 
 const { breadcrumbs, pageTitle, lastUpdated, author, reviewedBy } = Astro.props as Props;
 
-// 自动从 URL 路径生成面包屑
+// 鑷姩浠?URL 璺緞鐢熸垚闈㈠寘灞?
 function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
   const parts = pathname.replace(/\/$/, "").split("/").filter(Boolean);
   const items: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
@@ -45,9 +45,9 @@ function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
 }
 
 const crumbs = breadcrumbs || autoBreadcrumbs(Astro.url.pathname, pageTitle);
-const showBreadcrumb = Astro.url.pathname !== "/";  // 首页不显示
+const showBreadcrumb = Astro.url.pathname !== "/";  // 棣栭〉涓嶆樉绀?
 
-// EEAT: 路径排除规则 — 首页/定价/About 等不显示 PageMeta
+// EEAT: 璺緞鎺掗櫎瑙勫垯 鈥?棣栭〉/瀹氫环/About 绛変笉鏄剧ず PageMeta
 const excludePageMeta = ["/", "/pricing", "/about", "/contact", "/privacy", "/terms", "/templates", "/blog"]
   .some((p) => Astro.url.pathname === p || Astro.url.pathname.startsWith(p + "/"));
 const showPageMeta = !!lastUpdated && !excludePageMeta;
@@ -60,7 +60,6 @@ const showPageMeta = !!lastUpdated && !excludePageMeta;
     <meta name="robots" content="index, follow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="canonical" href="https://ink-flows.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />

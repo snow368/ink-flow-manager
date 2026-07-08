@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="InkFlow Blog — Tattoo Studio Tips & Guides" description="Tips and guides for running a successful tattoo studio. From digitizing waivers to reducing no-shows and automating aftercare." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow Blog</h1>
+      <p class="mt-4 text-lg text-gray-400">Tips and guides for running a successful tattoo studio.</p>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <article class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white hover:text-accent-300 transition-colors">
+            <a href="/blog/how-to-digitize-tattoo-waivers">How to Digitize Tattoo Waivers in 2026</a>
+          </h2>
+          <p class="mt-2 text-sm text-gray-400">Go paperless with digital consent forms. Save time, reduce liability, and improve client experience.</p>
+          <p class="mt-4 text-xs text-accent-400">Published May 28, 2026</p>
+        </article>
+        <article class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white hover:text-accent-300 transition-colors">
+            <a href="/blog/reduce-no-shows-deposit-booking">How to Reduce No-Shows in Your Tattoo Studio</a>
+          </h2>
+          <p class="mt-2 text-sm text-gray-400">7 proven strategies to cut no-shows and protect your revenue.</p>
+          <p class="mt-4 text-xs text-accent-400">Published May 28, 2026</p>
+        </article>
+        <article class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white hover:text-accent-300 transition-colors">
+            <a href="/blog/tattoo-aftercare-automation">Tattoo Aftercare Automation Guide</a>
+          </h2>
+          <p class="mt-2 text-sm text-gray-400">Automate healing check-ins and review requests — on autopilot.</p>
+          <p class="mt-4 text-xs text-accent-400">Published May 28, 2026</p>
+        </article>
+        <article class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white hover:text-accent-300 transition-colors">
+            <a href="/blog/tattoo-inventory-guide">Tattoo Shop Inventory Management Guide</a>
+          </h2>
+          <p class="mt-2 text-sm text-gray-400">Track ink, needles, and supplies. Never run out mid-session.</p>
+          <p class="mt-4 text-xs text-accent-400">Published May 28, 2026</p>
+        </article>
+        <article class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-lg font-semibold text-white hover:text-accent-300 transition-colors">
+            <a href="/blog/multi-artist-commission-tracking">Multi-Artist Commission Tracking Explained</a>
+          </h2>
+          <p class="mt-2 text-sm text-gray-400">Set different rates and automate payouts. No spreadsheet math.</p>
+          <p class="mt-4 text-xs text-accent-400">Published May 28, 2026</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

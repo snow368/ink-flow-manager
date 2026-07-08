@@ -1,0 +1,47 @@
+[
+  {
+    "id": "audit_1779757282271_ijrg",
+    "action": "push_subscribed",
+    "payload": {
+      "artistId": "test_artist",
+      "endpoint": "https://example.com/push"
+    },
+    "createdAt": 1779757282271
+  },
+  {
+    "id": "audit_1779757289813_rpf3",
+    "action": "booking_push_sent",
+    "payload": {
+      "artistId": "test_artist",
+      "clientName": "John"
+    },
+    "createdAt": 1779757289813
+  },
+  {
+    "id": "audit_1779757302452_pwvu",
+    "action": "waiver_signed",
+    "payload": {
+      "appointmentId": "appt_test123",
+      "clientName": "John Doe"
+    },
+    "createdAt": 1779757302452
+  },
+  {
+    "id": "audit_1779757501178_oph7",
+    "action": "waiver_signed",
+    "payload": {
+      "appointmentId": "appt_fix1",
+      "clientName": "Test User"
+    },
+    "createdAt": 1779757501178
+  },
+  {
+    "id": "audit_1779757602855_ccoq",
+    "action": "waiver_signed",
+    "payload": {
+      "appointmentId": "appt_flow1",
+      "clientName": "Alice"
+    },
+    "createdAt": 1779757602855
+  }
+]

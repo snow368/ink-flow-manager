@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+// 41 templates — same as WebsiteWizard.tsx
+const TEMPLATES = [
+  // Free (14)
+  { name: 'Minimal', key: 'minimal', tier: 'free', desc: 'Clean white, timeless', primary: '#1a1a1a', bg: '#ffffff', card: '#ffffff', text: '#1a1a1a' },
+  { name: 'Traditional', key: 'traditional', tier: 'free', desc: 'Bold American red', primary: '#c41e1e', bg: '#0a0a0a', card: '#141414', text: '#f5f0e8' },
+  { name: 'Vintage', key: 'vintage', tier: 'free', desc: 'Warm retro feel', primary: '#8b4513', bg: '#f5f0e8', card: '#faf5ee', text: '#2c2418' },
+  { name: 'Moody', key: 'moody', tier: 'free', desc: 'Dark with gold', primary: '#b8860b', bg: '#0d0d0d', card: '#141414', text: '#e8e0d8' },
+  { name: 'Midnight', key: 'midnight', tier: 'free', desc: 'Deep blue night', primary: '#4a80d0', bg: '#080c14', card: '#101826', text: '#d8e0f0' },
+  { name: 'Botanical', key: 'botanical', tier: 'free', desc: 'Sage green', primary: '#5a9e6a', bg: '#0f1a12', card: '#1a2a1e', text: '#dce8d8' },
+  { name: 'Arctic', key: 'arctic', tier: 'free', desc: 'Cool ice blue', primary: '#2a7aaa', bg: '#e8f0f5', card: '#ffffff', text: '#1a2a3a' },
+  { name: 'Desert', key: 'desert', tier: 'free', desc: 'Warm desert tones', primary: '#c4783a', bg: '#e8e0d0', card: '#f5f0e8', text: '#2a2218' },
+  { name: 'Tribal', key: 'tribal', tier: 'free', desc: 'Black & grey', primary: '#d4d4d4', bg: '#050505', card: '#0d0d0d', text: '#e8e8e8' },
+  { name: 'Lavender', key: 'lavender', tier: 'free', desc: 'Soft purple', primary: '#8a6aca', bg: '#f0ecf5', card: '#ffffff', text: '#2a203a' },
+  { name: 'Maori', key: 'maori', tier: 'free', desc: 'Tribal red & black', primary: '#cc2222', bg: '#080808', card: '#111111', text: '#e8e8e8' },
+  { name: 'Halloween', key: 'halloween', tier: 'free', desc: 'Orange & black', primary: '#ff6600', bg: '#0a0808', card: '#141010', text: '#e8d8c8' },
+  { name: 'Nordic', key: 'nordic', tier: 'free', desc: 'Cool steel blue', primary: '#7a9aaa', bg: '#0c1018', card: '#161c28', text: '#d8e0e8' },
+  { name: 'Monochrome', key: 'monochrome', tier: 'free', desc: 'Clean grey scale', primary: '#666666', bg: '#080808', card: '#141414', text: '#cccccc' },
+  // Pro (11)
+  { name: 'Edgy', key: 'edgy', tier: 'pro', desc: 'Neon pink on black', primary: '#ff0066', bg: '#0a0a0a', card: '#111', text: '#f0f0f0' },
+  { name: 'Studio', key: 'studio', tier: 'pro', desc: 'Gallery warm tones', primary: '#d4a574', bg: '#f8f8f8', card: '#ffffff', text: '#222' },
+  { name: 'Brutalist', key: 'brutalist', tier: 'pro', desc: 'Heavy black & white', primary: '#ffffff', bg: '#000000', card: '#0a0a0a', text: '#ffffff' },
+  { name: 'Nature', key: 'nature', tier: 'pro', desc: 'Forest green', primary: '#4a8c3f', bg: '#0f1a0e', card: '#1a2a18', text: '#e0ecd8' },
+  { name: 'Royal', key: 'royal', tier: 'pro', desc: 'Deep purple & gold', primary: '#7c3aed', bg: '#0e0a1a', card: '#1a1528', text: '#e8e0f0' },
+  { name: 'Neon', key: 'neon', tier: 'pro', desc: 'Cyan on dark', primary: '#00ffff', bg: '#0a0a12', card: '#12121e', text: '#f0f0f8' },
+  { name: 'Japanese', key: 'japanese', tier: 'pro', desc: 'Traditional irezumi red', primary: '#cc3300', bg: '#0f0a08', card: '#1a1410', text: '#f0e8e0' },
+  { name: 'Cyberpunk', key: 'cyberpunk', tier: 'pro', desc: 'Neon magenta cyber', primary: '#ff00aa', bg: '#0a0515', card: '#140a24', text: '#e0d8f0' },
+  { name: 'Sunset', key: 'sunset', tier: 'pro', desc: 'Warm orange glow', primary: '#ff6622', bg: '#1a0e0a', card: '#2a1810', text: '#f0e0d8' },
+  { name: 'Sakura', key: 'sakura', tier: 'pro', desc: 'Cherry blossom pink', primary: '#e86a8a', bg: '#1a1018', card: '#2a1a24', text: '#f0e0e8' },
+  { name: 'Punk', key: 'punk', tier: 'pro', desc: 'High-contrast yellow', primary: '#ffee00', bg: '#0a0a0a', card: '#141010', text: '#f0f0f0' },
+  { name: 'Neonoir', key: 'neonoir', tier: 'pro', desc: 'Red noir dramatic', primary: '#ff2244', bg: '#080808', card: '#111114', text: '#e0e0e0' },
+  { name: 'Biomechanical', key: 'biomechanical', tier: 'pro', desc: 'Metallic red & grey', primary: '#c0392b', bg: '#0d0d0f', card: '#161618', text: '#e0e0e2' },
+  { name: 'Chicano', key: 'chicano', tier: 'pro', desc: 'Warm brown & gold', primary: '#c4956a', bg: '#1a1410', card: '#261e18', text: '#e8ddd0' },
+  { name: 'New School', key: 'new-school', tier: 'pro', desc: 'Bright neon cartoon', primary: '#ff66cc', bg: '#0a0a20', card: '#151530', text: '#e8e8f0' },
+  { name: 'Tropical', key: 'tropical', tier: 'pro', desc: 'Coral & teal', primary: '#ff7744', bg: '#0a1414', card: '#142020', text: '#dce8e0' },
+  // Plus (6)
+  { name: 'Industrial', key: 'industrial', tier: 'plus', desc: 'Steel & concrete', primary: '#4682b4', bg: '#121212', card: '#1c1c1c', text: '#d8d8d8' },
+  { name: 'Woodcut', key: 'woodcut', tier: 'plus', desc: 'Dark print-like', primary: '#cc9a4a', bg: '#1a1410', card: '#26201a', text: '#e0d8cc' },
+  { name: 'Watercolor', key: 'watercolor', tier: 'plus', desc: 'Soft pastels', primary: '#e88d9a', bg: '#f8f4f0', card: '#ffffff', text: '#2a2420' },
+  { name: 'Gothic', key: 'gothic', tier: 'plus', desc: 'Ornate dark', primary: '#800020', bg: '#0a0808', card: '#141010', text: '#d8d0c8' },
+  { name: 'Coastal', key: 'coastal', tier: 'plus', desc: 'Light & breezy', primary: '#2a8a8a', bg: '#f0f5f5', card: '#ffffff', text: '#1a2a2a' },
+  { name: 'Metallic', key: 'metallic', tier: 'plus', desc: 'Silver chrome', primary: '#9a9aaa', bg: '#0e0e10', card: '#18181c', text: '#e0e0e4' },
+  { name: 'Steampunk', key: 'steampunk', tier: 'plus', desc: 'Brass & bronze', primary: '#b8862a', bg: '#14100a', card: '#1e1a14', text: '#e0d8cc' },
+  { name: 'Celestial', key: 'celestial', tier: 'plus', desc: 'Gold on midnight', primary: '#c8a040', bg: '#080818', card: '#101028', text: '#e0d8f0' },
+  { name: 'Trash Polka', key: 'trash-polka', tier: 'plus', desc: 'Collage red chaos', primary: '#cc2244', bg: '#0a0a0a', card: '#141414', text: '#f0f0f0' },
+  { name: 'Retro Wave', key: 'retro-wave', tier: 'plus', desc: '80s sunset neon', primary: '#ff6688', bg: '#0a0a30', card: '#151545', text: '#e0d8f8' },
+];
+
+const tiers = [
+  { key: 'free', label: 'Free', badge: 'Free Forever' },
+  { key: 'pro', label: 'Pro', badge: 'Pro', color: 'var(--accent)' },
+  { key: 'plus', label: 'Plus', badge: 'Plus', color: '#f59e0b' },
+];
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="41 Tattoo Shop Website Templates — InkFlow" description="Choose from 41 stunning website templates for your tattoo studio. Free templates available. All templates are mobile-friendly and ready in minutes." />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TEMPLATES</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">41 Stunning Templates for Your Studio</h1>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Every template is mobile-friendly, SEO-optimized, and ready in minutes. Pick your style, connect your Instagram, and start booking clients.</p>
+    </div>
+  </section>
+
+  <!-- TIER FILTER -->
+  <section class="pb-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap gap-3 justify-center" id="tier-filters">
+        <button class="tier-btn active px-5 py-2 rounded-full text-sm font-medium border border-ink-700 text-white bg-ink-800 hover:bg-ink-700 transition-all" data-tier="all">All ({TEMPLATES.length})</button>
+        {tiers.map(t => (
+          <button class="tier-btn px-5 py-2 rounded-full text-sm font-medium border border-ink-700 text-gray-400 hover:text-white hover:bg-ink-800 transition-all" data-tier={t.key}>
+            {t.label} ({TEMPLATES.filter(tm => tm.tier === t.key).length})
+          </button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATES GRID -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="template-grid">
+        {TEMPLATES.map(t => (
+          <div class="template-card rounded-xl border border-ink-800 bg-ink-900/30 overflow-hidden hover:border-accent-500/50 transition-all duration-300 hover:-translate-y-1" data-tier={t.tier}>
+            <!-- Mini preview -->
+            <div class="h-40 relative" style={`background: ${t.bg}`}>
+              <div class="absolute top-3 left-3 right-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <div class="w-6 h-6 rounded flex items-center justify-center text-xs font-bold" style={`background: ${t.primary}; color: ${t.bg === '#ffffff' || t.bg === '#f5f0e8' || t.bg === '#e8f0f5' || t.bg === '#f8f4f0' || t.bg === '#f0f5f5' || t.bg === '#f0ecf5' || t.bg === '#e8e0d0' || t.bg === '#f8f8f8' || t.bg === '#f8f4f0' || t.bg === '#f8f4f0' || t.bg === '#e8f0f5' ? t.bg === '#ffffff' || t.bg === '#f5f0e8' ? '#1a1a1a' : '#333' : '#fff'}`}>IF</div>
+                  <div class="text-xs font-semibold" style={`color: ${t.primary}`}>{t.name}</div>
+                </div>
+                <div class="flex gap-1.5">
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.primary}`}></div>
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.text}`}></div>
+                  <div class="h-2 flex-1 rounded" style={`background: ${t.card}`}></div>
+                </div>
+                <div class="flex gap-2 mt-2">
+                  <div class="h-1.5 w-1.5 rounded-full" style={`background: ${t.primary}`}></div>
+                  <div class="h-1.5 flex-1" style={`background: ${t.text}20`}></div>
+                  <div class="h-1.5 flex-1" style={`background: ${t.text}20`}></div>
+                </div>
+                <div class="flex gap-2 mt-1.5">
+                  <div class="h-6 w-16 rounded text-[10px] flex items-center justify-center font-bold" style={`background: ${t.primary}; color: ${['#ffffff','#f5f0e8','#e8f0f5','#f8f4f0','#f0f5f5','#f0ecf5','#e8e0d0','#f8f8f8'].includes(t.bg) ? '#fff' : '#fff'}`}>Book</div>
+                  <div class="h-6 w-16 rounded text-[10px] flex items-center justify-center font-medium" style={`border: 1.5px solid ${t.primary}; color: ${t.primary}`}>Call</div>
+                </div>
+              </div>
+            </div>
+            <!-- Info -->
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-1">
+                <h3 class="font-semibold text-white text-sm">{t.name}</h3>
+                <span class={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${t.tier === 'free' ? 'bg-green-900/50 text-green-400' : t.tier === 'pro' ? 'bg-accent-500/10 text-accent-400' : 'bg-amber-900/50 text-amber-400'}`}>{t.tier === 'free' ? 'Free' : t.tier === 'pro' ? 'Pro' : 'Plus'}</span>
+              </div>
+              <p class="text-xs text-gray-500">{t.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <div class="rounded-2xl border border-accent-500/20 bg-gradient-to-b from-accent-500/5 to-transparent p-8 sm:p-12">
+        <h2 class="text-2xl font-bold text-white sm:text-3xl">Ready to Build Your Studio Website?</h2>
+        <p class="mt-3 text-gray-400">All templates included. Pick one, connect your Instagram, and go live in minutes.</p>
+        <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3 text-sm font-bold text-white hover:bg-accent-400 transition-colors">Get Started Free →</a>
+        <p class="mt-3 text-xs text-gray-600">No credit card required · Free plan forever</p>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  // Tier filter
+  const filterBtns = document.querySelectorAll('.tier-btn');
+  const cards = document.querySelectorAll('.template-card');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => { b.classList.remove('active', 'bg-ink-800', 'text-white'); b.classList.add('text-gray-400'); });
+      btn.classList.add('active', 'bg-ink-800', 'text-white');
+      const tier = btn.dataset.tier;
+      cards.forEach(c => {
+        c.style.display = tier === 'all' || c.dataset.tier === tier ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .template-card:hover { box-shadow: 0 8px 32px rgba(163, 58, 58, 0.15); }
+  .tier-btn.active { background: rgb(163 58 58); border-color: rgb(163 58 58); color: white; }
+</style>
