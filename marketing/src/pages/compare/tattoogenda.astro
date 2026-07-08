@@ -6,7 +6,7 @@ import Footer from '../../components/Footer.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
-  <SEOHead slot="head" title="InkFlow vs Tattoogenda â€” Full Comparison for Studios" description="Compare InkFlow vs Tattoogenda. Aftercare automation, inventory, multi-language â€” see which fits your studio. Start free." />
+  <SEOHead slot="head" title="InkFlow vs Tattoogenda â€?Full Comparison for Studios" description="Compare InkFlow vs Tattoogenda. Aftercare automation, inventory, multi-language â€?see which fits your studio. Start free." />
   <Navbar />
 
 
@@ -20,7 +20,13 @@ import Footer from '../../components/Footer.astro';
     "@type": "Brand",
     "name": "InkFlow"
   },
-  "category": "Tattoo Studio Software"
+  "category": "Tattoo Studio Software",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
 })} />
   <!-- Hero -->
   <section class="pt-24 pb-12 sm:pt-32">
@@ -41,10 +47,10 @@ import Footer from '../../components/Footer.astro';
           If you're a studio based in Europe and need VAT-compliant invoicing with multi-currency support, Tattoogenda is a strong contender. Their platform is purpose-built for tattoo studios and has years of market presence.
         </p>
         <p class="mt-3 text-gray-400">
-          However, <strong class="text-accent-300">InkFlow</strong> offers features Tattoogenda doesn't â€” aftercare automation, inventory management, and a truly free plan. For studios that want modern automation and global reach (7 languages, USD/EUR), InkFlow provides better value at every tier.
+          However, <strong class="text-accent-300">InkFlow</strong> offers features Tattoogenda doesn't â€?aftercare automation, inventory management, and a truly free plan. For studios that want modern automation and global reach (7 languages, USD/EUR), InkFlow provides better value at every tier.
         </p>
         <div class="mt-6">
-          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†’</a>
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
         </div>
       </div>
     </div>
@@ -66,7 +72,7 @@ import Footer from '../../components/Footer.astro';
             </div>
             <div class="rounded-lg bg-ink-900 p-4">
               <p class="font-bold text-gray-400">Tattoogenda Free</p>
-              <p class="text-2xl font-extrabold text-gray-500 mt-1">â‚¬0</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">â‚?</p>
               <p class="text-xs text-gray-600 mt-1">Limited features, 2 artists</p>
             </div>
           </div>
@@ -81,7 +87,7 @@ import Footer from '../../components/Footer.astro';
             </div>
             <div class="rounded-lg bg-ink-900 p-4">
               <p class="font-bold text-gray-400">Tattoogenda Growth</p>
-              <p class="text-2xl font-extrabold text-gray-500 mt-1">â‚¬24/mo</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">â‚?4/mo</p>
               <p class="text-xs text-gray-600 mt-1">Up to 3 artists, no inventory</p>
             </div>
           </div>
@@ -106,18 +112,18 @@ import Footer from '../../components/Footer.astro';
           </thead>
           <tbody class="divide-y divide-ink-800/50">
             {[
-              { f: 'Free Plan', i: 'âœ… Forever (unlimited features)', b: 'âš ï¸ Limited free tier' },
-              { f: 'Aftercare Automation', i: 'âœ… Built-in', b: 'âŒ Not available' },
-              { f: 'Inventory Management', i: 'âœ… Ink, needles, supplies', b: 'âŒ Not available' },
-              { f: 'Digital Waivers', i: 'âœ… Included', b: 'âœ… Included' },
-              { f: 'Online Booking', i: 'âœ… Custom link', b: 'âœ… Custom link' },
-              { f: 'Multi-Language', i: 'âœ… 7 languages', b: 'âš ï¸ Limited' },
-              { f: 'VAT Invoicing', i: 'âš ï¸ Via Stripe', b: 'âœ… Built-in (EU)' },
-              { f: 'Multi-Currency', i: 'âœ… USD, EUR, GBP, CAD', b: 'âœ… EUR, GBP' },
-              { f: 'SMS Reminders', i: 'âœ… Unlimited', b: 'âœ… Limited' },
-              { f: 'Commission Split', i: 'âœ… Auto-calculated', b: 'âœ… Manual' },
-              { f: 'Free Website', i: 'âœ… Included', b: 'âœ… Included' },
-              { f: 'Client Portal', i: 'âœ… Client app', b: 'âœ… Client portal' },
+              { f: 'Free Plan', i: 'âœ?Forever (unlimited features)', b: 'âš ï¸ Limited free tier' },
+              { f: 'Aftercare Automation', i: 'âœ?Built-in', b: 'â?Not available' },
+              { f: 'Inventory Management', i: 'âœ?Ink, needles, supplies', b: 'â?Not available' },
+              { f: 'Digital Waivers', i: 'âœ?Included', b: 'âœ?Included' },
+              { f: 'Online Booking', i: 'âœ?Custom link', b: 'âœ?Custom link' },
+              { f: 'Multi-Language', i: 'âœ?7 languages', b: 'âš ï¸ Limited' },
+              { f: 'VAT Invoicing', i: 'âš ï¸ Via Stripe', b: 'âœ?Built-in (EU)' },
+              { f: 'Multi-Currency', i: 'âœ?USD, EUR, GBP, CAD', b: 'âœ?EUR, GBP' },
+              { f: 'SMS Reminders', i: 'âœ?Unlimited', b: 'âœ?Limited' },
+              { f: 'Commission Split', i: 'âœ?Auto-calculated', b: 'âœ?Manual' },
+              { f: 'Free Website', i: 'âœ?Included', b: 'âœ?Included' },
+              { f: 'Client Portal', i: 'âœ?Client app', b: 'âœ?Client portal' },
             ].map(row => (
               <tr class="hover:bg-ink-900/30 transition-colors">
                 <td class="p-4 text-gray-300 font-medium">{row.f}</td>
@@ -143,11 +149,11 @@ import Footer from '../../components/Footer.astro';
         <h2 class="text-2xl font-bold text-white">Who Is InkFlow Best For?</h2>
         <p class="mt-3 text-gray-400">InkFlow is ideal for studios that want <strong class="text-white">modern automation features that Tattoogenda doesn't offer</strong>:</p>
         <ul class="mt-3 space-y-2 text-gray-400">
-          <li class="flex gap-2">â€¢ <strong class="text-white">Aftercare automation</strong> â€” send care instructions and product reminders automatically after each appointment</li>
-          <li class="flex gap-2">â€¢ <strong class="text-white">Inventory management</strong> â€” track ink, needles, and supplies with low-stock alerts</li>
-          <li class="flex gap-2">â€¢ <strong class="text-white">Truly free plan</strong> â€” not feature-capped. Use InkFlow Free indefinitely with all core features</li>
-          <li class="flex gap-2">â€¢ <strong class="text-white">Global language support</strong> â€” 7 languages including English, Spanish, French, German, Portuguese, Japanese, Chinese</li>
-          <li class="flex gap-2">â€¢ <strong class="text-white">Modern mobile-first interface</strong> â€” works on any device without a native app</li>
+          <li class="flex gap-2">â€?<strong class="text-white">Aftercare automation</strong> â€?send care instructions and product reminders automatically after each appointment</li>
+          <li class="flex gap-2">â€?<strong class="text-white">Inventory management</strong> â€?track ink, needles, and supplies with low-stock alerts</li>
+          <li class="flex gap-2">â€?<strong class="text-white">Truly free plan</strong> â€?not feature-capped. Use InkFlow Free indefinitely with all core features</li>
+          <li class="flex gap-2">â€?<strong class="text-white">Global language support</strong> â€?7 languages including English, Spanish, French, German, Portuguese, Japanese, Chinese</li>
+          <li class="flex gap-2">â€?<strong class="text-white">Modern mobile-first interface</strong> â€?works on any device without a native app</li>
         </ul>
       </div>
     </div>
@@ -169,7 +175,7 @@ import Footer from '../../components/Footer.astro';
         </div>
         <div class="rounded-xl border border-ink-800 p-5">
           <h3 class="font-semibold text-white">European Market Presence</h3>
-          <p class="mt-2 text-sm text-gray-400">Tattoogenda has more case studies, localized support, and community presence in European countries. Their platform is translated into Dutch, French, German, and Spanish â€” all optimized for EU users.</p>
+          <p class="mt-2 text-sm text-gray-400">Tattoogenda has more case studies, localized support, and community presence in European countries. Their platform is translated into Dutch, French, German, and Spanish â€?all optimized for EU users.</p>
         </div>
       </div>
     </div>
@@ -182,7 +188,7 @@ import Footer from '../../components/Footer.astro';
       <p class="mt-2 text-gray-400 text-sm">Switching takes less than an hour.</p>
       <ol class="mt-8 space-y-4">
         <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">1</span>
-          <div><strong class="text-white">Export from Tattoogenda</strong><p class="text-sm text-gray-400 mt-1">Go to Settings â†’ Export â†’ Download client data as CSV.</p></div>
+          <div><strong class="text-white">Export from Tattoogenda</strong><p class="text-sm text-gray-400 mt-1">Go to Settings â†?Export â†?Download client data as CSV.</p></div>
         </li>
         <li class="flex gap-4"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">2</span>
           <div><strong class="text-white">Set up InkFlow</strong><p class="text-sm text-gray-400 mt-1"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Create a free account</a>. Add your studio info, artists, and services.</p></div>
@@ -201,7 +207,7 @@ import Footer from '../../components/Footer.astro';
       <div class="space-y-4">
         <details class="rounded-xl border border-ink-800 p-4">
           <summary class="cursor-pointer text-sm font-medium text-white">Does Tattoogenda have aftercare automation?</summary>
-          <p class="mt-2 text-sm text-gray-400">No. Tattoogenda does not offer aftercare automation. This is InkFlow's standout feature â€” automated aftercare instructions, healing timeline reminders, and product recommendations sent via SMS or email.</p>
+          <p class="mt-2 text-sm text-gray-400">No. Tattoogenda does not offer aftercare automation. This is InkFlow's standout feature â€?automated aftercare instructions, healing timeline reminders, and product recommendations sent via SMS or email.</p>
         </details>
         <details class="rounded-xl border border-ink-800 p-4">
           <summary class="cursor-pointer text-sm font-medium text-white">Can I use InkFlow in Europe?</summary>
@@ -222,8 +228,8 @@ import Footer from '../../components/Footer.astro';
   <!-- CTA -->
   <section class="border-t border-ink-800/50 py-16 text-center">
     <h2 class="text-2xl font-bold text-white">Features You Won't Find in Tattoogenda</h2>
-    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Aftercare automation, inventory management, a truly free plan â€” InkFlow has what modern studios need. Free to start, no credit card required.</p>
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†’</a>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Aftercare automation, inventory management, a truly free plan â€?InkFlow has what modern studios need. Free to start, no credit card required.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
     <p class="mt-4 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
   </section>
 
