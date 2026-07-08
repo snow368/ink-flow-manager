@@ -1,0 +1,262 @@
+
+--- 2026-05-21T07:25:03.033Z debug
+🪵  Writing logs to "D:\ink-flow-manager\.wrangler\logs\wrangler-2026-05-21_07-25-02_838.log"
+---
+
+--- 2026-05-21T07:25:03.033Z debug
+.env file not found at "D:\ink-flow-manager\.env.local". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+---
+
+--- 2026-05-21T07:25:03.044Z log
+
+ ⛅️ wrangler 4.93.0
+───────────────────
+---
+
+--- 2026-05-21T07:25:03.054Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command started","timestamp":1779348303053,"properties":{"amplitude_session_id":1779348303051,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":[],"argsCombination":"","sanitizedCommand":"whoami","sanitizedArgs":{}}}
+---
+
+--- 2026-05-21T07:25:03.070Z log
+Getting User settings...
+---
+
+--- 2026-05-21T07:25:03.082Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/user
+---
+
+--- 2026-05-21T07:25:03.082Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.083Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.083Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.083Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:03.806Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:03.806Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.806Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.806Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:03.809Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/accounts
+---
+
+--- 2026-05-21T07:25:03.809Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.809Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.809Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.809Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:03.810Z debug
+-- START CF API REQUEST: GET https://api.cloudflare.com/client/v4/memberships
+---
+
+--- 2026-05-21T07:25:03.810Z debug
+QUERY STRING: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.810Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.810Z debug
+INIT: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:03.810Z debug
+-- END CF API REQUEST
+---
+
+--- 2026-05-21T07:25:04.170Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:04.170Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:04.170Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:04.171Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:04.738Z debug
+-- START CF API RESPONSE: OK 200
+---
+
+--- 2026-05-21T07:25:04.738Z debug
+HEADERS: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:04.738Z debug
+RESPONSE: omitted; set WRANGLER_LOG_SANITIZE=false to include sanitized data
+---
+
+--- 2026-05-21T07:25:04.738Z debug
+-- END CF API RESPONSE
+---
+
+--- 2026-05-21T07:25:04.739Z log
+👋 You are logged in with an OAuth Token, associated with the email snow368@gmail.com.
+---
+
+--- 2026-05-21T07:25:04.743Z log
+┌─────────────────────────────┬──────────────────────────────────┐
+│ Account Name                │ Account ID                       │
+├─────────────────────────────┼──────────────────────────────────┤
+│ Snow368@gmail.com's Account │ 76a99ad37a968c6e5f743d8bb27825b3 │
+└─────────────────────────────┴──────────────────────────────────┘
+---
+
+--- 2026-05-21T07:25:04.745Z log
+🔓 Token Permissions:
+---
+
+--- 2026-05-21T07:25:04.746Z log
+Scope (Access)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- account (read)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- user (read)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- workers (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- workers_kv (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- workers_routes (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- workers_scripts (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- workers_tail (read)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- d1 (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- pages (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- zone (read)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- ssl_certs (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- ai (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- ai-search (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- ai-search (run)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- queues (write)
+---
+
+--- 2026-05-21T07:25:04.746Z log
+- pipelines (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- secrets_store (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- artifacts (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- flagship (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- containers (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- cloudchamber (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- connectivity (admin)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- email_routing (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- email_sending (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- browser (write)
+---
+
+--- 2026-05-21T07:25:04.747Z log
+- offline_access 
+---
+
+--- 2026-05-21T07:25:04.748Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"view accounts","timestamp":1779348304748,"properties":{"amplitude_session_id":1779348304747,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","category":"Workers","os":"win32:x64"}}
+---
+
+--- 2026-05-21T07:25:04.749Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command completed","timestamp":1779348304749,"properties":{"amplitude_session_id":1779348303051,"amplitude_event_id":1,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":[],"argsCombination":"","sanitizedCommand":"whoami","sanitizedArgs":{},"durationMs":1711}}
+---

@@ -1,0 +1,166 @@
+import { db } from '../db';
+import type { AppointmentRecord, SessionRecord, StoredAppointmentRecord, TimelineEvent, ConsumableUsage } from '../db';
+import { incrementProjectSessionCount } from './projectLogic';
+import { resolveProjectId } from './projectAccess';
+
+export function createSession(
+  projectId: string,
+  appointment: AppointmentRecord,
+): SessionRecord {
+  const now = Date.now();
+  return {
+    id: 'session_' + now + '_' + Math.random().toString(36).slice(2, 6),
+    projectId,
+    appointmentId: appointment.id,
+    clientId: appointment.clientId,
+    artistId: appointment.artistId,
+    status: 'active',
+    startedAt: now,
+    actualDuration: 0,
+    timeline: [{ timestamp: now, type: 'start', payload: appointment.type || 'new_tattoo' }],
+    photos: [],
+    videos: [],
+    notes: [],
+    consumables: [],
+  };
+}
+
+export async function createSessionForAppointment(
+  appointment: StoredAppointmentRecord,
+): Promise<SessionRecord> {
+  const projectId = (await resolveProjectId(appointment)) ?? appointment.projectId ?? null;
+  if (!projectId) {
+    throw new Error('Cannot start session: appointment has no resolvable project');
+  }
+  return createSession(projectId, { ...appointment, projectId });
+}
+
+export function addTimelineEvent(
+  session: SessionRecord,
+  type: TimelineEvent['type'],
+  payload?: string
+): SessionRecord {
+  return {
+    ...session,
+    timeline: [...session.timeline, { timestamp: Date.now(), type, payload }],
+  };
+}
+
+export function addConsumable(
+  session: SessionRecord,
+  itemId: string,
+  quantity: number,
+  batchNumber?: string
+): SessionRecord {
+  const updated: ConsumableUsage[] = [...session.consumables];
+  const existing = updated.find(c => c.itemId === itemId);
+  if (existing) {
+    existing.quantity += quantity;
+    if (batchNumber) existing.batchNumber = batchNumber;
+  } else {
+    updated.push({ itemId, quantity, batchNumber });
+  }
+  return { ...session, consumables: updated };
+}
+
+export function addPhoto(session: SessionRecord, photoData: string): SessionRecord {
+  return {
+    ...session,
+    photos: [...session.photos, photoData],
+    timeline: [...session.timeline, { timestamp: Date.now(), type: 'photo' }],
+  };
+}
+
+export function addVideo(session: SessionRecord, videoData: string): SessionRecord {
+  return {
+    ...session,
+    videos: [...(session.videos || []), videoData],
+    timeline: [...session.timeline, { timestamp: Date.now(), type: 'photo', payload: 'video' }],
+  };
+}
+
+export function addNote(session: SessionRecord, note: string, isAllergy = false): SessionRecord {
+  return {
+    ...session,
+    notes: [...session.notes, note],
+    timeline: [...session.timeline, { timestamp: Date.now(), type: isAllergy ? 'allergy' : 'note', payload: note }],
+  };
+}
+
+export async function finishSession(session: SessionRecord): Promise<SessionRecord> {
+  const now = Date.now();
+  let pauseTotal = 0;
+  const tl = session.timeline;
+  for (let i = 0; i < tl.length; i++) {
+    if (tl[i].type === 'pause') {
+      const resumeIdx = tl.findIndex((e, j) => j > i && e.type === 'resume');
+      if (resumeIdx > i) {
+        pauseTotal += tl[resumeIdx].timestamp - tl[i].timestamp;
+        i = resumeIdx;
+      }
+    }
+  }
+  const actualDuration = Math.round((now - session.startedAt - pauseTotal) / 60000);
+
+  const finished: SessionRecord = {
+    ...session,
+    status: 'completed',
+    finishedAt: now,
+    actualDuration,
+    timeline: [...session.timeline, { timestamp: now, type: 'done', payload: `Total: ${actualDuration}min` }],
+  };
+
+  await db.sessions.add(finished);
+
+  if (session.appointmentId) {
+    await db.appointments.update(session.appointmentId, { status: 'done' });
+  }
+
+  let projectId = session.projectId;
+  if (!projectId) {
+    const { resolveSessionProjectId } = await import('./projectAccess');
+    projectId = (await resolveSessionProjectId(session)) ?? undefined;
+  }
+  if (projectId) await incrementProjectSessionCount(projectId);
+
+  for (const c of session.consumables) {
+    const item = await db.inventory.get(c.itemId);
+    if (item) {
+      const newQty = Math.max(0, item.quantity - c.quantity);
+      await db.inventory.update(c.itemId, { quantity: newQty });
+    }
+  }
+
+  return finished;
+}
+
+export function getElapsedMinutes(session: SessionRecord): number {
+  let pauseTotal = 0;
+  const tl = session.timeline;
+  for (let i = 0; i < tl.length; i++) {
+    if (tl[i].type === 'pause') {
+      const resumeIdx = tl.findIndex((e, j) => j > i && e.type === 'resume');
+      if (resumeIdx > i) {
+        pauseTotal += tl[resumeIdx].timestamp - tl[i].timestamp;
+        i = resumeIdx;
+      }
+    }
+  }
+  return Math.round((Date.now() - session.startedAt - pauseTotal) / 60000);
+}
+
+export function generateSummary(session: SessionRecord): string {
+  const mins = session.actualDuration || getElapsedMinutes(session);
+  const consumableSummary = session.consumables
+    .map(c => `${c.itemId} x${c.quantity}`)
+    .join(', ') || 'none';
+  const photoCount = session.photos.length;
+  const noteCount = session.notes.length;
+
+  return [
+    `Session: ${mins} minutes`,
+    `Consumables: ${consumableSummary}`,
+    `Photos: ${photoCount}`,
+    `Notes: ${noteCount}`,
+  ].join('\n');
+}

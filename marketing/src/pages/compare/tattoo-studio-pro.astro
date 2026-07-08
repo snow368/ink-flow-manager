@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="InkFlow vs Tattoo Studio Pro — Full Comparison" description="Compare InkFlow vs Tattoo Studio Pro. Features, pricing, and which is best for your tattoo studio. InkFlow starts at $0/mo with aftercare automation included." />
+  <Navbar />
+
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Tattoo Studio Pro</h1>
+      <p class="mt-4 text-lg text-gray-400">Which is right for your studio?</p>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
+        <h2 class="text-lg font-bold text-white">Quick Verdict</h2>
+        <p class="mt-2 text-sm text-gray-400">If you're a solo artist or small studio looking for an affordable, all-in-one solution with built-in waivers and aftercare, choose InkFlow. If you need enterprise features for 25+ artists, Tattoo Studio Pro's Legion plan might be worth the premium.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-6 text-2xl font-bold text-white">Feature Comparison</h2>
+      <div class="overflow-x-auto rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-ink-800 bg-ink-900/50">
+              <th class="px-6 py-4 text-left text-gray-300">Feature</th>
+              <th class="px-6 py-4 text-center text-accent-400">InkFlow</th>
+              <th class="px-6 py-4 text-center text-gray-300">Tattoo Studio Pro</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-800">
+            <tr><td class="px-6 py-4 text-gray-400">Starting Price</td><td class="px-6 py-4 text-center text-accent-400 font-medium">$0/mo</td><td class="px-6 py-4 text-center text-gray-400">$29/mo</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">Digital Waivers</td><td class="px-6 py-4 text-center text-accent-400">✅ Included</td><td class="px-6 py-4 text-center text-gray-400">✅ Included</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">Aftercare Automation</td><td class="px-6 py-4 text-center text-accent-400">✅</td><td class="px-6 py-4 text-center text-gray-400">❌</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">SMS Reminders</td><td class="px-6 py-4 text-center text-accent-400">✅ Unlimited</td><td class="px-6 py-4 text-center text-gray-400">⚠️ Limited</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">Free Plan</td><td class="px-6 py-4 text-center text-accent-400">✅ Forever</td><td class="px-6 py-4 text-center text-gray-400">❌ 30-day trial</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">Multi-Language</td><td class="px-6 py-4 text-center text-accent-400">✅ 7 languages</td><td class="px-6 py-4 text-center text-gray-400">❌ English only</td></tr>
+            <tr><td class="px-6 py-4 text-gray-400">Commission Split</td><td class="px-6 py-4 text-center text-accent-400">✅</td><td class="px-6 py-4 text-center text-gray-400">✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-ink-800/50 py-12 text-center">
+    <h2 class="text-2xl font-bold text-white">Try InkFlow Free</h2>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

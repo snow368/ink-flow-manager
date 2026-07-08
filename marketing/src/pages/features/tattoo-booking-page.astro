@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout>
+  <FAQSchema questions={[
+    { question: "How do I get my booking page?", answer: "Your booking page is created automatically when you sign up for InkFlow. Choose your URL, upload your photo, and share the link on Instagram or your website." },
+    { question: "Can I use my own domain for my booking page?", answer: "Yes. Pro and Plus users can connect their own domain. Just add a CNAME record — no technical support needed." },
+    { question: "Does the booking page collect deposits?", answer: "Yes. Clients pay a deposit to book. This locks the appointment and cuts no-shows by up to 80%." },
+    { question: "Can I embed the booking page on my existing website?", answer: "Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom." },
+  ]} />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32 sm:pb-28">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl text-center">
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
+          Free for Pro users
+        </div>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Artist Booking Page: Free Booking Link for Your Studio</h1>
+        <p class="mt-6 text-lg text-gray-400">InkFlow gives every artist a free professional booking page. Share on Instagram, embed on your website, or use your own domain. Clients book with deposit in one click — no phone tag needed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-md rounded-xl border border-ink-700 bg-ink-900 p-8">
+        <div class="mb-6 text-center">
+          <div class="mx-auto mb-4 h-20 w-20 rounded-full bg-ink-700" />
+          <h3 class="text-xl font-bold text-white">Your Name</h3>
+          <p class="text-sm text-gray-400">Artist at Your Studio</p>
+        </div>
+        <div class="mb-6 space-y-2 text-sm text-gray-400">
+          <p>📍 City, State</p>
+          <p>⭐ 4.9 (127 reviews)</p>
+          <p>💉 Tattoo since 2015</p>
+        </div>
+        <div class="mb-6 border-t border-ink-800 pt-6">
+          <h4 class="mb-3 text-sm font-semibold text-white">Specialties</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Black & Grey</span>
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Realism</span>
+            <span class="rounded-full border border-ink-700 px-3 py-1 text-xs text-gray-300">Traditional</span>
+          </div>
+        </div>
+        <a href="https://app.ink-flows.com/register" class="block w-full rounded-lg bg-accent-500 py-3 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+          Book an Appointment
+        </a>
+        <p class="mt-4 text-center text-xs text-gray-600">Powered by <a href="/" class="text-accent-400 hover:underline">InkFlow</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Every Artist Needs a Dedicated Booking Page</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">DMs and phone calls don't scale — you lose bookings every week.</h3><p class="mt-1 text-sm text-gray-400">Clients message you on Instagram, you reply with pricing, they ask again next week. A booking page captures them at the moment of interest.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Without a professional page, you look less credible.</h3><p class="mt-1 text-sm text-gray-400">Clients expect a seamless online experience. A clunky process or no page at all costs you clients who choose studios with easy booking.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">No deposit at booking means more no-shows.</h3><p class="mt-1 text-sm text-gray-400">A booking page without deposit collection doesn't solve the no-show problem. InkFlow's page requires a deposit to lock the appointment.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Booking Page Features Built for Tattoo Artists</h2>
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Your Own Domain or Subdomain</h3>
+          <p class="text-sm text-gray-400">Use ink-flows.com/your-name or connect your own domain. Professional link to share on Instagram, TikTok, and business cards.</p>
+          <h4 class="mt-4 text-sm font-semibold text-white">Instant Setup, No Coding</h4>
+          <p class="text-sm text-gray-400">Your page is live as soon as you create your InkFlow account. Choose your URL, upload your photo, and share the link.</p>
+          <h5 class="mt-3 text-sm font-medium text-white">Custom Domain in One Click</h5>
+          <p class="text-sm text-gray-400">Pro and Plus users can connect their own domain. Just add a CNAME record — no technical support needed.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Portfolio Showcase with Instagram Integration</h3>
+          <p class="text-sm text-gray-400">Display your best work automatically from your Instagram. Clients see your style before they book.</p>
+          <h4 class="mt-4 text-sm font-semibold text-white">Auto-Sync from Instagram</h4>
+          <p class="text-sm text-gray-400">Your booking page pulls photos directly from your Instagram feed. No manual uploads, no extra work.</p>
+          <h5 class="mt-3 text-sm font-medium text-white">Client Proof Gallery</h5>
+          <p class="text-sm text-gray-400">Healed photos submitted through aftercare automation are automatically added to your portfolio with client consent.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Instant Booking with Deposit Collection</h3>
+          <p class="text-sm text-gray-400">Clients see real-time availability and book with a deposit. No phone tag, no double-booking.</p>
+          <h4 class="mt-4 text-sm font-semibold text-white">Real-Time Availability</h4>
+          <p class="text-sm text-gray-400">Clients see exactly which time slots are available. No back-and-forth to find a time that works.</p>
+          <h5 class="mt-3 text-sm font-medium text-white">Deposit Locks the Appointment</h5>
+          <p class="text-sm text-gray-400">A deposit is required to confirm. No-shows drop by 80% when clients have skin in the game.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Booking Page Comparison: InkFlow vs Standalone Booking Tools</h2>
+      <p class="mt-3 text-center text-gray-400">Generic booking pages don't collect deposits or show tattoo portfolios. Here's how InkFlow's artist booking page compares.</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="border-b border-ink-700">
+            <th class="text-left py-3 pr-4 text-gray-400 font-medium">Feature</th>
+            <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+            <th class="text-center py-3 pr-4 text-gray-500 font-medium">Calendly</th>
+            <th class="text-center py-3 text-gray-500 font-medium">Acuity</th>
+          </tr></thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Free booking page</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Limited free</td><td class="text-center py-3 text-gray-600">Limited free</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Deposit collection at booking</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">Card on file</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Instagram portfolio sync</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Your own domain</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Multiple artist booking links</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Built-in waivers &amp; CRM</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Aftercare automation</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr><td class="py-3 pr-4 text-white">SMS reminders included</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">$0.07/text</td><td class="text-center py-3 text-gray-600">$0.07/text</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER SCENARIO GUIDE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Which Booking Page Is Right for You?</h2>
+      <p class="mt-3 text-center text-gray-400">Your choice depends on whether you need a standalone scheduler or an all-in-one artist page.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Solo artist who just needs a scheduling link</h3>
+          <p class="text-sm text-gray-400 mt-1">Calendly works for basic scheduling. But you miss deposit collection, portfolio display, and waiver integration. InkFlow's page does all of it.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Studio with multiple artists</h3>
+          <p class="text-sm text-gray-400 mt-1">Each artist gets their own booking link with portfolio and bio. Acuity handles multiple calendars but lacks tattoo-specific features like commission tracking and waivers.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-semibold text-sm">Studio focused on Instagram bookings</h3>
+          <p class="text-sm text-gray-400 mt-1">Link in bio is the #1 booking source for tattoo studios. InkFlow's page auto-syncs your Instagram portfolio and collects deposits — one link does everything.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+      <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">How do I get my booking page?</summary>
+        <p class="mt-2 text-sm text-gray-400">Your booking page is created automatically when you sign up for InkFlow. Choose your URL, upload your photo, and share the link on Instagram or your website.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can I use my own domain for my booking page?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. Pro and Plus users can connect their own domain. Just add a CNAME record — no technical support needed.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Does the booking page collect deposits?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. Clients pay a deposit to book. This locks the appointment and cuts no-shows by up to 80%.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can I embed the booking page on my existing website?</summary>
+        <p class="mt-2 text-sm text-gray-400">Yes. One line of code embeds a booking button on any site — Squarespace, Wix, WordPress, or custom.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white sm:text-3xl">Get Your Free Booking Page</h2>
+      <p class="mt-4 text-gray-400">Upgrade to Pro and get your page in minutes.</p>
+      <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+        Start Free Trial
+      </a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

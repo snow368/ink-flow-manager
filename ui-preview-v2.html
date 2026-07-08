@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>InkFlow — Tattoo OS Preview v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: #0c0c0c;
+  color: #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+}
+
+/* ========== THEME TOKENS v2 ========== */
+:root {
+  --bg-app: #0c0c0c;
+  --bg-panel: #141416;
+  --bg-card: #1a1a1e;
+  --bg-card-hover: #1e1e24;
+  --bg-elevated: #1c1c22;
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0a8;
+  --text-tertiary: #5c5c66;
+  --brand-accent: #a33a3a;
+  --brand-accent-dim: #7a2a2a;
+  --brand-accent-glow: rgba(163, 58, 58, 0.12);
+  --brand-warm: #8a7a6a;
+  --brand-warm-dim: #5a5048;
+  --brand-success: #3a8a5a;
+  --brand-success-dim: rgba(58, 138, 90, 0.12);
+  --brand-warning: #b88a3a;
+  --brand-warning-dim: rgba(184, 138, 58, 0.12);
+  --brand-danger: #8a3a3a;
+  --border-default: #222226;
+  --border-subtle: #18181c;
+  --border-active: #3a3a42;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+/* Status color tokens */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+}
+.status-badge.unconfirmed { background: rgba(184, 138, 58, 0.1); color: #c8a060; }
+.status-badge.deposit_paid { background: rgba(96, 165, 250, 0.1); color: #7ab8f0; }
+.status-badge.ready { background: rgba(58, 138, 90, 0.1); color: #5aba6a; }
+.status-badge.done { background: rgba(92, 92, 102, 0.15); color: #6a6a74; }
+.status-badge.cancelled { background: rgba(138, 58, 58, 0.1); color: #8a5a5a; }
+
+/* ========== SECTION TITLE ========== */
+.section-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+/* ========== SCREEN FRAME ========== */
+.screen {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+
+.screen-header {
+  padding: 20px 20px 0;
+}
+.screen-header .top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+.screen-header h1 {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.screen-header .sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-weight: 450;
+}
+.header-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.header-actions button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-panel);
+  color: var(--text-secondary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.header-actions button:hover {
+  border-color: var(--border-active);
+  background: var(--bg-card);
+}
+.header-actions .btn-primary-action {
+  background: var(--brand-accent);
+  border-color: var(--brand-accent);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 300;
+}
+.header-actions .btn-primary-action:hover {
+  background: var(--brand-accent-dim);
+  border-color: var(--brand-accent-dim);
+}
+
+.screen-content {
+  padding: 16px 20px 20px;
+}
+
+/* ========== CONTROL PANEL LAYOUT ========== */
+
+/* Pipeline Row */
+.pipeline-row {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: var(--bg-panel);
+  border-radius: var(--radius-sm);
+}
+.pipeline-step {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.pipeline-step .step-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+.pipeline-step .step-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+.pipeline-step.active .step-count { color: var(--brand-accent); }
+.pipeline-step.active .step-label { color: var(--text-primary); }
+.pipeline-step.active { background: var(--bg-card); }
+
+/* KPI Dots (minimal) */
+.kpi-minimal {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi-minimal .stat {
+  display: flex;
+  flex-direction: column;
+}
+.kpi-minimal .stat .num {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.kpi-minimal .stat .lbl {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.kpi-minimal .divider {
+  width: 1px;
+  background: var(--border-subtle);
+}
+
+/* Session Item — the core unit */
+.session-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.session-item:hover { padding-left: 4px; }
+.session-item:last-child { border-bottom: none; }
+
+.session-item .time-col {
+  min-width: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  padding-top: 1px;
+}
+.session-item .body-col {
+  flex: 1;
+  min-width: 0;
+}
+.session-item .body-col .client-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.session-item .body-col .client-row .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.session-item .body-col .client-row .name .project-tag {
+  font-size: 11px;
+  font-weight: 450;
+  color: var(--text-tertiary);
+  margin-left: 6px;
+}
+.session-item .body-col .meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 450;
+}
+.session-item .body-col .meta-row .meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  opacity: 0.4;
+}
+.session-item .right-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  justify-content: center;
+  min-width: 60px;
+}
+.session-item .right-col .badge-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* Status dot (tiny) */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.unconfirmed { background: #c8a060; }
+.status-dot.deposit_paid { background: #7ab8f0; }
+.status-dot.ready { background: #5aba6a; }
+.status-dot.done { background: #5a5a64; }
+.status-dot.cancelled { background: #6a4a4a; }
+
+/* Section card — very subtle */
+.control-section {
+  margin-bottom: 24px;
+}
+
+/* Pending items */
+.pending-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pending-item:last-child { border-bottom: none; }
+.pending-item .pi-icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  font-size: 12px;
+}
+.pending-item .pi-body {
+  flex: 1;
+}
+.pending-item .pi-body .pi-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.pending-item .pi-body .pi-sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.pending-item .pi-action {
+  padding: 4px 10px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.pending-item .pi-action:hover {
+  border-color: var(--border-active);
+  color: var(--text-secondary);
+}
+
+/* ========== WALK-IN INTAKE FLOW ========== */
+.intake-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 8px;
+}
+.intake-step {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.intake-step:last-child { border-bottom: none; }
+.intake-step:hover .intake-arrow { color: var(--text-secondary); }
+
+.intake-step .intake-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.intake-step .intake-body {
+  flex: 1;
+}
+.intake-step .intake-body .intake-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1px;
+}
+.intake-step .intake-body .intake-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 450;
+}
+.intake-step .intake-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  font-weight: 300;
+  transition: color 0.12s;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+.empty-state .empty-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+.empty-state h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.empty-state p {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-weight: 450;
+}
+
+/* ========== TAB BAR v2 ========== */
+.tab-bar {
+  display: flex;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border-default);
+  min-height: 56px;
+  padding: 0 8px;
+}
+.tab-bar button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 8px 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  transition: all 0.15s;
+  position: relative;
+}
+.tab-bar button .tab-icon {
+  font-size: 18px;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+.tab-bar button.active {
+  color: var(--text-primary);
+}
+.tab-bar button.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 2px;
+  background: var(--brand-accent);
+  border-radius: 0 0 1px 1px;
+}
+.tab-bar button:hover {
+  color: var(--text-secondary);
+}
+
+/* ========== BUTTONS v2 ========== */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: inherit;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: var(--brand-accent); color: #fff; }
+.btn-primary:hover { background: var(--brand-accent-dim); }
+.btn-secondary { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-default); }
+.btn-secondary:hover { border-color: var(--border-active); color: var(--text-primary); }
+.btn-ghost { background: transparent; color: var(--text-tertiary); padding: 8px 8px; }
+.btn-ghost:hover { color: var(--text-secondary); }
+.btn-sm { padding: 5px 10px; font-size: 10px; }
+.btn-success { background: var(--brand-success); color: #fff; }
+.btn-warning { background: var(--brand-warning); color: #0c0c0c; }
+
+/* ========== TAGS ========== */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+  background: transparent;
+}
+
+/* ========== DESIGN NOTES ========== */
+.design-notes {
+  max-width: 420px;
+  width: 100%;
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid var(--border-default);
+  background: var(--bg-panel);
+}
+.design-notes h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-accent);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+.design-notes ul {
+  list-style: none;
+  padding: 0;
+}
+.design-notes li {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  padding: 3px 0;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.5;
+}
+.design-notes li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--brand-accent);
+  opacity: 0.5;
+}
+</style>
+</head>
+<body>
+
+<!-- ========== DESIGN NOTES ========== -->
+<div class="design-notes">
+  <h3>INKFLOW v2 → TATTOO OS</h3>
+  <ul>
+    <li>红色降级为暗红 accent (#a33a3a)，不再有压迫感</li>
+    <li>增加 warm gray (#8a7a6a) 中性 accent</li>
+    <li>黑灰更"柔" — bg-panel #141416，不是纯黑</li>
+    <li>状态表达 = badge + subtle dot + thin border，不再靠 4px 边框</li>
+    <li>Today → Studio Control Panel，按 flow 组织信息</li>
+    <li>Walk-in 从弹窗升级为完整 intake flow（killer feature）</li>
+    <li>字体 weight 更克制（650/600/450），不全是 900</li>
+    <li>留白更理性，信息密度降低</li>
+    <li>整体气质像 Linear × Milanote — 创作系统的工具感</li>
+    <li>目标：用 3 小时不累，不是第一眼看起来很酷</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1: STUDIO CONTROL PANEL — Day View -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="top-row">
+      <div>
+        <h1>Today</h1>
+        <div class="sub">Wed, May 27 · 3 sessions · 1 pending</div>
+      </div>
+      <div class="header-actions">
+        <button title="Walk-in" style="width:auto;padding:0 10px;gap:4px;font-size:11px;font-weight:600;">
+          <span style="font-size:14px;">✋</span> Walk-in
+        </button>
+        <button class="btn-primary-action">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <!-- Pipeline: today's flow stages -->
+    <div class="section-label">Today's Pipeline</div>
+    <div class="pipeline-row">
+      <div class="pipeline-step active">
+        <div class="step-count">2</div>
+        <div class="step-label">Session</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-count">1</div>
+        <div class="step-label">Deposit</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-count">—</div>
+        <div class="step-label">Design</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="step-count">$520</div>
+        <div class="step-label">Revenue</div>
+      </div>
+    </div>
+
+    <!-- Session List -->
+    <div class="control-section">
+      <div class="section-label">Sessions</div>
+
+      <!-- Session 1: Ready (in progress) -->
+      <div class="session-item">
+        <div class="time-col">10:00</div>
+        <div class="body-col">
+          <div class="client-row">
+            <span class="name">Alex Rivera <span class="project-tag">· Portrait</span></span>
+          </div>
+          <div class="meta-row">
+            <span>Station 3</span>
+            <span class="meta-dot"></span>
+            <span>180 min</span>
+            <span class="meta-dot"></span>
+            <span>Chest</span>
+          </div>
+        </div>
+        <div class="right-col">
+          <span class="status-badge ready">● Ready</span>
+        </div>
+      </div>
+
+      <!-- Session 2: Deposit Paid -->
+      <div class="session-item">
+        <div class="time-col">14:00</div>
+        <div class="body-col">
+          <div class="client-row">
+            <span class="name">Marcus Chen <span class="project-tag">· Full Sleeve</span></span>
+          </div>
+          <div class="meta-row">
+            <span>Station 2</span>
+            <span class="meta-dot"></span>
+            <span>120 min</span>
+            <span class="meta-dot"></span>
+            <span>Left arm</span>
+            <span class="meta-dot"></span>
+            <span style="color:var(--brand-accent);">⚠ Lidocaine allergy</span>
+          </div>
+        </div>
+        <div class="right-col">
+          <span class="status-badge deposit_paid">● Deposit</span>
+        </div>
+      </div>
+
+      <!-- Session 3: Unconfirmed -->
+      <div class="session-item">
+        <div class="time-col">16:30</div>
+        <div class="body-col">
+          <div class="client-row">
+            <span class="name">Sarah Okafor <span class="project-tag">· Floral</span></span>
+          </div>
+          <div class="meta-row">
+            <span>Station 1</span>
+            <span class="meta-dot"></span>
+            <span>90 min</span>
+            <span class="meta-dot"></span>
+            <span>Forearm</span>
+          </div>
+        </div>
+        <div class="right-col">
+          <span class="status-badge unconfirmed">● Unconfirmed</span>
+          <div style="font-size:10px;color:var(--text-tertiary);margin-top:2px;">Deposit: $100</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending: Design Approval + Reference -->
+    <div class="control-section">
+      <div class="section-label">Pending Review</div>
+
+      <div class="pending-item">
+        <div class="pi-icon">🎨</div>
+        <div class="pi-body">
+          <div class="pi-title">Dragon sleeve — design draft v2</div>
+          <div class="pi-sub">Marcus Chen · Submitted 2h ago</div>
+        </div>
+        <button class="pi-action">Review</button>
+      </div>
+
+      <div class="pending-item">
+        <div class="pi-icon">📷</div>
+        <div class="pi-body">
+          <div class="pi-title">Reference photo needed</div>
+          <div class="pi-sub">Alex Rivera · Grandma portrait ref</div>
+        </div>
+        <button class="pi-action">Request</button>
+      </div>
+    </div>
+
+    <!-- Quick KPI -->
+    <div class="kpi-minimal">
+      <div class="stat">
+        <span class="num" style="color:var(--text-primary);">2</span>
+        <span class="lbl">Active</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="num" style="color:var(--brand-warning);">$520</span>
+        <span class="lbl">Today rev</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="num" style="color:var(--text-tertiary);">2</span>
+        <span class="lbl">Deposits</span>
+      </div>
+      <div class="divider"></div>
+      <div class="stat">
+        <span class="num" style="color:var(--brand-accent);">1</span>
+        <span class="lbl">Overdue</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2: WALK-IN INTAKE FLOW (KILLER FEATURE) -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="top-row">
+      <div>
+        <h1>Walk-in</h1>
+        <div class="sub">Front desk intake — 3 min setup</div>
+      </div>
+      <div class="header-actions">
+        <button style="background:transparent;border:none;color:var(--text-tertiary);font-size:18px;">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <div class="section-label">Client Intake</div>
+
+    <div class="intake-flow">
+      <div class="intake-step">
+        <div class="intake-icon">📋</div>
+        <div class="intake-body">
+          <div class="intake-title">Waiver & Health Questions</div>
+          <div class="intake-desc">Digital consent form, allergies, medical conditions</div>
+        </div>
+        <div class="intake-arrow">→</div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-icon">💳</div>
+        <div class="intake-body">
+          <div class="intake-title">Quick Deposit</div>
+          <div class="intake-desc">$50 deposit via Stripe — tap to pay, no account needed</div>
+        </div>
+        <div class="intake-arrow">→</div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-icon">🎨</div>
+        <div class="intake-body">
+          <div class="intake-title">Instant Project</div>
+          <div class="intake-desc">Flash sheet picker · Quick placement notes · Photo reference</div>
+        </div>
+        <div class="intake-arrow">→</div>
+      </div>
+
+      <div class="intake-step">
+        <div class="intake-icon">📅</div>
+        <div class="intake-body">
+          <div class="intake-title">Auto Schedule Slot</div>
+          <div class="intake-desc">Next available slot suggested · Confirm or pick time</div>
+        </div>
+        <div class="intake-arrow">→</div>
+      </div>
+    </div>
+
+    <!-- Quick-pick flash -->
+    <div class="section-label" style="margin-top:16px;">FLASH PICKER</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px;">
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-tertiary);font-weight:500;">Dagger</div>
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-tertiary);font-weight:500;">Rose</div>
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--brand-accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--brand-accent);font-weight:600;box-shadow:inset 0 0 0 1px var(--brand-accent-dim);">Skull</div>
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-tertiary);font-weight:500;">Butterfly</div>
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-tertiary);font-weight:500;">Dragon</div>
+      <div style="aspect-ratio:1;background:var(--bg-card);border:1px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-tertiary);font-weight:500;">Anchor</div>
+    </div>
+
+    <button style="width:100%;padding:12px;background:var(--brand-accent);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Start Session</button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3: EMPTY / REST DAY -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div class="top-row">
+      <div>
+        <h1>Today</h1>
+        <div class="sub">Wed, May 27 · No sessions scheduled</div>
+      </div>
+      <div class="header-actions">
+        <button style="width:auto;padding:0 10px;gap:4px;font-size:11px;font-weight:600;">
+          <span style="font-size:14px;">✋</span> Walk-in
+        </button>
+        <button class="btn-primary-action">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <div class="empty-state">
+      <div class="empty-icon">⛓️</div>
+      <h3>No sessions today</h3>
+      <p>Open walk-in intake or schedule a new appointment</p>
+      <div style="display:flex;gap:8px;margin-top:20px;">
+        <button class="btn btn-primary">+ New Session</button>
+        <button class="btn btn-secondary">✋ Walk-in Quick Start</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4: COMPONENT LIBRARY v2 -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-content">
+    <div class="section-label">Status Badges</div>
+    <div class="tag-row">
+      <span class="status-badge unconfirmed">● Unconfirmed</span>
+      <span class="status-badge deposit_paid">● Deposit Paid</span>
+      <span class="status-badge ready">● Ready</span>
+      <span class="status-badge done">● Completed</span>
+      <span class="status-badge cancelled">● Cancelled</span>
+    </div>
+
+    <div class="section-label">Status Dots (minimal)</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;align-items:center;">
+      <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-tertiary);"><span class="status-dot unconfirmed"></span> Unconfirmed</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-tertiary);"><span class="status-dot deposit_paid"></span> Deposit</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-tertiary);"><span class="status-dot ready"></span> Ready</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-tertiary);"><span class="status-dot done"></span> Done</span>
+    </div>
+
+    <div class="section-label">Tags</div>
+    <div class="tag-row">
+      <span class="tag">Station 1</span>
+      <span class="tag">Japanese</span>
+      <span class="tag">120 min</span>
+      <span class="tag" style="border-color:var(--brand-accent-dim);color:var(--brand-accent);">⚠ Allergies</span>
+      <span class="tag" style="border-color:var(--brand-success-dim);color:var(--brand-success);">Deposit paid</span>
+    </div>
+
+    <div class="section-label">Buttons</div>
+    <div class="btn-row">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-primary btn-sm">Small</button>
+      <button class="btn btn-secondary btn-sm">Small 2</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-success">Success</button>
+      <button class="btn btn-warning">Warning</button>
+      <button class="btn btn-secondary">Secondary</button>
+    </div>
+
+    <div class="section-label">Tab Bar</div>
+  </div>
+  <div class="tab-bar">
+    <button class="active">
+      <span class="tab-icon">📅</span>
+      Today
+    </button>
+    <button>
+      <span class="tab-icon">👥</span>
+      Clients
+    </button>
+    <button>
+      <span class="tab-icon">👤</span>
+      Me
+    </button>
+    <button>
+      <span class="tab-icon">⚙️</span>
+      Studio
+    </button>
+  </div>
+</div>
+
+</body>
+</html>

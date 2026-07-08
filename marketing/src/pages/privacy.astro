@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Privacy Policy — InkFlow" description="InkFlow privacy policy." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-gray-300">
+      <h1 class="text-4xl font-extrabold text-white mb-8">Privacy Policy</h1>
+      <p class="text-sm text-gray-500">Last updated: June 2026</p>
+      <div class="mt-8 space-y-4 text-sm">
+        <p>InkFlow ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share your personal information when you use our service.</p>
+        <h2 class="text-lg font-semibold text-white mt-6">Information We Collect</h2>
+        <p>We collect information you provide when creating an account, including your name, email address, and studio details. We also collect usage data to improve our service.</p>
+        <h2 class="text-lg font-semibold text-white mt-6">How We Use Your Information</h2>
+        <p>We use your information to provide and improve our service, send appointment reminders, process payments through Stripe, and communicate with you about your account.</p>
+        <h2 class="text-lg font-semibold text-white mt-6">Third-Party Services</h2>
+        <p>We use Stripe for payment processing, Cloudflare for CDN and security, and SendGrid for email delivery. Each service has its own privacy policy governing data handling.</p>
+        <h2 class="text-lg font-semibold text-white mt-6">Contact</h2>
+        <p>For privacy-related inquiries, contact us at hello@ink-flows.com.</p>
+      </div>
+    </div>
+  </section>
+  <Footer />
+</BaseLayout>

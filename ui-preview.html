@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>InkFlow — Design Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 24px 12px; }
+
+/* ========== THEME TOKENS ========== */
+:root {
+  --bg-app: #000000;
+  --bg-panel: #0a0a0a;
+  --bg-panel-alt: #050505;
+  --bg-card: #0d0d0d;
+  --text-primary: #ffffff;
+  --text-muted: #a3a3a3;
+  --text-subtle: #525252;
+  --brand-primary: #dc2626;
+  --brand-info: #fbbf24;
+  --brand-success: #22c55e;
+  --brand-warning: #f59e0b;
+  --brand-danger: #b91c1c;
+  --border-default: #1f1f1f;
+  --border-soft: #141414;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
+  --radius-3xl: 14px;
+}
+
+/* Status colors */
+.status-unconfirmed { color: #fbbf24; }
+.status-deposit_paid { color: #60a5fa; }
+.status-ready { color: #34d399; }
+.status-done { color: #6b7280; }
+.status-cancelled { color: #4b5563; }
+
+/* ========== SECTION TITLE ========== */
+.section-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  margin-top: 28px;
+}
+
+/* ========== SCREEN FRAME ========== */
+.screen {
+  width: 100%;
+  max-width: 390px;
+  background: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  padding: 0;
+  margin-bottom: 36px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 20px 60px rgba(0,0,0,0.8);
+}
+
+.screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 16px 0;
+}
+
+.screen-header h1 {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.screen-header .date-sub {
+  font-size: 12px;
+  color: var(--text-subtle);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.screen-content {
+  padding: 16px;
+}
+
+/* ========== COMPONENT STYLES ========== */
+
+/* KPI Strip */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.kpi-item {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  padding: 10px 10px;
+  text-align: center;
+}
+.kpi-item .kpi-label {
+  font-size: 9px;
+  color: var(--text-subtle);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.kpi-item .kpi-value {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+}
+.kpi-item .kpi-value.green { color: var(--brand-success); }
+.kpi-item .kpi-value.blue { color: #60a5fa; }
+.kpi-item .kpi-value.gold { color: var(--brand-info); }
+.kpi-item .kpi-value.red { color: #ef4444; }
+.kpi-item .kpi-value.gray { color: var(--text-subtle); }
+
+/* Date Strip */
+.date-strip {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.date-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-subtle);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 44px;
+  position: relative;
+  transition: all 0.15s;
+}
+.date-item .day-label {
+  font-size: 9px;
+  opacity: 0.5;
+  font-weight: 500;
+}
+.date-item .day-num {
+  font-size: 15px;
+  font-weight: 700;
+}
+.date-item.active {
+  background: var(--brand-primary);
+  color: #fff;
+}
+.date-item .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--brand-primary);
+}
+.date-item.active .dot {
+  background: #fff;
+}
+
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  background: var(--bg-panel);
+  padding: 2px;
+  gap: 1px;
+}
+.view-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--text-subtle);
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.view-toggle button.active {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn-add {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--brand-primary);
+  color: #fff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.btn-walkin {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Appointment Card — NEW TATTOO STYLE */
+.appt-card {
+  background: var(--bg-card);
+  border-left: 4px solid var(--brand-primary);
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.appt-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, transparent 50%, rgba(220,38,38,0.04) 50%);
+  pointer-events: none;
+}
+.appt-card .appt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.appt-card .appt-time {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+.appt-card .appt-client {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+.appt-card .appt-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.appt-card .appt-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 8px;
+}
+.appt-card .appt-details span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.appt-card .appt-notes {
+  font-size: 12px;
+  color: var(--text-subtle);
+  font-style: italic;
+  margin-bottom: 10px;
+  padding-left: 8px;
+  border-left: 2px solid var(--border-soft);
+}
+.appt-card .appt-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.appt-card .appt-actions button {
+  padding: 9px 16px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.appt-card .appt-actions button:active {
+  transform: scale(0.97);
+}
+.appt-card .appt-actions .btn-waiver {
+  background: var(--brand-warning);
+  color: #000;
+}
+.appt-card .appt-actions .btn-start {
+  background: var(--brand-success);
+  color: #000;
+}
+.appt-card .appt-actions .btn-deposit {
+  background: #60a5fa;
+  color: #000;
+}
+.appt-card .appt-actions .btn-done {
+  background: #7c3aed;
+  color: #fff;
+}
+.appt-card .appt-actions .btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-default) !important;
+  color: var(--text-muted);
+}
+.appt-card .appt-actions .btn-danger-text {
+  background: transparent;
+  border: 1px solid rgba(239,68,68,0.3) !important;
+  color: #f87171;
+}
+.appt-card .allergy-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: #7f1d1d;
+  color: #fca5a5;
+  display: inline-block;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* Status-specific card accents */
+.appt-card.status-unconfirmed { border-left-color: #fbbf24; }
+.appt-card.status-deposit_paid { border-left-color: #60a5fa; }
+.appt-card.status-ready { border-left-color: #34d399; }
+.appt-card.status-done { border-left-color: #6b7280; }
+.appt-card.status-cancelled { border-left-color: #4b5563; }
+
+/* Alert banner */
+.alert-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.alert-banner.red {
+  background: var(--brand-danger);
+  color: #fee2e2;
+  border-bottom: 1px solid var(--brand-danger);
+}
+.alert-banner.green-gold {
+  background: linear-gradient(135deg, var(--brand-success), var(--brand-info));
+  color: #fff;
+}
+
+/* Pending booking card */
+.pending-card {
+  background: #0a2a1a;
+  border: 1px solid rgba(34,197,94,0.2);
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.pending-card .pending-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.pending-card .pending-detail {
+  font-size: 11px;
+  color: #86efac;
+}
+.pending-card .pending-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  background: rgba(168,85,247,0.15);
+  color: #c084fc;
+}
+.pending-card .pending-actions {
+  display: flex;
+  gap: 4px;
+}
+.pending-card .pending-actions button {
+  padding: 7px 12px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* Reminder section */
+.reminder-section {
+  border: 1px solid #4338ca;
+  padding: 12px;
+  margin-bottom: 14px;
+  background: var(--bg-panel);
+}
+.reminder-section .reminder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.reminder-section .reminder-header h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c084fc;
+}
+.reminder-item {
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-soft);
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.reminder-item .ri-info {
+  flex: 1;
+  min-width: 0;
+}
+.reminder-item .ri-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+.reminder-item .ri-stage {
+  font-size: 10px;
+  padding: 1px 6px;
+  font-weight: 600;
+}
+.reminder-item .ri-stage.deposit { background: #7f1d1d; color: #fca5a5; }
+.reminder-item .ri-stage.reminder { background: #312e81; color: #a5b4fc; }
+.reminder-item .ri-actions button {
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Section Card */
+.section-card {
+  background: var(--bg-panel);
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+/* ========== TAB BAR ========== */
+.tab-bar {
+  display: flex;
+  background: var(--bg-panel);
+  border-top: 2px solid var(--border-default);
+  min-height: 64px;
+}
+.tab-bar button {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 12px 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.tab-bar button .tab-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+.tab-bar button.active {
+  color: var(--brand-primary);
+  border-top: 2px solid var(--brand-primary);
+  margin-top: -2px;
+}
+.tab-bar button.inactive {
+  color: var(--text-muted);
+  border-top: 2px solid transparent;
+  margin-top: -2px;
+}
+
+/* ========== WALKIN QR MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal-content {
+  width: 100%;
+  max-width: 360px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  padding: 28px 24px;
+  text-align: center;
+}
+.modal-content .modal-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+.modal-content h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.modal-content .modal-tip {
+  font-size: 12px;
+  font-weight: 600;
+  background: #1a0f00;
+  color: var(--brand-info);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--brand-info);
+  text-align: left;
+}
+.modal-content .qr-box {
+  width: 200px;
+  height: 200px;
+  background: #fff;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+.modal-content .qr-box img {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+.modal-content .qr-url {
+  font-size: 10px;
+  color: var(--text-subtle);
+  word-break: break-all;
+  margin-bottom: 12px;
+}
+.modal-content .modal-btns {
+  display: flex;
+  gap: 8px;
+}
+.modal-content .modal-btns button {
+  flex: 1;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+.modal-content .modal-btns .btn-outline {
+  border: 1px solid var(--border-default);
+  background: transparent;
+  color: var(--text-muted);
+}
+.modal-content .modal-btns .btn-primary {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+/* ========== LABELS ========== */
+.label-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.label-group .label-item {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.label-group .label-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  display: inline-block;
+}
+
+/* ========== SECTION HEADER INKFLOW STYLE ========== */
+.inkflow-section-header {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inkflow-section-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+/* ========== DESIGN NOTES ========== */
+.design-notes {
+  max-width: 390px;
+  width: 100%;
+  margin-bottom: 36px;
+  padding: 20px;
+  border: 1px solid var(--border-default);
+}
+.design-notes h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-bottom: 12px;
+}
+.design-notes ul {
+  list-style: none;
+  padding: 0;
+}
+.design-notes li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+}
+.design-notes li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--brand-primary);
+}
+</style>
+</head>
+<body>
+
+<!-- ========== DESIGN NOTES ========== -->
+<div class="design-notes">
+  <h3>INKFLOW — Tattoo Studio UI Direction</h3>
+  <ul>
+    <li>纯黑底 + 深灰卡片，对比强烈，去掉「科技公司感」</li>
+    <li>血红色 (#dc2626) 为主色调，比玫红更硬</li>
+    <li>金色 (#fbbf24) 替代蓝色作为 info 色</li>
+    <li>圆角缩小（最大 12px），更接近工业风</li>
+    <li>字体更粗更重（weight 700-900），信息密度更高</li>
+    <li>按钮更大、更厚实，适合纹身过程中粗手指操作</li>
+    <li>卡片用粗左边框区分状态，取代圆角标签</li>
+    <li>TabBar 加上边红条 active indicator</li>
+    <li>去掉多余留白和毛玻璃效果</li>
+  </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1: TODAY — Day View -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div>
+      <h1>Today</h1>
+      <div class="date-sub">Wed, May 27 · 3 appointments</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-walkin" title="Walk-in QR">✋</button>
+      <button class="btn-add">+</button>
+    </div>
+  </div>
+
+  <div class="screen-content">
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi-item">
+        <div class="kpi-label">Revenue</div>
+        <div class="kpi-value green">$520</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Upcoming</div>
+        <div class="kpi-value blue">3</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Deposits</div>
+        <div class="kpi-value gold">2</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label">Overdue</div>
+        <div class="kpi-value red">1</div>
+      </div>
+    </div>
+
+    <!-- Date Strip -->
+    <div class="date-strip">
+      <div class="date-item">
+        <span class="day-label">MON</span>
+        <span class="day-num">25</span>
+      </div>
+      <div class="date-item">
+        <span class="day-label">TUE</span>
+        <span class="day-num">26</span>
+        <span class="dot"></span>
+      </div>
+      <div class="date-item active">
+        <span class="day-label">WED</span>
+        <span class="day-num">27</span>
+        <div style="width:4px;height:4px;border-radius:2px;background:#fff;"></div>
+      </div>
+      <div class="date-item">
+        <span class="day-label">THU</span>
+        <span class="day-num">28</span>
+        <span class="dot"></span>
+      </div>
+      <div class="date-item">
+        <span class="day-label">FRI</span>
+        <span class="day-num">29</span>
+      </div>
+      <div class="date-item">
+        <span class="day-label">SAT</span>
+        <span class="day-num">30</span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="date-item">
+        <span class="day-label">SUN</span>
+        <span class="day-num">31</span>
+      </div>
+    </div>
+
+    <!-- Alert Banner: Follow-up -->
+    <div class="alert-banner red">
+      <span>⚠ FOLLOW UP NOW: 2 leads overdue</span>
+      <span>→</span>
+    </div>
+
+    <!-- View Toggle -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div class="view-toggle">
+        <button class="active">DAY</button>
+        <button>WEEK</button>
+        <button>MULTI</button>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <span style="font-size:10px;color:var(--text-subtle);font-weight:600;">Auto-send</span>
+        <div style="width:32px;height:18px;border-radius:9px;background:var(--brand-primary);position:relative;cursor:pointer;">
+          <div style="width:14px;height:14px;border-radius:7px;background:#fff;position:absolute;top:2px;right:2px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appointment Card 1: Unconfirmed (gold) -->
+    <div class="appt-card status-unconfirmed">
+      <div class="appt-header">
+        <div>
+          <span class="appt-time">14:00</span>
+          <span class="appt-client">Marcus Chen</span>
+        </div>
+        <span class="appt-badge status-unconfirmed" style="background:rgba(251,191,36,0.15);color:#fbbf24;">UNCONFIRMED</span>
+      </div>
+      <div class="appt-details">
+        <span>120min</span>
+        <span>Japanese · Full sleeve</span>
+        <span>Station 2</span>
+        <span>Left arm</span>
+      </div>
+      <div class="appt-notes">"Want a traditional Japanese dragon with koi fish — flowing up the shoulder"</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">
+        <span class="allergy-tag">Lidocaine allergy</span>
+      </div>
+      <div class="appt-actions">
+        <button class="btn-waiver">Waiver</button>
+        <button class="btn-deposit">Deposit</button>
+        <button class="btn-secondary">Calendar</button>
+        <button class="btn-secondary">QR</button>
+        <button class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Appointment Card 2: Deposit Paid (blue) -->
+    <div class="appt-card status-deposit_paid">
+      <div class="appt-header">
+        <div>
+          <span class="appt-time">16:30</span>
+          <span class="appt-client">Sarah Okafor</span>
+        </div>
+        <span class="appt-badge" style="background:rgba(96,165,250,0.15);color:#60a5fa;">DEPOSIT PAID</span>
+      </div>
+      <div class="appt-details">
+        <span>90min</span>
+        <span>Fine line · Floral</span>
+        <span>Station 1</span>
+        <span>$100 deposit</span>
+      </div>
+      <div class="appt-notes">"Forearm piece — peony and lavender combination in black and grey"</div>
+      <div class="appt-actions">
+        <button class="btn-start">Start</button>
+        <button class="btn-secondary">POS</button>
+        <button class="btn-secondary">Calendar</button>
+        <button class="btn-secondary">QR</button>
+      </div>
+    </div>
+
+    <!-- Appointment Card 3: Ready (green) + Reschedule Request -->
+    <div class="appt-card status-ready" style="padding-bottom:0;">
+      <div class="appt-header">
+        <div>
+          <span class="appt-time">10:00</span>
+          <span class="appt-client">Alex Rivera</span>
+        </div>
+        <span class="appt-badge" style="background:rgba(52,211,153,0.15);color:#34d399;">READY</span>
+      </div>
+      <div class="appt-details">
+        <span>180min</span>
+        <span>Realism · Portrait</span>
+        <span>Station 3</span>
+      </div>
+      <div class="appt-notes">"Chest piece — portrait of his grandmother based on reference photo"</div>
+      <div class="appt-actions" style="margin-bottom:12px;">
+        <button class="btn-start">Start</button>
+        <button class="btn-secondary">POS</button>
+        <button class="btn-secondary">Calendar</button>
+      </div>
+      <!-- Reschedule request inline -->
+      <div style="background:#1a0f00;padding:12px;margin:0 -14px 0;border-top:1px solid rgba(217,119,6,0.25);">
+        <p style="font-size:12px;font-weight:700;color:var(--brand-info);margin-bottom:4px;">RESCHEDULE REQUEST</p>
+        <p style="font-size:12px;color:#fcd34d;margin-bottom:2px;">Move to <strong>May 29</strong> at <strong>14:00</strong></p>
+        <p style="font-size:10px;color:var(--text-subtle);margin-bottom:8px;">Requested 2 hours ago</p>
+        <div style="display:flex;gap:6px;">
+          <button style="flex:1;padding:8px;border:none;background:var(--brand-success);color:#000;font-size:12px;font-weight:700;cursor:pointer;">Approve</button>
+          <button style="flex:1;padding:8px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:12px;font-weight:700;cursor:pointer;">Reject</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2: PENDING BOOKINGS + REMINDERS -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div>
+      <h1>Today</h1>
+      <div class="date-sub">3 appointments · 2 pending</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-walkin" title="Walk-in QR">✋</button>
+      <button class="btn-add">+</button>
+    </div>
+  </div>
+
+  <div class="screen-content">
+
+    <!-- Pending Bookings Card -->
+    <div class="section-card" style="border:1px solid rgba(34,197,94,0.25);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h3 style="font-size:13px;font-weight:700;color:var(--brand-success);">NEW BOOKINGS (2)</h3>
+        <button style="padding:3px 8px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:10px;cursor:pointer;">↻ Refresh</button>
+      </div>
+      <div class="pending-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="pending-name">Jessica Torres</div>
+            <div class="pending-detail">May 28 at 15:00</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">"Small dagger on inner forearm"</div>
+            <div style="font-size:10px;color:var(--text-subtle);margin-top:1px;">Phone: +1 555-0123</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
+            <span class="pending-tag">Awaiting</span>
+            <div class="pending-actions">
+              <button>Force Accept</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pending-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="pending-name">Kenji Nakamura</div>
+            <div class="pending-detail">May 29 at 11:00</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">"Hannya mask coverup on bicep"</div>
+            <div style="font-size:10px;color:var(--text-subtle);margin-top:1px;">Phone: +1 555-0456</div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;">
+            <span class="pending-tag">Awaiting</span>
+            <div class="pending-actions">
+              <button>Force Accept</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reminders Card -->
+    <div class="reminder-section">
+      <div class="reminder-header">
+        <h3>REMINDERS (3)</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:10px;color:var(--text-muted);font-weight:600;">Auto</span>
+          <div style="width:32px;height:18px;border-radius:9px;background:var(--brand-primary);position:relative;cursor:pointer;">
+            <div style="width:14px;height:14px;border-radius:7px;background:#fff;position:absolute;top:2px;right:2px;"></div>
+          </div>
+          <button style="padding:4px 10px;border:1px solid var(--brand-success);background:#0a2a1a;color:var(--brand-success);font-size:10px;font-weight:700;cursor:pointer;">Send All</button>
+        </div>
+      </div>
+
+      <!-- Reminder item -->
+      <div class="reminder-item">
+        <div class="ri-info">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px;">
+            <span class="ri-name">Alex Rivera</span>
+            <span class="ri-stage reminder">Tomorrow</span>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);">May 28 at 10:00</p>
+          <p style="font-size:11px;color:var(--text-subtle);">"Hey Alex! Reminder: your session is tomorrow at 10:00. See you at the studio!"</p>
+        </div>
+        <div class="ri-actions" style="display:flex;gap:4px;">
+          <button style="border:none;background:#075e54;color:#fff;">WA</button>
+          <button style="border:1px solid var(--border-default);background:transparent;color:var(--text-muted);">X</button>
+          <button style="border:1px solid #2563eb;background:rgba(37,99,235,0.1);color:#60a5fa;">SMS</button>
+        </div>
+      </div>
+
+      <div class="reminder-item">
+        <div class="ri-info">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:2px;">
+            <span class="ri-name">Marcus Chen</span>
+            <span class="ri-stage deposit">Deposit 24h</span>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);">May 27 at 14:00</p>
+          <p style="font-size:11px;color:var(--text-subtle);">"Hi Marcus, your deposit is still pending. Secure your slot here:"</p>
+        </div>
+        <div class="ri-actions" style="display:flex;gap:4px;">
+          <button style="border:none;background:#075e54;color:#fff;">WA</button>
+          <button style="border:1px solid var(--border-default);background:transparent;color:var(--text-muted);">X</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deposit Reminders -->
+    <div class="section-card" style="border:1px solid var(--border-default);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <h3 style="font-size:12px;font-weight:700;color:var(--brand-info);">DEPOSIT REMINDERS (1)</h3>
+        <button style="padding:6px 14px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;">Open Leads</button>
+      </div>
+      <div style="background:var(--bg-panel-alt);border:1px solid var(--border-soft);padding:8px;margin-bottom:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:700;">Jessica Torres</span>
+          <span style="font-size:11px;color:#fca5a5;">48h reminder</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">$150 USD · pending_verify</p>
+        <div style="display:flex;gap:6px;">
+          <button style="padding:4px 10px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:11px;cursor:pointer;">Copy Reminder</button>
+          <button style="padding:4px 10px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:11px;cursor:pointer;">Done +1d</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3: WALK-IN QR MODAL -->
+<!-- ============================================================ -->
+<div class="screen" style="position:relative;min-height:500px;">
+  <!-- Simulating the overlay -->
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:10;padding:20px;border-radius:20px;">
+    <div class="modal-content">
+      <div class="modal-icon">✋</div>
+      <h2>Walk-in QR</h2>
+      <div class="modal-tip">PRINT THIS QR & DISPLAY AT FRONT DESK — walk-in clients scan to check in.</div>
+      <div class="qr-box">
+        <!-- QR placeholder — just a visual stand-in -->
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <rect width="100" height="100" fill="#fff"/>
+          <g fill="#000">
+            <!-- Corner boxes -->
+            <rect x="3" y="3" width="20" height="20" rx="2"/>
+            <rect x="7" y="7" width="12" height="12"/>
+            <rect x="77" y="3" width="20" height="20" rx="2"/>
+            <rect x="81" y="7" width="12" height="12"/>
+            <rect x="3" y="77" width="20" height="20" rx="2"/>
+            <rect x="7" y="81" width="12" height="12"/>
+            <!-- Random data dots -->
+            <rect x="30" y="3" width="4" height="4"/>
+            <rect x="38" y="3" width="4" height="4"/>
+            <rect x="46" y="3" width="4" height="4"/>
+            <rect x="54" y="3" width="4" height="4"/>
+            <rect x="30" y="11" width="4" height="4"/>
+            <rect x="42" y="11" width="4" height="4"/>
+            <rect x="30" y="19" width="4" height="4"/>
+            <rect x="38" y="19" width="4" height="4"/>
+            <rect x="46" y="19" width="4" height="4"/>
+            <rect x="54" y="19" width="4" height="4"/>
+            <rect x="62" y="3" width="4" height="4"/>
+            <rect x="62" y="11" width="4" height="4"/>
+            <rect x="62" y="19" width="4" height="4"/>
+            <rect x="30" y="30" width="4" height="4"/>
+            <rect x="38" y="30" width="4" height="4"/>
+            <rect x="46" y="30" width="4" height="4"/>
+            <rect x="54" y="30" width="4" height="4"/>
+            <rect x="62" y="30" width="4" height="4"/>
+            <rect x="70" y="30" width="4" height="4"/>
+            <rect x="30" y="38" width="4" height="4"/>
+            <rect x="38" y="38" width="4" height="4"/>
+            <rect x="46" y="38" width="4" height="4"/>
+            <rect x="54" y="38" width="4" height="4"/>
+            <rect x="70" y="38" width="4" height="4"/>
+            <rect x="78" y="38" width="4" height="4"/>
+            <rect x="30" y="46" width="4" height="4"/>
+            <rect x="38" y="46" width="4" height="4"/>
+            <rect x="46" y="46" width="4" height="4"/>
+            <rect x="54" y="46" width="4" height="4"/>
+            <rect x="62" y="46" width="4" height="4"/>
+            <rect x="46" y="54" width="4" height="4"/>
+            <rect x="54" y="54" width="4" height="4"/>
+            <rect x="62" y="54" width="4" height="4"/>
+            <rect x="70" y="54" width="4" height="4"/>
+            <rect x="78" y="54" width="4" height="4"/>
+            <rect x="30" y="62" width="4" height="4"/>
+            <rect x="38" y="62" width="4" height="4"/>
+            <rect x="46" y="62" width="4" height="4"/>
+            <rect x="54" y="62" width="4" height="4"/>
+            <rect x="62" y="62" width="4" height="4"/>
+            <rect x="70" y="62" width="4" height="4"/>
+            <rect x="38" y="70" width="4" height="4"/>
+            <rect x="46" y="70" width="4" height="4"/>
+            <rect x="54" y="70" width="4" height="4"/>
+            <rect x="62" y="70" width="4" height="4"/>
+            <rect x="30" y="78" width="4" height="4"/>
+            <rect x="38" y="78" width="4" height="4"/>
+            <rect x="46" y="78" width="4" height="4"/>
+            <rect x="54" y="78" width="4" height="4"/>
+            <rect x="70" y="78" width="4" height="4"/>
+            <rect x="70" y="70" width="4" height="4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="qr-url">https://inkflow.app/walkin/artist_12345</div>
+      <div class="modal-btns">
+        <button class="btn-outline">Copy URL</button>
+        <button class="btn-primary">Print QR</button>
+      </div>
+      <button style="margin-top:12px;padding:8px 20px;background:transparent;color:var(--text-subtle);font-size:12px;cursor:pointer;border:none;">Close</button>
+    </div>
+  </div>
+
+  <!-- Background behind modal (dimmed) -->
+  <div style="opacity:0.15;filter:blur(4px);padding:16px;pointer-events:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div><div style="height:28px;width:100px;background:var(--bg-panel);"></div></div>
+      <div style="display:flex;gap:8px;">
+        <div style="width:44px;height:44px;border:1px solid var(--border-default);"></div>
+        <div style="width:44px;height:44px;background:var(--brand-primary);"></div>
+      </div>
+    </div>
+    <div style="background:var(--bg-panel);padding:12px;margin-bottom:10px;">
+      <div style="height:14px;width:60%;background:var(--border-soft);margin-bottom:8px;"></div>
+      <div style="height:80px;background:var(--border-soft);"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4: TAB BAR + LABELS -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-content">
+    <div class="inkflow-section-header">STATUS COLORS</div>
+    <div class="label-group" style="flex-wrap:wrap;">
+      <span class="label-item"><span class="dot" style="background:#fbbf24;"></span>Unconfirmed</span>
+      <span class="label-item"><span class="dot" style="background:#60a5fa;"></span>Deposit Paid</span>
+      <span class="label-item"><span class="dot" style="background:#34d399;"></span>Ready</span>
+      <span class="label-item"><span class="dot" style="background:#6b7280;"></span>Done</span>
+      <span class="label-item"><span class="dot" style="background:#4b5563;"></span>Canceled</span>
+    </div>
+
+    <div class="inkflow-section-header">BUTTON STYLES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <button style="padding:12px 24px;border:none;background:var(--brand-primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Primary</button>
+      <button style="padding:10px 20px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;">Secondary</button>
+      <button style="padding:8px 16px;border:1px solid var(--border-default);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;">Small</button>
+      <button style="padding:12px 24px;border:none;background:var(--brand-danger);color:#fff;font-size:14px;font-weight:700;cursor:pointer;">Danger</button>
+      <button style="padding:8px 16px;border:none;background:var(--brand-success);color:#000;font-size:13px;font-weight:700;cursor:pointer;">Success</button>
+      <button style="padding:8px 16px;border:none;background:var(--brand-warning);color:#000;font-size:13px;font-weight:700;cursor:pointer;">Warning</button>
+    </div>
+
+    <div class="inkflow-section-header">TAB BAR</div>
+  </div>
+  <div class="tab-bar">
+    <button class="active">
+      <span class="tab-icon">📅</span>
+      <span>Today</span>
+    </button>
+    <button class="inactive">
+      <span class="tab-icon">👥</span>
+      <span>Clients</span>
+    </button>
+    <button class="inactive">
+      <span class="tab-icon">👤</span>
+      <span>Me</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 5: EMPTY STATE -->
+<!-- ============================================================ -->
+<div class="screen">
+  <div class="screen-header">
+    <div>
+      <h1>Today</h1>
+      <div class="date-sub">Wed, May 27 · No appointments</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-walkin">✋</button>
+      <button class="btn-add">+</button>
+    </div>
+  </div>
+  <div class="screen-content">
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="font-size:48px;margin-bottom:16px;opacity:0.3;font-weight:100;">⛓️</div>
+      <p style="font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text-muted);">No appointments today</p>
+      <p style="font-size:13px;color:var(--text-subtle);">Tap + to schedule a session</p>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <button class="active">
+      <span class="tab-icon">📅</span>
+      <span>Today</span>
+    </button>
+    <button class="inactive">
+      <span class="tab-icon">👥</span>
+      <span>Clients</span>
+    </button>
+    <button class="inactive">
+      <span class="tab-icon">👤</span>
+      <span>Me</span>
+    </button>
+  </div>
+</div>
+
+</body>
+</html>

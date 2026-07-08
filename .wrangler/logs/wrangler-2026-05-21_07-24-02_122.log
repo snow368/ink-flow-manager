@@ -1,0 +1,58 @@
+
+--- 2026-05-21T07:24:02.342Z debug
+🪵  Writing logs to "D:\ink-flow-manager\.wrangler\logs\wrangler-2026-05-21_07-24-02_122.log"
+---
+
+--- 2026-05-21T07:24:02.342Z debug
+.env file not found at "D:\ink-flow-manager\.env.local". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+---
+
+--- 2026-05-21T07:24:02.353Z log
+
+ ⛅️ wrangler 4.93.0
+───────────────────
+---
+
+--- 2026-05-21T07:24:02.364Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command started","timestamp":1779348242364,"properties":{"amplitude_session_id":1779348242362,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":true,"hasAssets":false,"agent":null,"argsUsed":[],"argsCombination":"","sanitizedCommand":"login","sanitizedArgs":{}}}
+---
+
+--- 2026-05-21T07:24:02.383Z log
+Attempting to login via OAuth...
+---
+
+--- 2026-05-21T07:24:02.399Z log
+Opening a link in your default browser: https://dash.cloudflare.com/oauth2/auth?response_type=code&client_id=54d11594-84e4-41aa-b438-e81b8fa78ee7&redirect_uri=http%3A%2F%2Flocalhost%3A8976%2Foauth%2Fcallback&scope=account%3Aread%20user%3Aread%20workers%3Awrite%20workers_kv%3Awrite%20workers_routes%3Awrite%20workers_scripts%3Awrite%20workers_tail%3Aread%20d1%3Awrite%20pages%3Awrite%20zone%3Aread%20ssl_certs%3Awrite%20ai%3Awrite%20ai-search%3Awrite%20ai-search%3Arun%20queues%3Awrite%20pipelines%3Awrite%20secrets_store%3Awrite%20artifacts%3Awrite%20flagship%3Awrite%20containers%3Awrite%20cloudchamber%3Awrite%20connectivity%3Aadmin%20email_routing%3Awrite%20email_sending%3Awrite%20browser%3Awrite%20offline_access&state=GrXouhfiE37Zps6BBQXpx5Yooq00p2QT&code_challenge=U4sRZxFobKyLDG72gqEPGZkG-Crhol4oT_BXN8Fp5AY&code_challenge_method=S256
+---
+
+--- 2026-05-21T07:24:28.811Z debug
+fetching auth token grant_type=authorization_code&code=hvGLIYbxHEkgiCRmuIlbJB37v4Wf-QCySNseAWEU49k.6X4MyeWYy2lVoXD7qIXNBtf_EYcLW1gXG9VQWObpKUI&redirect_uri=http%3A%2F%2Flocalhost%3A8976%2Foauth%2Fcallback&client_id=54d11594-84e4-41aa-b438-e81b8fa78ee7&code_verifier=WDdrWmZaeGVQTnVMb0pOOVNNSWREOFZFaThVTGxzZUhiR2NBZ1ZZa2p0bExKd3dDSUdGWW9zeUY1ZVNkRnpCVjR2dEdqbDFiM3U2RVhhR3hsT0IxZHBUaG8uellvQUEz
+---
+
+--- 2026-05-21T07:24:28.811Z debug
+Checking if domain has Access enabled: dash.cloudflare.com
+---
+
+--- 2026-05-21T07:24:28.812Z debug
+Access switch not cached for: dash.cloudflare.com
+---
+
+--- 2026-05-21T07:24:29.320Z debug
+Caching access switch for: dash.cloudflare.com
+---
+
+--- 2026-05-21T07:24:29.321Z debug
+Fetching auth token from https://dash.cloudflare.com/oauth2/token
+---
+
+--- 2026-05-21T07:24:30.153Z log
+Successfully logged in.
+---
+
+--- 2026-05-21T07:24:30.155Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"login user","timestamp":1779348270155,"properties":{"amplitude_session_id":1779348270154,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":true,"hasAssets":false,"agent":null,"category":"Workers","os":"win32:x64"}}
+---
+
+--- 2026-05-21T07:24:30.158Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command completed","timestamp":1779348270157,"properties":{"amplitude_session_id":1779348242362,"amplitude_event_id":1,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"toml","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":true,"hasAssets":false,"agent":null,"argsUsed":[],"argsCombination":"","sanitizedCommand":"login","sanitizedArgs":{},"durationMs":27811}}
+---

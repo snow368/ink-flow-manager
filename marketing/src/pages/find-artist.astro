@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const cities = {
+  us: ['New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Portland, OR', 'Miami, FL', 'Chicago, IL', 'Denver, CO', 'Nashville, TN', 'Seattle, WA', 'San Francisco, CA'],
+  uk: ['London', 'Manchester', 'Brighton', 'Birmingham', 'Glasgow'],
+  ca: ['Toronto', 'Vancouver', 'Montreal', 'Calgary'],
+  au: ['Melbourne', 'Sydney', 'Brisbane', 'Perth'],
+  de: ['Berlin', 'Hamburg', 'Munich', 'Cologne'],
+  es: ['Madrid', 'Barcelona', 'Valencia'],
+  fr: ['Paris', 'Lyon', 'Marseille'],
+  it: ['Milan', 'Rome', 'Naples'],
+  jp: ['Tokyo', 'Osaka', 'Kyoto'],
+  br: ['São Paulo', 'Rio de Janeiro'],
+};
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Book a Tattoo Appointment in Your City — InkFlow" description="Find and book tattoo artists near you. Browse local shops and schedule your consultation online. Free bookings available." />
+  <Navbar />
+
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Book a Tattoo Appointment</h1>
+      <p class="mt-4 text-lg text-gray-400">Select your country and city to see local tattoo shops.</p>
+    </div>
+  </section>
+
+  <!-- Country + City Selector -->
+  <section class="pb-8">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-ink-700 bg-ink-900 p-6">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">Country</label>
+            <select id="fa-country" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              <option value="us">🇺🇸 United States</option>
+              <option value="uk">🇬🇧 United Kingdom</option>
+              <option value="ca">🇨🇦 Canada</option>
+              <option value="au">🇦🇺 Australia</option>
+              <option value="de">🇩🇪 Germany</option>
+              <option value="es">🇪🇸 Spain</option>
+              <option value="fr">🇫🇷 France</option>
+              <option value="it">🇮🇹 Italy</option>
+              <option value="jp">🇯🇵 Japan</option>
+              <option value="br">🇧🇷 Brazil</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1">City</label>
+            <select id="fa-city" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+              {cities.us.map(c => <option value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+        <button id="fa-search-btn" class="mt-4 w-full rounded-lg bg-accent-500 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">
+          Show Tattoo Shops
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Maps Results -->
+  <section id="fa-results" class="pb-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div id="fa-map" class="h-[500px] w-full rounded-xl border border-ink-700 overflow-hidden bg-ink-900 flex items-center justify-center">
+        <p class="text-gray-500 text-sm">Select a city and click "Show Tattoo Shops" to browse</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Notify -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-lg px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-xl font-bold text-white">Want Artists to Come to You?</h2>
+      <p class="mt-2 text-sm text-gray-400">We're building a network of tattoo studios. Leave your email and we'll notify you when artists in your area join InkFlow for direct booking.</p>
+      <div class="mt-6 flex gap-3">
+        <input type="email" placeholder="your@email.com" class="flex-1 rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+        <button class="rounded-lg bg-accent-500 px-5 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors whitespace-nowrap">
+          Notify Me
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  // City data
+  const cities = {
+    us: ['New York, NY', 'Los Angeles, CA', 'Austin, TX', 'Portland, OR', 'Miami, FL', 'Chicago, IL', 'Denver, CO', 'Nashville, TN', 'Seattle, WA', 'San Francisco, CA'],
+    uk: ['London', 'Manchester', 'Brighton', 'Birmingham', 'Glasgow'],
+    ca: ['Toronto', 'Vancouver', 'Montreal', 'Calgary'],
+    au: ['Melbourne', 'Sydney', 'Brisbane', 'Perth'],
+    de: ['Berlin', 'Hamburg', 'Munich', 'Cologne'],
+    es: ['Madrid', 'Barcelona', 'Valencia'],
+    fr: ['Paris', 'Lyon', 'Marseille'],
+    it: ['Milan', 'Rome', 'Naples'],
+    jp: ['Tokyo', 'Osaka', 'Kyoto'],
+    br: ['São Paulo', 'Rio de Janeiro'],
+  };
+
+  const countrySel = document.getElementById('fa-country');
+  const citySel = document.getElementById('fa-city');
+
+  // Update cities on country change
+  countrySel?.addEventListener('change', () => {
+    const country = countrySel.value;
+    const cityList = cities[country] || cities.us;
+    citySel.innerHTML = cityList.map(c => `<option value="${c}">${c}</option>`).join('');
+  });
+
+  // Search on click
+  document.getElementById('fa-search-btn')?.addEventListener('click', () => {
+    const city = citySel.value;
+    if (!city) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://www.google.com/maps?q=best+tattoo+shop+' + encodeURIComponent(city) + '&output=embed';
+    iframe.className = 'w-full h-full';
+    iframe.style.border = 'none';
+    const map = document.getElementById('fa-map');
+    map.innerHTML = '';
+    map.appendChild(iframe);
+  });
+</script>

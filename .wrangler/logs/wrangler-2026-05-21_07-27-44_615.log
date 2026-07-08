@@ -1,0 +1,49 @@
+
+--- 2026-05-21T07:27:44.818Z debug
+🪵  Writing logs to "D:\ink-flow-manager\.wrangler\logs\wrangler-2026-05-21_07-27-44_615.log"
+---
+
+--- 2026-05-21T07:27:44.817Z debug
+.env file not found at "D:\ink-flow-manager\.env.local". Continuing... For more details, refer to https://developers.cloudflare.com/workers/wrangler/system-environment-variables/
+---
+
+--- 2026-05-21T07:27:44.829Z log
+
+ ⛅️ wrangler 4.93.0
+───────────────────
+---
+
+--- 2026-05-21T07:27:44.833Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command started","timestamp":1779348464833,"properties":{"amplitude_session_id":1779348464830,"amplitude_event_id":0,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":["projectName"],"argsCombination":"projectName","sanitizedCommand":"pages deploy","sanitizedArgs":{}}}
+---
+
+--- 2026-05-21T07:27:44.858Z debug
+Configuration file belonging to ⚡️ Pages ⚡️ project detected.
+---
+
+--- 2026-05-21T07:27:44.870Z debug
+Metrics dispatcher: Posting data {"deviceId":"7f64349a-6a95-4c3c-9112-aaf76008c5c9","event":"wrangler command errored","timestamp":1779348464870,"properties":{"amplitude_session_id":1779348464830,"amplitude_event_id":1,"wranglerVersion":"4.93.0","wranglerMajorVersion":4,"wranglerMinorVersion":93,"wranglerPatchVersion":0,"osPlatform":"Windows","osVersion":"Windows 11 Home China","nodeVersion":24,"packageManager":"npm","isFirstUsage":false,"configFileType":"none","isCI":false,"isPagesCI":false,"isWorkersCI":false,"isInteractive":false,"hasAssets":false,"agent":"claude-code","argsUsed":["projectName"],"argsCombination":"projectName","sanitizedCommand":"pages deploy","sanitizedArgs":{},"durationMs":47,"errorType":"UserError","errorMessage":"config pages project validation failed"}}
+---
+
+--- 2026-05-21T07:27:44.871Z log
+
+---
+
+--- 2026-05-21T07:27:44.946Z error
+✘ [ERROR] Running configuration file validation for Pages:
+
+    - Configuration file for Pages projects does not support "account_id"
+
+
+---
+
+--- 2026-05-21T07:27:44.967Z debug
+Error: Running configuration file validation for Pages:
+  - Configuration file for Pages projects does not support "account_id"
+    at readPagesConfig (C:\Users\snow3\AppData\Local\npm-cache\_npx\32026684e21afda6\node_modules\wrangler\wrangler-dist\cli.js:66041:11)
+    at Object.handler (C:\Users\snow3\AppData\Local\npm-cache\_npx\32026684e21afda6\node_modules\wrangler\wrangler-dist\cli.js:240056:20)
+    at C:\Users\snow3\AppData\Local\npm-cache\_npx\32026684e21afda6\node_modules\wrangler\wrangler-dist\cli.js:179280:36
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:63:14)
+    at run (C:\Users\snow3\AppData\Local\npm-cache\_npx\32026684e21afda6\node_modules\wrangler\wrangler-dist\cli.js:63997:61)
+    at Object.handler (C:\Users\snow3\AppData\Local\npm-cache\_npx\32026684e21afda6\node_modules\wrangler\wrangler-dist\cli.js:179229:13)
+---
