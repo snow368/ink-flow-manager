@@ -1,40 +1,21 @@
 User-agent: *
 Allow: /
-Allow: /book/
-Allow: /embed/
-Allow: /r/
-Allow: /intake/
-Allow: /pay/
-Allow: /bio/
-Allow: /portal/
-Allow: /confirm/
-Allow: /pricing
-Allow: /public-waiver/
-Allow: /verify/
-Allow: /blog/
-Disallow: /register
-Disallow: /today
-Disallow: /clients
-Disallow: /me
-Disallow: /appointment/
-Disallow: /session/
-Disallow: /inventory
-Disallow: /leads
-Disallow: /settings
-Disallow: /studio-settings
-Disallow: /business-settings
-Disallow: /account-settings
-Disallow: /pro-plus-setup
-Disallow: /dashboard
-Disallow: /pos
-Disallow: /portfolio
-Disallow: /owner-dashboard
-Disallow: /staff-management
-Disallow: /audit-log
-Disallow: /communication-log
-Disallow: /tasks
-Disallow: /checkin/
-Disallow: /respond/
-Disallow: /shifts
-Disallow: /close-out
-Sitemap: https://inkflow.com/sitemap.xml
+
+Sitemap: https://ink-flows.com/sitemap-index.xml
+
+# Allow AI search crawlers
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Block training crawlers
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /

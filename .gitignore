@@ -1,11 +1,5 @@
-node_modules
-dist
-*.local
+node_modules/
+dist/
+.astro/
 .env
-.claude/
-server/data/
-test-results/
-playwright-report/
-playwright/.cache/
-workers/.wrangler/
-gsc-key.json
+.wrangler/

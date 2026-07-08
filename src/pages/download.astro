@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout>
+  <SEOHead slot="head" title="Download InkFlow — Install on Any Device" description="Install InkFlow on iPhone, iPad, Android, or desktop. PWA works offline with push notifications. No app store needed." />
+  <Navbar />
+
+  <section class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Use InkFlow on Any Device</h1>
+      <p class="mt-4 text-lg text-gray-400">Install as a PWA for the best experience. No app store needed.</p>
+    </div>
+  </section>
+
+  <section class="pb-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-12">
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8">
+        <h2 class="text-2xl font-bold text-white">iPhone / iPad</h2>
+        <ol class="mt-6 space-y-4 text-sm text-gray-400">
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">1</span> Open Safari and go to app.ink-flows.com</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">2</span> Tap the Share button (square with arrow)</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">3</span> Scroll down and tap "Add to Home Screen"</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">4</span> Tap "Add" — InkFlow appears on your home screen</li>
+        </ol>
+      </div>
+
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8">
+        <h2 class="text-2xl font-bold text-white">Android</h2>
+        <ol class="mt-6 space-y-4 text-sm text-gray-400">
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">1</span> Open Chrome and go to app.ink-flows.com</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">2</span> Tap the menu (three dots)</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">3</span> Tap "Install app"</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">4</span> Tap "Install" — done</li>
+        </ol>
+      </div>
+
+      <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-8">
+        <h2 class="text-2xl font-bold text-white">Desktop (Chrome / Edge)</h2>
+        <ol class="mt-6 space-y-4 text-sm text-gray-400">
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">1</span> Open Chrome/Edge and go to app.ink-flows.com</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">2</span> Click the install icon in the address bar</li>
+          <li class="flex items-start gap-4"><span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-xs font-bold text-accent-400">3</span> Click "Install" — InkFlow opens as its own window</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

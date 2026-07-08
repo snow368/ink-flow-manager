@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+
+const features = [
+  {
+    title: 'Smart Booking',
+    slug: 'booking',
+    tagline: 'Deposit-based scheduling cuts no-shows by 80%',
+    desc: 'Online booking with deposit collection, automated reminders, and multi-artist calendar. Clients book 24/7, your schedule stays full.',
+    icon: '📅',
+  },
+  {
+    title: 'Deposits & Payments',
+    slug: 'payments',
+    tagline: 'Collect deposits, split commissions, get paid faster',
+    desc: 'Stripe-powered payment processing built for tattoo studios. Collect deposits at booking, send payment links post-session, split commissions automatically.',
+    icon: '💳',
+  },
+  {
+    title: 'Digital Waivers',
+    slug: 'waivers',
+    tagline: 'Paperless consent forms with QR check-in',
+    desc: 'Replace paper waivers with digital consent forms. E-signatures, medical history tracking, secure cloud storage. Clients sign from their phone before they arrive.',
+    icon: '📝',
+  },
+  {
+    title: 'Client CRM',
+    slug: 'crm',
+    tagline: '360° client history, smart segments, automated follow-ups',
+    desc: 'Know every client who walks through your door. Booking history, design approvals, preferences, automated follow-ups — all linked to one profile.',
+    icon: '👥',
+  },
+  {
+    title: 'Inventory Tracking',
+    slug: 'inventory',
+    tagline: 'Never run out of ink, needles, or supplies mid-session',
+    desc: 'Track ink, needles, cartridges, and shop supplies with low-stock alerts, cost-per-session tracking, and auto-reorder points.',
+    icon: '📦',
+  },
+  {
+    title: 'Aftercare Automation',
+    slug: 'aftercare',
+    tagline: 'Automated healing check-ins, review requests, referrals',
+    desc: 'Automated SMS/email aftercare sequences at day 3, 7, and 14. Healed photo collection, review requests, and referral prompts — on autopilot.',
+    icon: '❤️',
+  },
+  {
+    title: 'Booking Page',
+    slug: 'booking-page',
+    tagline: 'Free professional booking page for your studio',
+    desc: 'Get a free, mobile-friendly booking page to share on Instagram or your own domain. Clients book in one click, no app download needed.',
+    icon: '🔗',
+  },
+  {
+    title: 'Client Portal',
+    slug: 'client-portal',
+    tagline: 'Clients manage their own appointments',
+    desc: 'Self-service portal for appointment history, signed waivers, upcoming bookings, and design approvals. Fewer calls, happier clients.',
+    icon: '🚪',
+  },
+  {
+    title: 'Analytics Dashboard',
+    slug: 'analytics',
+    tagline: 'Data-driven decisions for your studio',
+    desc: 'Revenue trends, artist performance, booking patterns, and client growth — all in one dashboard. Spot opportunities, fix bottlenecks.',
+    icon: '📊',
+  },
+  {
+    title: 'POS System',
+    slug: 'pos',
+    tagline: 'Sell products and retail at the counter',
+    desc: 'Accept payments, sell aftercare products and merchandise, manage retail inventory from your iPad or phone. No separate POS hardware needed.',
+    icon: '🛒',
+  },
+  {
+    title: 'Review Management',
+    slug: 'marketing',
+    tagline: 'Automate review requests and referrals',
+    desc: 'Collect Google reviews automatically after each session, run referral programs, and capture new leads — built into your management platform.',
+    icon: '⭐',
+  },
+  {
+    title: 'Referral Program',
+    slug: 'referrals',
+    tagline: 'Track who sends you business',
+    desc: 'Automated client referral tracking. Know who your best advocates are, reward them, and grow your studio through word-of-mouth.',
+    icon: '🔁',
+  },
+  {
+    title: 'Competitor Intelligence',
+    slug: 'competitor-intelligence',
+    tagline: 'Know what other studios are doing',
+    desc: 'Track competitor pricing, services, and promotions. Spot market trends and adjust your strategy based on real data.',
+    icon: '🔍',
+  },
+  {
+    title: 'Compliance',
+    slug: 'compliance',
+    tagline: 'Stay health-department ready',
+    desc: 'Health department checklists, autoclave logs, inspection prep, and compliance documentation — all built in.',
+    icon: '✅',
+  },
+  {
+    title: 'Supply Brands Directory',
+    slug: 'supply-brands',
+    tagline: 'Find and review tattoo supply brands',
+    desc: 'Browse ink, needle, cartridge, and machine brands. Read reviews from other studio owners. Find your next supplier.',
+    icon: '🏷️',
+  },
+];
+---
+
+<BaseLayout pageTitle="Features">
+  <SEOHead slot="head" title="All InkFlow Features — Booking, CRM, Waivers & More" description="InkFlow gives you 15+ features to run your tattoo studio: booking, deposits, CRM, waivers, inventory, aftercare, analytics, POS, and more. All in one platform." />
+  <Navbar />
+
+  <!-- Hero -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">FEATURES</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Everything You Need to Run Your Studio</h1>
+      <p class="mt-6 text-lg text-gray-400 max-w-2xl mx-auto">
+        Fifteen features, one platform. Purpose-built for tattoo studios — no more duct-taping five different apps together.
+      </p>
+    </div>
+  </section>
+
+  <!-- Feature Grid -->
+  <section class="pb-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {features.map((f) => (
+          <a
+            href={`/features/${f.slug}`}
+            class="group rounded-2xl border border-ink-800 bg-ink-900/50 p-6 hover:border-accent-500/30 hover:bg-ink-900/80 transition-all"
+          >
+            <div class="mb-4 flex items-center gap-3">
+              <span class="text-2xl">{f.icon}</span>
+              <h2 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">{f.title}</h2>
+            </div>
+            <p class="text-sm text-accent-400 font-medium mb-2">{f.tagline}</p>
+            <p class="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
+            <div class="mt-4 flex items-center gap-1 text-xs font-semibold text-accent-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              Learn more <span aria-hidden="true">→</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <div class="rounded-2xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 to-transparent p-8 sm:p-12">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Ready to See It in Action?</h2>
+        <p class="mt-4 text-lg text-gray-400">Try InkFlow free. No credit card required. <strong class="text-accent-400">Full access to all 15 features.</strong></p>
+        <div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+            Start Free Trial →
+          </a>
+          <a href="/compare/best-tattoo-studio-software" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+            Compare Alternatives →
+          </a>
+        </div>
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-gray-600">
+          <span>✓ No credit card</span>
+          <span>✓ Free plan: $0 forever</span>
+          <span>✓ Pro: 5 artists, full features</span>
+          <span>✓ Multi-location: Plus plan</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
