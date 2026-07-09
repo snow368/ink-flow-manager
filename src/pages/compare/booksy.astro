@@ -13,14 +13,15 @@ import Footer from '../../components/Footer.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Product",
+  "@type": "SoftwareApplication",
   "name": "InkFlow vs Booksy",
   "description": "InkFlow vs Booksy - Comparison for tattoo studio management. Booksy is for salons, InkFlow is for tattoo shops.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
   "brand": {
     "@type": "Brand",
     "name": "InkFlow"
   },
-  "category": "Tattoo Studio Software",
   "offers": {
     "@type": "Offer",
     "price": "0",
