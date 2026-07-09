@@ -1,1 +1,11 @@
-/* /index.html 200
+# Redirect short feature URLs to canonical long URLs (fix Google duplicate)
+/features/pos          /features/tattoo-pos-system/          301
+/features/marketing    /features/tattoo-marketing-automation/ 301
+/features/aftercare    /features/tattoo-aftercare-software-automation/ 301
+/features/compliance   /features/tattoo-compliance-software/  301
+/features/analytics    /features/tattoo-studio-analytics/     301
+/features/referrals    /features/tattoo-referral-program/     301
+/features/booking-page /features/tattoo-booking-page/        301
+/features/supply-brands /features/tattoo-supply-brands/      301
+/features/client-portal /features/tattoo-client-portal/      301
+/features/competitor-intelligence /features/tattoo-competitor-intelligence/ 301
