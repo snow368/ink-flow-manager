@@ -7,6 +7,14 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": []
+}
+</script>
+
   <SEOHead slot="head" title="InkFlow vs Square Appointments for Tattoo Studios" description="Square Appointments costs $110-140/mo with integrations. InkFlow includes deposit booking, waivers, and aftercare. Start free." canonical="https://ink-flows.com/compare/square-appointments/" />
   <FAQSchema questions={[
     { question: "Can Square Appointments handle tattoo studio booking?", answer: "Square Appointments handles basic scheduling but lacks tattoo-specific features: deposit-based booking (Square uses card-on-file), digital consent forms, multi-artist commission splitting, ink/needle inventory tracking, and aftercare automation. You'd need Square for Payments, Square for Retail, and third-party tools to cover what InkFlow offers in one platform." },

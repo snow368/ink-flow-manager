@@ -8,6 +8,16 @@ import FAQSchema from '../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "InkFlow",
+  "url": "https://ink-flows.com",
+  "description": "All-in-one tattoo studio management software — booking, waivers, CRM, aftercare automation"
+}
+</script>
   <SEOHead slot="head" title="Tattoo Studio Management Software" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
   <FAQSchema questions={[
     { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
