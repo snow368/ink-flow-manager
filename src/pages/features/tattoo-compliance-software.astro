@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Studio Health Compliance — Checklists, Autoclave Logs &amp; Inspections" description="InkFlow's health compliance software helps tattoo studios stay inspection-ready with digital checklists, autoclave logs, and documentation. Built into your studio management. Start free." />
   <FAQSchema questions={[
     { question: "Does InkFlow generate health inspection checklists?", answer: "Yes. Built-in checklists cover sterilization, cleanliness, and documentation requirements. Customize for your local health department's requirements." },

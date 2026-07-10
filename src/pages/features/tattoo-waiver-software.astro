@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Digital Tattoo Waiver Software — Paperless Consent Forms, Legally Binding E-Signatures" description="InkFlow's digital tattoo waiver software replaces paper consent forms with legally binding e-signatures. QR check-in, medical tracking, parental consent — clients sign on their phone. Start free." />
   <FAQSchema questions={[
     { question: "Are digital waivers legally binding?", answer: "Yes. E-signatures with timestamps and IP logging are binding under ESIGN (US), UETA, and GDPR. InkFlow stores every waiver with a full audit trail." },

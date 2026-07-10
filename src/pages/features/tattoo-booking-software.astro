@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Booking Software — Cut No-Shows by 80% with Deposits" description="InkFlow's tattoo booking software cuts no-shows by up to 80% with deposit-based scheduling. Multi-artist calendar, automated SMS reminders, and online booking widget — no POS terminal needed. Start free." />
   <FAQSchema questions={[
     { question: "Can clients book online without creating an account?", answer: "Yes. Clients book via a public link — no account needed. They just provide name, email, and phone. Returning clients are recognized automatically." },

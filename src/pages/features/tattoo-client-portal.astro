@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Client Portal — Appointments, Waivers &amp; History in One Place" description="InkFlow's tattoo client portal gives clients access to their appointment history, signed waivers, and upcoming bookings. No more 'can you send me my waiver?' Start free." />
   <FAQSchema questions={[
     { question: "What can clients see in the portal?", answer: "Clients can view their appointment history, signed waivers, upcoming bookings, and past tattoo photos. They can also reschedule or cancel appointments." },

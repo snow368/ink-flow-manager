@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <FAQSchema questions={[
     { question: "What payment methods does InkFlow support?", answer: "Credit card, debit card, Apple Pay, and Google Pay — all processed through Stripe. Deposits, balance collection, tips, and retail sales." },
     { question: "Does InkFlow add any markup on top of Stripe fees?", answer: "No. You pay only Stripe's standard 2.9% + $0.30 per transaction. InkFlow does not add any platform markup." },

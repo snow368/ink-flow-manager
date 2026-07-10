@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="InkFlow Team" authorBio="Tattoo studio management platform">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Ink Passport — EU REACH Compliance &amp; Digital Ink Records | InkFlow" description="InkFlow generates digital ink passports for every tattoo session. Record ink brand, batch/lot numbers, and expiration dates — fully compliant with EU standard EN17169:2020. Automatically emailed to clients with aftercare instructions." />
   <FAQSchema questions={[
     { question: "What is an ink passport?", answer: "An ink passport is a digital record of all inks used during a tattoo session, including brand, color, batch/lot number, and expiration date. Required under EU standard EN17169:2020." },

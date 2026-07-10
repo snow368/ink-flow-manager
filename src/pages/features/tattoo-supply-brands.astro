@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Supply Brands Directory — Find &amp; Compare Suppliers" description="Discover and compare tattoo supply brands. See what other studios use, read reviews, and find your next supplier. Ink, needles, cartridges, machines, and aftercare." />
   <FAQSchema questions={[
     { question: "What types of supply brands are listed?", answer: "Ink brands, needle and cartridge manufacturers, tattoo machines, aftercare products, PPE, and studio equipment. Updated regularly." },

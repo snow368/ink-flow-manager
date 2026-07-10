@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Aftercare Automation — 40% More Healed Photos on Autopilot" description="InkFlow automates tattoo aftercare with healing check-ins at day 3, 7, and 14. Studios see 40% more healed photo submissions and 2x more Google reviews. Set it once, runs on autopilot." />
   <FAQSchema questions={[
     { question: "How does InkFlow's aftercare automation work?", answer: "After each session, InkFlow automatically sends aftercare instructions. Then it follows up at day 3, 7, and 14 to check healing progress. At week 4, it requests a healed photo. At week 3, it asks for a Google review. All on autopilot." },

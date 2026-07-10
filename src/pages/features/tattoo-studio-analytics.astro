@@ -7,6 +7,22 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <SEOHead slot="head" title="Tattoo Studio Analytics — Revenue, Bookings &amp; Artist Performance" description="InkFlow's studio analytics dashboard tracks revenue, artist performance, booking trends, and client growth. Data-driven decisions for your tattoo studio. Start free." />
   <FAQSchema questions={[
     { question: "What metrics does the analytics dashboard show?", answer: "Revenue trends, booking volume, artist performance, client growth, no-show rates, and average session value. All updated in real-time." },
