@@ -1,408 +1,408 @@
----
-import BaseLayout from '../layouts/BaseLayout.astro';
-import SEOHead from '../components/SEOHead.astro';
-import Navbar from '../components/Navbar.astro';
-import Footer from '../components/Footer.astro';
-import FAQSchema from '../components/FAQSchema.astro';
-
----
-
-<BaseLayout>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "InkFlow",
-  "url": "https://ink-flows.com",
-  "description": "All-in-one tattoo studio management software — booking, waivers, CRM, aftercare automation"
-}
-</script>
-  <SEOHead slot="head" title="Tattoo Studio Management Software" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
-  <FAQSchema questions={[
-    { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
-    { question: "Can I accept deposits through InkFlow?", answer: "Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%." },
-    { question: "Does InkFlow work on iPad?", answer: "Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk." },
-    { question: "Can I have multiple artists on one account?", answer: "Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link." },
-    { question: "Can I import my existing client data?", answer: "Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms." },
-  ]} />
-  <Navbar />
-
-  <!-- Hero -->
-  <section class="relative overflow-hidden pt-20 pb-20 sm:pt-28 sm:pb-28">
-    <div class="absolute inset-0 bg-gradient-to-b from-accent-500/5 via-transparent to-transparent pointer-events-none" />
-    <div class="absolute top-1/4 left-1/3 -translate-x-1/2 w-[800px] h-[800px] bg-accent-500/5 rounded-full blur-3xl pointer-events-none" />
-    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent-500/3 rounded-full blur-3xl pointer-events-none" />
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="grid lg:grid-cols-2 lg:gap-12 items-center">
-        <!-- Left: Text -->
-        <div>
-          <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
-            <span class="h-2 w-2 rounded-full bg-accent-400 animate-pulse" />
-            Trusted by 500+ studios worldwide
-          </div>
-          <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
-            Tattoo Studio Management<br />
-            <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Software for Your Shop</span>
-          </h1>
-          <p class="mt-6 text-lg text-gray-400 max-w-xl">
-            Booking, deposits, waivers, CRM, POS, inventory, aftercare — one platform replaces five tools. Built by tattoo artists, for tattoo studios.
-          </p>
-          <div class="mt-8 flex flex-col gap-4 sm:flex-row">
-            <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105 text-center">
-              Start Free Trial
-            </a>
-            <a href="/features/tattoo-booking-software" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all text-center">
-              See Features →
-            </a>
-          </div>
-          <p class="mt-4 text-sm text-gray-500">No credit card required · Free plan available · 30-day trial</p>
-        </div>
-        <!-- Right: Product Preview -->
-        <div class="mt-12 lg:mt-0">
-          <div class="relative mx-auto max-w-md lg:max-w-none">
-            <!-- Browser window frame -->
-            <div class="rounded-xl border border-ink-700 bg-ink-900 shadow-2xl shadow-accent-500/10 overflow-hidden">
-              <!-- Browser chrome -->
-              <div class="flex items-center gap-2 border-b border-ink-700 px-4 py-3">
-                <div class="h-3 w-3 rounded-full bg-red-500/60" />
-                <div class="h-3 w-3 rounded-full bg-yellow-500/60" />
-                <div class="h-3 w-3 rounded-full bg-green-500/60" />
-                <span class="ml-3 text-xs text-gray-600">app.ink-flows.com</span>
-              </div>
-              <!-- Real product screenshot -->
-              <img src="/images/hero-screenshot-2.png" alt="InkFlow booking dashboard interface" class="w-full aspect-[16/10] object-cover" />
-            </div>
-            <!-- Glowing accent behind -->
-            <div class="absolute -bottom-6 -right-6 h-48 w-48 rounded-full bg-accent-500/10 blur-2xl pointer-events-none -z-10" />
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Social Proof -->
-  <section class="border-y border-ink-800/50 py-8">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
-        <span class="flex items-center gap-2">G2 <span class="text-accent-400">4.8</span>/5</span>
-        <span class="flex items-center gap-2">Capterra <span class="text-accent-400">4.7</span>/5</span>
-        <span class="flex items-center gap-2">GetApp <span class="text-accent-400">4.9</span>/5</span>
-        <span class="text-gray-600">|</span>
-        <span class="text-gray-400">Join 500+ studios</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Grid -->
-  <section class="py-24">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white sm:text-4xl">Everything You Need to Run Your Studio</h2>
-        <p class="mt-4 text-lg text-gray-400">Purpose-built for tattoo studios. No more duct-taping five different apps together.</p>
-      </div>
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        <!-- Booking -->
-        <a href="/features/tattoo-booking-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Smart Booking</h3>
-            <p class="text-sm text-gray-400">Deposit-based scheduling with automated SMS and email reminders. Studios using InkFlow cut no-shows by 80%.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="flex w-full gap-1">
-              {[40,65,45,80,55,70,60].map(h => (
-                <div key={h} class="flex-1 h-16 flex items-end">
-                  <div class="w-full rounded-t bg-accent-500/20" style={`height: ${h}%`} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </a>
-        <!-- Payments / Deposits -->
-        <a href="/features/tattoo-payment-processing" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Deposits & Payments</h3>
-            <p class="text-sm text-gray-400">Collect deposits at booking, send payment links post-session, and split commissions automatically.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="flex w-full items-center justify-center gap-3">
-              <div class="flex flex-col items-center">
-                <div class="h-8 w-12 rounded border border-accent-500/20 bg-accent-500/5 flex items-center justify-center text-xs text-accent-400">$50</div>
-                <span class="mt-1 text-[10px] text-gray-600">Deposit</span>
-              </div>
-              <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-              <div class="flex flex-col items-center">
-                <div class="h-8 w-12 rounded border border-green-500/20 bg-green-500/5 flex items-center justify-center text-xs text-green-400">$200</div>
-                <span class="mt-1 text-[10px] text-gray-600">Balance</span>
-              </div>
-            </div>
-          </div>
-        </a>
-        <!-- Waivers -->
-        <a href="/features/tattoo-waiver-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Digital Waivers</h3>
-            <p class="text-sm text-gray-400">Paperless intake with e-signatures, QR check-in, and medical history. Clients sign from their phone before they arrive.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="w-full rounded border border-ink-700 bg-ink-800/50 p-2">
-              <div class="flex items-center gap-2">
-                <div class="h-4 w-4 rounded border-2 border-accent-500 flex items-center justify-center">
-                  <div class="h-2 w-2 rounded-sm bg-accent-500" />
-                </div>
-                <span class="text-[10px] text-gray-500">I understand the risks and consent to the procedure...</span>
-              </div>
-              <div class="mt-1 h-1.5 w-2/3 rounded-full bg-ink-700">
-                <div class="h-full w-full rounded-full bg-accent-500/30" style="width: 65%" />
-              </div>
-            </div>
-          </div>
-        </a>
-        <!-- CRM -->
-        <a href="/features/tattoo-crm-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Client CRM</h3>
-            <p class="text-sm text-gray-400">360° client history, smart tags, automated follow-ups, referral tracking. Know every client who walks through your door.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="flex w-full -space-x-2">
-              {[
-                {c: 'bg-accent-500', i: 'S'},
-                {c: 'bg-blue-500', i: 'M'},
-                {c: 'bg-green-500', i: 'J'},
-                {c: 'bg-purple-500', i: 'A'},
-                {c: 'bg-orange-500', i: 'T'},
-              ].map(p => (
-                <div key={p.i} class={`h-7 w-7 rounded-full ${p.c} flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-ink-900`}>{p.i}</div>
-              ))}
-              <div class="h-7 w-7 rounded-full bg-ink-700 flex items-center justify-center text-[10px] text-gray-500 ring-2 ring-ink-900">+12</div>
-            </div>
-          </div>
-        </a>
-        <!-- Inventory -->
-        <a href="/features/tattoo-inventory-management" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Inventory Tracking</h3>
-            <p class="text-sm text-gray-400">Track ink, needles, and supplies. Low-stock alerts, cost-per-session tracking, and auto-reorder points.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="flex w-full gap-1.5">
-              {[
-                {l: 'Black Ink', v: 80},
-                {l: 'RL #12', v: 30},
-                {l: 'MAG #9', v: 60},
-                {l: 'Gloves M', v: 20},
-              ].map(item => (
-                <div key={item.l} class="flex-1 flex flex-col items-center">
-                  <div class="w-full rounded-t bg-ink-800 flex items-end justify-center" style={`height: ${item.v / 2}px`}>
-                    <div class="w-3/4 rounded-t" style={`height: ${item.v}%; background: ${item.v < 30 ? 'rgb(239 68 68 / 0.3)' : 'rgb(99 102 241 / 0.3)'}`} />
-                  </div>
-                  <span class="mt-1 text-[8px] text-gray-600 truncate w-full text-center">{item.l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </a>
-        <!-- Aftercare -->
-        <a href="/features/tattoo-aftercare-software-automation" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
-          <div class="p-6 pb-0">
-            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-            </div>
-            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Aftercare Automation</h3>
-            <p class="text-sm text-gray-400">Automated healing check-ins, review requests, and referral prompts — on autopilot. Your clients feel cared for without you lifting a finger.</p>
-          </div>
-          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
-            <div class="w-full space-y-1.5">
-              {[
-                {d: 'Day 1', v: 100},
-                {d: 'Day 3', v: 75},
-                {d: 'Day 7', v: 50},
-                {d: 'Day 14', v: 25},
-              ].map((msg, i) => (
-                <div key={msg.d} class="flex items-center gap-2">
-                  <div class="h-1.5 w-1.5 rounded-full" class:list={[i === 0 ? 'bg-accent-500' : 'bg-ink-600']} />
-                  <div class={`h-2 rounded ${i === 0 ? 'bg-accent-500/20 w-3/4' : 'bg-ink-700/50 w-1/2'}`} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works -->
-  <section class="border-t border-ink-800/50 py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white sm:text-4xl">Get Your Studio Online in Minutes</h2>
-        <p class="mt-4 text-lg text-gray-400">Three simple steps to transform how your studio runs.</p>
-      </div>
-      <div class="grid gap-8 md:grid-cols-3">
-        <div class="text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">1</div>
-          <h3 class="mb-2 text-lg font-semibold text-white">Set Up Your Studio</h3>
-          <p class="text-sm text-gray-400">Add your artists, services, pricing, and business hours. It takes 5 minutes.</p>
-        </div>
-        <div class="text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">2</div>
-          <h3 class="mb-2 text-lg font-semibold text-white">Share Your Booking Link</h3>
-          <p class="text-sm text-gray-400">Share on Instagram, your website, or as a QR code. Clients book instantly.</p>
-        </div>
-        <div class="text-center">
-          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">3</div>
-          <h3 class="mb-2 text-lg font-semibold text-white">Watch It Grow</h3>
-          <p class="text-sm text-gray-400">Automated reminders, aftercare, and reviews — your studio runs itself.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing Preview -->
-  <section class="border-t border-ink-800/50 py-20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl font-bold text-white sm:text-4xl">Simple Pricing</h2>
-        <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you need more.</p>
-      </div>
-      <div class="grid gap-8 md:grid-cols-4 max-w-5xl mx-auto">
-        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
-          <h3 class="text-lg font-semibold text-white">Free</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$0</p>
-          <p class="mt-1 text-sm text-gray-400">Forever free</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li>1 artist</li>
-            <li>Basic app tools</li>
-            <li>Local-only</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
-        </div>
-        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
-          <h3 class="text-lg font-semibold text-white">Starter</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$9.99</p>
-          <p class="mt-1 text-sm text-gray-400">Per month</p>
-          <p class="text-xs text-gray-500">or <span class="text-gray-300">$99.99</span>/yr</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li>Online booking</li>
-            <li>Digital waivers</li>
-            <li>Client CRM + cloud</li>
-            <li>SMS reminders</li>
-            <li>Free website page</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started</a>
-        </div>
-        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 text-center flex flex-col relative">
-          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
-          <h3 class="text-lg font-semibold text-white">Pro</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
-          <p class="mt-1 text-sm text-gray-400">Per month</p>
-          <p class="text-xs text-gray-500">or <span class="text-gray-300">$299.99</span>/yr</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li>Up to 5 artists</li>
-            <li>Full features</li>
-            <li>Digital waivers</li>
-            <li>Unlimited SMS</li>
-            <li>Enhanced website</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start Free Trial</a>
-        </div>
-        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
-          <h3 class="text-lg font-semibold text-white">Plus</h3>
-          <p class="mt-2 text-4xl font-bold text-white">$49.99</p>
-          <p class="mt-1 text-sm text-gray-400">Per month</p>
-          <p class="text-xs text-gray-500">or <span class="text-gray-300">$499.99</span>/yr</p>
-          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
-            <li>Multi-location</li>
-            <li>Custom domain</li>
-            <li>Priority support</li>
-            <li>Analytics dashboard</li>
-            <li>Unlimited website</li>
-          </ul>
-          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Start Plus Trial</a>
-        </div>
-      </div>
-      <p class="mt-10 text-center"><a href="/pricing/" class="text-sm text-accent-400 hover:text-accent-300 transition-colors">See full pricing →</a></p>
-    </div>
-  </section>
-
-  <!-- FAQ - GEO optimized -->
-  <section class="border-t border-ink-800/50 py-20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="mb-12 text-center text-3xl font-bold text-white">Frequently Asked Questions</h2>
-      <div class="space-y-6">
-        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
-          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
-            Is InkFlow really free for solo artists?
-            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <p class="mt-4 text-sm text-gray-400">Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime.</p>
-        </details>
-        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
-          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
-            Can I accept deposits through InkFlow?
-            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <p class="mt-4 text-sm text-gray-400">Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%.</p>
-        </details>
-        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
-          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
-            Does InkFlow work on iPad?
-            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <p class="mt-4 text-sm text-gray-400">Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk.</p>
-        </details>
-        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
-          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
-            Can I have multiple artists on one account?
-            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <p class="mt-4 text-sm text-gray-400">Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link.</p>
-        </details>
-        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
-          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
-            Can I import my existing client data?
-            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </summary>
-          <p class="mt-4 text-sm text-gray-400">Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  
-
-<!-- Final CTA -->
-  <section class="relative overflow-hidden border-t border-ink-800/50 py-20">
-    <div class="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent pointer-events-none" />
-    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl font-bold text-white sm:text-4xl">Ready to Transform Your Studio?</h2>
-      <p class="mt-4 text-lg text-gray-400">Join 500+ studios already using InkFlow. Free trial, no credit card required.</p>
-      <div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-        <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105">
-          Start Free Trial
-        </a>
-        <a href="/contact" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
-          Book a Demo
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <Footer />
-</BaseLayout>
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SEOHead from '../components/SEOHead.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+
+---
+
+<BaseLayout>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "InkFlow",
+  "url": "https://ink-flows.com",
+  "description": "All-in-one tattoo studio management software — booking, waivers, CRM, aftercare automation"
+}
+</script>
+  <SEOHead slot="head" title="Tattoo Studio Management Software — All-in-One | InkFlow" description="All-in-one tattoo studio management software. Booking, CRM, payments, inventory, aftercare. Purpose-built for studios. Start free at InkFlow." />
+  <FAQSchema questions={[
+    { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
+    { question: "Can I accept deposits through InkFlow?", answer: "Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%." },
+    { question: "Does InkFlow work on iPad?", answer: "Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk." },
+    { question: "Can I have multiple artists on one account?", answer: "Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link." },
+    { question: "Can I import my existing client data?", answer: "Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms." },
+  ]} />
+  <Navbar />
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden pt-20 pb-20 sm:pt-28 sm:pb-28">
+    <div class="absolute inset-0 bg-gradient-to-b from-accent-500/5 via-transparent to-transparent pointer-events-none" />
+    <div class="absolute top-1/4 left-1/3 -translate-x-1/2 w-[800px] h-[800px] bg-accent-500/5 rounded-full blur-3xl pointer-events-none" />
+    <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent-500/3 rounded-full blur-3xl pointer-events-none" />
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid lg:grid-cols-2 lg:gap-12 items-center">
+        <!-- Left: Text -->
+        <div>
+          <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-accent-500/20 bg-accent-500/5 px-4 py-1.5 text-sm text-accent-300">
+            <span class="h-2 w-2 rounded-full bg-accent-400 animate-pulse" />
+            Trusted by 500+ studios worldwide
+          </div>
+          <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl leading-tight">
+            Tattoo Studio Management<br />
+            <span class="bg-gradient-to-r from-accent-300 to-accent-500 bg-clip-text text-transparent">Software for Your Shop</span>
+          </h1>
+          <p class="mt-6 text-lg text-gray-400 max-w-xl">
+            Booking, deposits, waivers, CRM, POS, inventory, aftercare — one platform replaces five tools. Built by tattoo artists, for tattoo studios.
+          </p>
+          <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+            <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105 text-center">
+              Start Free Trial
+            </a>
+            <a href="/features/tattoo-booking-software" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all text-center">
+              See Features →
+            </a>
+          </div>
+          <p class="mt-4 text-sm text-gray-500">No credit card required · Free plan available · 30-day trial</p>
+        </div>
+        <!-- Right: Product Preview -->
+        <div class="mt-12 lg:mt-0">
+          <div class="relative mx-auto max-w-md lg:max-w-none">
+            <!-- Browser window frame -->
+            <div class="rounded-xl border border-ink-700 bg-ink-900 shadow-2xl shadow-accent-500/10 overflow-hidden">
+              <!-- Browser chrome -->
+              <div class="flex items-center gap-2 border-b border-ink-700 px-4 py-3">
+                <div class="h-3 w-3 rounded-full bg-red-500/60" />
+                <div class="h-3 w-3 rounded-full bg-yellow-500/60" />
+                <div class="h-3 w-3 rounded-full bg-green-500/60" />
+                <span class="ml-3 text-xs text-gray-600">app.ink-flows.com</span>
+              </div>
+              <!-- Real product screenshot -->
+              <img src="/images/hero-screenshot-2.png" alt="InkFlow booking dashboard interface" class="w-full aspect-[16/10] object-cover" />
+            </div>
+            <!-- Glowing accent behind -->
+            <div class="absolute -bottom-6 -right-6 h-48 w-48 rounded-full bg-accent-500/10 blur-2xl pointer-events-none -z-10" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof -->
+  <section class="border-y border-ink-800/50 py-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-500">
+        <span class="flex items-center gap-2">G2 <span class="text-accent-400">4.8</span>/5</span>
+        <span class="flex items-center gap-2">Capterra <span class="text-accent-400">4.7</span>/5</span>
+        <span class="flex items-center gap-2">GetApp <span class="text-accent-400">4.9</span>/5</span>
+        <span class="text-gray-600">|</span>
+        <span class="text-gray-400">Join 500+ studios</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="py-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Everything You Need to Run Your Studio</h2>
+        <p class="mt-4 text-lg text-gray-400">Purpose-built for tattoo studios. No more duct-taping five different apps together.</p>
+      </div>
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Booking -->
+        <a href="/features/tattoo-booking-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Smart Booking</h3>
+            <p class="text-sm text-gray-400">Deposit-based scheduling with automated SMS and email reminders. Studios using InkFlow cut no-shows by 80%.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full gap-1">
+              {[40,65,45,80,55,70,60].map(h => (
+                <div key={h} class="flex-1 h-16 flex items-end">
+                  <div class="w-full rounded-t bg-accent-500/20" style={`height: ${h}%`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </a>
+        <!-- Payments / Deposits -->
+        <a href="/features/tattoo-payment-processing" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Deposits & Payments</h3>
+            <p class="text-sm text-gray-400">Collect deposits at booking, send payment links post-session, and split commissions automatically.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full items-center justify-center gap-3">
+              <div class="flex flex-col items-center">
+                <div class="h-8 w-12 rounded border border-accent-500/20 bg-accent-500/5 flex items-center justify-center text-xs text-accent-400">$50</div>
+                <span class="mt-1 text-[10px] text-gray-600">Deposit</span>
+              </div>
+              <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              <div class="flex flex-col items-center">
+                <div class="h-8 w-12 rounded border border-green-500/20 bg-green-500/5 flex items-center justify-center text-xs text-green-400">$200</div>
+                <span class="mt-1 text-[10px] text-gray-600">Balance</span>
+              </div>
+            </div>
+          </div>
+        </a>
+        <!-- Waivers -->
+        <a href="/features/tattoo-waiver-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Digital Waivers</h3>
+            <p class="text-sm text-gray-400">Paperless intake with e-signatures, QR check-in, and medical history. Clients sign from their phone before they arrive.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="w-full rounded border border-ink-700 bg-ink-800/50 p-2">
+              <div class="flex items-center gap-2">
+                <div class="h-4 w-4 rounded border-2 border-accent-500 flex items-center justify-center">
+                  <div class="h-2 w-2 rounded-sm bg-accent-500" />
+                </div>
+                <span class="text-[10px] text-gray-500">I understand the risks and consent to the procedure...</span>
+              </div>
+              <div class="mt-1 h-1.5 w-2/3 rounded-full bg-ink-700">
+                <div class="h-full w-full rounded-full bg-accent-500/30" style="width: 65%" />
+              </div>
+            </div>
+          </div>
+        </a>
+        <!-- CRM -->
+        <a href="/features/tattoo-crm-software" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Client CRM</h3>
+            <p class="text-sm text-gray-400">360° client history, smart tags, automated follow-ups, referral tracking. Know every client who walks through your door.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full -space-x-2">
+              {[
+                {c: 'bg-accent-500', i: 'S'},
+                {c: 'bg-blue-500', i: 'M'},
+                {c: 'bg-green-500', i: 'J'},
+                {c: 'bg-purple-500', i: 'A'},
+                {c: 'bg-orange-500', i: 'T'},
+              ].map(p => (
+                <div key={p.i} class={`h-7 w-7 rounded-full ${p.c} flex items-center justify-center text-[10px] font-bold text-white ring-2 ring-ink-900`}>{p.i}</div>
+              ))}
+              <div class="h-7 w-7 rounded-full bg-ink-700 flex items-center justify-center text-[10px] text-gray-500 ring-2 ring-ink-900">+12</div>
+            </div>
+          </div>
+        </a>
+        <!-- Inventory -->
+        <a href="/features/tattoo-inventory-management" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Inventory Tracking</h3>
+            <p class="text-sm text-gray-400">Track ink, needles, and supplies. Low-stock alerts, cost-per-session tracking, and auto-reorder points.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="flex w-full gap-1.5">
+              {[
+                {l: 'Black Ink', v: 80},
+                {l: 'RL #12', v: 30},
+                {l: 'MAG #9', v: 60},
+                {l: 'Gloves M', v: 20},
+              ].map(item => (
+                <div key={item.l} class="flex-1 flex flex-col items-center">
+                  <div class="w-full rounded-t bg-ink-800 flex items-end justify-center" style={`height: ${item.v / 2}px`}>
+                    <div class="w-3/4 rounded-t" style={`height: ${item.v}%; background: ${item.v < 30 ? 'rgb(239 68 68 / 0.3)' : 'rgb(99 102 241 / 0.3)'}`} />
+                  </div>
+                  <span class="mt-1 text-[8px] text-gray-600 truncate w-full text-center">{item.l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </a>
+        <!-- Aftercare -->
+        <a href="/features/tattoo-aftercare-software-automation" class="group relative rounded-xl border border-ink-800 bg-ink-900/50 overflow-hidden hover:border-accent-500/30 transition-all">
+          <div class="p-6 pb-0">
+            <div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/10 text-accent-400 ring-1 ring-accent-500/20">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            </div>
+            <h3 class="mb-2 text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Aftercare Automation</h3>
+            <p class="text-sm text-gray-400">Automated healing check-ins, review requests, and referral prompts — on autopilot. Your clients feel cared for without you lifting a finger.</p>
+          </div>
+          <div class="mt-4 h-24 bg-gradient-to-t from-ink-800/30 to-transparent flex items-end px-6 pb-4">
+            <div class="w-full space-y-1.5">
+              {[
+                {d: 'Day 1', v: 100},
+                {d: 'Day 3', v: 75},
+                {d: 'Day 7', v: 50},
+                {d: 'Day 14', v: 25},
+              ].map((msg, i) => (
+                <div key={msg.d} class="flex items-center gap-2">
+                  <div class="h-1.5 w-1.5 rounded-full" class:list={[i === 0 ? 'bg-accent-500' : 'bg-ink-600']} />
+                  <div class={`h-2 rounded ${i === 0 ? 'bg-accent-500/20 w-3/4' : 'bg-ink-700/50 w-1/2'}`} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="border-t border-ink-800/50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Get Your Studio Online in Minutes</h2>
+        <p class="mt-4 text-lg text-gray-400">Three simple steps to transform how your studio runs.</p>
+      </div>
+      <div class="grid gap-8 md:grid-cols-3">
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">1</div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Set Up Your Studio</h3>
+          <p class="text-sm text-gray-400">Add your artists, services, pricing, and business hours. It takes 5 minutes.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">2</div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Share Your Booking Link</h3>
+          <p class="text-sm text-gray-400">Share on Instagram, your website, or as a QR code. Clients book instantly.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/10 text-2xl font-bold text-accent-400">3</div>
+          <h3 class="mb-2 text-lg font-semibold text-white">Watch It Grow</h3>
+          <p class="text-sm text-gray-400">Automated reminders, aftercare, and reviews — your studio runs itself.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Preview -->
+  <section class="border-t border-ink-800/50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Simple Pricing</h2>
+        <p class="mt-4 text-lg text-gray-400">Start free. Upgrade when you need more.</p>
+      </div>
+      <div class="grid gap-8 md:grid-cols-4 max-w-5xl mx-auto">
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
+          <h3 class="text-lg font-semibold text-white">Free</h3>
+          <p class="mt-2 text-4xl font-bold text-white">$0</p>
+          <p class="mt-1 text-sm text-gray-400">Forever free</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>1 artist</li>
+            <li>Basic app tools</li>
+            <li>Local-only</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started Free</a>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
+          <h3 class="text-lg font-semibold text-white">Starter</h3>
+          <p class="mt-2 text-4xl font-bold text-white">$9.99</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$99.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Online booking</li>
+            <li>Digital waivers</li>
+            <li>Client CRM + cloud</li>
+            <li>SMS reminders</li>
+            <li>Free website page</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Get Started</a>
+        </div>
+        <div class="rounded-xl border-2 border-accent-500 bg-ink-900 p-8 text-center flex flex-col relative">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent-500 px-4 py-0.5 text-xs font-semibold text-ink-950">Most Popular</span>
+          <h3 class="text-lg font-semibold text-white">Pro</h3>
+          <p class="mt-2 text-4xl font-bold text-white">$29.99</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$299.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Up to 5 artists</li>
+            <li>Full features</li>
+            <li>Digital waivers</li>
+            <li>Unlimited SMS</li>
+            <li>Enhanced website</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg bg-accent-500 px-6 py-2.5 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start Free Trial</a>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-8 text-center flex flex-col">
+          <h3 class="text-lg font-semibold text-white">Plus</h3>
+          <p class="mt-2 text-4xl font-bold text-white">$49.99</p>
+          <p class="mt-1 text-sm text-gray-400">Per month</p>
+          <p class="text-xs text-gray-500">or <span class="text-gray-300">$499.99</span>/yr</p>
+          <ul class="mt-6 space-y-2 text-sm text-gray-400 flex-1">
+            <li>Multi-location</li>
+            <li>Custom domain</li>
+            <li>Priority support</li>
+            <li>Analytics dashboard</li>
+            <li>Unlimited website</li>
+          </ul>
+          <a href="https://app.ink-flows.com/register" class="mt-8 block rounded-lg border border-ink-700 px-6 py-2.5 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-colors">Start Plus Trial</a>
+        </div>
+      </div>
+      <p class="mt-10 text-center"><a href="/pricing/" class="text-sm text-accent-400 hover:text-accent-300 transition-colors">See full pricing →</a></p>
+    </div>
+  </section>
+
+  <!-- FAQ - GEO optimized -->
+  <section class="border-t border-ink-800/50 py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-12 text-center text-3xl font-bold text-white">Frequently Asked Questions</h2>
+      <div class="space-y-6">
+        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
+          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
+            Is InkFlow really free for solo artists?
+            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <p class="mt-4 text-sm text-gray-400">Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime.</p>
+        </details>
+        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
+          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
+            Can I accept deposits through InkFlow?
+            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <p class="mt-4 text-sm text-gray-400">Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%.</p>
+        </details>
+        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
+          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
+            Does InkFlow work on iPad?
+            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <p class="mt-4 text-sm text-gray-400">Yes. InkFlow is a Progressive Web App that works on any device — iPhone, iPad, Android, and desktop. Artists can check clients in, sign waivers, and process payments all from an iPad at the front desk.</p>
+        </details>
+        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
+          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
+            Can I have multiple artists on one account?
+            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <p class="mt-4 text-sm text-gray-400">Yes. Our Pro plan supports up to 10 artists with individual calendars, commission tracking, and a shared client database. Each artist gets their own booking link.</p>
+        </details>
+        <details class="group rounded-xl border border-ink-800 p-6 open:border-accent-500/30">
+          <summary class="flex cursor-pointer items-center justify-between text-base font-medium text-white">
+            Can I import my existing client data?
+            <svg class="h-5 w-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <p class="mt-4 text-sm text-gray-400">Yes. InkFlow supports CSV import for clients, appointments, and inventory. We also offer migration assistance for studios switching from other platforms.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  
+
+<!-- Final CTA -->
+  <section class="relative overflow-hidden border-t border-ink-800/50 py-20">
+    <div class="absolute inset-0 bg-gradient-to-t from-accent-500/10 to-transparent pointer-events-none" />
+    <div class="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white sm:text-4xl">Ready to Transform Your Studio?</h2>
+      <p class="mt-4 text-lg text-gray-400">Join 500+ studios already using InkFlow. Free trial, no credit card required.</p>
+      <div class="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all hover:scale-105">
+          Start Free Trial
+        </a>
+        <a href="/contact" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+          Book a Demo
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
