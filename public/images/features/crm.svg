@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#18181b" rx="8"/>
+  <rect x="1" y="1" width="598" height="398" fill="none" stroke="#27272a" strokeWidth="2" rx="8"/>
+  <rect x="40" y="60" width="520" height="50" rx="6" fill="#27272a"/>
+  <rect x="40" y="130" width="520" height="180" rx="6" fill="#202024"/>
+  <text x="300" y="230" fontFamily="sans-serif" fontSize="20" fill="#a1a1aa" textAnchor="middle">Client CRM Dashboard</text>
+  <text x="300" y="260" fontFamily="sans-serif" fontSize="12" fill="#52525b" textAnchor="middle">InkFlow Screenshot</text>
+  <circle cx="55" cy="85" r="10" fill="#06b6d4"/>
+  <rect x="75" y="75" width="120" height="20" rx="4" fill="#52525b"/>
+  <circle cx="530" cy="85" r="12" fill="#06b6d4"/>
+  <text x="530" y="89" fontFamily="sans-serif" fontSize="10" fill="#18181b" textAnchor="middle" fontWeight="bold">IF</text>
+</svg>
