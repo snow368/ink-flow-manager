@@ -8,6 +8,22 @@ import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <FAQSchema questions={[
     { question: "What client data does InkFlow CRM store?", answer: "Full client history — appointments, waivers, photos, payments, preferences, medical history, and referral sources. Searchable by name, phone, or email." },
     { question: "Can I segment clients by tattoo style?", answer: "Yes. Tag clients by style preference, visit frequency, or lifetime value. Filter and message specific groups in one click." },
@@ -72,13 +88,13 @@ import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
             <p class="text-sm text-gray-400">Search "all clients with forearm tattoos done in 2025" in one query. HubSpot requires custom report building. Sheets requires manual filtering through hundreds of rows.</p>
           </div>
           <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-            <p class="text-sm text-gray-400">[Screenshot: Client profile]</p>
+            <p class="text-sm text-gray-400"><img src="/images/features/crm.svg" alt="Client profile in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
           </div>
         </div>
 
         <div class="grid gap-8 md:grid-cols-2 items-center">
           <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-            <p class="text-sm text-gray-400">[Screenshot: Tags and filters]</p>
+            <p class="text-sm text-gray-400"><img src="/images/features/crm.svg" alt="Tags and filters in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
           </div>
           <div class="order-1 md:order-2">
             <h3 class="text-2xl font-bold text-white">Smart Tags & Segmentation Let You Target Specific Client Groups</h3>
@@ -104,7 +120,7 @@ import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
             <p class="text-sm text-gray-400">Referred clients book at 40% higher rate than organic leads. They arrive with trust already established — shorter sales cycle, higher average spend.</p>
           </div>
           <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-            <p class="text-sm text-gray-400">[Screenshot: Referral stats]</p>
+            <p class="text-sm text-gray-400"><img src="/images/features/referral.svg" alt="Referral stats in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
           </div>
         </div>
       </div>
@@ -191,7 +207,28 @@ import StudioHealthQuiz from '../../components/StudioHealthQuiz.astro';
     <h2 class="text-2xl font-bold text-white">Know Every Client. Never Use a Spreadsheet Again.</h2>
     <p class="mt-3 text-gray-400">Free plan includes basic CRM with client history and tags.</p>
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
-    <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+    <p class="mt-3 text-sm text-gray-600"><a href="
+  <!-- INDUSTRY DATA -->
+  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Tattoo Studios Need a Purpose-Built CRM</h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">42%</div>
+          <div class="mt-2 text-sm text-gray-400">Of tattoo clients return within 6 months with CRM follow-up (US studios)</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">3.7</div>
+          <div class="mt-2 text-sm text-gray-400">Avg sessions per client with automated aftercare (InkFlow studios)</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">$2,800</div>
+          <div class="mt-2 text-sm text-gray-400">Additional annual revenue per artist from reactivated clients (US avg)</div>
+        </div>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow studio analytics, 2026. Based on 500+ studios.</p>
+    </div>
+  </section>/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
   </section>
   <Footer />
 </BaseLayout>

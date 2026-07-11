@@ -7,6 +7,14 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": []
+}
+</script>
+
   <SEOHead slot="head" title="InkFlow vs Mindbody for Tattoo Studios 2026" description="Mindbody has zero tattoo pages. InkFlow offers deposit booking, waivers, and aftercare built for studios. Start free." canonical="https://ink-flows.com/compare/mindbody/" />
   <FAQSchema questions={[
     { question: "Can Mindbody handle tattoo studio booking?", answer: "Mindbody was built for fitness studios, yoga classes, and salon appointments. It lacks deposit-based booking (collects payment at booking, not card-on-file), tattoo-specific digital waivers, aftercare automation, and ink/needle inventory tracking. Tattoo studios using Mindbody need 3-5 additional integrations to cover missing features." },

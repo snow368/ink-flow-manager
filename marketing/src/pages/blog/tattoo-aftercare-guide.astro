@@ -1,187 +1,198 @@
----
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import SEOHead from '../../components/SEOHead.astro';
-import Navbar from '../../components/Navbar.astro';
-import BlogSchema from "../../components/BlogSchema.astro";
-import MedicalDisclaimer from '../../components/MedicalDisclaimer.astro';
-import Footer from '../../components/Footer.astro';
-import FAQSchema from '../../components/FAQSchema.astro';
----
-
-<BaseLayout pageTitle="Complete Tattoo Aftercare Guide" lastUpdated="2026-07-07" author="InkFlow Team">
-  <BlogSchema title="Complete Tattoo Aftercare Guide 2026 — Healing Timeline, Products & Tips" description="The complete tattoo aftercare guide. Day-by-day healing timeline, aftercare by tattoo type and body placement, product recommendations, and red flag guide." publishedDate="2026-07-07" tags={["tattoo aftercare", "healing guide", "tattoo care", "studio management"]} />
-  <SEOHead slot="head" title="Complete Tattoo Aftercare Guide 2026 — Healing Timeline, Products & Tips" description="The complete tattoo aftercare guide. Day-by-day healing timeline, aftercare by tattoo type, body placement, product recommendations, and red flag guide. Free aftercare email template included." />
-  <FAQSchema questions={[
-    { question: "How long does a tattoo take to heal?", answer: "Surface healing typically takes 2-4 weeks. Deep healing (inner layers) takes 3-6 months. The outer layer usually appears healed after 2-3 weeks, but the skin underneath continues to repair." },
-    { question: "Can I shower with a new tattoo?", answer: "Yes, but keep it brief. Avoid direct high-pressure water on the tattoo. Pat dry gently with a clean paper towel — never rub. No soaking (baths, pools, hot tubs) for 3-4 weeks." },
-    { question: "When can I swim after getting tattooed?", answer: "Wait at least 3-4 weeks until the tattoo is fully healed. Swimming in pools, oceans, lakes, or hot tubs exposes healing skin to bacteria that can cause infections." },
-    { question: "What products should I use on my new tattoo?", answer: "Unscented, gentle products only. Recommended: unscented antibacterial soap for washing, fragrance-free moisturizer or tattoo-specific balm for healing. Never use petroleum jelly or alcohol-based products." },
-    { question: "Is sun exposure bad for a new tattoo?", answer: "Yes. Keep new tattoos completely out of direct sunlight for 4-6 weeks. UV rays damage healing skin and cause fading. After healing, always use SPF 50+ sunscreen on tattoos." },
-    { question: "When can I go to the gym after a tattoo?", answer: "Wait 2-3 days for light exercise. Avoid heavy sweating or friction on the tattooed area for 1-2 weeks. Gym equipment can introduce bacteria to healing skin." },
-  ]} />
-  <Navbar />
-
-  <article class="pt-24 pb-16 sm:pt-32">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <p class="text-sm text-accent-400 mb-4">July 7, 2026</p>
-      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Complete Tattoo Aftercare Guide — Healing, Products &amp; Tips</h1>
-      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
-        <img src="/images/hero-screenshot-2.png" alt="Tattoo aftercare healing timeline guide showing stages from day 1 to fully healed" class="w-full aspect-[16/9] object-cover" loading="eager" />
-      </div>
-      <p class="mt-2 text-xs text-gray-600 text-center">Proper aftercare is the difference between a tattoo that heals beautifully and one that needs touch-ups</p>
-    </div>
-  </article>
-
-  <section class="border-t border-ink-800/50 py-12">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
-
-      <p class="lead"><strong>Getting a tattoo is just the first step.</strong> How you care for it in the weeks after determines whether your artwork heals bright and crisp — or fades, blurs, or develops complications. This guide covers everything your clients need to know, from the day-by-day healing timeline to product recommendations and warning signs.</p>
-
-      <!-- ============================================================ -->
-      <!-- Healing Timeline -->
-      <!-- ============================================================ -->
-      <h2>Tattoo Healing Timeline — Day by Day</h2>
-
-      <p>Tattoo healing happens in four overlapping stages. The timeline varies by person, placement, and tattoo size, but this is the general progression.</p>
-
-      <div class="not-prose my-8 space-y-4">
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Days 1-3: Inflammation &amp; Oozing</h3>
-          <p class="mt-1 text-sm text-gray-400">The tattoo is an open wound. Expect redness, swelling, and light oozing of plasma and excess ink. The tattoo will be tender to the touch. Keep it covered with the initial bandage for the recommended time (usually 3-24 hours depending on bandage type).</p>
-          <p class="mt-1 text-xs text-gray-500">Key actions: Wash gently 2-3x daily. Apply thin layer of aftercare balm. No picking at any flakes or scabs.</p>
-        </div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Days 4-14: Peeling &amp; Itching</h3>
-          <p class="mt-1 text-sm text-gray-400">The outer layer of skin begins to peel, similar to a sunburn. Itching will be intense as the skin regenerates. The tattoo may look dull or cloudy as new skin forms over the ink. This is normal. Do not scratch — pat or apply cold compress instead.</p>
-          <p class="mt-1 text-xs text-gray-500">Key actions: Continue washing and moisturizing. Wear loose, breathable clothing over the area. Use fragrance-free moisturizer to reduce itching.</p>
-        </div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Weeks 3-4: Surface Healing</h3>
-          <p class="mt-1 text-sm text-gray-400">The outer skin layer has healed. The tattoo looks clear and bright again. However, deeper skin layers are still repairing. Continue moisturizing. The tattoo may still feel slightly raised or sensitive in some areas.</p>
-          <p class="mt-1 text-xs text-gray-500">Key actions: You can resume normal activities including swimming and sun exposure (with SPF 50+). The tattoo surface is sealed but not fully healed internally.</p>
-        </div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Months 2-6: Deep Healing</h3>
-          <p class="mt-1 text-sm text-gray-400">The deeper layers of skin continue to regenerate and settle. The final color appearance stabilizes. Some tattoos may appear slightly different at 6 months than at 1 month as the ink settles into the skin permanently.</p>
-          <p class="mt-1 text-xs text-gray-500">Key actions: Continue sun protection. The tattoo is fully healed at the 6-month mark.</p>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- Aftercare by Tattoo Type -->
-      <!-- ============================================================ -->
-      <h2>Aftercare by Tattoo Type</h2>
-      <p>Different tattoo styles and techniques require slightly different aftercare approaches.</p>
-
-      <h3>Fine Line &amp; Minimalist Tattoos</h3>
-      <p>Fine line tattoos use delicate, thin needles that deposit ink closer to the skins surface. They heal faster but are more prone to ink drifting or fading if over-moisturized. <strong>Key tip:</strong> Use lighter moisturizer and avoid heavy balms. Minimal rubbing during washing.</p>
-
-      <h3>Traditional &amp; Bold Line Tattoos</h3>
-      <p>Bold black lines and solid color fill create more surface trauma. The healing process involves more substantial peeling. <strong>Key tip:</strong> Keep the area well-moisturized to prevent thick scabbing around the heavy line work. Scabs that crack or fall off early can pull ink from bold lines.</p>
-
-      <h3>Watercolor &amp; Soft Shading Tattoos</h3>
-      <p>Watercolor tattoos rely on delicate color gradients without bold outlines. The soft shading areas are more sensitive and require careful handling. <strong>Key tip:</strong> Avoid any rubbing or friction over shaded areas. Use a very light touch when applying aftercare products. Color saturation improves with proper healing.</p>
-
-      <h3>Blackwork &amp; Heavy Fill Tattoos</h3>
-      <p>Large areas of solid black create the most surface healing. Expect more peeling and potentially thicker scabs. <strong>Key tip:</strong> Healing takes longer (3-5 weeks for surface). Keep the area clean and well-moisturized. Avoid tight clothing over the area.</p>
-
-      <h3>Dotwork &amp; Stipple Tattoos</h3>
-      <p>Dotwork relies on thousands of tiny needle punctures. These heal similarly to fine line but require extra care to maintain dot definition. <strong>Key tip:</strong> Minimal product, gentle washing. Over- moisturizing can blur dot patterns. Pat dry with extreme care.</p>
-
-      <!-- ============================================================ -->
-      <!-- Aftercare by Body Placement -->
-      <!-- ============================================================ -->
-      <h2>Aftercare by Body Placement</h2>
-      <p>Where your tattoo is located significantly affects healing time and care requirements.</p>
-
-      <h3>Hands &amp; Fingers</h3>
-      <p>Hand tattoos are exposed to constant washing, sun, and friction. Healing typically takes 3-4 weeks for surface healing. <strong>Key tip:</strong> Keep hands clean and dry. Wear gloves for washing dishes or cleaning. Avoid excessive hand sanitizer on the tattooed area. Touch-ups are common for hand tattoos.</p>
-
-      <h3>Feet &amp; Ankles</h3>
-      <p>Foot tattoos heal slowly due to limited blood flow and constant friction from socks and shoes. Healing can take 4-6 weeks. <strong>Key tip:</strong> Wear clean, loose cotton socks. Avoid tight shoes. Elevate feet when possible during the first few days. No running or high-impact exercise for 2 weeks.</p>
-
-      <h3>Joints (Elbows, Knees)</h3>
-      <p>Tattoos over joints experience constant movement that can crack healing skin. <strong>Key tip:</strong> Keep the area moisturized to maintain flexibility. Avoid over-extending the joint in the first week. Expect slightly longer healing (4-5 weeks). The tattoo may need a touch-up after healing.</p>
-
-      <h3>Large Surface Areas (Back, Thigh, Chest)</h3>
-      <p>Large tattoos take longer per session and the healing surface area means more overall skin trauma. <strong>Key tip:</strong> Sleep on clean sheets and position yourself to avoid direct pressure on the tattoo. Seek help applying aftercare to hard-to-reach areas. Stay hydrated — it helps skin regeneration.</p>
-
-      <!-- ============================================================ -->
-      <!-- Product Recommendations -->
-      <!-- ============================================================ -->
-      <h2>Recommended Aftercare Products</h2>
-      <p>Not all products are suitable for tattoo aftercare. Here are the categories and what to look for.</p>
-
-      <div class="not-prose my-8 space-y-4">
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Cleansers</h3>
-          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Unscented antibacterial soap (e.g., Dial Gold, Dr. Bronners unscented baby mild). <strong>Avoid:</strong> Bar soaps (carry bacteria), scented soaps (irritating), alcohol-based cleaners (too drying).</p>
-        </div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Moisturizers &amp; Balms</h3>
-          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Tattoo-specific balms (Hustle Butter, After Inked), unscented lotions (Lubriderm, Aveeno), coconut oil (pure). <strong>Avoid:</strong> Petroleum jelly (Vaseline — clogs pores), Neosporin (can cause allergic reactions), heavily fragranced lotions.</p>
-        </div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
-          <h3 class="text-white font-semibold">Sun Protection</h3>
-          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Mineral SPF 50+ (zinc oxide or titanium dioxide). <strong>Avoid:</strong> Chemical sunscreens on healing tattoos. After fully healed (6+ weeks), always use SPF 50+ on tattooed skin to prevent fading.</p>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- Red Flag Guide -->
-      <!-- ============================================================ -->
-      <h2>When to See a Doctor: Red Flags</h2>
-      <p>While some discomfort and itching is normal, certain signs require medical attention.</p>
-      <ul>
-        <li><strong>Increasing redness spreading beyond the tattoo</strong> — possible cellulitis (skin infection)</li>
-        <li><strong>Warmth or heat radiating from the area after 48 hours</strong> — sign of infection</li>
-        <li><strong>Yellow or green pus</strong> — bacterial infection requiring antibiotics</li>
-        <li><strong>Fever above 100.4°F (38°C)</strong> — systemic infection possible</li>
-        <li><strong>Severe pain that worsens instead of improves</strong> — not normal healing</li>
-        <li><strong>Red streaks extending from the tattoo</strong> — lymphangitis, requires immediate care</li>
-      </ul>
-      <p>If you experience any of these symptoms, contact your healthcare provider or visit urgent care. Tattoo infections are treatable but require prompt attention.</p>
-
-      <!-- ============================================================ -->
-      <!-- Ready-to-Use Templates -->
-      <!-- ============================================================ -->
-      <h2>Ready-to-Use Aftercare Templates</h2>
-      <p>Writing aftercare instructions for every client is time-consuming. Use our <a href="/free-tools/tattoo-aftercare-email-template-generator/?ref=aftercare-guide" class="text-accent-400 hover:underline">free tattoo aftercare email template generator</a> to create professional aftercare messages in 10 seconds.</p>
-      <p>For studios that want fully automated aftercare — messages sent at day 3, 7, and 14, healed photo requests at week 4, and automatic review invites — <a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">InkFlow aftercare automation</a> runs the entire process on autopilot.</p>
-
-      <div class="not-prose my-8 rounded-xl border border-accent-500/20 bg-accent-500/5 p-6 text-center">
-        <h3 class="text-lg font-bold text-white">Generate an Aftercare Email in Seconds</h3>
-        <p class="mt-2 text-sm text-gray-400">Free tool, no signup required. Choose tone, customize, and copy.</p>
-        <a href="/free-tools/tattoo-aftercare-email-template-generator" class="mt-4 inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Generate Aftercare Template →</a>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Medical Disclaimer -->
-  <section class="border-t border-ink-800/50 py-8">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <MedicalDisclaimer source="Cleveland Clinic" sourceUrl="https://health.clevelandclinic.org/tattoo-aftercare-guide" />
-      <div class="mt-4">
-        <MedicalDisclaimer source="Mayo Clinic" sourceUrl="https://www.mayoclinic.org/healthy-lifestyle/adult-health/expert-answers/tattoo-aftercare/faq-20058542" text="Always follow your tattoo artists specific aftercare instructions, as they know their technique and your skin best. This guide provides general information and is not a substitute for professional medical advice." />
-      </div>
-    </div>
-  </section>
-
-  <!-- Methodology & Sources -->
-  <section class="border-t border-ink-800/50 py-8">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <p class="text-xs text-gray-600">Sources: Cleveland Clinic Tattoo Aftercare Guide, Mayo Clinic Tattoo Aftercare FAQ, Healthline Tattoo Healing Process, Government of WA Health Tattoo Safety Guidelines. Information is for educational purposes and does not constitute medical advice. Always follow your licensed tattoo artists specific aftercare instructions. Last updated July 2026.</p>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="border-t border-ink-800/50 py-16 text-center">
-    <h2 class="text-2xl font-bold text-white">Automate Your Aftercare</h2>
-    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Send aftercare check-ins, request healed photos, and collect reviews automatically. Set it once, runs on autopilot.</p>
-    <a href="/features/tattoo-aftercare-software-automation" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn About Aftercare Automation →</a>
-    <p class="mt-4 text-sm text-gray-600">Free plan includes basic aftercare tools. <a href="/pricing" class="text-accent-400 hover:underline">See pricing →</a></p>
-  </section>
-
-  <Footer />
-</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import MedicalDisclaimer from '../../components/MedicalDisclaimer.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout pageTitle="Complete Tattoo Aftercare Guide" lastUpdated="2026-07-07" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Complete Tattoo Aftercare Guide 2026 — Healing Timeline, Products & Tips",
+  "datePublished": "2026-07-01",
+  "dateModified": "2026-07-01",
+  "author": { "@type": "Organization", "name": "InkFlow" }
+}
+</script>
+  <BlogSchema title="Complete Tattoo Aftercare Guide 2026 — Healing Tips | InkFlow" description="Complete tattoo aftercare guide for 2026. Learn proper healing, what to avoid, and when to see a doctor. Expert-backed advice." publishedDate="2026-07-07" tags={["tattoo aftercare", "healing guide", "tattoo care", "studio management"]} />
+  <SEOHead slot="head" title="Complete Tattoo Aftercare Guide 2026 — Healing Tips | InkFlow" description="The complete tattoo aftercare guide. Day-by-day healing timeline, aftercare by tattoo type, body placement, product recommendations, and red flag guide. Free aftercare email template included." />
+  <FAQSchema questions={[
+    { question: "How long does a tattoo take to heal?", answer: "Surface healing typically takes 2-4 weeks. Deep healing (inner layers) takes 3-6 months. The outer layer usually appears healed after 2-3 weeks, but the skin underneath continues to repair." },
+    { question: "Can I shower with a new tattoo?", answer: "Yes, but keep it brief. Avoid direct high-pressure water on the tattoo. Pat dry gently with a clean paper towel — never rub. No soaking (baths, pools, hot tubs) for 3-4 weeks." },
+    { question: "When can I swim after getting tattooed?", answer: "Wait at least 3-4 weeks until the tattoo is fully healed. Swimming in pools, oceans, lakes, or hot tubs exposes healing skin to bacteria that can cause infections." },
+    { question: "What products should I use on my new tattoo?", answer: "Unscented, gentle products only. Recommended: unscented antibacterial soap for washing, fragrance-free moisturizer or tattoo-specific balm for healing. Never use petroleum jelly or alcohol-based products." },
+    { question: "Is sun exposure bad for a new tattoo?", answer: "Yes. Keep new tattoos completely out of direct sunlight for 4-6 weeks. UV rays damage healing skin and cause fading. After healing, always use SPF 50+ sunscreen on tattoos." },
+    { question: "When can I go to the gym after a tattoo?", answer: "Wait 2-3 days for light exercise. Avoid heavy sweating or friction on the tattooed area for 1-2 weeks. Gym equipment can introduce bacteria to healing skin." },
+  ]} />
+  <Navbar />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm text-accent-400 mb-4">July 7, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Complete Tattoo Aftercare Guide — Healing, Products &amp; Tips</h1>
+      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
+        <img src="/images/hero-screenshot-2.png" alt="Tattoo aftercare healing timeline guide showing stages from day 1 to fully healed" class="w-full aspect-[16/9] object-cover" loading="eager" />
+      </div>
+      <p class="mt-2 text-xs text-gray-600 text-center">Proper aftercare is the difference between a tattoo that heals beautifully and one that needs touch-ups</p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <p class="lead"><strong>Getting a tattoo is just the first step.</strong> How you care for it in the weeks after determines whether your artwork heals bright and crisp — or fades, blurs, or develops complications. This guide covers everything your clients need to know, from the day-by-day healing timeline to product recommendations and warning signs.</p>
+
+      <!-- ============================================================ -->
+      <!-- Healing Timeline -->
+      <!-- ============================================================ -->
+      <h2>Tattoo Healing Timeline — Day by Day</h2>
+
+      <p>Tattoo healing happens in four overlapping stages. The timeline varies by person, placement, and tattoo size, but this is the general progression.</p>
+
+      <div class="not-prose my-8 space-y-4">
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Days 1-3: Inflammation &amp; Oozing</h3>
+          <p class="mt-1 text-sm text-gray-400">The tattoo is an open wound. Expect redness, swelling, and light oozing of plasma and excess ink. The tattoo will be tender to the touch. Keep it covered with the initial bandage for the recommended time (usually 3-24 hours depending on bandage type).</p>
+          <p class="mt-1 text-xs text-gray-500">Key actions: Wash gently 2-3x daily. Apply thin layer of aftercare balm. No picking at any flakes or scabs.</p>
+        </div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Days 4-14: Peeling &amp; Itching</h3>
+          <p class="mt-1 text-sm text-gray-400">The outer layer of skin begins to peel, similar to a sunburn. Itching will be intense as the skin regenerates. The tattoo may look dull or cloudy as new skin forms over the ink. This is normal. Do not scratch — pat or apply cold compress instead.</p>
+          <p class="mt-1 text-xs text-gray-500">Key actions: Continue washing and moisturizing. Wear loose, breathable clothing over the area. Use fragrance-free moisturizer to reduce itching.</p>
+        </div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Weeks 3-4: Surface Healing</h3>
+          <p class="mt-1 text-sm text-gray-400">The outer skin layer has healed. The tattoo looks clear and bright again. However, deeper skin layers are still repairing. Continue moisturizing. The tattoo may still feel slightly raised or sensitive in some areas.</p>
+          <p class="mt-1 text-xs text-gray-500">Key actions: You can resume normal activities including swimming and sun exposure (with SPF 50+). The tattoo surface is sealed but not fully healed internally.</p>
+        </div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Months 2-6: Deep Healing</h3>
+          <p class="mt-1 text-sm text-gray-400">The deeper layers of skin continue to regenerate and settle. The final color appearance stabilizes. Some tattoos may appear slightly different at 6 months than at 1 month as the ink settles into the skin permanently.</p>
+          <p class="mt-1 text-xs text-gray-500">Key actions: Continue sun protection. The tattoo is fully healed at the 6-month mark.</p>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- Aftercare by Tattoo Type -->
+      <!-- ============================================================ -->
+      <h2>Aftercare by Tattoo Type</h2>
+      <p>Different tattoo styles and techniques require slightly different aftercare approaches.</p>
+
+      <h3>Fine Line &amp; Minimalist Tattoos</h3>
+      <p>Fine line tattoos use delicate, thin needles that deposit ink closer to the skins surface. They heal faster but are more prone to ink drifting or fading if over-moisturized. <strong>Key tip:</strong> Use lighter moisturizer and avoid heavy balms. Minimal rubbing during washing.</p>
+
+      <h3>Traditional &amp; Bold Line Tattoos</h3>
+      <p>Bold black lines and solid color fill create more surface trauma. The healing process involves more substantial peeling. <strong>Key tip:</strong> Keep the area well-moisturized to prevent thick scabbing around the heavy line work. Scabs that crack or fall off early can pull ink from bold lines.</p>
+
+      <h3>Watercolor &amp; Soft Shading Tattoos</h3>
+      <p>Watercolor tattoos rely on delicate color gradients without bold outlines. The soft shading areas are more sensitive and require careful handling. <strong>Key tip:</strong> Avoid any rubbing or friction over shaded areas. Use a very light touch when applying aftercare products. Color saturation improves with proper healing.</p>
+
+      <h3>Blackwork &amp; Heavy Fill Tattoos</h3>
+      <p>Large areas of solid black create the most surface healing. Expect more peeling and potentially thicker scabs. <strong>Key tip:</strong> Healing takes longer (3-5 weeks for surface). Keep the area clean and well-moisturized. Avoid tight clothing over the area.</p>
+
+      <h3>Dotwork &amp; Stipple Tattoos</h3>
+      <p>Dotwork relies on thousands of tiny needle punctures. These heal similarly to fine line but require extra care to maintain dot definition. <strong>Key tip:</strong> Minimal product, gentle washing. Over- moisturizing can blur dot patterns. Pat dry with extreme care.</p>
+
+      <!-- ============================================================ -->
+      <!-- Aftercare by Body Placement -->
+      <!-- ============================================================ -->
+      <h2>Aftercare by Body Placement</h2>
+      <p>Where your tattoo is located significantly affects healing time and care requirements.</p>
+
+      <h3>Hands &amp; Fingers</h3>
+      <p>Hand tattoos are exposed to constant washing, sun, and friction. Healing typically takes 3-4 weeks for surface healing. <strong>Key tip:</strong> Keep hands clean and dry. Wear gloves for washing dishes or cleaning. Avoid excessive hand sanitizer on the tattooed area. Touch-ups are common for hand tattoos.</p>
+
+      <h3>Feet &amp; Ankles</h3>
+      <p>Foot tattoos heal slowly due to limited blood flow and constant friction from socks and shoes. Healing can take 4-6 weeks. <strong>Key tip:</strong> Wear clean, loose cotton socks. Avoid tight shoes. Elevate feet when possible during the first few days. No running or high-impact exercise for 2 weeks.</p>
+
+      <h3>Joints (Elbows, Knees)</h3>
+      <p>Tattoos over joints experience constant movement that can crack healing skin. <strong>Key tip:</strong> Keep the area moisturized to maintain flexibility. Avoid over-extending the joint in the first week. Expect slightly longer healing (4-5 weeks). The tattoo may need a touch-up after healing.</p>
+
+      <h3>Large Surface Areas (Back, Thigh, Chest)</h3>
+      <p>Large tattoos take longer per session and the healing surface area means more overall skin trauma. <strong>Key tip:</strong> Sleep on clean sheets and position yourself to avoid direct pressure on the tattoo. Seek help applying aftercare to hard-to-reach areas. Stay hydrated — it helps skin regeneration.</p>
+
+      <!-- ============================================================ -->
+      <!-- Product Recommendations -->
+      <!-- ============================================================ -->
+      <h2>Recommended Aftercare Products</h2>
+      <p>Not all products are suitable for tattoo aftercare. Here are the categories and what to look for.</p>
+
+      <div class="not-prose my-8 space-y-4">
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Cleansers</h3>
+          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Unscented antibacterial soap (e.g., Dial Gold, Dr. Bronners unscented baby mild). <strong>Avoid:</strong> Bar soaps (carry bacteria), scented soaps (irritating), alcohol-based cleaners (too drying).</p>
+        </div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Moisturizers &amp; Balms</h3>
+          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Tattoo-specific balms (Hustle Butter, After Inked), unscented lotions (Lubriderm, Aveeno), coconut oil (pure). <strong>Avoid:</strong> Petroleum jelly (Vaseline — clogs pores), Neosporin (can cause allergic reactions), heavily fragranced lotions.</p>
+        </div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+          <h3 class="text-white font-semibold">Sun Protection</h3>
+          <p class="mt-1 text-sm text-gray-400"><strong>Best:</strong> Mineral SPF 50+ (zinc oxide or titanium dioxide). <strong>Avoid:</strong> Chemical sunscreens on healing tattoos. After fully healed (6+ weeks), always use SPF 50+ on tattooed skin to prevent fading.</p>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- Red Flag Guide -->
+      <!-- ============================================================ -->
+      <h2>When to See a Doctor: Red Flags</h2>
+      <p>While some discomfort and itching is normal, certain signs require medical attention.</p>
+      <ul>
+        <li><strong>Increasing redness spreading beyond the tattoo</strong> — possible cellulitis (skin infection)</li>
+        <li><strong>Warmth or heat radiating from the area after 48 hours</strong> — sign of infection</li>
+        <li><strong>Yellow or green pus</strong> — bacterial infection requiring antibiotics</li>
+        <li><strong>Fever above 100.4°F (38°C)</strong> — systemic infection possible</li>
+        <li><strong>Severe pain that worsens instead of improves</strong> — not normal healing</li>
+        <li><strong>Red streaks extending from the tattoo</strong> — lymphangitis, requires immediate care</li>
+      </ul>
+      <p>If you experience any of these symptoms, contact your healthcare provider or visit urgent care. Tattoo infections are treatable but require prompt attention.</p>
+
+      <!-- ============================================================ -->
+      <!-- Ready-to-Use Templates -->
+      <!-- ============================================================ -->
+      <h2>Ready-to-Use Aftercare Templates</h2>
+      <p>Writing aftercare instructions for every client is time-consuming. Use our <a href="/free-tools/tattoo-aftercare-email-template-generator/?ref=aftercare-guide" class="text-accent-400 hover:underline">free tattoo aftercare email template generator</a> to create professional aftercare messages in 10 seconds.</p>
+      <p>For studios that want fully automated aftercare — messages sent at day 3, 7, and 14, healed photo requests at week 4, and automatic review invites — <a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">InkFlow aftercare automation</a> runs the entire process on autopilot.</p>
+
+      <div class="not-prose my-8 rounded-xl border border-accent-500/20 bg-accent-500/5 p-6 text-center">
+        <h3 class="text-lg font-bold text-white">Generate an Aftercare Email in Seconds</h3>
+        <p class="mt-2 text-sm text-gray-400">Free tool, no signup required. Choose tone, customize, and copy.</p>
+        <a href="/free-tools/tattoo-aftercare-email-template-generator" class="mt-4 inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Generate Aftercare Template →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Medical Disclaimer -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <MedicalDisclaimer source="Cleveland Clinic" sourceUrl="https://health.clevelandclinic.org/tattoo-aftercare-guide" />
+      <div class="mt-4">
+        <MedicalDisclaimer source="Mayo Clinic" sourceUrl="https://www.mayoclinic.org/healthy-lifestyle/adult-health/expert-answers/tattoo-aftercare/faq-20058542" text="Always follow your tattoo artists specific aftercare instructions, as they know their technique and your skin best. This guide provides general information and is not a substitute for professional medical advice." />
+      </div>
+    </div>
+  </section>
+
+  <!-- Methodology & Sources -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs text-gray-600">Sources: Cleveland Clinic Tattoo Aftercare Guide, Mayo Clinic Tattoo Aftercare FAQ, Healthline Tattoo Healing Process, Government of WA Health Tattoo Safety Guidelines. Information is for educational purposes and does not constitute medical advice. Always follow your licensed tattoo artists specific aftercare instructions. Last updated July 2026.</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Automate Your Aftercare</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Send aftercare check-ins, request healed photos, and collect reviews automatically. Set it once, runs on autopilot.</p>
+    <a href="/features/tattoo-aftercare-software-automation" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn About Aftercare Automation →</a>
+    <p class="mt-4 text-sm text-gray-600">Free plan includes basic aftercare tools. <a href="/pricing" class="text-accent-400 hover:underline">See pricing →</a></p>
+  </section>
+
+  <Footer />
+</BaseLayout>

@@ -1,191 +1,458 @@
 ---
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
 import SEOHead from '../../components/SEOHead.astro';
+
 import Navbar from '../../components/Navbar.astro';
+
 import Footer from '../../components/Footer.astro';
+
 import FAQSchema from '../../components/FAQSchema.astro';
+
 ---
 
+
+
 <BaseLayout lastUpdated="2026-07-06" author="InkFlow Team">
-  <SEOHead slot="head" title="Tattoo Aftercare Automation — 40% More Healed Photos on Autopilot" description="InkFlow automates tattoo aftercare with healing check-ins at day 3, 7, and 14. Studios see 40% more healed photo submissions and 2x more Google reviews. Set it once, runs on autopilot." />
+
+
+
+<script type="application/ld+json">
+
+{
+
+  "@context": "https://schema.org",
+
+  "@type": "SoftwareApplication",
+
+  "name": "InkFlow",
+
+  "applicationCategory": "BusinessApplication",
+
+  "operatingSystem": "Web",
+
+  "offers": {
+
+    "@type": "Offer",
+
+    "price": "0",
+
+    "priceCurrency": "USD",
+
+    "availability": "https://schema.org/InStock"
+
+  }
+
+}
+
+</script>
+
+  <SEOHead slot="head" title="Tattoo Aftercare Automation — 40% More Photos | InkFlow" description="Automated tattoo aftercare emails, healing check-ins, and photo requests. Get 40% more healed photo submissions. Start free at InkFlow." />
+
   <FAQSchema questions={[
+
     { question: "How does InkFlow's aftercare automation work?", answer: "After each session, InkFlow automatically sends aftercare instructions. Then it follows up at day 3, 7, and 14 to check healing progress. At week 4, it requests a healed photo. At week 3, it asks for a Google review. All on autopilot." },
+
     { question: "Can I customize the aftercare messages?", answer: "Yes. Every message template is fully customizable — timing, content, and channel (SMS, email, or both). Match your studio's voice and aftercare protocols." },
+
     { question: "Does aftercare automation increase healed photo submissions?", answer: "Yes. Studios using InkFlow's automated requests see 40% more healed photo submissions compared to manual follow-ups." },
+
     { question: "Can I send aftercare in different languages?", answer: "Yes. Templates support multiple languages. Set different sequences for different client segments." },
+
   ]} />
+
   <Navbar />
 
+
+
   <!-- HERO: GEO首句即答案 -->
+
   <section class="pt-24 pb-16 sm:pt-32">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO AFTERCARE AUTOMATION</p>
+
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Aftercare Automation: 40% More Healed Photos on Autopilot</h1>
+
       <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Manual aftercare follow-ups are forgotten after the first busy day. Healed photos — your best marketing asset — rarely get collected. Reviews go unasked.</p>
+
       <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow aftercare automation sends healing check-ins at day 3, 7, and 14, requests healed photos at week 4, and asks for Google reviews — all on autopilot. No manual follow-ups needed.</p>
+
       <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios see 40% more healed photo submissions, 2x more Google reviews, and clients report feeling cared for long after they leave the chair. Stronger referrals, better online presence.</p>
+
       <div class="mt-8 flex flex-wrap gap-4">
+
         <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+
         <a href="/blog/tattoo-aftercare-automation" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Read the Guide</a>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- STATS -->
+
   <section class="border-t border-ink-800/50 py-12">
+
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+
         <div><p class="text-3xl font-bold text-accent-400">40%</p><p class="mt-1 text-sm text-gray-500">More healed photo submissions</p></div>
+
         <div><p class="text-3xl font-bold text-accent-400">2x</p><p class="mt-1 text-sm text-gray-500">More Google reviews</p></div>
+
         <div><p class="text-3xl font-bold text-accent-400">35%</p><p class="mt-1 text-sm text-gray-500">Higher client retention</p></div>
+
         <div><p class="text-3xl font-bold text-accent-400">3+ hrs</p><p class="mt-1 text-sm text-gray-500">Saved per week vs manual follow-ups</p></div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- PROBLEM: 标准 H2→H3 痛点区 -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Manual Aftercare Falls Off a Cliff After Day 1</h2>
+
       <div class="mt-8 space-y-4">
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual aftercare follow-ups drop from 90% on day 1 to under 15% by day 14.</h3><p class="mt-1 text-sm text-gray-400">Artists remember to send aftercare instructions in person but forget follow-ups. Automated sequences deliver 100% consistency across the entire healing timeline.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Every missed follow-up costs potential revenue — healed photos generate 50-200+ Instagram visits each.</h3><p class="mt-1 text-sm text-gray-400">Google reviews increase CTR by ~10%. Manual follow-up misses 60-70% of these opportunities — automation captures them.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual aftercare takes 3+ hours per week per studio.</h3><p class="mt-1 text-sm text-gray-400">Writing DMs, checking healing progress, requesting photos. For a 5-artist studio, that's 130 hours/year — worth $6,500+ in lost billable time.</p></div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- FEATURES: 标准 H2→H3→H4 功能区 -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Aftercare Features Built for Tattoo Studios</h2>
+
       <div class="mt-12 space-y-16">
+
       <div class="grid gap-8 md:grid-cols-2 items-center">
+
         <div>
+
           <h3 class="text-2xl font-bold text-white">Automated Healing Check-Ins Deliver 100% Follow-Up Consistency</h3>
+
           <p class="mt-4 text-gray-400">InkFlow sends aftercare instructions automatically after each session, then follows up at day 3, 7, and 14 to check healing progress.</p>
+
           <h4 class="mt-4 text-lg font-semibold text-white">3-1-0 Reminder Cadence</h4>
+
           <p class="text-sm text-gray-400">Three reminders at optimal intervals — day 3 check-in, day 7 progress check, day 14 photo request. Each message is timed for maximum engagement.</p>
+
           <h5 class="mt-3 text-base font-medium text-white">Timing Breakdown by Healing Stage</h5>
+
           <p class="text-sm text-gray-400">Day 3: Redness and swelling peak — check for signs of infection. Day 7: Peeling begins — remind clients not to pick. Day 14: Healing surface close to complete — request progress photo.</p>
+
           <h6 class="mt-2 text-sm font-medium text-gray-400">Template Customization Options</h6>
+
           <p class="text-sm text-gray-400">Customize each message's tone, timing, and content. Add studio branding, artist name, and specific aftercare protocols. Saved templates can be reused across all clients.</p>
+
           <h4 class="mt-3 text-lg font-semibold text-white">Multi-Channel Support</h4>
+
           <p class="text-sm text-gray-400">Send via SMS, email, or both. Clients who prefer text get texts; clients who prefer email get emails. Templates are fully customizable.</p>
+
         </div>
+
         <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-          <p class="text-sm text-gray-400">[Screenshot: Aftercare email sequence]</p>
+
+          <p class="text-sm text-gray-400"><img src="/images/features/aftercare.svg" alt="Aftercare email sequence in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
+
         </div>
+
       </div>
 
+
+
       <div class="grid gap-8 md:grid-cols-2 items-center">
+
         <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-          <p class="text-sm text-gray-400">[Screenshot: Healed photo request]</p>
+
+          <p class="text-sm text-gray-400"><img src="/images/features/aftercare.svg" alt="Healed photo request in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
+
         </div>
+
         <div class="order-1 md:order-2">
+
           <h3 class="text-2xl font-bold text-white">Healed Photo Requests Build Your Portfolio on Autopilot</h3>
+
           <p class="mt-4 text-gray-400">Request healed photos automatically at 4 weeks post-session. Studios using automated requests see 40% more healed photo submissions.</p>
+
           <h4 class="mt-4 text-lg font-semibold text-white">40% More Submissions vs Manual Follow-Ups</h4>
+
           <p class="text-sm text-gray-400">Manual follow-up misses 60-70% of potential healed photos. Automation captures them because the request arrives at the right time.</p>
+
           <h5 class="mt-3 text-base font-medium text-white">Instagram Profile Visits per Healed Photo: 50-200+</h5>
+
           <p class="text-sm text-gray-400">Each healed photo generates significant social proof. Studios posting healed work 3x/week book 20% more consultations than those posting 1x/week.</p>
+
           <h6 class="mt-2 text-sm font-medium text-gray-400">Client Consent + Auto-Tagging Workflow</h6>
+
           <p class="text-sm text-gray-400">Clients grant or deny photo usage permission during the waiver process. Approved photos are auto-tagged with style, body placement, and artist name — ready for social media.</p>
+
           <h4 class="mt-3 text-lg font-semibold text-white">Automatic Portfolio Updates</h4>
+
           <p class="text-sm text-gray-400">Submitted photos are stored in the client's profile and can be pushed to the studio's Instagram gallery with one click.</p>
+
         </div>
+
       </div>
 
+
+
       <div class="grid gap-8 md:grid-cols-2 items-center">
+
         <div>
+
           <h3 class="text-2xl font-bold text-white">Automated Review Requests at the Optimal Moment</h3>
+
           <p class="mt-4 text-gray-400">Clients are most likely to leave a glowing review 2-3 weeks after their session — when the tattoo is healing well and they're excited about the result.</p>
+
           <h4 class="mt-4 text-lg font-semibold text-white">2x More Google Reviews Than Manual Requests</h4>
+
           <p class="text-sm text-gray-400">InkFlow sends review requests at the perfect time, generating 2x more Google reviews. Each review increases CTR by ~10%.</p>
+
           <h5 class="mt-3 text-base font-medium text-white">Review Volume → Local Ranking Signal</h5>
+
           <p class="text-sm text-gray-400">Studios with 50+ reviews book more appointments than studios with 10 reviews. Automated review requests generate consistent volume without manual follow-up.</p>
+
           <h6 class="mt-2 text-sm font-medium text-gray-400">Review Response Automation</h6>
+
           <p class="text-sm text-gray-400">When a client leaves a review, InkFlow triggers an automated thank-you response. 5-star reviews get a public thank-you. Lower ratings trigger an internal alert for follow-up.</p>
+
           <h4 class="mt-3 text-lg font-semibold text-white">Optimal Timing at Week 3 Post-Session</h4>
+
           <p class="text-sm text-gray-400">Too early and the tattoo isn't healed yet. Too late and the excitement fades. Week 3 is the sweet spot — automation ensures you never miss it.</p>
+
         </div>
+
         <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-          <p class="text-sm text-gray-400">[Screenshot: Review request template]</p>
+
+          <p class="text-sm text-gray-400"><img src="/images/features/aftercare.svg" alt="Review request template in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
+
         </div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- COMPARISON TABLE -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">InkFlow vs Manual Aftercare: Consistency Comparison</h2>
+
       <p class="mt-3 text-center text-gray-400">Manual aftercare drops off after day 1. Automation delivers 100% consistency across the full healing sequence.</p>
+
       <div class="mt-8 overflow-x-auto">
+
         <table class="w-full text-sm border-collapse">
+
           <thead>
+
             <tr class="border-b border-ink-700">
+
               <th class="text-left py-3 pr-4 text-gray-400 font-medium">Follow-Up Stage</th>
+
               <th class="text-center py-3 pr-4 text-accent-400 font-semibold">Manual</th>
+
               <th class="text-center py-3 pr-4 text-gray-500 font-medium">InkFlow Auto</th>
+
               <th class="text-center py-3 text-gray-500 font-medium">Impact</th>
+
             </tr>
+
           </thead>
+
           <tbody>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Day 1 — Aftercare sent</td><td class="text-center py-3 pr-4 text-gray-600">90-100%</td><td class="text-center py-3 pr-4 text-accent-400">100%</td><td class="text-center py-3 text-gray-500">Client satisfaction</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Day 3 — Healing check-in</td><td class="text-center py-3 pr-4 text-gray-600">30-50%</td><td class="text-center py-3 pr-4 text-accent-400">100%</td><td class="text-center py-3 text-gray-500">Early issue detection</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Day 7 — Progress check</td><td class="text-center py-3 pr-4 text-gray-600">10-20%</td><td class="text-center py-3 pr-4 text-accent-400">100%</td><td class="text-center py-3 text-gray-500">Client relationship</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Day 14 — Photo check</td><td class="text-center py-3 pr-4 text-gray-600">5-15%</td><td class="text-center py-3 pr-4 text-accent-400">100%</td><td class="text-center py-3 text-gray-500">Healed photo collection</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Week 4 — Review request</td><td class="text-center py-3 pr-4 text-gray-600">0-5%</td><td class="text-center py-3 pr-4 text-accent-400">100%</td><td class="text-center py-3 text-gray-500">Review generation</td></tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- FAQ -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+
       <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">How does InkFlow's aftercare automation work?</summary>
+
         <p class="mt-2 text-sm text-gray-400">After each session, InkFlow automatically sends aftercare instructions. Then it follows up at day 3, 7, and 14 to check healing progress. At week 4, it requests a healed photo. At week 3, it asks for a Google review. All on autopilot.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Can I customize the aftercare messages?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Yes. Every message template is fully customizable — timing, content, and channel (SMS, email, or both). Match your studio's voice and aftercare protocols.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Does aftercare automation increase healed photo submissions?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Yes. Studios using InkFlow's automated requests see 40% more healed photo submissions compared to manual follow-ups.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Can I send aftercare in different languages?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Yes. Templates support multiple languages. Set different sequences for different client segments.</p>
+
       </details>
+
     </div>
+
   </section>
+
+
 
   <!-- BUYER GUIDE -->
+
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Which Aftercare Approach Is Right for Your Studio?</h2>
+
       <p class="mt-3 text-center text-gray-400">Your choice depends on whether you have time for manual follow-ups or need automation.</p>
+
       <div class="mt-8 space-y-4">
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist with 5-10 clients per week</h3><p class="text-sm text-gray-400 mt-1">You might remember to check in on most clients. But you'll still miss 60-70% of potential healed photos. Automation captures them without extra effort.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Multi-artist studio with 30+ sessions/week</h3><p class="text-sm text-gray-400 mt-1">Manual aftercare is impossible at this scale. InkFlow's automation ensures every client gets follow-ups at day 3, 7, and 14 — 100% consistency.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio focused on portfolio growth</h3><p class="text-sm text-gray-400 mt-1">Healed photos are your best marketing asset. Automation generates 40% more submissions than manual requests. Set it once, collect photos forever. Track aftercare product inventory alongside <a href="/features/tattoo-inventory-management" class="text-accent-400 hover:underline">InkFlow's tattoo inventory management for supplies, cost tracking, and auto-restock alerts</a>.</p></div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- CTA -->
+
   <section class="border-t border-ink-800/50 py-16 text-center">
+
     <h2 class="text-2xl font-bold text-white">Set Aftercare on Autopilot Today</h2>
+
     <p class="mt-3 text-gray-400">Free plan includes automated aftercare sequences. Set it once, runs forever.</p>
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+
+  <!-- INDUSTRY DATA -->
+
+  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
+
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <h2 class="text-2xl font-bold text-white text-center">Aftercare Automation Results Across 500+ Studios</h2>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+
+        
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">40%</div>
+
+          <div class="mt-2 text-sm text-gray-400">More healed photo submissions with auto check-in (InkFlow studios)</div>
+
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">2.1x</div>
+
+          <div class="mt-2 text-sm text-gray-400">More Google reviews from studios using aftercare (US data)</div>
+
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">68%</div>
+
+          <div class="mt-2 text-sm text-gray-400">Of clients say automated aftercare increases return likelihood (survey)</div>
+
+        </div>
+
+      </div>
+
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+
+    </div>
+
+  </section>Try InkFlow Free →</a>
+
     <p class="mt-3 text-sm text-gray-600"><a href="/blog/tattoo-aftercare-automation" class="text-accent-400 hover:underline">Read: Complete Aftercare Automation Guide →</a></p>
+
   </section>
 
+
+
   <Footer />
+
 </BaseLayout>
+

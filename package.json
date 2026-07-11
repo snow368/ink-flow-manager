@@ -1,20 +1,34 @@
 {
-  "name": "inkflow-marketing",
-  "type": "module",
+  "name": "inkflow-manager",
+  "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "build:prod": "astro build",
-    "preview": "astro preview"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:prod": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.0.0",
-    "@astrojs/tailwind": "^6.0.0",
-    "@tailwindcss/typography": "^0.5.20",
-    "astro": "^5.0.0"
+    "dexie": "^4.4.2",
+    "lucide-react": "^0.441.0",
+    "qrcode": "^1.5.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.3",
+    "vite-plugin-pwa": "^0.20.5",
+    "workbox-precaching": "^7.4.0",
+    "workbox-routing": "^7.4.0",
+    "workbox-strategies": "^7.4.0"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.0"
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.28",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.21",
+    "vitest": "^4.1.7"
   }
 }
