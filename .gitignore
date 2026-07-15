@@ -17,3 +17,4 @@ marketing/node_modules/
 marketing/dist/
 marketing/.astro/
 marketing/.wrangler/
+__pycache__/
