@@ -1,0 +1,354 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SEOHead from '../../../components/SEOHead.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import FAQSchema from '../../../components/FAQSchema.astro';
+import { TATTOO_CATEGORIES } from '../../../data/tattoo-meanings';
+import {
+  CATEGORY_PAGE_CONTENT,
+  CATEGORY_RELATED_TOOLS,
+  CATEGORY_RELATED_CATEGORIES,
+  CATEGORY_EEAT,
+  EEAT_AUTHOR,
+  EEAT_PUBLISHED,
+  EEAT_EXPERIENCE,
+} from '../../../data/tattoo-category-content';
+
+export async function getStaticPaths() {
+  return TATTOO_CATEGORIES.map((cat) => ({
+    params: { category: cat.id },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+const content = CATEGORY_PAGE_CONTENT[category.id];
+const site = 'https://ink-flows.com';
+const canonical = `${site}/meaning/category/${category.id}`;
+const today = new Date().toISOString().slice(0, 10);
+
+const h1 = content?.h1 ?? `${category.name} Tattoo Meanings`;
+const metaTitle = `${category.name} Tattoo Meanings`; // SEOHead appends " | InkFlow"
+const metaDescription = content?.metaDescription ?? category.desc;
+const introParas = (content?.intro ?? category.desc).split('\n\n');
+const faqs = content?.faqs ?? [];
+const deepDiveParas = content?.deepDive ? content.deepDive.split('\n\n') : [];
+const didYouKnow = content?.didYouKnow ?? [];
+const dataInsights = content?.dataInsights ?? [];
+const relatedTools = content?.relatedTools ?? CATEGORY_RELATED_TOOLS[category.id] ?? [];
+const choosingParas = content?.choosingGuide ? content.choosingGuide.split('\n\n') : [];
+const placementParas = content?.placementGuide ? content.placementGuide.split('\n\n') : [];
+const popularSymbols = content?.popularSymbols ?? [];
+const relatedCategoryIds = content?.relatedCategories ?? CATEGORY_RELATED_CATEGORIES[category.id] ?? [];
+const relatedCategories = relatedCategoryIds
+  .map((id) => TATTOO_CATEGORIES.find((c) => c.id === id))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c));
+
+// E-E-A-T (Experience / Expertise / Authoritativeness / Trust)
+const eeat = CATEGORY_EEAT[category.id] ?? {};
+const author = EEAT_AUTHOR;
+const reviewer = eeat.reviewer;
+const sources = eeat.sources ?? [];
+const fmtDate = (d: string) =>
+  new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+
+// CollectionPage schema listing every symbol in this category (hub structure)
+const collectionJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: h1,
+  description: metaDescription,
+  url: canonical,
+  author: {
+    '@type': 'Person',
+    name: author.name,
+    jobTitle: author.title,
+    url: author.url,
+  },
+  datePublished: EEAT_PUBLISHED,
+  dateModified: today,
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: category.symbols.map((s, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: s.name,
+      url: `${site}/meaning/${s.slug}`,
+    })),
+  },
+});
+
+const personJson = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: author.name,
+  jobTitle: author.title,
+  url: author.url,
+  worksFor: { '@type': 'Organization', name: 'InkFlow', url: site },
+});
+---
+
+<BaseLayout
+  breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Tattoo Meanings', href: '/meaning' },
+    { label: category.name },
+  ]}
+  pageTitle={category.name}
+  lastUpdated={today}
+  author={author.name}
+  reviewedBy={reviewer?.name}
+>
+  <SEOHead slot="head" title={metaTitle} description={metaDescription} canonical={canonical} appSchema={false} />
+  <script type="application/ld+json" set:html={collectionJson} />
+  <script type="application/ld+json" set:html={personJson} />
+  <FAQSchema questions={faqs} />
+  <Navbar />
+
+  <!-- Hero -->
+  <section class="pt-28 pb-10">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO MEANINGS</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">{h1}</h1>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl">{metaDescription}</p>
+    </div>
+  </section>
+
+  <!-- BLUF intro + top meanings -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      {introParas.map((p) => <p class="mt-4 text-gray-400 leading-relaxed">{p}</p>)}
+      <div class="mt-6 grid gap-3 sm:grid-cols-2">
+        {category.symbols.slice(0, 6).map((s) => (
+          <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+            <p class="font-semibold text-white">{s.name}</p>
+            <p class="mt-1 text-sm text-gray-500">{s.meaning}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Deep dive: exclusive angle competitors miss -->
+  {deepDiveParas.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">How to Read the Meaning</h2>
+        <p class="mt-2 text-sm text-gray-500">Most guides list one meaning per symbol. The real signal is in the details — line weight, count, and cultural layering.</p>
+        {deepDiveParas.map((p) => <p class="mt-4 text-gray-400 leading-relaxed">{p}</p>)}
+      </div>
+    </section>
+  )}
+
+  <!-- Did you know: differentiation facts -->
+  {didYouKnow.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Did You Know?</h2>
+        <ul class="mt-6 space-y-3">
+          {didYouKnow.map((fact) => (
+            <li class="flex gap-3 rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+              <span class="mt-0.5 text-accent-400">&#9733;</span>
+              <span class="text-gray-400 leading-relaxed">{fact}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- Original data insights (our own dataset — hardest for competitors to copy) -->
+  {dataInsights.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Original Data</h2>
+        <p class="mt-2 text-sm text-gray-500">Figures below are drawn from InkFlow's own directory of 70 curated tattoo symbols across 15 categories — original research, not repackaged from other sites.</p>
+        <ul class="mt-6 space-y-3">
+          {dataInsights.map((fact) => (
+            <li class="flex gap-3 rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+              <span class="mt-0.5 text-accent-400">&#9632;</span>
+              <span class="text-gray-400 leading-relaxed">{fact}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- How to choose a {category} tattoo -->
+  {choosingParas.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">How to Choose a {category.name} Tattoo</h2>
+        {choosingParas.map((p) => <p class="mt-4 text-gray-400 leading-relaxed">{p}</p>)}
+      </div>
+    </section>
+  )}
+
+  <!-- Placement & sizing -->
+  {placementParas.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Best Placements &amp; Sizing for {category.name} Tattoos</h2>
+        {placementParas.map((p) => <p class="mt-4 text-gray-400 leading-relaxed">{p}</p>)}
+      </div>
+    </section>
+  )}
+
+  <!-- Most-requested symbols -->
+  {popularSymbols.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Most-Requested {category.name} Symbols</h2>
+        <p class="mt-2 text-sm text-gray-500">The designs clients ask for most in this category, and the meaning behind each.</p>
+        <div class="mt-6 space-y-4">
+          {popularSymbols.map((ps) => (
+            <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4">
+              <p class="font-semibold text-white">{ps.name}</p>
+              <p class="mt-1 text-sm text-gray-400 leading-relaxed">{ps.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Full symbol grid (internal links) -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">All {category.name} Tattoo Meanings</h2>
+      <p class="mt-2 text-sm text-gray-500">Tap any symbol to read its full history, cultural notes, and popular variations.</p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {category.symbols.map((s) => (
+          <a href={`/meaning/${s.slug}`} class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink-800/50 text-lg text-gray-400 group-hover:text-accent-400 transition-colors">
+                {s.name[0]}
+              </div>
+              <h3 class="font-semibold text-white group-hover:text-accent-300 transition-colors">{s.name}</h3>
+            </div>
+            <p class="mt-3 text-sm text-gray-500">{s.meaning}</p>
+            <p class="mt-3 text-xs text-gray-500 leading-relaxed line-clamp-2">{s.desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Categories (topic-cluster hub: cross-category internal links) -->
+  {relatedCategories.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Explore Related Categories</h2>
+        <p class="mt-2 text-sm text-gray-500">More symbol meanings your clients ask about.</p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {relatedCategories.map((c) => (
+            <a href={`/meaning/category/${c.id}`} class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink-800/50 text-lg text-gray-400 group-hover:text-accent-400 transition-colors">{c.name[0]}</div>
+              <div>
+                <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">{c.name} Tattoo Meanings</p>
+                <p class="mt-0.5 text-xs text-gray-500">View category &rarr;</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Related Tools & Resources (informational -> commercial internal links) -->
+  {relatedTools.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Related Tools &amp; Resources</h2>
+        <p class="mt-2 text-sm text-gray-500">Plan, price, and book the tattoo you're researching — free tools and the studio software behind them.</p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {relatedTools.map((t) => (
+            <a href={t.href} class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300 text-lg font-bold group-hover:bg-accent-500/25 transition-colors">&#9881;</div>
+              <div>
+                <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">{t.label}</p>
+                <p class="mt-0.5 text-xs text-gray-500">Open tool &rarr;</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ (AEO) -->
+  {faqs.length > 0 && (
+    <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+        <div class="mt-6 space-y-6">
+          {faqs.map((f) => (
+            <div>
+              <h3 class="text-lg font-semibold text-white">{f.question}</h3>
+              <p class="mt-2 text-gray-400 leading-relaxed">{f.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- E-E-A-T: Experience / Expertise / Authoritativeness / Trust -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">About this guide</h2>
+
+      <div class="mt-6 flex gap-4 items-start">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-300 font-bold">IF</div>
+        <div>
+          <p class="font-semibold text-white">{author.name} <span class="text-sm font-normal text-gray-500">— {author.title}</span></p>
+          <p class="mt-1 text-sm text-gray-400 leading-relaxed">{author.bio}</p>
+          {reviewer && (
+            <p class="mt-3 text-sm text-gray-400">
+              <span class="text-accent-400">Reviewed by</span> {reviewer.name}, {reviewer.title}.
+            </p>
+          )}
+        </div>
+      </div>
+
+      {sources.length > 0 && (
+        <div class="mt-6">
+          <p class="text-sm font-semibold text-gray-300">Sources &amp; cultural references</p>
+          <ul class="mt-2 space-y-1 text-sm">
+            {sources.map((s) => (
+              <li>
+                <a href={s.url} rel="nofollow noopener" target="_blank" class="text-accent-300 hover:underline">{s.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p class="mt-6 text-sm text-gray-500">{EEAT_EXPERIENCE}</p>
+
+      <p class="mt-4 text-xs text-gray-600">
+        Published {fmtDate(EEAT_PUBLISHED)} · Last updated {fmtDate(today)}.
+        <a href="/about" class="text-gray-500 hover:underline">Meet the InkFlow team →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Know the Meaning Before You Ink</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Help clients choose symbols with story and significance. InkFlow helps you manage bookings, waivers, and aftercare — all in one place.</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <a href="/meaning" class="inline-block rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:border-accent-500/40 transition-all">All Categories</a>
+      <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

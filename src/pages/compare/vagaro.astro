@@ -5,12 +5,18 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 ---
 
-<BaseLayout lastUpdated="2026-07-06" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
+<BaseLayout lastUpdated="2026-06-28" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {"@type": "Question", "name": "Can I keep my Vagaro client data?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Export your client CSV from Vagaro and import to InkFlow. Your appointment history won't transfer, but all client contact info will."} },
+    {"@type": "Question", "name": "Does InkFlow have a mobile app like Vagaro?", "acceptedAnswer": {"@type": "Answer", "text": "InkFlow is a Progressive Web App (PWA) ¡ª it works on any device through the browser. Artists can check clients in, sign waivers, and process payments from iPhone, iPad, or Android. No separate app to install."} },
+    {"@type": "Question", "name": "Can I run both Vagaro and InkFlow during transition?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. There's no contract lock-in. Use InkFlow for new bookings and gradually transition your clients. We recommend a 2-week parallel run."} },
+    {"@type": "Question", "name": "Does InkFlow support Vagaro's gift cards?", "acceptedAnswer": {"@type": "Answer", "text": "Gift cards are not currently supported in InkFlow. If gift cards are critical to your business, this is one area where Vagaro has an advantage."} },
+    {"@type": "Question", "name": "What payment processors does InkFlow support?", "acceptedAnswer": {"@type": "Answer", "text": "InkFlow integrates with Stripe. Rates are standard Stripe processing fees (2.9% + $0.30) ¡ª InkFlow adds zero markup. Vagaro charges additional processing fees on top of payment processor rates."} }
+  ]
 }
 </script>
 
@@ -21,14 +27,15 @@ import Footer from '../../components/Footer.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Product",
+  "@type": "SoftwareApplication",
   "name": "InkFlow vs Vagaro",
   "description": "InkFlow vs Vagaro - Comparison for tattoo studio management. Vagaro is built for salons.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
   "brand": {
     "@type": "Brand",
     "name": "InkFlow"
   },
-  "category": "Tattoo Studio Software",
   "offers": {
     "@type": "Offer",
     "price": "0",

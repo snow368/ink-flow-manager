@@ -2,7 +2,7 @@
 interface Props {
   /** 页面最后更新日期，格式 YYYY-MM-DD */
   lastUpdated: string;
-  /** 作者名，默认 InkFlow Team */
+  /** 作者名，默认 Sarah Chen */
   author?: string;
   /** 审核者 */
   reviewedBy?: string;
@@ -10,7 +10,7 @@ interface Props {
   visible?: boolean;
 }
 
-const { lastUpdated, author = "InkFlow Team", reviewedBy, visible = true } = Astro.props;
+const { lastUpdated, author = "Sarah Chen", reviewedBy, visible = true } = Astro.props;
 
 // 格式化日期：YYYY-MM-DD → Month DD, YYYY
 const formatDate = (d: string) => {

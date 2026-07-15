@@ -6,14 +6,7 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": []
-}
-</script>
+<BaseLayout lastUpdated="2026-07-01" author="InkFlow Team">
 
   <SEOHead slot="head" title="InkFlow vs Square Appointments for Tattoo Studios" description="Square Appointments costs $110-140/mo with integrations. InkFlow includes deposit booking, waivers, and aftercare. Start free." canonical="https://ink-flows.com/compare/square-appointments/" />
   <FAQSchema questions={[
@@ -27,11 +20,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "SoftwareApplication",
     "name": "InkFlow vs Square Appointments",
     "description": "InkFlow vs Square Appointments for tattoo studio management. Square is free to start but costs $110-140/mo with necessary integrations.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
     "brand": { "@type": "Brand", "name": "InkFlow" },
-    "category": "Tattoo Studio Software",
     "offers": {
       "@type": "Offer",
       "price": "0",

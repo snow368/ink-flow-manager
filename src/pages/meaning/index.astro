@@ -8,9 +8,9 @@ import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
-  <SEOHead slot="head" title="Tattoo Meanings Directory — Search Symbolism & Design Meanings | InkFlow" description="Discover the meaning behind 42 popular tattoo symbols. Animals, flowers, mythological creatures, geometric patterns, and cultural designs. Free reference." />
+  <SEOHead slot="head" title="Tattoo Meanings Directory — Search Symbolism & Design Meanings | InkFlow" description={`Discover the meaning behind ${ALL_MEANINGS.length} popular tattoo symbols. Animals, flowers, mythological creatures, geometric & celestial designs, religious & spiritual symbols, cultural & tribal traditions, nature, objects, modern styles, birds, zodiac, insects, sea life, time & mortality, and words & lettering. Free reference.`} />
   <FAQSchema questions={[
-    { question: "How many tattoo meanings are in this directory?", answer: "42 symbols across 10 categories including animals, flowers, mythological creatures, geometric designs, religious symbols, cultural traditions, and modern styles." },
+    { question: "How many tattoo meanings are in this directory?", answer: `${ALL_MEANINGS.length} symbols across ${TATTOO_CATEGORIES.length} categories including animals, flowers, mythological creatures, geometric & celestial designs, religious & spiritual symbols, cultural & tribal traditions, nature, objects, modern styles, birds, zodiac & astrology, insects, sea life, time & mortality, and words & lettering.` },
     { question: "Are meanings based on cultural accuracy?", answer: "Yes. We cite cultural and historical sources for traditional meanings. Modern interpretations are labeled as such. All information is for educational purposes." },
     { question: "Can I suggest a meaning to add?", answer: "Yes. Contact us with your suggestion and source references. We review and add new meanings regularly." },
   ]} />
@@ -32,6 +32,7 @@ import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
           <div>
             <h2 class="text-2xl font-bold text-white">{cat.name}</h2>
             <p class="text-sm text-gray-500 mt-1">{cat.desc}</p>
+            <a href={`/meaning/category/${cat.id}`} class="mt-2 inline-block text-xs font-medium text-accent-400 hover:underline">View all {cat.name} meanings →</a>
           </div>
           <span class="text-xs text-gray-600">{cat.symbols.length} symbols</span>
         </div>

@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+
+const TITLE = "Tattoo Healing Timeline: What to Expect, Day by Day";
+const DESC = "A 30-day surface timeline plus the 3–6 month deep heal. See how healing differs by tattoo type and placement, and quick 'is this normal?' checks.";
+const URL = "https://ink-flows.com/blog/aftercare-timeline";
+---
+
+<BaseLayout pageTitle="Tattoo Healing Timeline" lastUpdated="2026-06-01">
+  <BlogSchema title={TITLE} description={DESC} publishedDate="2026-07-15" author="InkFlow Team" image="/images/blog/aftercare-guide.svg" tags={["tattoo healing timeline", "tattoo aftercare day 1", "how long tattoo heals"]} />
+  <SEOHead slot="head" title={TITLE} description={DESC} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ink-flows.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://ink-flows.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": "Tattoo Healing Timeline", "item": URL }
+    ]
+  })} />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-xs text-gray-500 mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-400">Home</a> <span class="mx-1">/</span>
+        <a href="/blog" class="hover:text-accent-400">Blog</a> <span class="mx-1">/</span>
+        <a href="/blog/tattoo-aftercare-guide" class="hover:text-accent-400">Aftercare</a> <span class="mx-1">/</span>
+        <span class="text-gray-400">Timeline</span>
+      </nav>
+      <p class="text-sm text-accent-400 mb-4">July 15, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Tattoo Healing Timeline: What to Expect, Day by Day</h1>
+      <p class="mt-6 text-lg text-gray-300">
+        Surface skin closes in 2–4 weeks; the dermis keeps remodeling for 3–6 months. Here's the day-by-day surface timeline, the deeper heal, and how type and placement shift the clock.
+      </p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <h2>The 30-day surface timeline</h2>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-ink-700"><th class="text-left py-2 pr-4">Window</th><th class="text-left py-2 pr-4">What you see</th><th class="text-left py-2 pr-4">Care focus</th></tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-ink-800"><td class="py-2 pr-4 font-semibold">Day 1</td><td class="py-2 pr-4">Red, warm, shiny, light ooze</td><td class="py-2 pr-4">First wash, thin lotion</td></tr>
+          <tr class="border-b border-ink-800"><td class="py-2 pr-4 font-semibold">Day 3–7</td><td class="py-2 pr-4">Itch begins, starts to dull</td><td class="py-2 pr-4">Moisturise, don't scratch</td></tr>
+          <tr class="border-b border-ink-800"><td class="py-2 pr-4 font-semibold">Day 8–14</td><td class="py-2 pr-4">Flaking/peeling, bold work may re-peel</td><td class="py-2 pr-4">Keep it light, let scabs fall</td></tr>
+          <tr class="border-b border-ink-800"><td class="py-2 pr-4 font-semibold">Day 15–21</td><td class="py-2 pr-4">Surface settled, slightly cloudy</td><td class="py-2 pr-4">Lotion + SPF if exposed</td></tr>
+          <tr><td class="py-2 pr-4 font-semibold">Day 22–30</td><td class="py-2 pr-4">Looks healed, lines sharpening</td><td class="py-2 pr-4">Normal skincare, lifelong SPF</td></tr>
+        </tbody>
+      </table>
+
+      <h2>The 3–6 month deep heal</h2>
+      <p>Under the surface, the dermis remodels and ink settles for up to six months. This is when final vibrancy and crispness appear — and why sun protection in those months matters most for color.</p>
+
+      <h2>Healing by tattoo type</h2>
+      <ul>
+        <li><strong>Color:</strong> more dramatic peel, flakes can look tinted — normal.</li>
+        <li><strong>Fine line:</strong> looks "done" by ~10–14 days but fades easiest over years.</li>
+        <li><strong>Blackout / bold:</strong> a second mini-peel around day 10–14 as deep layers reject excess pigment.</li>
+      </ul>
+      <p>See <a href="/blog/aftercare-color-tattoo" class="text-accent-400 hover:underline">color tattoo aftercare</a> for the color-specific notes.</p>
+
+      <h2>Healing by placement</h2>
+      <p>Hands, feet, and fingers regenerate fast but rub constantly and lose ink easiest. Ribs, sternum, and spine have slower circulation and often run 5–7 days behind a forearm. More in the <a href="/blog/tattoo-aftercare-guide#placement" class="text-accent-400 hover:underline">placement section of the main guide</a>.</p>
+
+      <h2>"Is this normal?" quick checks</h2>
+      <ul>
+        <li><strong>Faded at day 7?</strong> Often just the milky "cloudy" phase — it returns as it settles.</li>
+        <li><strong>Scab?</strong> A thin scab is normal; thick, weeping, or spreading scabs are not.</li>
+        <li><strong>Itch?</strong> Normal in week one; painful itching with swelling is not.</li>
+      </ul>
+
+      <h2>About this guide</h2>
+      <p>Part of the <a href="/blog/tattoo-aftercare-guide" class="text-accent-400 hover:underline">InkFlow tattoo aftercare guide</a>. Medically reviewed by <strong>Dr. Priya Anand, MD</strong>. Published July 15, 2026.</p>
+
+      <h2>FAQ</h2>
+      <h3>What does a tattoo look like healed after 1 year?</h3>
+      <p>At one year the ink is fully settled — lines crisp, color stable (if sun-protected). Minor fading in high-friction or sun-exposed spots is normal.</p>
+      <h3>Can a tattoo heal in 2 weeks?</h3>
+      <p>The surface can look closed in 2 weeks, but the dermis is still remodeling for months. Treat it gently and keep it out of the sun that whole time.</p>
+      <h3>Why does my tattoo look faded at day 7?</h3>
+      <p>Usually the "cloudy" phase — a milky film as the top layer heals. It typically clears as the skin settles over the following weeks.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "Can a tattoo heal in 2 weeks?", answer: "The surface can look closed in 2 weeks, but the dermis is still remodeling for months. Treat it gently and keep it out of the sun that whole time." },
+      { question: "Why does my tattoo look faded at day 7?", answer: "Usually the cloudy phase — a milky film as the top layer heals. It typically clears as the skin settles over the following weeks." },
+      { question: "What does a tattoo look like healed after 1 year?", answer: "At one year the ink is fully settled — lines crisp and color stable if sun-protected. Minor fading in high-friction or sun-exposed spots is normal." },
+    ]}
+  />
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Related guides</h2>
+      <div class="mt-6 grid grid-cols-2 gap-3 text-center">
+        <a href="/blog/aftercare-color-tattoo" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Color tattoo care</p><p class="text-xs text-gray-500 mt-1">Protect vibrancy</p></a>
+        <a href="/blog/tattoo-aftercare-guide" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Full guide</p><p class="text-xs text-gray-500 mt-1">By type &amp; placement</p></a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

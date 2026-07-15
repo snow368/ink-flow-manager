@@ -5,12 +5,17 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 ---
 
-<BaseLayout lastUpdated="2026-07-06" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
+<BaseLayout lastUpdated="2026-06-26" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {"@type": "Question", "name": "Does Tattoogenda have aftercare automation?", "acceptedAnswer": {"@type": "Answer", "text": "No. Tattoogenda does not offer aftercare automation. This is InkFlow's standout feature ¡ª automated aftercare instructions, healing timeline reminders, and product recommendations sent via SMS or email."} },
+    {"@type": "Question", "name": "Can I use InkFlow in Europe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. InkFlow supports EUR and multi-language interfaces. However, if automated VAT invoicing is critical, Tattoogenda's EU-native solution may be a better fit until InkFlow adds native EU tax compliance."} },
+    {"@type": "Question", "name": "Which platform has better booking features?", "acceptedAnswer": {"@type": "Answer", "text": "Both platforms offer robust online booking with deposit collection, custom booking links, and calendar sync. InkFlow has the edge with unlimited SMS reminders included in all plans."} },
+    {"@type": "Question", "name": "Is there a contract with InkFlow?", "acceptedAnswer": {"@type": "Answer", "text": "No contracts. No cancellation fees. You can downgrade or cancel anytime. Tattoogenda also offers month-to-month billing."} }
+  ]
 }
 </script>
 
@@ -21,14 +26,15 @@ import Footer from '../../components/Footer.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Product",
+  "@type": "SoftwareApplication",
   "name": "InkFlow vs Tattoogenda",
   "description": "InkFlow vs Tattoogenda - Comparison for tattoo studio management.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
   "brand": {
     "@type": "Brand",
     "name": "InkFlow"
   },
-  "category": "Tattoo Studio Software",
   "offers": {
     "@type": "Offer",
     "price": "0",

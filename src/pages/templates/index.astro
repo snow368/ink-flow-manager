@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 
 // 41 templates — same as WebsiteWizard.tsx
 const TEMPLATES = [
@@ -58,8 +59,19 @@ const tiers = [
 ];
 ---
 
-<BaseLayout>
+<BaseLayout lastUpdated="2026-06-19">
   <SEOHead slot="head" title="41 Tattoo Shop Website Templates — InkFlow" description="Choose from 41 stunning website templates for your tattoo studio. Free templates available. All templates are mobile-friendly and ready in minutes." />
+
+  <!-- FAQPage Schema -->
+  <FAQSchema
+    questions={[
+      { question: "Are tattoo studio website templates free?", answer: "InkFlow offers 14 free templates in styles like Minimal, Traditional, Vintage, Midnight, and Botanical. Pro and Plus tiers unlock 27 additional premium designs. All templates are mobile-friendly and SEO-optimized." },
+      { question: "How do I customize a tattoo studio template?", answer: "After choosing a template, connect your Instagram feed, add your studio logo, set your pricing and services, and share your booking link. No coding required — your site goes live in minutes." },
+      { question: "Can I use an InkFlow template with my own domain?", answer: "Yes. All templates support custom domains. Your website runs on InkFlow's hosting with SSL included — no separate hosting or domain configuration needed beyond connecting your custom domain." },
+      { question: "Do these templates work on mobile devices?", answer: "Yes. Every template is fully responsive and mobile-friendly. Clients browsing on their phone will see a polished, fast-loading site optimized for booking on the go." },
+    ]}
+  />
+
   <Navbar />
 
   <!-- HERO -->
@@ -124,6 +136,46 @@ const tiers = [
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Are tattoo studio website templates free?</summary>
+          <p class="mt-2 text-sm text-gray-400">InkFlow offers 14 free templates in styles like Minimal, Traditional, Vintage, Midnight, and Botanical. Pro and Plus tiers unlock 27 additional premium designs. All templates are mobile-friendly and SEO-optimized.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How do I customize a tattoo studio template?</summary>
+          <p class="mt-2 text-sm text-gray-400">After choosing a template, connect your Instagram feed, add your studio logo, set your pricing and services, and share your booking link. No coding required — your site goes live in minutes.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use an InkFlow template with my own domain?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. All templates support custom domains. Your website runs on InkFlow's hosting with SSL included — no separate hosting or domain configuration needed beyond connecting your custom domain.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Do these templates work on mobile devices?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every template is fully responsive and mobile-friendly. Clients browsing on their phone will see a polished, fast-loading site optimized for booking on the go.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Resources -->
+  <section class="border-t border-ink-800/50 py-12 bg-ink-900/30">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-lg border border-ink-800 p-6">
+        <h2 class="text-lg font-semibold text-white">Related Resources</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>→ <a href="/features/free-tattoo-website" class="text-accent-400 hover:underline">Free Tattoo Website</a> — get a free studio website with booking</li>
+          <li>→ <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">Booking Software Features</a> — full scheduling feature walkthrough</li>
+          <li>→ <a href="/features/tattoo-booking-page" class="text-accent-400 hover:underline">Booking Page</a> — share your booking link on Instagram</li>
+          <li>→ <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">Best Tattoo Studio Software Compared</a></li>
+        </ul>
       </div>
     </div>
   </section>

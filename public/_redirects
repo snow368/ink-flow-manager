@@ -1,11 +1,18 @@
-# Redirect short feature URLs to canonical long URLs (fix Google duplicate)
-/features/pos          /features/tattoo-pos-system/          301
-/features/marketing    /features/tattoo-marketing-automation/ 301
-/features/aftercare    /features/tattoo-aftercare-software-automation/ 301
-/features/compliance   /features/tattoo-compliance-software/  301
-/features/analytics    /features/tattoo-studio-analytics/     301
-/features/referrals    /features/tattoo-referral-program/     301
-/features/booking-page /features/tattoo-booking-page/        301
-/features/supply-brands /features/tattoo-supply-brands/      301
-/features/client-portal /features/tattoo-client-portal/      301
-/features/competitor-intelligence /features/tattoo-competitor-intelligence/ 301
+# Force canonical scheme + host (https, non-www).
+# Consolidates http:// / https://www. duplicate URLs Google has indexed.
+http://ink-flows.com/*    https://ink-flows.com/:splat    301
+https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
+
+# PWA SPA fallback
+/app/*    /app/index.html   200
+
+# Backward-compatible public routes
+/book/*    /app/book/:splat   200
+/embed/*   /app/embed/:splat  200
+/r/*       /app/r/:splat      200
+/intake/*  /app/intake/:splat  200
+/pay/*     /app/pay/:splat     200
+
+# Shop short links — render via worker at /s/:slug
+# NOTE: also need Cloudflare route rule sending ink-flows.com/s/* → ink-flow-api worker
+/s/*       /s/:splat           200

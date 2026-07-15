@@ -8,13 +8,13 @@ import PageSchema from '../../components/PageSchema.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout breadcrumbs={[
+<BaseLayout lastUpdated="2026-06-11" breadcrumbs={[
     { label: 'Home', href: '/' },
     { label: 'Blog', href: '/blog' },
     { label: 'Digitize Tattoo Waivers' },
   ]}>
   <BlogSchema title="How to Digitize Tattoo Waivers — Complete Guide 2026" description="Learn how to digitize tattoo waivers in 2026. Step-by-step guide to paperless consent forms, e-signatures, and QR check-in for your studio." publishedDate="2026-05-15" tags={["digital waivers", "tattoo consent forms", "paperless studio"]} />
-  <SEOHead slot="head" title="How to Digitize Tattoo Waivers — Complete Guide 2026" description="Learn how to digitize tattoo waivers in 2026. Step-by-step guide to paperless consent forms, e-signatures, and QR check-in for your studio." />
+  <SEOHead slot="head" title="How to Digitize Tattoo Waivers — Complete Guide 2026" description="Learn how to digitize tattoo waivers in 2026. Step-by-step guide to paperless consent forms, e-signatures, and QR check-in for your studio." appSchema={false} />
   <PageSchema type="article" data={{
     headline: "How to Digitize Tattoo Waivers in 2026",
     description: "Step-by-step guide to digitizing tattoo waivers. Paperless consent forms, e-signatures, and QR check-in.",

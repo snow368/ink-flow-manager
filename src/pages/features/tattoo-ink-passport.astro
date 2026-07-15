@@ -1,356 +1,356 @@
----
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import SEOHead from '../../components/SEOHead.astro';
-import Navbar from '../../components/Navbar.astro';
-import Footer from '../../components/Footer.astro';
-import FAQSchema from '../../components/FAQSchema.astro';
----
-
-<BaseLayout lastUpdated="2026-07-07" author="InkFlow Team" authorBio="Tattoo studio management platform">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "InkFlow",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock"
-  }
-}
-</script>
-  <SEOHead slot="head" title="Tattoo Ink Passport — EU REACH Compliance | InkFlow" description="Digital ink passport for EU REACH compliance. Track ink brands, batch numbers, and usage records. Purpose-built for tattoo studios." />
-  <FAQSchema questions={[
-    { question: "What is an ink passport?", answer: "An ink passport is a digital record of all inks used during a tattoo session, including brand, color, batch/lot number, and expiration date. Required under EU standard EN17169:2020." },
-    { question: "Is ink passport mandatory?", answer: "Yes, in several EU countries (e.g., Netherlands enforced by GGD). Other EU member states are adopting the requirement. InkFlow helps studios stay compliant." },
-    { question: "How does InkFlow generate ink passports?", answer: "After each session, the artist fills in the ink details. InkFlow auto-generates a PDF ink passport and emails it to the client alongside aftercare instructions." },
-    { question: "Can I export ink passports?", answer: "Yes. All ink passports are stored in the client's record and can be exported as PDF for health department inspections or client records." },
-    { question: "Does InkFlow track batch and lot numbers?", answer: "Yes. Record brand, supplier, color, batch/lot number, and expiration date for each ink used. Recall alerts notify you if an ink is recalled." },
-    { question: "What happens if I don't comply with EU ink regulations?", answer: "Penalties vary by country. In the Netherlands the GGD inspects studios and can issue fines. Beyond fines, if a client has a reaction and you can't document the ink used, you face significant liability exposure." },
-    { question: "Are REACH-compliant inks different from regular inks?", answer: "Yes. Since January 2022, REACH restricts over 4,000 chemicals in tattoo inks. Inks sold before that date may be non-compliant. Always look for REACH-compliant labelling and batch numbers on the bottle." },
-  ]} />
-  <Navbar />
-
-  <!-- HERO -->
-  <section class="pt-24 pb-16 sm:pt-32">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO INK PASSPORT</p>
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Ink Passport: Digital Ink Records for EU REACH Compliance</h1>
-      <p class="mt-6 text-lg text-gray-400">Since January 2022, EU regulation REACH (2020/2081) restricts over 4,000 chemicals in tattoo inks. Studios are required to document every ink used per session — brand, batch number, expiration date — under standard EN 17169:2020. InkFlow automates this with digital ink passports, automatically generated and emailed to clients.</p>
-      <div class="mt-8 flex flex-wrap gap-4">
-        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
-        <a href="#compliance-checklist" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Download Compliance Checklist</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- THE REGULATION: What exactly changed -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">What the EU Regulation Actually Requires</h2>
-      <p class="mt-2 text-center text-gray-400 text-sm">Two frameworks, one goal: safer tattooing through full ink traceability.</p>
-
-      <div class="mt-10 grid gap-6 sm:grid-cols-2">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
-          <h3 class="text-white font-semibold text-lg">REACH Regulation (EU) 2020/2081</h3>
-          <p class="mt-2 text-sm text-gray-400">Amends Annex XVII of EU REACH to ban or restrict <strong class="text-white">over 4,000 chemicals</strong> previously used in tattoo and permanent makeup inks.</p>
-          <ul class="mt-4 space-y-2 text-sm text-gray-400">
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Effective:</strong> 4 January 2022 (main restrictions)</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Final deadline:</strong> 4 January 2023 (Pigment Blue 15:3 &amp; Green 7)</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Banned:</strong> CMRs, skin sensitisers, heavy metals (lead, cadmium, chromium VI, mercury, arsenic)</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">19 colorants</strong> already prohibited in hair dyes now also banned in tattoo inks</li>
-          </ul>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
-          <h3 class="text-white font-semibold text-lg">EN 17169:2020 — Safe Tattooing Practice</h3>
-          <p class="mt-2 text-sm text-gray-400">The CEN European standard for safe and hygienic tattooing practice — the legal foundation for the Ink Passport.</p>
-          <ul class="mt-4 space-y-2 text-sm text-gray-400">
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Requires <strong class="text-white">documenting exact ink data</strong> for every appointment</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Ink brand, supplier, colour code, batch/LOT number, expiration date</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Artist signature + session timestamp</li>
-            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Adopted as binding law by several EU member states</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- REAL CONSEQUENCES -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h3 class="text-xl font-bold text-white text-center">Non-Compliance Is Not Hypothetical</h3>
-      <p class="mt-2 text-center text-gray-400 text-sm">Enforcement is already active across the EU, and the consequences are real.</p>
-
-      <div class="mt-10 grid gap-4">
-        <div class="rounded-xl border border-red-900/50 bg-red-950/20 p-5">
-          <div class="flex items-start gap-4">
-            <span class="text-2xl shrink-0">🚨</span>
-            <div>
-              <h3 class="text-white font-semibold">23 recalled inks via Safety Gate (RAPEX) — including inks with 25% lead by weight</h3>
-              <p class="mt-1 text-sm text-gray-400">Sweden reported multiple tattoo inks through the EU's rapid alert system that contained lead levels <strong class="text-white">30,000× the legal limit</strong>. Some of these were still in use at EU studios. Without documented batch numbers, you cannot know if your stock is affected.</p>
-            </div>
-          </div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="flex items-start gap-4">
-            <span class="text-2xl shrink-0">🇳🇱</span>
-            <div>
-              <h3 class="text-white font-semibold">Netherlands: GGD conducts active inspections</h3>
-              <p class="mt-1 text-sm text-gray-400">The Dutch public health service (GGD) regularly inspects tattoo studios for compliance. They check whether every session has a completed ink passport. <strong class="text-white">Fines are issued for non-compliance.</strong> Some platforms (like Tattoogenda) now block payment processing unless an ink passport is completed, precisely because of GGD enforcement pressure.</p>
-            </div>
-          </div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="flex items-start gap-4">
-            <span class="text-2xl shrink-0">⚖️</span>
-            <div>
-              <h3 class="text-white font-semibold">Liability risk: the client has a reaction — can you prove what ink you used?</h3>
-              <p class="mt-1 text-sm text-gray-400">A client develops an allergic reaction or infection. Without a documented ink passport, you have no way to prove which brand, batch, or expiration date the ink had. In a lawsuit, that absence of documentation shifts liability to you. <strong class="text-white">Digital ink passports are your legal proof of due diligence.</strong></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHAT'S IN AN INK PASSPORT -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">What an Ink Passport Records</h2>
-      <p class="mt-2 text-center text-gray-400 text-sm">Every field required by EN 17169:2020, plus additional fields for full traceability.</p>
-
-      <div class="mt-10 overflow-hidden rounded-xl border border-ink-800">
-        <table class="w-full text-sm">
-          <thead class="bg-ink-800/50">
-            <tr>
-              <th class="px-5 py-3.5 text-left font-semibold text-white w-1/3">Field</th>
-              <th class="px-5 py-3.5 text-left font-semibold text-white">Why It Matters</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-ink-800">
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Ink Brand</td>
-              <td class="px-5 py-3.5 text-gray-400">Identifies the manufacturer — essential for recall tracking. Intenze, Eternal, Kuro Sumi, World Famous, Panthera, and others are REACH-compliant.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Ink Name &amp; Color</td>
-              <td class="px-5 py-3.5 text-gray-400">Specific product name and colour identifier (e.g., "Zuper Black", "Alchemy Orange"). Links the record to a specific product SKU.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Batch / Lot Number</td>
-              <td class="px-5 py-3.5 text-gray-400"><strong class="text-white">The single most important field.</strong> If a batch is recalled, the lot number is how you check whether your client was exposed. Without it, you cannot participate in recall verification.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Expiration Date</td>
-              <td class="px-5 py-3.5 text-gray-400">Expired inks can harbour bacteria or degrade into harmful compounds. REACH requires that inks in use are within their shelf life.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Supplier</td>
-              <td class="px-5 py-3.5 text-gray-400">Links the ink to the distributor. If an issue is found, the full supply chain can be traced back to the source.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Artist Name</td>
-              <td class="px-5 py-3.5 text-gray-400">Which artist performed the session and used the ink. For multi-artist studios, this attribution is critical.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Session Date</td>
-              <td class="px-5 py-3.5 text-gray-400">When the ink was used. Links to the appointment record, consent form, and aftercare timeline.</td>
-            </tr>
-            <tr class="bg-ink-900/20">
-              <td class="px-5 py-3.5 text-white font-medium">Studio Location</td>
-              <td class="px-5 py-3.5 text-gray-400">Which studio location performed the session (for multi-location studios and mobile artists).</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHECKLIST -->
-  <section id="compliance-checklist" class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">8-Step Compliance Checklist for EU Studios</h2>
-      <p class="mt-2 text-center text-gray-400 text-sm">Use this to audit your current setup. InkFlow automates steps 3–8.</p>
-
-      <div class="mt-10 space-y-3">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">1</span>
-          <div><p class="text-white font-medium">Audit your current ink inventory</p><p class="text-sm text-gray-400 mt-0.5">Check every bottle: does it have REACH-compliant labelling? Is it past expiration? Dispose of any non-compliant stock immediately.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">2</span>
-          <div><p class="text-white font-medium">Switch to REACH-compliant brands only</p><p class="text-sm text-gray-400 mt-0.5">Intenze (Black Label / Gen-Z), Eternal (APEX series), World Famous (Limitless), Kuro Sumi Imperial, Panthera, Dynamic (Viking/Platinum), Radiant Evolved, I AM INK — these are verified REACH-compliant.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">3</span>
-          <div><p class="text-white font-medium">Set up digital ink passport templates</p><p class="text-sm text-gray-400 mt-0.5">Pre-configure your common ink brands and colours so artists don't skip documentation. InkFlow does this automatically with 13 preset EU brands.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">4</span>
-          <div><p class="text-white font-medium">Integrate ink passport with session workflow</p><p class="text-sm text-gray-400 mt-0.5">Artist completes the ink passport before payment is processed. Best practice: consent → session → ink passport → payment → client receives passport PDF via email.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">5</span>
-          <div><p class="text-white font-medium">Auto-generate PDF and email to client</p><p class="text-sm text-gray-400 mt-0.5">Clients need a copy for their records. InkFlow auto-generates a PDF ink passport and emails it alongside aftercare instructions — no extra steps.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">6</span>
-          <div><p class="text-white font-medium">Store records with timestamps</p><p class="text-sm text-gray-400 mt-0.5">Ink passports must be retained for liability purposes. Digital records with timestamps provide audit-proof documentation for health department inspections.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">7</span>
-          <div><p class="text-white font-medium">Monitor Safety Gate (RAPEX) alerts</p><p class="text-sm text-gray-400 mt-0.5">The EU's rapid alert system reports dangerous products. If your ink brand appears on an alert, you need to check your batch numbers immediately against your passport records.</p></div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
-          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">8</span>
-          <div><p class="text-white font-medium">Train all artists on the workflow</p><p class="text-sm text-gray-400 mt-0.5">Every artist in your studio must follow the same documentation process. One missed passport = one gap in your compliance.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PAPER VS DIGITAL -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h3 class="text-xl font-bold text-white text-center">Paper vs. Digital Ink Passports</h3>
-      <p class="mt-2 text-center text-gray-400 text-sm">Many studios still use paper logs. Here's why that's risky — and why digital is the only scalable option.</p>
-
-      <div class="mt-10 overflow-hidden rounded-xl border border-ink-800">
-        <table class="w-full text-sm">
-          <thead class="bg-ink-800/50">
-            <tr>
-              <th class="px-5 py-3.5 text-left font-semibold text-white w-1/4"></th>
-              <th class="px-5 py-3.5 text-left font-semibold text-white text-red-400">Paper Logs</th>
-              <th class="px-5 py-3.5 text-left font-semibold text-white text-green-400">Digital (InkFlow)</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-ink-800">
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Batch lookup</td><td class="px-5 py-3.5 text-gray-400">Flip through notebooks — hope you wrote it down</td><td class="px-5 py-3.5 text-gray-400">Search across all records in 1 second</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Recall response</td><td class="px-5 py-3.5 text-gray-400">Manually cross-check every client log against the recall list</td><td class="px-5 py-3.5 text-gray-400">Filter by batch number, identify affected clients instantly</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Client delivery</td><td class="px-5 py-3.5 text-gray-400">Photocopy or take a photo — client loses it anyway</td><td class="px-5 py-3.5 text-gray-400">Auto-email PDF — client has it forever</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Artist compliance</td><td class="px-5 py-3.5 text-gray-400">No enforcement — artists "forget" to write it down</td><td class="px-5 py-3.5 text-gray-400">Built into session workflow — cannot be skipped</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Inspection readiness</td><td class="px-5 py-3.5 text-gray-400">Stack of notebooks — easy to lose, no timestamp proof</td><td class="px-5 py-3.5 text-gray-400">Exportable PDFs with timestamps — inspection ready in 2 clicks</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Multi-studio</td><td class="px-5 py-3.5 text-gray-400">Each location keeps separate paper logs — fragmented</td><td class="px-5 py-3.5 text-gray-400">Centralized cloud — all locations, one system</td></tr>
-            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Backup</td><td class="px-5 py-3.5 text-gray-400">Fire, water, or coffee spill = permanent data loss</td><td class="px-5 py-3.5 text-gray-400">Cloud-backed — never lose a record</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPLIANT BRANDS -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h3 class="text-xl font-bold text-white text-center">Verified REACH-Compliant Ink Brands</h3>
-      <p class="mt-2 text-center text-gray-400 text-sm">Based on current European retailer listings (Killer Ink Ireland, Tattooland). InkFlow pre-loads these brands and their colours so you don't have to type them.</p>
-
-      <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Intenze</p><p class="text-xs text-gray-500">Black Label / Gen-Z</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Eternal Ink</p><p class="text-xs text-gray-500">APEX series (EU)</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">World Famous</p><p class="text-xs text-gray-500">Limitless range</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Kuro Sumi Imperial</p><p class="text-xs text-gray-500">REACH compliant</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Dynamic</p><p class="text-xs text-gray-500">Viking / Platinum</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Panthera</p><p class="text-xs text-gray-500">Futura Italy</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Radiant Colors</p><p class="text-xs text-gray-500">Evolved series</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">I AM INK</p><p class="text-xs text-gray-500">Made in Austria</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Premier Products</p><p class="text-xs text-gray-500">Greystar series</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Raw Premium</p><p class="text-xs text-gray-500">Platinum line</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Quantum</p><p class="text-xs text-gray-500">REACH compliant</p></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Kwadron</p><p class="text-xs text-gray-500">Polish brand</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW INKFLOW DOES IT -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">How InkFlow Automates Ink Passports</h2>
-      <p class="mt-2 text-center text-gray-400 text-sm">From session to client inbox, zero extra steps.</p>
-
-      <div class="mt-10 space-y-6">
-        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">1</span>
-          <div><h3 class="text-white font-semibold">Complete the session</h3><p class="text-sm text-gray-400 mt-1">After finishing the tattoo, the artist opens the session summary in InkFlow. The ink passport form is pre-loaded with your studio's commonly used brands and colours.</p></div>
-        </div>
-        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">2</span>
-          <div><h3 class="text-white font-semibold">Record ink details</h3><p class="text-sm text-gray-400 mt-1">Select the brand from a dropdown (13 pre-loaded EU brands). The colour field auto-fills with that brand's preset colours. Enter batch/lot number and expiration date. Takes 30 seconds.</p></div>
-        </div>
-        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">3</span>
-          <div><h3 class="text-white font-semibold">PDF is generated automatically</h3><p class="text-sm text-gray-400 mt-1">InkFlow creates a formatted PDF ink passport with all the data — brand, batch, dates, artist, studio. The PDF is stored in the client's permanent record.</p></div>
-        </div>
-        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">4</span>
-          <div><h3 class="text-white font-semibold">Client receives it by email</h3><p class="text-sm text-gray-400 mt-1">The PDF is automatically emailed to the client along with their aftercare instructions. One email, everything they need. The client keeps it forever.</p></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COUNTRY ENFORCEMENT -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h3 class="text-xl font-bold text-white text-center">Enforcement by Country</h3>
-      <p class="mt-2 text-center text-gray-400 text-sm">REACH is EU-wide, but each member state enforces it differently. If you're in one of these countries, compliance is urgent.</p>
-
-      <div class="mt-10 space-y-4">
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇳🇱</span><div><p class="text-white font-semibold">Netherlands</p><p class="text-sm text-gray-400">GGD actively inspects studios. Ink passports required by law. Fines for non-compliance.</p></div></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇸🇪</span><div><p class="text-white font-semibold">Sweden</p><p class="text-sm text-gray-400">Active Safety Gate reporter. Has flagged 23+ non-compliant inks. Strict enforcement expected.</p></div></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇩🇪</span><div><p class="text-white font-semibold">Germany</p><p class="text-sm text-gray-400">BfR (Federal Institute for Risk Assessment) monitors ink safety. Individual states conduct inspections.</p></div></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇫🇷</span><div><p class="text-white font-semibold">France</p><p class="text-sm text-gray-400">ANSES actively evaluates ink safety. Compliance expected but enforcement varies by region.</p></div></div>
-        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇧🇪</span><div><p class="text-white font-semibold">Belgium</p><p class="text-sm text-gray-400">FPS Health inspects studios. LAGGING: some studios still use non-compliant inks.</p></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 text-center">
-      <h3 class="text-xl font-bold text-white mt-8">Start Your Compliance in 5 Minutes</h3>
-      <p class="mt-4 text-gray-400">InkFlow makes ink passport compliance automatic. Pre-loaded with 13 EU-compliant ink brands, auto-generated PDFs, and client email delivery. Free to start, no credit card required.</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
-  <!-- INDUSTRY DATA -->
-  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Ink Passport — Tracking Tattoo History</h2>
-      <div class="mt-10 grid gap-6 sm:grid-cols-3">
-        
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">100%</div>
-          <div class="mt-2 text-sm text-gray-400">Digital record retention rate vs 40% paper card loss</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">2.3</div>
-          <div class="mt-2 text-sm text-gray-400">Avg number of studios a client visits in their lifetime (US)</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">68%</div>
-          <div class="mt-2 text-sm text-gray-400">Of clients willing to pay more for digital ink passport</div>
-        </div>
-      </div>
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
-    </div>
-  </section>Start Free →</a>
-
-<!-- RELATED FEATURES -->
-<section class="border-t border-ink-800/30 py-12">
-  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-xl font-bold text-white">Related Features</h2>
-    <div class="mt-6 flex flex-wrap justify-center gap-4">\n      <a href="/features/tattoo-inventory-management" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Inventory Management</a>\n      <a href="/features/tattoo-crm-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Crm Software</a>\n      <a href="/features/tattoo-supply-brands" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Supply Brands</a>
-    </div>
-  </div>
-</section>
-        <a href="https://app.ink-flows.com/ink-passport" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See Demo</a>
-      </div>
-      <p class="mt-6 text-xs text-gray-600">REACH Regulation (EU) 2020/2081 • EN 17169:2020. Compliance requirements may vary by member state. Consult your national health authority for specific obligations.</p>
-    </div>
-  </section>
-
-  <Footer />
-</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-03" author="InkFlow Team" authorBio="Tattoo studio management platform">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
+  <SEOHead slot="head" title="Tattoo Ink Passport — EU REACH Compliance | InkFlow" description="Digital ink passport for EU REACH compliance. Track ink brands, batch numbers, and usage records. Purpose-built for tattoo studios." />
+  <FAQSchema questions={[
+    { question: "What is an ink passport?", answer: "An ink passport is a digital record of all inks used during a tattoo session, including brand, color, batch/lot number, and expiration date. Required under EU standard EN17169:2020." },
+    { question: "Is ink passport mandatory?", answer: "Yes, in several EU countries (e.g., Netherlands enforced by GGD). Other EU member states are adopting the requirement. InkFlow helps studios stay compliant." },
+    { question: "How does InkFlow generate ink passports?", answer: "After each session, the artist fills in the ink details. InkFlow auto-generates a PDF ink passport and emails it to the client alongside aftercare instructions." },
+    { question: "Can I export ink passports?", answer: "Yes. All ink passports are stored in the client's record and can be exported as PDF for health department inspections or client records." },
+    { question: "Does InkFlow track batch and lot numbers?", answer: "Yes. Record brand, supplier, color, batch/lot number, and expiration date for each ink used. Recall alerts notify you if an ink is recalled." },
+    { question: "What happens if I don't comply with EU ink regulations?", answer: "Penalties vary by country. In the Netherlands the GGD inspects studios and can issue fines. Beyond fines, if a client has a reaction and you can't document the ink used, you face significant liability exposure." },
+    { question: "Are REACH-compliant inks different from regular inks?", answer: "Yes. Since January 2022, REACH restricts over 4,000 chemicals in tattoo inks. Inks sold before that date may be non-compliant. Always look for REACH-compliant labelling and batch numbers on the bottle." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO INK PASSPORT</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Ink Passport: Digital Ink Records for EU REACH Compliance</h1>
+      <p class="mt-6 text-lg text-gray-400">Since January 2022, EU regulation REACH (2020/2081) restricts over 4,000 chemicals in tattoo inks. Studios are required to document every ink used per session — brand, batch number, expiration date — under standard EN 17169:2020. InkFlow automates this with digital ink passports, automatically generated and emailed to clients.</p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+        <a href="#compliance-checklist" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Download Compliance Checklist</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE REGULATION: What exactly changed -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What the EU Regulation Actually Requires</h2>
+      <p class="mt-2 text-center text-gray-400 text-sm">Two frameworks, one goal: safer tattooing through full ink traceability.</p>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-white font-semibold text-lg">REACH Regulation (EU) 2020/2081</h3>
+          <p class="mt-2 text-sm text-gray-400">Amends Annex XVII of EU REACH to ban or restrict <strong class="text-white">over 4,000 chemicals</strong> previously used in tattoo and permanent makeup inks.</p>
+          <ul class="mt-4 space-y-2 text-sm text-gray-400">
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Effective:</strong> 4 January 2022 (main restrictions)</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Final deadline:</strong> 4 January 2023 (Pigment Blue 15:3 &amp; Green 7)</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">Banned:</strong> CMRs, skin sensitisers, heavy metals (lead, cadmium, chromium VI, mercury, arsenic)</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span><strong class="text-white">19 colorants</strong> already prohibited in hair dyes now also banned in tattoo inks</li>
+          </ul>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-white font-semibold text-lg">EN 17169:2020 — Safe Tattooing Practice</h3>
+          <p class="mt-2 text-sm text-gray-400">The CEN European standard for safe and hygienic tattooing practice — the legal foundation for the Ink Passport.</p>
+          <ul class="mt-4 space-y-2 text-sm text-gray-400">
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Requires <strong class="text-white">documenting exact ink data</strong> for every appointment</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Ink brand, supplier, colour code, batch/LOT number, expiration date</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Artist signature + session timestamp</li>
+            <li class="flex gap-2"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0"></span>Adopted as binding law by several EU member states</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REAL CONSEQUENCES -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h3 class="text-xl font-bold text-white text-center">Non-Compliance Is Not Hypothetical</h3>
+      <p class="mt-2 text-center text-gray-400 text-sm">Enforcement is already active across the EU, and the consequences are real.</p>
+
+      <div class="mt-10 grid gap-4">
+        <div class="rounded-xl border border-red-900/50 bg-red-950/20 p-5">
+          <div class="flex items-start gap-4">
+            <span class="text-2xl shrink-0">🚨</span>
+            <div>
+              <h3 class="text-white font-semibold">23 recalled inks via Safety Gate (RAPEX) — including inks with 25% lead by weight</h3>
+              <p class="mt-1 text-sm text-gray-400">Sweden reported multiple tattoo inks through the EU's rapid alert system that contained lead levels <strong class="text-white">30,000× the legal limit</strong>. Some of these were still in use at EU studios. Without documented batch numbers, you cannot know if your stock is affected.</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="flex items-start gap-4">
+            <span class="text-2xl shrink-0">🇳🇱</span>
+            <div>
+              <h3 class="text-white font-semibold">Netherlands: GGD conducts active inspections</h3>
+              <p class="mt-1 text-sm text-gray-400">The Dutch public health service (GGD) regularly inspects tattoo studios for compliance. They check whether every session has a completed ink passport. <strong class="text-white">Fines are issued for non-compliance.</strong> Some platforms (like Tattoogenda) now block payment processing unless an ink passport is completed, precisely because of GGD enforcement pressure.</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="flex items-start gap-4">
+            <span class="text-2xl shrink-0">⚖️</span>
+            <div>
+              <h3 class="text-white font-semibold">Liability risk: the client has a reaction — can you prove what ink you used?</h3>
+              <p class="mt-1 text-sm text-gray-400">A client develops an allergic reaction or infection. Without a documented ink passport, you have no way to prove which brand, batch, or expiration date the ink had. In a lawsuit, that absence of documentation shifts liability to you. <strong class="text-white">Digital ink passports are your legal proof of due diligence.</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S IN AN INK PASSPORT -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What an Ink Passport Records</h2>
+      <p class="mt-2 text-center text-gray-400 text-sm">Every field required by EN 17169:2020, plus additional fields for full traceability.</p>
+
+      <div class="mt-10 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead class="bg-ink-800/50">
+            <tr>
+              <th class="px-5 py-3.5 text-left font-semibold text-white w-1/3">Field</th>
+              <th class="px-5 py-3.5 text-left font-semibold text-white">Why It Matters</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-800">
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Ink Brand</td>
+              <td class="px-5 py-3.5 text-gray-400">Identifies the manufacturer — essential for recall tracking. Intenze, Eternal, Kuro Sumi, World Famous, Panthera, and others are REACH-compliant.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Ink Name &amp; Color</td>
+              <td class="px-5 py-3.5 text-gray-400">Specific product name and colour identifier (e.g., "Zuper Black", "Alchemy Orange"). Links the record to a specific product SKU.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Batch / Lot Number</td>
+              <td class="px-5 py-3.5 text-gray-400"><strong class="text-white">The single most important field.</strong> If a batch is recalled, the lot number is how you check whether your client was exposed. Without it, you cannot participate in recall verification.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Expiration Date</td>
+              <td class="px-5 py-3.5 text-gray-400">Expired inks can harbour bacteria or degrade into harmful compounds. REACH requires that inks in use are within their shelf life.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Supplier</td>
+              <td class="px-5 py-3.5 text-gray-400">Links the ink to the distributor. If an issue is found, the full supply chain can be traced back to the source.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Artist Name</td>
+              <td class="px-5 py-3.5 text-gray-400">Which artist performed the session and used the ink. For multi-artist studios, this attribution is critical.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Session Date</td>
+              <td class="px-5 py-3.5 text-gray-400">When the ink was used. Links to the appointment record, consent form, and aftercare timeline.</td>
+            </tr>
+            <tr class="bg-ink-900/20">
+              <td class="px-5 py-3.5 text-white font-medium">Studio Location</td>
+              <td class="px-5 py-3.5 text-gray-400">Which studio location performed the session (for multi-location studios and mobile artists).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKLIST -->
+  <section id="compliance-checklist" class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">8-Step Compliance Checklist for EU Studios</h2>
+      <p class="mt-2 text-center text-gray-400 text-sm">Use this to audit your current setup. InkFlow automates steps 3–8.</p>
+
+      <div class="mt-10 space-y-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">1</span>
+          <div><p class="text-white font-medium">Audit your current ink inventory</p><p class="text-sm text-gray-400 mt-0.5">Check every bottle: does it have REACH-compliant labelling? Is it past expiration? Dispose of any non-compliant stock immediately.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">2</span>
+          <div><p class="text-white font-medium">Switch to REACH-compliant brands only</p><p class="text-sm text-gray-400 mt-0.5">Intenze (Black Label / Gen-Z), Eternal (APEX series), World Famous (Limitless), Kuro Sumi Imperial, Panthera, Dynamic (Viking/Platinum), Radiant Evolved, I AM INK — these are verified REACH-compliant.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">3</span>
+          <div><p class="text-white font-medium">Set up digital ink passport templates</p><p class="text-sm text-gray-400 mt-0.5">Pre-configure your common ink brands and colours so artists don't skip documentation. InkFlow does this automatically with 13 preset EU brands.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">4</span>
+          <div><p class="text-white font-medium">Integrate ink passport with session workflow</p><p class="text-sm text-gray-400 mt-0.5">Artist completes the ink passport before payment is processed. Best practice: consent → session → ink passport → payment → client receives passport PDF via email.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">5</span>
+          <div><p class="text-white font-medium">Auto-generate PDF and email to client</p><p class="text-sm text-gray-400 mt-0.5">Clients need a copy for their records. InkFlow auto-generates a PDF ink passport and emails it alongside aftercare instructions — no extra steps.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">6</span>
+          <div><p class="text-white font-medium">Store records with timestamps</p><p class="text-sm text-gray-400 mt-0.5">Ink passports must be retained for liability purposes. Digital records with timestamps provide audit-proof documentation for health department inspections.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">7</span>
+          <div><p class="text-white font-medium">Monitor Safety Gate (RAPEX) alerts</p><p class="text-sm text-gray-400 mt-0.5">The EU's rapid alert system reports dangerous products. If your ink brand appears on an alert, you need to check your batch numbers immediately against your passport records.</p></div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 flex items-start gap-3">
+          <span class="mt-0.5 w-6 h-6 rounded-full bg-accent-500/20 text-accent-400 text-sm font-bold flex items-center justify-center shrink-0">8</span>
+          <div><p class="text-white font-medium">Train all artists on the workflow</p><p class="text-sm text-gray-400 mt-0.5">Every artist in your studio must follow the same documentation process. One missed passport = one gap in your compliance.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAPER VS DIGITAL -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h3 class="text-xl font-bold text-white text-center">Paper vs. Digital Ink Passports</h3>
+      <p class="mt-2 text-center text-gray-400 text-sm">Many studios still use paper logs. Here's why that's risky — and why digital is the only scalable option.</p>
+
+      <div class="mt-10 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead class="bg-ink-800/50">
+            <tr>
+              <th class="px-5 py-3.5 text-left font-semibold text-white w-1/4"></th>
+              <th class="px-5 py-3.5 text-left font-semibold text-white text-red-400">Paper Logs</th>
+              <th class="px-5 py-3.5 text-left font-semibold text-white text-green-400">Digital (InkFlow)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-800">
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Batch lookup</td><td class="px-5 py-3.5 text-gray-400">Flip through notebooks — hope you wrote it down</td><td class="px-5 py-3.5 text-gray-400">Search across all records in 1 second</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Recall response</td><td class="px-5 py-3.5 text-gray-400">Manually cross-check every client log against the recall list</td><td class="px-5 py-3.5 text-gray-400">Filter by batch number, identify affected clients instantly</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Client delivery</td><td class="px-5 py-3.5 text-gray-400">Photocopy or take a photo — client loses it anyway</td><td class="px-5 py-3.5 text-gray-400">Auto-email PDF — client has it forever</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Artist compliance</td><td class="px-5 py-3.5 text-gray-400">No enforcement — artists "forget" to write it down</td><td class="px-5 py-3.5 text-gray-400">Built into session workflow — cannot be skipped</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Inspection readiness</td><td class="px-5 py-3.5 text-gray-400">Stack of notebooks — easy to lose, no timestamp proof</td><td class="px-5 py-3.5 text-gray-400">Exportable PDFs with timestamps — inspection ready in 2 clicks</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Multi-studio</td><td class="px-5 py-3.5 text-gray-400">Each location keeps separate paper logs — fragmented</td><td class="px-5 py-3.5 text-gray-400">Centralized cloud — all locations, one system</td></tr>
+            <tr class="bg-ink-900/20"><td class="px-5 py-3.5 text-white font-medium">Backup</td><td class="px-5 py-3.5 text-gray-400">Fire, water, or coffee spill = permanent data loss</td><td class="px-5 py-3.5 text-gray-400">Cloud-backed — never lose a record</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANT BRANDS -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h3 class="text-xl font-bold text-white text-center">Verified REACH-Compliant Ink Brands</h3>
+      <p class="mt-2 text-center text-gray-400 text-sm">Based on current European retailer listings (Killer Ink Ireland, Tattooland). InkFlow pre-loads these brands and their colours so you don't have to type them.</p>
+
+      <div class="mt-10 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Intenze</p><p class="text-xs text-gray-500">Black Label / Gen-Z</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Eternal Ink</p><p class="text-xs text-gray-500">APEX series (EU)</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">World Famous</p><p class="text-xs text-gray-500">Limitless range</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Kuro Sumi Imperial</p><p class="text-xs text-gray-500">REACH compliant</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Dynamic</p><p class="text-xs text-gray-500">Viking / Platinum</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Panthera</p><p class="text-xs text-gray-500">Futura Italy</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Radiant Colors</p><p class="text-xs text-gray-500">Evolved series</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">I AM INK</p><p class="text-xs text-gray-500">Made in Austria</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Premier Products</p><p class="text-xs text-gray-500">Greystar series</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Raw Premium</p><p class="text-xs text-gray-500">Platinum line</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Quantum</p><p class="text-xs text-gray-500">REACH compliant</p></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-3.5 text-center"><p class="text-white font-semibold">Kwadron</p><p class="text-xs text-gray-500">Polish brand</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW INKFLOW DOES IT -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">How InkFlow Automates Ink Passports</h2>
+      <p class="mt-2 text-center text-gray-400 text-sm">From session to client inbox, zero extra steps.</p>
+
+      <div class="mt-10 space-y-6">
+        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">1</span>
+          <div><h3 class="text-white font-semibold">Complete the session</h3><p class="text-sm text-gray-400 mt-1">After finishing the tattoo, the artist opens the session summary in InkFlow. The ink passport form is pre-loaded with your studio's commonly used brands and colours.</p></div>
+        </div>
+        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">2</span>
+          <div><h3 class="text-white font-semibold">Record ink details</h3><p class="text-sm text-gray-400 mt-1">Select the brand from a dropdown (13 pre-loaded EU brands). The colour field auto-fills with that brand's preset colours. Enter batch/lot number and expiration date. Takes 30 seconds.</p></div>
+        </div>
+        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">3</span>
+          <div><h3 class="text-white font-semibold">PDF is generated automatically</h3><p class="text-sm text-gray-400 mt-1">InkFlow creates a formatted PDF ink passport with all the data — brand, batch, dates, artist, studio. The PDF is stored in the client's permanent record.</p></div>
+        </div>
+        <div class="flex items-start gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <span class="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center text-accent-400 font-bold shrink-0">4</span>
+          <div><h3 class="text-white font-semibold">Client receives it by email</h3><p class="text-sm text-gray-400 mt-1">The PDF is automatically emailed to the client along with their aftercare instructions. One email, everything they need. The client keeps it forever.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTRY ENFORCEMENT -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h3 class="text-xl font-bold text-white text-center">Enforcement by Country</h3>
+      <p class="mt-2 text-center text-gray-400 text-sm">REACH is EU-wide, but each member state enforces it differently. If you're in one of these countries, compliance is urgent.</p>
+
+      <div class="mt-10 space-y-4">
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇳🇱</span><div><p class="text-white font-semibold">Netherlands</p><p class="text-sm text-gray-400">GGD actively inspects studios. Ink passports required by law. Fines for non-compliance.</p></div></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇸🇪</span><div><p class="text-white font-semibold">Sweden</p><p class="text-sm text-gray-400">Active Safety Gate reporter. Has flagged 23+ non-compliant inks. Strict enforcement expected.</p></div></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇩🇪</span><div><p class="text-white font-semibold">Germany</p><p class="text-sm text-gray-400">BfR (Federal Institute for Risk Assessment) monitors ink safety. Individual states conduct inspections.</p></div></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇫🇷</span><div><p class="text-white font-semibold">France</p><p class="text-sm text-gray-400">ANSES actively evaluates ink safety. Compliance expected but enforcement varies by region.</p></div></div>
+        <div class="rounded-lg border border-ink-800 bg-ink-900/30 p-4 flex items-center gap-3"><span class="text-xl shrink-0">🇧🇪</span><div><p class="text-white font-semibold">Belgium</p><p class="text-sm text-gray-400">FPS Health inspects studios. LAGGING: some studios still use non-compliant inks.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 text-center">
+      <h3 class="text-xl font-bold text-white mt-8">Start Your Compliance in 5 Minutes</h3>
+      <p class="mt-4 text-gray-400">InkFlow makes ink passport compliance automatic. Pre-loaded with 13 EU-compliant ink brands, auto-generated PDFs, and client email delivery. Free to start, no credit card required.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+  <!-- INDUSTRY DATA -->
+  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Ink Passport — Tracking Tattoo History</h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">100%</div>
+          <div class="mt-2 text-sm text-gray-400">Digital record retention rate vs 40% paper card loss</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">2.3</div>
+          <div class="mt-2 text-sm text-gray-400">Avg number of studios a client visits in their lifetime (US)</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">68%</div>
+          <div class="mt-2 text-sm text-gray-400">Of clients willing to pay more for digital ink passport</div>
+        </div>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+    </div>
+  </section>Start Free →</a>
+
+<!-- RELATED FEATURES -->
+<section class="border-t border-ink-800/30 py-12">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-xl font-bold text-white">Related Features</h2>
+    <div class="mt-6 flex flex-wrap justify-center gap-4">\n      <a href="/features/tattoo-inventory-management" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Inventory Management</a>\n      <a href="/features/tattoo-crm-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Crm Software</a>\n      <a href="/features/tattoo-supply-brands" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Supply Brands</a>
+    </div>
+  </div>
+</section>
+        <a href="https://app.ink-flows.com/ink-passport" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See Demo</a>
+      </div>
+      <p class="mt-6 text-xs text-gray-600">REACH Regulation (EU) 2020/2081 • EN 17169:2020. Compliance requirements may vary by member state. Consult your national health authority for specific obligations.</p>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
