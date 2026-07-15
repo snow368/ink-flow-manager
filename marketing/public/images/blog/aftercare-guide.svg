@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Tattoo aftercare guide hero">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#15131f"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0a35e"/>
+      <stop offset="1" stop-color="#e07a4f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#f0a35e" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f0a35e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <g fill="none" stroke="url(#acc)" stroke-width="3" opacity="0.9">
+    <path d="M150 520 C 320 360, 520 360, 700 470 S 980 520, 1080 430" stroke-linecap="round"/>
+    <path d="M150 560 C 340 410, 540 410, 720 510 S 980 560, 1080 470" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <g fill="url(#acc)" opacity="0.85">
+    <circle cx="700" cy="300" r="6"/>
+    <circle cx="840" cy="250" r="5"/>
+    <circle cx="560" cy="260" r="4"/>
+  </g>
+  <text x="80" y="160" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#ffffff">Tattoo Aftercare</text>
+  <text x="82" y="215" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#f0a35e">Heal it right — by style &amp; placement</text>
+</svg>

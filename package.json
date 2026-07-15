@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:prod": "tsc && vite build",
+    "build": "node scripts/build-marketing.mjs",
+    "build:app": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest"
   },

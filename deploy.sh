@@ -3,8 +3,8 @@
 
 set -e
 
-# 1. Build frontend
-echo "=== Building frontend ==="
+# 1. Build frontend (now builds the Astro marketing site from ./marketing)
+echo "=== Building marketing (Astro) site ==="
 cd D:/ink-flow-manager
 npm run build
 

@@ -1,273 +1,273 @@
----
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import SEOHead from '../../components/SEOHead.astro';
-import Navbar from '../../components/Navbar.astro';
-import BlogSchema from "../../components/BlogSchema.astro";
-import Footer from '../../components/Footer.astro';
-import FAQSchema from '../../components/FAQSchema.astro';
----
-
-<BaseLayout breadcrumbs={[
-    { label: 'Home', href: '/' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Aftercare Automation' },
-  ]}>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups",
-  "datePublished": "2026-07-01",
-  "dateModified": "2026-07-01",
-  "author": { "@type": "Organization", "name": "InkFlow" }
-}
-</script>
-  <BlogSchema title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." publishedDate="2026-06-05" tags={["aftercare emails", "client follow-up", "automation"]} />
-  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." appSchema={false} />
-  <Navbar />
-
-  <article class="pt-24 pb-16 sm:pt-32">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <p class="text-sm text-accent-400 mb-4">TATTOO AFTERCARE AUTOMATION</p>
-      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Tattoo Aftercare Email Automation for Busy Studios</h1>
-      <!-- Featured Image -->
-      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
-        <img src="/images/blog/aftercare-email-automation.svg" alt="Automated aftercare email sequence for tattoo studios showing day-based healing check-ins" class="w-full aspect-[16/9] object-cover" loading="eager" />
-      </div>
-      <p class="mt-2 text-xs text-gray-600 text-center">Automated aftercare emails — Day 1, 3, 7, and 14 check-ins that run on autopilot</p>
-      <p class="mt-4 text-lg text-gray-400">You're too busy tattooing to chase clients for healing updates. Here's how to set up automated aftercare that runs itself.</p>
-      <div class="mt-6 flex items-center gap-4 border-t border-ink-800/50 pt-6">
-        <div class="h-10 w-10 rounded-full bg-accent-500/20 flex items-center justify-center text-sm font-bold text-accent-400">SC</div>
-        <div>
-          <p class="text-sm font-medium text-white">Sarah Chen</p>
-          <p class="text-xs text-gray-500">Studio Operations · 10 years in the industry</p>
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <section class="border-t border-ink-800/50 py-12">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
-
-      <p class="lead">Every tattoo artist knows the feeling. It's 9 PM, you're finally home, and you realize you forgot to check in on that sleeve you finished this morning. So you scroll through your DMs, find the client, type out a message — again.</p>
-      <p>Now multiply that by 10 clients a week, and you're looking at a solid hour of manual follow-ups. Time you could spend designing, tattooing, or honestly just resting.</p>
-
-      <div class="not-prose my-8 rounded-xl border border-ink-800 bg-ink-900/50 p-6">
-        <p class="text-sm font-semibold text-white mb-4">📊 Aftercare Follow-Up Consistency: Manual vs Automated</p>
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">10-20%</p><p class="text-xs text-gray-500">Day 7 follow-up rate (manual)</p></div>
-          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">100%</p><p class="text-xs text-gray-500">Day 7 follow-up rate (automated)</p></div>
-        </div>
-        <p class="text-xs text-gray-500 mt-3 text-center">Automated aftercare delivers 100% consistency across the entire healing timeline</p>
-      </div>
-
-      <p class="text-accent-400 font-semibold text-lg">Here's a better way.</p>
-
-      <h2>Why Most Studios Wing It (And Why It's a Problem)</h2>
-      <p>Most tattoo shops don't have a formal aftercare system. It works like this:</p>
-      <ul>
-        <li><strong>Day 1:</strong> Artist verbally explains aftercare during the session</li>
-        <li><strong>Day 3:</strong> Maybe a text if the artist remembers</li>
-        <li><strong>Day 7:</strong> Silence. Unless the client has a problem</li>
-      </ul>
-      <p>The issue isn't that artists don't care. They absolutely do. The issue is that <strong>manual follow-up doesn't scale</strong>.</p>
-      <p>When you're doing 3-4 sessions a day, keeping track of who's on day 3 vs day 7 of healing becomes impossible without a system. And when follow-up falls through the cracks, you're not just missing photo opportunities — you're missing early warning signs of infection or healing issues.</p>
-
-      <h2>What Automated Aftercare Actually Looks Like</h2>
-      <p>Automated aftercare isn't some robotic, impersonal message blast. Done right, your clients won't even realize it's automated. They'll just think you're incredibly on top of things.</p>
-
-      <p>Here's a proven automated timeline used by successful studios:</p>
-
-      <table class="w-full text-sm border border-ink-800 rounded-lg">
-        <thead>
-          <tr class="bg-ink-900/50">
-            <th class="p-3 text-left">When</th>
-            <th class="p-3 text-left">What Gets Sent</th>
-            <th class="p-3 text-left">Goal</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-ink-800/50">
-          <tr><td class="p-3">Immediately after</td><td class="p-3">Aftercare instructions + what to expect in first 24 hours</td><td class="p-3 text-gray-400">Reduce panic calls by 60%</td></tr>
-          <tr><td class="p-3">Day 3</td><td class="p-3">Healing check-in — "How's it feeling?"</td><td class="p-3 text-gray-400">Catch issues early, show you care</td></tr>
-          <tr><td class="p-3">Day 7</td><td class="p-3">Progress check + touch-up reminder</td><td class="p-3 text-gray-400">Increase return bookings</td></tr>
-          <tr><td class="p-3">Day 14</td><td class="p-3">Healed photo request</td><td class="p-3 text-gray-400">Collect portfolio material</td></tr>
-          <tr><td class="p-3">Day 21</td><td class="p-3">Review request + referral prompt</td><td class="p-3 text-gray-400">Generate reviews and referrals</td></tr>
-        </tbody>
-      </table>
-
-      <p>Each message is personalized with the client's name, the artist's name, and the specific session date. It takes 10 minutes to set up once. Then it runs on autopilot.</p>
-
-      <h2>SMS vs Email: Which Channel Works Best?</h2>
-      <p>The most effective aftercare automation uses both channels strategically:</p>
-      <table class="w-full text-sm border-collapse">
-        <thead>
-          <tr class="border-b border-ink-700">
-            <th class="text-left py-2 pr-4">Channel</th>
-            <th class="text-left py-2 pr-4">Open Rate</th>
-            <th class="text-left py-2 pr-4">Best For</th>
-            <th class="text-left py-2 pr-4">Limitations</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-ink-800">
-            <td class="py-2 pr-4 font-semibold">SMS</td>
-            <td class="py-2 pr-4">98% within 3 minutes</td>
-            <td class="py-2 pr-4">Short check-ins, reminders, time-sensitive messages</td>
-            <td class="py-2 pr-4">160 chars, no rich media</td>
-          </tr>
-          <tr>
-            <td class="py-2 pr-4 font-semibold">Email</td>
-            <td class="py-2 pr-4">20-30%</td>
-            <td class="py-2 pr-4">Detailed instructions, photo requests, aftercare guides</td>
-            <td class="py-2 pr-4">Lower open rate, may land in spam</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>The winning strategy: <strong>SMS for timely check-ins</strong> (day 3, day 7) and <strong>email for information</strong> (detailed aftercare PDF, photo upload link, review link). Use both and you cover every client's preferred channel.</p>
-
-      <h2>Email Template: The Day-14 Photo Request</h2>
-      <p>Here's a real email template that converts at 55%+:</p>
-      <div style="background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; line-height: 1.6;">
-        <p><strong>Subject:</strong> How's your tattoo healing? 🖤</p>
-        <p>Hey [Name],</p>
-        <p>It's been two weeks since your session with [Artist]. Hope the healing is going smoothly!</p>
-        <p>If you're happy with how it's looking, we'd love to see a photo. Healed work is the best way to show new clients what we can do.</p>
-        <p>📸 <strong>Reply to this email with a photo</strong> — takes 10 seconds.</p>
-        <p>Also, if you had a great experience, please consider leaving a review:<br/>
-        <a href="#">Leave a Google Review →</a></p>
-        <p>Thanks again for choosing [Studio].</p>
-        <p>— [Artist] &amp; the [Studio] team</p>
-      </div>
-
-      <h2>The Real ROI: More Healed Photos, Less Stress</h2>
-      <p>The artists I've talked to report two things after setting up automated aftercare:</p>
-      <ol>
-        <li><strong>They stop forgetting.</strong> The system fires at the right time, every time. No more "oh crap I forgot to check on that client" moments at midnight.</li>
-        <li><strong>They get way more healed photos.</strong> When you ask at the right time — not too early, not too late — clients actually send them. Those healed photos become your best marketing material.</li>
-      </ol>
-      <p>One studio I worked with saw their healed photo submission rate go from about 30% to over 70% within a month of setting up automated reminders. Not because they did anything different — just because they asked at the right time.</p>
-      <p>Beyond photos, automated aftercare delivers measurable business results:</p>
-      <ul>
-        <li><strong>35% higher client retention</strong> — clients return because they felt cared for</li>
-        <li><strong>2x more Google reviews</strong> — timed requests at day 21 convert best</li>
-        <li><strong>3+ hours saved per week</strong> — no more manual DM follow-ups</li>
-        <li><strong>40% more referral business</strong> — happy clients are prompted to refer friends</li>
-      </ul>
-
-      <h2>Comparison: Aftercare Automation Tools</h2>
-      <table class="w-full text-sm border-collapse">
-        <thead>
-          <tr class="border-b border-ink-700">
-            <th class="text-left py-2 pr-4">Feature</th>
-            <th class="text-left py-2 pr-4">InkFlow</th>
-            <th class="text-left py-2 pr-4">Mailchimp</th>
-            <th class="text-left py-2 pr-4">Manual (DMs/Texts)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-ink-800">
-            <td class="py-2 pr-4">Auto-triggered by appointments</td>
-            <td class="py-2 pr-4 text-green-400">✓</td>
-            <td class="py-2 pr-4 text-red-400">✗</td>
-            <td class="py-2 pr-4 text-red-400">✗</td>
-          </tr>
-          <tr class="border-b border-ink-800">
-            <td class="py-2 pr-4">SMS + email</td>
-            <td class="py-2 pr-4 text-green-400">✓</td>
-            <td class="py-2 pr-4 text-amber-400">Email only</td>
-            <td class="py-2 pr-4 text-amber-400">SMS only</td>
-          </tr>
-          <tr class="border-b border-ink-800">
-            <td class="py-2 pr-4">Photo collection</td>
-            <td class="py-2 pr-4 text-green-400">✓</td>
-            <td class="py-2 pr-4 text-red-400">✗</td>
-            <td class="py-2 pr-4 text-amber-400">Manual</td>
-          </tr>
-          <tr class="border-b border-ink-800">
-            <td class="py-2 pr-4">CRM integration</td>
-            <td class="py-2 pr-4 text-green-400">✓</td>
-            <td class="py-2 pr-4 text-amber-400">Manual import</td>
-            <td class="py-2 pr-4 text-red-400">✗</td>
-          </tr>
-          <tr>
-            <td class="py-2 pr-4">Price</td>
-            <td class="py-2 pr-4 text-accent-400">$29.99/mo (Pro)</td>
-            <td class="py-2 pr-4">$20-80/mo</td>
-            <td class="py-2 pr-4">Your time (~1hr/wk)</td>
-          </tr>
-        </tbody>
-      </table>
-      <p><a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">InkFlow's aftercare automation</a> is the only solution that combines automated booking-triggered sequences with built-in CRM, photo collection, and review requests — all in one platform.</p>
-
-      <h2>Setting It Up: Less Work Than You Think</h2>
-      <ol>
-        <li><strong>Pick your message templates</strong> — most platforms have defaults you can tweak in 5 minutes</li>
-        <li><strong>Set the timing</strong> — day 3, day 7, day 14, day 21 (or custom)</li>
-        <li><strong>Choose channels</strong> — SMS, email, or both</li>
-        <li><strong>Turn it on</strong> — that's it. Every appointment now automatically triggers the sequence</li>
-      </ol>
-      <p>From that point forward, you don't think about it again until a client replies. The system handles the timing, the personalization, and the follow-up.</p>
-
-      <h2>FAQ</h2>
-
-      <h3>Do clients find automated aftercare messages annoying?</h3>
-      <p>Not if they're useful. A healing check-in at day 3 feels like good service, not spam. The key is spacing them out (don't send daily) and keeping the tone helpful, not salesy.</p>
-
-      <h3>Can I customize the messages?</h3>
-      <p>Yes. Every message is fully customizable. Use your studio's voice — whether that's professional, laid-back, or somewhere in between. Personalization tokens (client name, artist name, date) make each message feel individual.</p>
-
-      <h3>What if a client reports a problem through the automation?</h3>
-      <p>The automation handles the check-in. If they reply with a concern, you take over from there. The system isn't replacing you — it's making sure nothing falls through the cracks.</p>
-
-      <h3>How many healed photos can I expect?</h3>
-      <p>Studios using automated aftercare collect healed photos from 40-60% of clients, compared to 10-15% with manual follow-up. The key is asking at the right time (day 14) with a simple process (reply with photo).</p>
-
-      <h3>Is SMS or email better for aftercare?</h3>
-      <p>Use both. SMS for time-sensitive check-ins (day 3 healing check, day 7 progress). Email for detailed information (aftercare PDF, photo upload link, review link). Most studios see best results with an SMS-first, email-follow approach.</p>
-    </div>
-  </section>
-
-  <FAQSchema
-    questions={[
-      { question: "Do clients find automated aftercare messages annoying?", answer: "Not if they're useful. A healing check-in at day 3 feels like good service. Space them out and keep the tone helpful, not salesy." },
-      { question: "Can I customize aftercare automation messages?", answer: "Yes. Every message is fully customizable with personalization tokens for client name, artist name, and session date." },
-      { question: "Is SMS or email better for tattoo aftercare?", answer: "Use both. SMS for time-sensitive check-ins (98% open rate), email for detailed information like aftercare PDFs and photo upload links." },
-      { question: "How many healed photos can I expect with automation?", answer: "40-60% of clients submit healed photos with automation, compared to 10-15% with manual follow-up." },
-    ]}
-  />
-
-  <section class="border-t border-ink-800/50 py-16 text-center">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <div class="rounded-2xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 to-transparent p-8 text-center mb-6">
-        <h2 class="text-2xl font-bold text-white">Stop Chasing Clients. Let the System Do It.</h2>
-        <p class="mt-2 text-gray-400">Aftercare automation is included in every Pro plan. Set it up once, and you're done.</p>
-        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
-            Start Free Trial →
-          </a>
-          <a href="/features/tattoo-aftercare-software-automation" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
-            See How It Works
-          </a>
-        </div>
-        <div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
-          <span>✓ No credit card required</span>
-          <span>✓ Free plan for solo artists</span>
-          <span>✓ Turn it on in 2 minutes</span>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3 text-center">
-        <a href="/blog/tattoo-aftercare-automation" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
-          <p class="text-sm font-medium text-white group-hover:text-accent-300">Full Aftercare Guide</p>
-          <p class="text-xs text-gray-500 mt-1">Complete automation sequence</p>
-        </a>
-        <a href="/features/tattoo-crm-software" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
-          <p class="text-sm font-medium text-white group-hover:text-accent-300">Client CRM</p>
-          <p class="text-xs text-gray-500 mt-1">Combine with aftercare data</p>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <Footer />
-</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-06-18" breadcrumbs={[
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Aftercare Automation' },
+  ]}>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups",
+  "datePublished": "2026-07-01",
+  "dateModified": "2026-07-01",
+  "author": { "@type": "Organization", "name": "InkFlow" }
+}
+</script>
+  <BlogSchema title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." publishedDate="2026-06-05" tags={["aftercare emails", "client follow-up", "automation"]} />
+  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." appSchema={false} />
+  <Navbar />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm text-accent-400 mb-4">TATTOO AFTERCARE AUTOMATION</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Tattoo Aftercare Email Automation for Busy Studios</h1>
+      <!-- Featured Image -->
+      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
+        <img src="/images/blog/aftercare-email-automation.svg" alt="Automated aftercare email sequence for tattoo studios showing day-based healing check-ins" class="w-full aspect-[16/9] object-cover" loading="eager" />
+      </div>
+      <p class="mt-2 text-xs text-gray-600 text-center">Automated aftercare emails — Day 1, 3, 7, and 14 check-ins that run on autopilot</p>
+      <p class="mt-4 text-lg text-gray-400">You're too busy tattooing to chase clients for healing updates. Here's how to set up automated aftercare that runs itself.</p>
+      <div class="mt-6 flex items-center gap-4 border-t border-ink-800/50 pt-6">
+        <div class="h-10 w-10 rounded-full bg-accent-500/20 flex items-center justify-center text-sm font-bold text-accent-400">SC</div>
+        <div>
+          <p class="text-sm font-medium text-white">Sarah Chen</p>
+          <p class="text-xs text-gray-500">Studio Operations · 10 years in the industry</p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <p class="lead">Every tattoo artist knows the feeling. It's 9 PM, you're finally home, and you realize you forgot to check in on that sleeve you finished this morning. So you scroll through your DMs, find the client, type out a message — again.</p>
+      <p>Now multiply that by 10 clients a week, and you're looking at a solid hour of manual follow-ups. Time you could spend designing, tattooing, or honestly just resting.</p>
+
+      <div class="not-prose my-8 rounded-xl border border-ink-800 bg-ink-900/50 p-6">
+        <p class="text-sm font-semibold text-white mb-4">📊 Aftercare Follow-Up Consistency: Manual vs Automated</p>
+        <div class="grid grid-cols-2 gap-4 text-center">
+          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">10-20%</p><p class="text-xs text-gray-500">Day 7 follow-up rate (manual)</p></div>
+          <div class="rounded-lg bg-ink-800/50 p-3"><p class="text-2xl font-bold text-accent-400">100%</p><p class="text-xs text-gray-500">Day 7 follow-up rate (automated)</p></div>
+        </div>
+        <p class="text-xs text-gray-500 mt-3 text-center">Automated aftercare delivers 100% consistency across the entire healing timeline</p>
+      </div>
+
+      <p class="text-accent-400 font-semibold text-lg">Here's a better way.</p>
+
+      <h2>Why Most Studios Wing It (And Why It's a Problem)</h2>
+      <p>Most tattoo shops don't have a formal aftercare system. It works like this:</p>
+      <ul>
+        <li><strong>Day 1:</strong> Artist verbally explains aftercare during the session</li>
+        <li><strong>Day 3:</strong> Maybe a text if the artist remembers</li>
+        <li><strong>Day 7:</strong> Silence. Unless the client has a problem</li>
+      </ul>
+      <p>The issue isn't that artists don't care. They absolutely do. The issue is that <strong>manual follow-up doesn't scale</strong>.</p>
+      <p>When you're doing 3-4 sessions a day, keeping track of who's on day 3 vs day 7 of healing becomes impossible without a system. And when follow-up falls through the cracks, you're not just missing photo opportunities — you're missing early warning signs of infection or healing issues.</p>
+
+      <h2>What Automated Aftercare Actually Looks Like</h2>
+      <p>Automated aftercare isn't some robotic, impersonal message blast. Done right, your clients won't even realize it's automated. They'll just think you're incredibly on top of things.</p>
+
+      <p>Here's a proven automated timeline used by successful studios:</p>
+
+      <table class="w-full text-sm border border-ink-800 rounded-lg">
+        <thead>
+          <tr class="bg-ink-900/50">
+            <th class="p-3 text-left">When</th>
+            <th class="p-3 text-left">What Gets Sent</th>
+            <th class="p-3 text-left">Goal</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-ink-800/50">
+          <tr><td class="p-3">Immediately after</td><td class="p-3">Aftercare instructions + what to expect in first 24 hours</td><td class="p-3 text-gray-400">Reduce panic calls by 60%</td></tr>
+          <tr><td class="p-3">Day 3</td><td class="p-3">Healing check-in — "How's it feeling?"</td><td class="p-3 text-gray-400">Catch issues early, show you care</td></tr>
+          <tr><td class="p-3">Day 7</td><td class="p-3">Progress check + touch-up reminder</td><td class="p-3 text-gray-400">Increase return bookings</td></tr>
+          <tr><td class="p-3">Day 14</td><td class="p-3">Healed photo request</td><td class="p-3 text-gray-400">Collect portfolio material</td></tr>
+          <tr><td class="p-3">Day 21</td><td class="p-3">Review request + referral prompt</td><td class="p-3 text-gray-400">Generate reviews and referrals</td></tr>
+        </tbody>
+      </table>
+
+      <p>Each message is personalized with the client's name, the artist's name, and the specific session date. It takes 10 minutes to set up once. Then it runs on autopilot.</p>
+
+      <h2>SMS vs Email: Which Channel Works Best?</h2>
+      <p>The most effective aftercare automation uses both channels strategically:</p>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-ink-700">
+            <th class="text-left py-2 pr-4">Channel</th>
+            <th class="text-left py-2 pr-4">Open Rate</th>
+            <th class="text-left py-2 pr-4">Best For</th>
+            <th class="text-left py-2 pr-4">Limitations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4 font-semibold">SMS</td>
+            <td class="py-2 pr-4">98% within 3 minutes</td>
+            <td class="py-2 pr-4">Short check-ins, reminders, time-sensitive messages</td>
+            <td class="py-2 pr-4">160 chars, no rich media</td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-4 font-semibold">Email</td>
+            <td class="py-2 pr-4">20-30%</td>
+            <td class="py-2 pr-4">Detailed instructions, photo requests, aftercare guides</td>
+            <td class="py-2 pr-4">Lower open rate, may land in spam</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>The winning strategy: <strong>SMS for timely check-ins</strong> (day 3, day 7) and <strong>email for information</strong> (detailed aftercare PDF, photo upload link, review link). Use both and you cover every client's preferred channel.</p>
+
+      <h2>Email Template: The Day-14 Photo Request</h2>
+      <p>Here's a real email template that converts at 55%+:</p>
+      <div style="background: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; line-height: 1.6;">
+        <p><strong>Subject:</strong> How's your tattoo healing? 🖤</p>
+        <p>Hey [Name],</p>
+        <p>It's been two weeks since your session with [Artist]. Hope the healing is going smoothly!</p>
+        <p>If you're happy with how it's looking, we'd love to see a photo. Healed work is the best way to show new clients what we can do.</p>
+        <p>📸 <strong>Reply to this email with a photo</strong> — takes 10 seconds.</p>
+        <p>Also, if you had a great experience, please consider leaving a review:<br/>
+        <a href="#">Leave a Google Review →</a></p>
+        <p>Thanks again for choosing [Studio].</p>
+        <p>— [Artist] &amp; the [Studio] team</p>
+      </div>
+
+      <h2>The Real ROI: More Healed Photos, Less Stress</h2>
+      <p>The artists I've talked to report two things after setting up automated aftercare:</p>
+      <ol>
+        <li><strong>They stop forgetting.</strong> The system fires at the right time, every time. No more "oh crap I forgot to check on that client" moments at midnight.</li>
+        <li><strong>They get way more healed photos.</strong> When you ask at the right time — not too early, not too late — clients actually send them. Those healed photos become your best marketing material.</li>
+      </ol>
+      <p>One studio I worked with saw their healed photo submission rate go from about 30% to over 70% within a month of setting up automated reminders. Not because they did anything different — just because they asked at the right time.</p>
+      <p>Beyond photos, automated aftercare delivers measurable business results:</p>
+      <ul>
+        <li><strong>35% higher client retention</strong> — clients return because they felt cared for</li>
+        <li><strong>2x more Google reviews</strong> — timed requests at day 21 convert best</li>
+        <li><strong>3+ hours saved per week</strong> — no more manual DM follow-ups</li>
+        <li><strong>40% more referral business</strong> — happy clients are prompted to refer friends</li>
+      </ul>
+
+      <h2>Comparison: Aftercare Automation Tools</h2>
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-ink-700">
+            <th class="text-left py-2 pr-4">Feature</th>
+            <th class="text-left py-2 pr-4">InkFlow</th>
+            <th class="text-left py-2 pr-4">Mailchimp</th>
+            <th class="text-left py-2 pr-4">Manual (DMs/Texts)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">Auto-triggered by appointments</td>
+            <td class="py-2 pr-4 text-green-400">✓</td>
+            <td class="py-2 pr-4 text-red-400">✗</td>
+            <td class="py-2 pr-4 text-red-400">✗</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">SMS + email</td>
+            <td class="py-2 pr-4 text-green-400">✓</td>
+            <td class="py-2 pr-4 text-amber-400">Email only</td>
+            <td class="py-2 pr-4 text-amber-400">SMS only</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">Photo collection</td>
+            <td class="py-2 pr-4 text-green-400">✓</td>
+            <td class="py-2 pr-4 text-red-400">✗</td>
+            <td class="py-2 pr-4 text-amber-400">Manual</td>
+          </tr>
+          <tr class="border-b border-ink-800">
+            <td class="py-2 pr-4">CRM integration</td>
+            <td class="py-2 pr-4 text-green-400">✓</td>
+            <td class="py-2 pr-4 text-amber-400">Manual import</td>
+            <td class="py-2 pr-4 text-red-400">✗</td>
+          </tr>
+          <tr>
+            <td class="py-2 pr-4">Price</td>
+            <td class="py-2 pr-4 text-accent-400">$29.99/mo (Pro)</td>
+            <td class="py-2 pr-4">$20-80/mo</td>
+            <td class="py-2 pr-4">Your time (~1hr/wk)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">InkFlow's aftercare automation</a> is the only solution that combines automated booking-triggered sequences with built-in CRM, photo collection, and review requests — all in one platform.</p>
+
+      <h2>Setting It Up: Less Work Than You Think</h2>
+      <ol>
+        <li><strong>Pick your message templates</strong> — most platforms have defaults you can tweak in 5 minutes</li>
+        <li><strong>Set the timing</strong> — day 3, day 7, day 14, day 21 (or custom)</li>
+        <li><strong>Choose channels</strong> — SMS, email, or both</li>
+        <li><strong>Turn it on</strong> — that's it. Every appointment now automatically triggers the sequence</li>
+      </ol>
+      <p>From that point forward, you don't think about it again until a client replies. The system handles the timing, the personalization, and the follow-up.</p>
+
+      <h2>FAQ</h2>
+
+      <h3>Do clients find automated aftercare messages annoying?</h3>
+      <p>Not if they're useful. A healing check-in at day 3 feels like good service, not spam. The key is spacing them out (don't send daily) and keeping the tone helpful, not salesy.</p>
+
+      <h3>Can I customize the messages?</h3>
+      <p>Yes. Every message is fully customizable. Use your studio's voice — whether that's professional, laid-back, or somewhere in between. Personalization tokens (client name, artist name, date) make each message feel individual.</p>
+
+      <h3>What if a client reports a problem through the automation?</h3>
+      <p>The automation handles the check-in. If they reply with a concern, you take over from there. The system isn't replacing you — it's making sure nothing falls through the cracks.</p>
+
+      <h3>How many healed photos can I expect?</h3>
+      <p>Studios using automated aftercare collect healed photos from 40-60% of clients, compared to 10-15% with manual follow-up. The key is asking at the right time (day 14) with a simple process (reply with photo).</p>
+
+      <h3>Is SMS or email better for aftercare?</h3>
+      <p>Use both. SMS for time-sensitive check-ins (day 3 healing check, day 7 progress). Email for detailed information (aftercare PDF, photo upload link, review link). Most studios see best results with an SMS-first, email-follow approach.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "Do clients find automated aftercare messages annoying?", answer: "Not if they're useful. A healing check-in at day 3 feels like good service. Space them out and keep the tone helpful, not salesy." },
+      { question: "Can I customize aftercare automation messages?", answer: "Yes. Every message is fully customizable with personalization tokens for client name, artist name, and session date." },
+      { question: "Is SMS or email better for tattoo aftercare?", answer: "Use both. SMS for time-sensitive check-ins (98% open rate), email for detailed information like aftercare PDFs and photo upload links." },
+      { question: "How many healed photos can I expect with automation?", answer: "40-60% of clients submit healed photos with automation, compared to 10-15% with manual follow-up." },
+    ]}
+  />
+
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-accent-500/30 bg-gradient-to-br from-accent-500/10 to-transparent p-8 text-center mb-6">
+        <h2 class="text-2xl font-bold text-white">Stop Chasing Clients. Let the System Do It.</h2>
+        <p class="mt-2 text-gray-400">Aftercare automation is included in every Pro plan. Set it up once, and you're done.</p>
+        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+            Start Free Trial →
+          </a>
+          <a href="/features/tattoo-aftercare-software-automation" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+            See How It Works
+          </a>
+        </div>
+        <div class="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
+          <span>✓ No credit card required</span>
+          <span>✓ Free plan for solo artists</span>
+          <span>✓ Turn it on in 2 minutes</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 text-center">
+        <a href="/blog/tattoo-aftercare-automation" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
+          <p class="text-sm font-medium text-white group-hover:text-accent-300">Full Aftercare Guide</p>
+          <p class="text-xs text-gray-500 mt-1">Complete automation sequence</p>
+        </a>
+        <a href="/features/tattoo-crm-software" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group">
+          <p class="text-sm font-medium text-white group-hover:text-accent-300">Client CRM</p>
+          <p class="text-xs text-gray-500 mt-1">Combine with aftercare data</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
