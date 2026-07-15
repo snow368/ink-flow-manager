@@ -13,9 +13,9 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 
-# Block training crawlers
+# Allow AI crawlers so ChatGPT / Google AI Overviews can cite this site
 User-agent: GPTBot
-Disallow: /
+Allow: /
 
 User-agent: Google-Extended
-Disallow: /
+Allow: /

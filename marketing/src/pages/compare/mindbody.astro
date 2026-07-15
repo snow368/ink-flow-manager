@@ -7,13 +7,6 @@ import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="InkFlow Team">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": []
-}
-</script>
 
   <SEOHead slot="head" title="InkFlow vs Mindbody for Tattoo Studios 2026" description="Mindbody has zero tattoo pages. InkFlow offers deposit booking, waivers, and aftercare built for studios. Start free." canonical="https://ink-flows.com/compare/mindbody/" />
   <FAQSchema questions={[
@@ -27,11 +20,12 @@ import FAQSchema from '../../components/FAQSchema.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "SoftwareApplication",
     "name": "InkFlow vs Mindbody",
     "description": "InkFlow vs Mindbody for tattoo studio management. Mindbody has zero tattoo content across 2,084 indexed pages.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
     "brand": { "@type": "Brand", "name": "InkFlow" },
-    "category": "Tattoo Studio Software",
     "offers": {
       "@type": "Offer",
       "price": "0",

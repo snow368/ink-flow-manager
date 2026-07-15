@@ -13,9 +13,12 @@
 | 工具 | 说明 | 链接 |
 |------|------|------|
 | **Google Search Console** | 官方站长工具，关键词排名/点击/展现数据 | https://search.google.com/search-console |
-| **Ahrefs** | 外链分析/关键词研究/竞品监控（付费） | https://ahrefs.com |
-| **Semrush** | SEO 全栈工具（付费） | https://semrush.com |
+| **Ahrefs** | 外链分析/关键词研究/竞品监控（付费）+ Brand Radar (AI 品牌监控) | https://ahrefs.com |
+| **Semrush** | SEO 全栈工具（付费）+ AI Visibility Toolkit + Perplexity 引用追踪 | https://semrush.com |
 | **Screaming Frog** | 网站爬虫，技术 SEO 审计 | https://www.screamingfrog.co.uk |
+| **SE Ranking** | 高性价比全能 + AI Overview Tracker | https://seranking.com |
+| **Sitebulb** | 技术 SEO 审计 (AI 友好) | https://sitebulb.com |
+| **Surfer SEO** | AI 内容优化 + 品牌声音控制 | https://surferseo.com |
 
 ## 外链策略
 | 方法 | 说明 |
@@ -29,6 +32,8 @@
 |------|------|------|
 | **ChatGPT** | AI 写作/选题/关键词挖掘 | https://chat.openai.com |
 | **Claude** | AI 写作/内容优化 | https://claude.ai |
+| **MarketMuse** | 内容库存分析、差距识别、权威评分 | https://marketmuse.com |
+| **Frase.io** | AI 内容研究+写作+SEO/GEO 双评分，从 Quora/Reddit 抓取问题 | https://frase.io |
 
 ## 图片优化
 | 工具 | 说明 | 链接 |

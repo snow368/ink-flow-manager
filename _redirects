@@ -1,3 +1,8 @@
+# Force canonical scheme + host (https, non-www).
+# Consolidates http:// / https://www. duplicate URLs Google has indexed.
+http://ink-flows.com/*    https://ink-flows.com/:splat    301
+https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
+
 # PWA SPA fallback
 /app/*    /app/index.html   200
 

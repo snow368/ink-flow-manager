@@ -10,7 +10,12 @@ import Footer from '../../components/Footer.astro';
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": []
+  "mainEntity": [
+    {"@type": "Question", "name": "Does Tattoo Studio Pro have aftercare automation?", "acceptedAnswer": {"@type": "Answer", "text": "No. Tattoo Studio Pro does not offer aftercare automation at any plan tier. This is their biggest missing feature compared to InkFlow."} },
+    {"@type": "Question", "name": "Can I import my Tattoo Studio Pro clients?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Export your client data as CSV from TSP and use InkFlow's CSV import tool. Contact us at hello@ink-flows.com for migration assistance."} },
+    {"@type": "Question", "name": "Which platform supports more artists?", "acceptedAnswer": {"@type": "Answer", "text": "Tattoo Studio Pro supports up to unlimited artists on their Legion plan. InkFlow Pro supports up to 10 artists. For studios with 10+ artists, TSP has the advantage on capacity."} },
+    {"@type": "Question", "name": "Is InkFlow PCI compliant?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. InkFlow uses Stripe for payment processing, which is PCI DSS Level 1 compliant. We never store credit card numbers on our servers."} }
+  ]
 }
 </script>
 
@@ -21,14 +26,15 @@ import Footer from '../../components/Footer.astro';
   <!-- Comparison Schema -->
   <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
-  "@type": "Product",
+  "@type": "SoftwareApplication",
   "name": "InkFlow vs Tattoo Studio Pro",
   "description": "InkFlow vs Tattoo Studio Pro - Comparison for tattoo studio management.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
   "brand": {
     "@type": "Brand",
     "name": "InkFlow"
   },
-  "category": "Tattoo Studio Software",
   "offers": {
     "@type": "Offer",
     "price": "0",

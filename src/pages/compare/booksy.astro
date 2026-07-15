@@ -3,10 +3,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
   <SEOHead slot="head" title="InkFlow vs Booksy — The Full Comparison" description="Compare InkFlow vs Booksy for tattoo studios. See how they stack up on booking, deposits, waivers, commission tracking, pricing, and tattoo-specific features." />
+  <FAQSchema questions={[
+    { question: "Is Booksy good for tattoo studios?", answer: "Booksy works for solo artists who want basic booking and marketplace discoverability. But it's a general salon platform — it lacks tattoo-specific features like digital waivers, aftercare automation, and inventory tracking that dedicated tattoo software includes." },
+    { question: "How much does Booksy cost?", answer: "Booksy's base plan starts at $29.99/mo plus $20 per additional provider, and SMS reminders cost extra ($0.07/SMS). InkFlow starts at $0/mo with waivers, aftercare, and inventory included." },
+    { question: "What is the best Booksy alternative for tattoo studios?", answer: "For tattoo-specific needs, InkFlow is purpose-built with digital waivers, deposit collection, commission splitting, and aftercare automation. Other options include Tattoo Studio Pro and Tattoogenda — see our side-by-side comparisons." },
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">
@@ -74,6 +80,19 @@ import Footer from '../../components/Footer.astro';
           <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Related comparisons -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl font-bold text-white">Compare Booksy to Other Tattoo Software</h2>
+      <p class="mt-3 text-gray-400">Looking at more than one option before you decide? These side-by-side comparisons help:</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li><a href="/compare/tattoo-studio-pro" class="text-accent-400 hover:underline font-medium">Booksy vs Tattoo Studio Pro</a> — pricing, waivers, and enterprise features compared.</li>
+        <li><a href="/compare/tattoogenda" class="text-accent-400 hover:underline font-medium">Booksy vs Tattoogenda</a> — interface, automation, and free-plan differences.</li>
+        <li><a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline font-medium">Best Tattoo Studio Software in 2026</a> — the full landscape beyond Booksy.</li>
+      </ul>
     </div>
   </section>
 

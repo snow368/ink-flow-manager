@@ -35,8 +35,8 @@
 
 | # | 维度 | 来源文件 | 规则 |
 |---|------|---------|------|
-| 1 | **关键词选择** | `keyword-selection-methodology` | 5维度打分：KD/意图/商业价值/搜索量/匹配度 |
-| 2 | **搜索意图判断** | `keyword-selection-methodology` | SERP首页全是Blog=信息型，全是LP=商业型，全是对比=交易型 |
+| 1 | **关键词选择（5维评分）** | `framework/keyword-research.md` §1.3 | KD/意图/商业价值/搜索量/匹配度，每项1-10，总分50 |
+| 2 | **搜索意图判断** | `framework/keyword-research.md` §1.1 | SERP首页全是Blog=信息型，全是LP=商业型，全是对比=交易型 |
 | 3 | **TOFU/MOFU/BOFU** | `semrush-tofu-mofu-bofu` + `rosshudgens-tofu-content-back` | 80%精力做商业/交易，20%信息型。TOFU因AI推荐复活 |
 | 4 | **关键词分组做一页** | `inkflow-keywords-headings` | 同意图的词归组，H1放主词，H2/H3放长尾 |
 | 5 | **Title公式** | `meta-tags-rules` | `{目标词} — {价值} \| InkFlow` ≤60字 |

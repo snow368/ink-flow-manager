@@ -3,10 +3,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
   <SEOHead slot="head" title="InkFlow vs Tattoogenda — Full Comparison" description="Compare InkFlow vs Tattoogenda for your tattoo studio. Modern interface, aftercare automation, and free plan — vs Tattoogenda's EU-focused platform." />
+  <FAQSchema questions={[
+    { question: "What is Tattoogenda?", answer: "Tattoogenda is a tattoo-studio management platform with a strong presence in the EU market. It offers booking, client management, and basic waiver support, with a focus on multi-location franchises." },
+    { question: "How does Tattoogenda compare to InkFlow?", answer: "Both are built for tattoo studios. InkFlow offers a more modern interface, aftercare automation, and inventory tracking that Tattoogenda doesn't provide, plus a generous free plan. Tattoogenda is strong for multi-location franchises." },
+    { question: "Is there a free Tattoogenda alternative?", answer: "Yes — InkFlow offers a free forever plan that includes booking, deposits, digital waivers, and aftercare automation, where Tattoogenda only offers a limited free tier." },
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">
@@ -51,6 +57,18 @@ import Footer from '../../components/Footer.astro';
   <section class="py-12 text-center border-t border-ink-800/50">
     <h2 class="text-2xl font-bold text-white">Try InkFlow Free</h2>
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
+  </section>
+
+  <!-- Related comparisons -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl font-bold text-white">Compare Tattoogenda to Other Software</h2>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li><a href="/compare/booksy" class="text-accent-400 hover:underline font-medium">Tattoogenda vs Booksy</a> — marketplace reach vs tattoo-specific features.</li>
+        <li><a href="/compare/tattoo-studio-pro" class="text-accent-400 hover:underline font-medium">Tattoogenda vs Tattoo Studio Pro</a> — enterprise vs all-in-one.</li>
+        <li><a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline font-medium">Best Tattoo Studio Software in 2026</a> — the full landscape.</li>
+      </ul>
+    </div>
   </section>
 
   <Footer />

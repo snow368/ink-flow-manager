@@ -58,8 +58,47 @@
 |--------|------|--------|----------|--------|--------|---------|
 | ... | ... | ... | ... | ... | ... | ... |
 
+## 2026 年关键词研究新变化
+
+### 三大转变
+1. **从"搜索量优先"到"商业价值优先"**: 高搜索量的关键词正被 AI Overview 捕获。现代关键词研究关注能直接驱动品牌认知或转化的词。
+2. **从"仅限 Google"到"全网搜索"**: Reddit/ChatGPT/Amazon/YouTube 都是关键词来源平台
+3. **从"查询匹配"到"提示词研究"**: 长尾提示词正在取代传统关键词匹配
+
+来源: [Semrush — Keyword Research 2026](https://www.semrush.com/blog/keyword-research/)
+
+### Reddit 自然用语挖掘 (增强版)
+- 用 `site:reddit.com "keyword"` 在 Google 中搜索，找到已排名的 Reddit 帖子
+- Reddit 用户使用自然口语化查询（如 "CRM that doesn't suck for small teams"），传统工具往往遗漏
+- 推荐工具: **GummySearch** / **AnswerThePublic**
+- 反复出现的问题 = 内容 Brief: 在目标 Subreddit 搜索主题，阅读年度热度前 20 帖子，记录每个反复被问的问题
+
+来源: [Saad Raza — Reddit SEO Strategy](https://saadrazaseo.com/reddit-seo-strategy/)
+
+### YouTube 关键词源
+- YouTube 搜索栏自动补全 → 长尾关键词
+- 目标频道评论区 → 真实用户问题
+- 工具: **vidIQ** / **TubeBuddy**
+
+### LLM 辅助关键词扩展
+- Claude/ChatGPT 可用于快速扩展种子关键词、按意图聚类、模拟购买流程问题
+- 但 LLM 输出不能替代工具提供的搜索量数据
+
+### 四大筛选问题 (2026)
+每个关键词是否值得投入，逐一问：
+1. 能否带来品牌认知流量？
+2. 能否提升 AI 可见性？
+3. 能否吸引潜在客户？
+4. 能否直接推动购买？
+
+### 关键数据
+- **92.4%** 的搜索查询月搜索量低于 10 次 — 大多数需求集中在长尾
+- **70%** 的搜索具有信息意图
+- **60%** 的 Google 搜索因 AI 摘要和零点击 SERP 而结束无点击
+
 ## 更新记录
 
 | 日期 | 事件 |
 |------|------|
 | 2026-06-06 | 初始化 |
+| 2026-07-13 | 新增 2026 年三大转变、Reddit 增强版、YouTube 关键词源、LLM 辅助、四大筛选问题 |

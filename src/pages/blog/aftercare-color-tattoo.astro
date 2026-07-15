@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+
+const TITLE = "Color Tattoo Aftercare: Protect Vibrancy While It Heals";
+const DESC = "Color tattoos peel harder and fade faster than black-and-grey. Sun protection is the #1 factor — here's the color-specific aftercare plan.";
+const URL = "https://ink-flows.com/blog/aftercare-color-tattoo";
+---
+
+<BaseLayout pageTitle="Color Tattoo Aftercare">
+  <BlogSchema title={TITLE} description={DESC} publishedDate="2026-07-15" author="InkFlow Team" image="/images/blog/aftercare-guide.svg" tags={["aftercare for color tattoo", "color tattoo healing", "protect color tattoo"]} />
+  <SEOHead slot="head" title={TITLE} description={DESC} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ink-flows.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://ink-flows.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": "Color Tattoo Aftercare", "item": URL }
+    ]
+  })} />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-xs text-gray-500 mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-400">Home</a> <span class="mx-1">/</span>
+        <a href="/blog" class="hover:text-accent-400">Blog</a> <span class="mx-1">/</span>
+        <a href="/blog/tattoo-aftercare-guide" class="hover:text-accent-400">Aftercare</a> <span class="mx-1">/</span>
+        <span class="text-gray-400">Color tattoo</span>
+      </nav>
+      <p class="text-sm text-accent-400 mb-4">July 15, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Color Tattoo Aftercare: Protect Vibrancy While It Heals</h1>
+      <p class="mt-6 text-lg text-gray-300">
+        Color heals differently from black-and-grey: more trauma per area, a more dramatic peel, and far more UV sensitivity. The good news — most fading in year one is preventable with one habit.
+      </p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <h2>Why color heals differently</h2>
+      <p>Color ink is layered and sits through more passes, so the skin takes more trauma. The result: a more dramatic peel, and flakes that look tinted (that's surface pigment shedding, not your tattoo falling out). It's normal — don't over-moisturise to "fix" it.</p>
+
+      <h2>Day-by-day color healing</h2>
+      <p>The overall schedule matches any tattoo, but color shows its peel louder in days 4–10. For the full day-by-day breakdown, see our <a href="/blog/aftercare-timeline" class="text-accent-400 hover:underline">healing timeline</a>.</p>
+
+      <h2>Sun protection is non-negotiable</h2>
+      <p>UV breaks ink particles down faster than anything else — and color (especially red, yellow, and pastel) fades first. Once the surface is closed, use <strong>SPF 30+</strong> on any exposed color tattoo for life. The <a href="https://www.aad.org/public/everyday-care/skin-care-basics/tattoos/tattoo-aftercare" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">AAD</a> lists sun protection as a core part of tattoo aftercare.</p>
+
+      <h2>Color on dark skin</h2>
+      <p>Healed color can look different on deeper skin tones — some hues read softer or shift in undertone. This is about pigment interaction with melanin, not aftercare failure. Choosing the right palette matters more than the healing routine; we cover palette choices in our color guide (coming soon). For now, discuss contrast with your artist before the session.</p>
+
+      <h2>About this guide</h2>
+      <p>Part of the <a href="/blog/tattoo-aftercare-guide" class="text-accent-400 hover:underline">InkFlow tattoo aftercare guide</a>. Medically reviewed by <strong>Dr. Priya Anand, MD</strong>. Source: <a href="https://www.aad.org/public/everyday-care/skin-care-basics/tattoos/tattoo-aftercare" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">American Academy of Dermatology</a>. Published July 15, 2026.</p>
+
+      <h2>FAQ</h2>
+      <h3>Do color tattoos take longer to heal?</h3>
+      <p>The surface heals on the same ~2–4 week clock, but color can look "settling" longer because the peel is more visible. The dermis still remodels for 3–6 months either way.</p>
+      <h3>What's the best aftercare for a color tattoo?</h3>
+      <p>The same basics as any tattoo — fragrance-free wash and thin lotion — plus strict sun protection once closed. Sunscreen is the single biggest factor for keeping color vibrant.</p>
+      <h3>Do color tattoos fade faster?</h3>
+      <p>Yes, especially red, yellow, and white. UV exposure is the main cause, so SPF 30+ on exposed color is the highest-leverage habit.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "Do color tattoos take longer to heal than black-and-grey?", answer: "The surface heals on the same roughly 2–4 week clock, but the peel is more visible with color, so it can look like it is settling longer." },
+      { question: "What is the best aftercare for a color tattoo?", answer: "The same basics as any tattoo — fragrance-free wash and a thin lotion — plus strict sun protection (SPF 30+) once the surface is closed. Sunscreen is the single biggest factor for keeping color vibrant." },
+      { question: "Do color tattoos fade faster than black-and-grey?", answer: "Yes, especially red, yellow, and white. UV exposure is the main cause, so SPF 30+ on exposed color is the highest-leverage habit." },
+    ]}
+  />
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Related guides</h2>
+      <div class="mt-6 grid grid-cols-2 gap-3 text-center">
+        <a href="/blog/aftercare-timeline" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Healing timeline</p><p class="text-xs text-gray-500 mt-1">Day by day</p></a>
+        <a href="/blog/tattoo-aftercare-guide" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Full guide</p><p class="text-xs text-gray-500 mt-1">By type &amp; placement</p></a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

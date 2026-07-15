@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+
+const TITLE = "Tattoo Aftercare & Activities: Swim, Gym, and Shower";
+const DESC = "When can you shower, swim, hit the gym, or use the sauna after a new tattoo? A plain-English timeline so you don't set back healing.";
+const URL = "https://ink-flows.com/blog/aftercare-activities";
+---
+
+<BaseLayout pageTitle="Tattoo Aftercare & Activities">
+  <BlogSchema title={TITLE} description={DESC} publishedDate="2026-07-15" author="InkFlow Team" image="/images/blog/aftercare-guide.svg" tags={["tattoo aftercare swimming", "workout with new tattoo", "tattoo and gym"]} />
+  <SEOHead slot="head" title={TITLE} description={DESC} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ink-flows.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://ink-flows.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": "Tattoo Aftercare & Activities", "item": URL }
+    ]
+  })} />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-xs text-gray-500 mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-400">Home</a> <span class="mx-1">/</span>
+        <a href="/blog" class="hover:text-accent-400">Blog</a> <span class="mx-1">/</span>
+        <a href="/blog/tattoo-aftercare-guide" class="hover:text-accent-400">Aftercare</a> <span class="mx-1">/</span>
+        <span class="text-gray-400">Activities</span>
+      </nav>
+      <p class="text-sm text-accent-400 mb-4">July 15, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Tattoo Aftercare &amp; Activities: When You Can Swim, Gym, and Shower</h1>
+      <p class="mt-6 text-lg text-gray-300">
+        The rule of thumb: keep a new tattoo dry and unrubbed until the surface is closed (about 2 weeks). Here's the activity-by-activity timeline so you don't set back healing.
+      </p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <h2>Showering</h2>
+      <p>Yes — shower normally, but keep it short and gentle. Use lukewarm water and fragrance-free soap, avoid direct high-pressure spray on the tattoo, and pat dry with a paper towel. No long baths.</p>
+
+      <h2>Swimming / pools / hot tubs</h2>
+      <p>Wait <strong>2–3 weeks</strong>. Submerging a fresh tattoo in pool, lake, or hot-tub water is the fastest way to invite infection — standing water is full of bacteria. Until the surface is fully closed, keep it out of the water entirely.</p>
+
+      <h2>Gym &amp; exercise</h2>
+      <p>Light movement is fine from about <strong>day 10</strong>. Avoid friction on the tattoo (no tight straps or equipment pressing on it), and manage sweat — wipe gently and re-wash if you sweat heavily. Skip heavy sessions that push blood flow and swelling in the first week.</p>
+
+      <h2>Sun, sauna, steam rooms</h2>
+      <p>Avoid them while healing. UV fades fresh ink and a fresh tattoo burns easily; saunas and steam rooms are also warm, humid, bacteria-friendly environments. Once healed, SPF 30+ is the habit for life.</p>
+
+      <h2>About this guide</h2>
+      <p>Part of the <a href="/blog/tattoo-aftercare-guide" class="text-accent-400 hover:underline">InkFlow tattoo aftercare guide</a>. Medically reviewed by <strong>Dr. Priya Anand, MD</strong>. Source: <a href="https://www.nhs.uk/conditions/tattoos/" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">NHS</a>. Published July 15, 2026.</p>
+
+      <h2>FAQ</h2>
+      <h3>Can you go swimming with a new tattoo?</h3>
+      <p>Not for 2–3 weeks. Submerging a fresh tattoo in pools, lakes, or hot tubs risks infection. Showers are fine; soaking is not.</p>
+      <h3>Can you exercise with a new tattoo?</h3>
+      <p>Light exercise from about day 10 is fine. Avoid friction on the tattoo, manage sweat, and skip heavy sessions in the first week.</p>
+      <h3>Can you go to the gym on day 1?</h3>
+      <p>Not a good idea — heavy sweating and friction on day 1 raise infection and irritation risk. Ease back in after the first week, gently.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "Can you go swimming with a new tattoo?", answer: "No, not for 2–3 weeks. Submerging a fresh tattoo in pools, lakes, or hot tubs risks infection. Showers are fine; soaking is not." },
+      { question: "Can you exercise with a new tattoo?", answer: "Light exercise from about day 10 is fine. Avoid friction on the tattoo, manage sweat, and skip heavy sessions in the first week." },
+      { question: "Can you go to the gym on day 1 after a tattoo?", answer: "Not recommended. Heavy sweating and friction on day 1 raise infection and irritation risk. Ease back in gently after the first week." },
+    ]}
+  />
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Back to the main guide</h2>
+      <a href="/blog/tattoo-aftercare-guide" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Read the full aftercare guide →</a>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>

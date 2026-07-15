@@ -4,11 +4,35 @@ interface Props {
   description: string;
   canonical?: string;
   ogImage?: string;
+  noindex?: boolean;
 }
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, noindex = false } = Astro.props;
 const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
 const site = 'https://ink-flows.com';
+
+// Normalize canonical: force https + non-www + trailing slash + strip query/hash.
+// This consolidates the ~20 trailing-slash / www / http duplicate pairs that
+// Google has indexed (e.g. /pricing vs /pricing/), so ranking signals stop
+// splitting across variants and concentrate on one URL.
+function normalizeCanonical(input: string): string {
+  try {
+    const u = new URL(input);
+    u.protocol = 'https:';
+    u.host = 'ink-flows.com';
+    u.search = '';
+    u.hash = '';
+    if (u.pathname.length > 1 && !u.pathname.endsWith('/')) {
+      u.pathname = u.pathname + '/';
+    }
+    return u.toString();
+  } catch {
+    return input;
+  }
+}
+
+const canonicalUrl = normalizeCanonical(canonical || Astro.url.href);
+
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -19,15 +43,14 @@ const jsonLd = JSON.stringify({
   "url": "https://ink-flows.com",
 });
 ---
----
-
 <slot name="head" />
 <title>{title} | InkFlow</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonical || Astro.url.href} />
+<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+<link rel="canonical" href={canonicalUrl} />
 <meta property="og:title" content={`${title} | InkFlow`} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonical || Astro.url.href} />
+<meta property="og:url" content={canonicalUrl} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />

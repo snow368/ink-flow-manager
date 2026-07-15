@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Stylized great wave">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1f3a"/>
+      <stop offset="100%" stop-color="#13315c"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2b6cb0"/>
+      <stop offset="100%" stop-color="#1a4971"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#sky)"/>
+  <circle cx="930" cy="180" r="70" fill="#e8c07d" opacity="0.9"/>
+  <path d="M0,420 C200,320 350,520 560,430 C760,345 900,520 1200,420 L1200,675 L0,675 Z" fill="url(#wave)"/>
+  <path d="M0,475 C220,405 380,565 600,485 C820,405 980,565 1200,475 L1200,675 L0,675 Z" fill="#0f2f4d"/>
+  <path d="M548,432 C588,360 632,360 672,432 C652,402 592,402 548,432 Z" fill="#cfe8ff" opacity="0.7"/>
+  <path d="M300,470 C320,430 360,430 380,470 C366,450 330,450 300,470 Z" fill="#cfe8ff" opacity="0.5"/>
+</svg>
