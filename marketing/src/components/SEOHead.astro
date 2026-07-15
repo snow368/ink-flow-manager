@@ -131,7 +131,7 @@ if (!disableBreadcrumb && !_isHome && !_isSpecial) {
 <link rel="alternate" hreflang="en" href={canonicalUrl} />
 <meta property="og:title" content={`${title} | InkFlow`} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={href} />
+<meta property="og:url" content={canonicalUrl} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
