@@ -4,6 +4,7 @@ interface Props {
   description: string;
   canonical?: string;
   ogImage?: string;
+  noindex?: boolean;
   /**
    * Emit the SoftwareApplication schema. TRUE for product/app pages
    * (home, features, compare, free-tools, pricing). FALSE for content
@@ -21,11 +22,31 @@ interface Props {
   disableBreadcrumb?: boolean;
 }
 
-const { title, description, canonical } = Astro.props;
+const { title, description, canonical, noindex = false } = Astro.props;
 const appSchema = Astro.props.appSchema ?? true;
 const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
 const site = 'https://ink-flows.com';
-const href = canonical || Astro.url.href;
+
+// Normalize canonical: force https + non-www + trailing slash + strip query/hash.
+// Consolidates the trailing-slash / www / http duplicate pairs Google indexed,
+// so ranking signals stop splitting across URL variants and concentrate on one.
+function normalizeCanonical(input: string): string {
+  try {
+    const u = new URL(input);
+    u.protocol = 'https:';
+    u.host = 'ink-flows.com';
+    u.search = '';
+    u.hash = '';
+    if (u.pathname.length > 1 && !u.pathname.endsWith('/')) {
+      u.pathname = u.pathname + '/';
+    }
+    return u.toString();
+  } catch {
+    return input;
+  }
+}
+
+const canonicalUrl = normalizeCanonical(canonical || Astro.url.href);
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -104,9 +125,10 @@ if (!disableBreadcrumb && !_isHome && !_isSpecial) {
 <slot name="head" />
 <title>{title} | InkFlow</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={href} />
-<link rel="alternate" hreflang="x-default" href={href} />
-<link rel="alternate" hreflang="en" href={href} />
+<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+<link rel="canonical" href={canonicalUrl} />
+<link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+<link rel="alternate" hreflang="en" href={canonicalUrl} />
 <meta property="og:title" content={`${title} | InkFlow`} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={href} />
