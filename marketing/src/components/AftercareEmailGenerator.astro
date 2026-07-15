@@ -1,9 +1,151 @@
 ---
 ---
 <div class="rounded-xl border border-ink-700 bg-ink-900 p-6 sm:p-8">
-  <h3 class="text-xl font-bold text-white">Aftercare Email Generator</h3>
-  <p class="text-sm text-gray-400">Automate aftercare follow-ups with InkFlow.</p>
-  <div class="mt-4">
-    <a href="/pricing" class="text-accent-400 hover:underline">Start free trial</a>
+  <h3 class="text-xl font-bold text-white mb-2">Aftercare Email Sequence Generator</h3>
+  <p class="text-sm text-gray-400 mb-6">Generate a complete aftercare follow-up email sequence (Day 1 → Day 30) you can send to clients. Auto-tailored to tattoo type.</p>
+
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Client name</label>
+        <input id="ae-client" type="text" placeholder="Jane Doe" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Artist name</label>
+        <input id="ae-artist" type="text" placeholder="Alex Rivera" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Tattoo date</label>
+        <input id="ae-date" type="date" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Tattoo type</label>
+        <select id="ae-type" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none">
+          <option value="tattoo">Standard / black &amp; grey</option>
+          <option value="fine-line">Fine line</option>
+          <option value="color">Color</option>
+          <option value="large-piece">Large piece / sleeve</option>
+          <option value="cover-up">Cover-up</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" id="ae-gen" class="w-full rounded-lg bg-accent-500 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Generate Email Sequence</button>
   </div>
+
+  <div id="ae-output" class="mt-6 hidden space-y-4"></div>
 </div>
+
+<script>
+  const AFTERCARE = {
+    default: [
+      'Keep the bandage on for the recommended time.',
+      'Wash gently with antibacterial soap and lukewarm water.',
+      'Pat dry with a clean paper towel — do not rub.',
+      'Apply a thin layer of recommended ointment.',
+      'Avoid swimming, sun exposure, and tight clothing for 2 weeks.',
+      'Do not pick or scratch the tattoo while it heals.',
+      'Contact your artist if you notice signs of infection.',
+    ],
+    'large-piece': [
+      'Leave the initial wrap on overnight (or per artist instructions).',
+      'Wash 2-3 times daily with mild antibacterial soap.',
+      'Apply ointment sparingly — too much suffocates the skin.',
+      'Wear loose, breathable clothing over the area.',
+      'Avoid gym, sauna, pools, and direct sun for 3 weeks.',
+      'Sleep on clean sheets, avoid pet contact with fresh tattoo.',
+      'Schedule a touch-up check in 4-6 weeks if needed.',
+    ],
+    'fine-line': [
+      'Remove bandage after 2-4 hours.',
+      'Wash gently with lukewarm water and mild soap.',
+      'Apply a very thin layer of unscented lotion.',
+      'Fine line tattoos heal faster but are delicate — avoid friction.',
+      'Sun protection is critical — UV fades fine lines quickly.',
+      'Touch-ups may be needed after full healing (4-6 weeks).',
+    ],
+    color: [
+      'Color tattoos may ooze plasma for 24-48 hours — this is normal.',
+      'Wash and re-wrap for the first 2 nights if oozing.',
+      'Avoid colored clothing dyes touching the fresh tattoo.',
+      'Colors may look dull during peeling — final color appears after 3-4 weeks.',
+      'Use SPF 50+ on healed color tattoos to prevent fading.',
+    ],
+    'cover-up': [
+      'Cover-up tattoos are often worked deeper — healing takes longer.',
+      'Keep the area extra moisturized during healing.',
+      'Expect more scabbing than a fresh tattoo on bare skin.',
+      'The old tattoo underneath may show through during healing — wait 4+ weeks for final result.',
+    ],
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const TYPE_MAP = { tattoo: 'default', 'fine-line': 'fine-line', color: 'color', 'large-piece': 'large-piece', 'cover-up': 'cover-up' };
+  const stepsFor = (type) => AFTERCARE[TYPE_MAP[type] || 'default'];
+
+  const SEQUENCE = [
+    {
+      day: 1,
+      subject: (n) => `Day 1 — Welcome to the healing process, ${n}`,
+      body: (n, a, steps) =>
+        `Hi ${n},\n\nThanks for getting tattooed by ${a} today! The first 24 hours matter most.\n\nRight now:\n• ${steps[0]}\n• ${steps[1]}\n• ${steps[2]}\n\nYou'll start to feel it tighten and warm up — that's normal. Reply to this email any time if something feels off.\n\nTake care,\n${a}`,
+    },
+    {
+      day: 3,
+      subject: (n) => `Day 3 — Cleaning routine, ${n}`,
+      body: (n, a, steps) =>
+        `Hi ${n},\n\nBy now the wrap is off and you're washing on your own. Quick reminder:\n\n• ${steps[1]}\n• ${steps[2]}\n• ${steps[3]}\n\nKeep it simple — a thin layer of ointment is enough. Over-moisturizing slows healing.\n\n— ${a}`,
+    },
+    {
+      day: 7,
+      subject: (n) => `Day 7 — Peeling is normal, ${n}`,
+      body: (n, a, steps) =>
+        `Hi ${n},\n\nAround day 7 your tattoo will start to flake and peel. Do NOT pick at it.\n\n• ${steps[4]}\n• ${steps[5]}\n\nThe itch means it's healing. A little fragrance-free lotion helps. Colors may look dull right now — that's temporary.\n\n— ${a}`,
+    },
+    {
+      day: 14,
+      subject: (n) => `Day 14 — How's it looking, ${n}?`,
+      body: (n, a, steps) =>
+        `Hi ${n},\n\nTwo weeks in. Most surface healing is done, but the deeper skin is still settling.\n\n• Keep it out of direct sun and pools a bit longer.\n• ${steps[6]}\n\nSend me a photo whenever you like — I'm happy to check the progress.\n\n— ${a}`,
+    },
+    {
+      day: 30,
+      subject: (n) => `Day 30 — Loving your tattoo, ${n}?`,
+      body: (n, a, steps) =>
+        `Hi ${n},\n\nOne month on — your tattoo should be fully surface-healed and looking its best.\n\n• ${steps[6]}\n• For color work, start using SPF 50+ so it stays vibrant.\n\nIf any spots need a touch-up, book a free check-up anytime. Glad to have you as a client!\n\n— ${a}`,
+    },
+  ];
+
+  $('ae-gen')?.addEventListener('click', () => {
+    const n = $('ae-client').value.trim() || 'there';
+    const a = $('ae-artist').value.trim() || 'your artist';
+    const type = $('ae-type').value;
+    const steps = stepsFor(type);
+    const out = $('ae-output');
+    out.innerHTML = '';
+    SEQUENCE.forEach((email) => {
+      const subject = email.subject(n);
+      const body = email.body(n, a, steps);
+      const card = document.createElement('div');
+      card.className = 'rounded-lg border border-ink-700 bg-ink-800/50 p-4';
+      card.innerHTML = `
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold text-accent-400">${email.day === 1 ? 'Day 1' : 'Day ' + email.day}</span>
+          <button type="button" class="ae-copy text-xs rounded border border-ink-700 bg-ink-800 px-3 py-1.5 text-white hover:bg-ink-700 transition-colors" data-subject="${subject.replace(/"/g, '&quot;')}">Copy</button>
+        </div>
+        <p class="text-sm font-semibold text-white mb-1">${subject}</p>
+        <pre class="whitespace-pre-wrap text-xs text-gray-300 max-h-48 overflow-auto">${body}</pre>`;
+      out.appendChild(card);
+    });
+    out.classList.remove('hidden');
+    out.querySelectorAll('.ae-copy').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const subject = btn.getAttribute('data-subject');
+        const body = btn.parentElement.parentElement.querySelector('pre').textContent;
+        navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`).catch(() => {});
+        btn.textContent = 'Copied!';
+        setTimeout(() => (btn.textContent = 'Copy'), 1500);
+      });
+    });
+  });
+</script>

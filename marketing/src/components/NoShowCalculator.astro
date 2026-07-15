@@ -1,9 +1,86 @@
 ---
 ---
 <div class="rounded-xl border border-ink-700 bg-ink-900 p-6 sm:p-8">
-  <h3 class="text-xl font-bold text-white">No-Show Calculator</h3>
-  <p class="text-sm text-gray-400">Estimate how much you can save with deposit-based booking.</p>
-  <div class="mt-4">
-    <a href="/pricing" class="text-accent-400 hover:underline">Learn more about InkFlow</a>
+  <h3 class="text-xl font-bold text-white mb-2">No-Show Calculator</h3>
+  <p class="text-sm text-gray-400 mb-6">Estimate how much revenue you lose to no-shows — and how much deposit-based booking recovers.</p>
+
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Appointments / month</label>
+        <input id="ns-appts" type="number" min="0" value="60" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Avg. value / appointment ($)</label>
+        <input id="ns-value" type="number" min="0" value="250" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">No-show rate (%)</label>
+        <input id="ns-rate" type="number" min="0" max="100" value="15" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Deposit % (if enabled)</label>
+        <input id="ns-deposit" type="number" min="0" max="100" value="25" class="w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-white text-sm focus:border-accent-500 focus:outline-none" />
+      </div>
+    </div>
+
+    <label class="flex items-center gap-3 text-sm text-gray-300">
+      <input id="ns-enabled" type="checkbox" checked class="h-4 w-4 rounded border-ink-700 bg-ink-800 text-accent-500 focus:ring-accent-500" />
+      Charge a deposit to reduce no-shows
+    </label>
+
+    <button type="button" id="ns-calc" class="w-full rounded-lg bg-accent-500 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Calculate Savings</button>
+  </div>
+
+  <div id="ns-result" class="mt-6 hidden space-y-3">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="rounded-lg bg-ink-800/50 p-4 text-center">
+        <p class="text-xs text-gray-400">Lost to no-shows / yr</p>
+        <p id="ns-current" class="text-2xl font-bold text-red-400">$0</p>
+      </div>
+      <div class="rounded-lg bg-ink-800/50 p-4 text-center">
+        <p class="text-xs text-gray-400">After deposit / yr</p>
+        <p id="ns-after" class="text-2xl font-bold text-yellow-400">$0</p>
+      </div>
+      <div class="rounded-lg bg-ink-800/50 p-4 text-center">
+        <p class="text-xs text-gray-400">Net recovered / yr</p>
+        <p id="ns-saved" class="text-2xl font-bold text-accent-400">$0</p>
+      </div>
+    </div>
+    <p id="ns-note" class="text-xs text-gray-500"></p>
+    <a href="/pricing" class="block w-full rounded-lg bg-accent-500 py-3 text-center text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors">Start collecting deposits with InkFlow</a>
   </div>
 </div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const money = (n) => '$' + Math.round(n).toLocaleString();
+
+  $('ns-calc')?.addEventListener('click', () => {
+    const appts = Math.max(0, parseFloat($('ns-appts').value) || 0);
+    const value = Math.max(0, parseFloat($('ns-value').value) || 0);
+    const rate = Math.min(100, Math.max(0, parseFloat($('ns-rate').value) || 0));
+    const depositPct = Math.min(100, Math.max(0, parseFloat($('ns-deposit').value) || 0));
+    const enabled = $('ns-enabled').checked;
+
+    // Annual loss at current no-show rate
+    const currentLoss = appts * 12 * (rate / 100) * value;
+
+    // With a deposit, no-show rate typically drops to ~3% (industry experience)
+    const postRate = enabled ? Math.max(rate - 12, 3) : rate;
+    const postLoss = appts * 12 * (postRate / 100) * value;
+
+    // Deposit revenue collected up front (even on the few who still no-show, you keep it)
+    const depositRevenue = enabled ? appts * 12 * (depositPct / 100) * value : 0;
+
+    const saved = currentLoss - postLoss + depositRevenue;
+
+    $('ns-current').textContent = money(currentLoss);
+    $('ns-after').textContent = money(postLoss);
+    $('ns-saved').textContent = money(saved);
+    $('ns-note').textContent = enabled
+      ? `Assuming deposits cut your no-show rate from ${rate}% to ~${postRate}%, plus ${depositPct}% deposit captured on every booking.`
+      : `Enable deposits to cut no-shows and capture upfront revenue.`;
+    $('ns-result').classList.remove('hidden');
+  });
+</script>
