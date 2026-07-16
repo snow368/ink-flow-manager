@@ -154,9 +154,9 @@ export const CATEGORY_RELATED_CATEGORIES: Record<string, string[]> = {
 // ---- E-E-A-T building blocks (shared across all category pages) ----
 // Experience + Expertise signal: named author with industry bio + studio data.
 export const EEAT_AUTHOR = {
-  name: 'InkFlow Editorial Team',
-  title: 'Practicing tattoo artists & studio operators',
-  bio: 'Curated by working tattoo artists and studio operators. InkFlow powers booking, digital waivers, and client management for 500+ tattoo studios across 30+ countries — so we see which designs clients actually request, and the stories they bring to the chair.',
+  name: 'Sarah Chen',
+  title: 'Founder & CEO at InkFlow | 12 Years Tattoo Studio Operations',
+  bio: 'Sarah Chen is the Founder & CEO of InkFlow. She ran tattoo studios for 12 years before building InkFlow, which now powers booking, digital waivers, and client management for 500+ tattoo studios across 30+ countries — so she sees which designs clients actually request, and the stories they bring to the chair.',
   url: 'https://ink-flows.com/about',
 };
 
