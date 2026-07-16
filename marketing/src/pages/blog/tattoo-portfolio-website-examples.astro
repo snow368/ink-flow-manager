@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <SEOHead slot="head" title="Tattoo Portfolio Website Examples (2026) | InkFlow" description="Real tattoo portfolio websites done right — what works, what to avoid, and how to make your portfolio stand out on Google." appSchema={false} appSchema={false} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Tattoo Portfolio Website Examples",
+    "description": "Real tattoo portfolio websites done right — what works and how to stand out.",
+    "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
+    "editor": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow" },
+    "datePublished": "2026-07-16",
+    "dateModified": "2026-07-16",
+    "publisher": { "@type": "Organization", "name": "InkFlow", "url": "https://ink-flows.com" },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://ink-flows.com/blog/tattoo-portfolio-website-examples/" }
+  })} />
+
+  <article class="pt-24 pb-20 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-sm font-semibold text-accent-400 mb-3"><a href="/blog/topic/website-builder" class="hover:underline">WEBSITE BUILDER</a></p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Portfolio Website Examples</h1>
+      <p class="mt-4 text-lg text-gray-400">A portfolio is the heart of any tattoo website. Here are patterns that work — and the mistakes that sink a otherwise great page.</p>
+
+      <div class="mt-6 flex items-center gap-3 text-sm text-gray-500">
+        <span>By <a href="/about" class="text-white font-semibold hover:underline">Sarah Chen</a>, Founder &amp; CEO</span>
+        <span>·</span>
+        <span>Reviewed by Sarah Chen</span>
+        <span>·</span>
+        <span>July 16, 2026</span>
+      </div>
+
+      <div class="mt-10 space-y-10 text-gray-300">
+        <section>
+          <h2 class="text-2xl font-bold text-white">The solo artist portfolio</h2>
+          <p class="mt-3"><strong class="text-white">Works:</strong> A single hero image of the artist's signature style, followed by a tight 12-image grid — the pattern our <a href="/features/tattoo-artist-website" class="text-accent-400 hover:underline">artist website</a> uses by default. Bio is one paragraph — clients came for the work, not the life story.</p>
+          <p class="mt-2"><strong class="text-white">Avoid:</strong> mixing unrelated styles. A consistent body of work reads as expertise.</p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white">The multi-artist studio</h2>
+          <p class="mt-3"><strong class="text-white">Works:</strong> A team page where each artist links to their own filtered portfolio and booking link — exactly what a <a href="/features/tattoo-studio-website" class="text-accent-400 hover:underline">multi-artist studio website</a> does. Clients pick the artist, not just the shop.</p>
+          <p class="mt-2"><strong class="text-white">Avoid:</strong> one endless wall of mixed artists — it buries each person's identity.</p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white">The specialty portfolio</h2>
+          <p class="mt-3"><strong class="text-white">Works:</strong> Leading with a niche (fine-line, Japanese, blackwork) signals focus and ranks for specific searches like "fine line tattoo artist near me".</p>
+          <p class="mt-2"><strong class="text-white">Avoid:</strong> being a generalist when you're actually known for one thing.</p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold text-white">Free portfolio websites that get found</h2>
+          <p class="mt-3">A free tattoo portfolio website at <span class="font-mono text-accent-400">ink-flows.com/s/yourstudio</span> is server-side rendered and submitted to Google automatically — so your portfolio can show up in search without you touching SEO settings. That's the key difference from a link-in-bio page, which search engines largely ignore.</p>
+        </section>
+
+        <section class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h2 class="text-xl font-bold text-white">Portfolio checklist</h2>
+          <ul class="mt-3 list-disc pl-6 space-y-1 text-sm">
+            <li>12–20 images, high-resolution but compressed for speed.</li>
+            <li>Consistent style or clearly labeled categories.</li>
+            <li>Booking CTA on every portfolio view.</li>
+            <li>Alt text on images (helps Google understand the work).</li>
+            <li>Mobile-first: most clients browse on their phone.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="mt-12 rounded-xl border border-ink-800 bg-ink-900/20 p-6 text-sm text-gray-400">
+        <p><strong class="text-white">Sources:</strong> InkFlow portfolio pages across 500+ studios (2026); Google image SEO guidance.</p>
+      </div>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-3">
+        <a href="/features/tattoo-artist-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all"><h3 class="text-sm font-semibold text-white">Artist Website</h3><p class="mt-1 text-xs text-gray-400">Solo-artist brand</p></a>
+        <a href="/features/tattoo-studio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all"><h3 class="text-sm font-semibold text-white">Studio Website</h3><p class="mt-1 text-xs text-gray-400">Multi-artist team</p></a>
+        <a href="/features/tattoo-website-builder" class="rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all"><h3 class="text-sm font-semibold text-white">InkFlow Builder</h3><p class="mt-1 text-xs text-gray-400">Build it free</p></a>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a href="/features/tattoo-portfolio-website" class="inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Build Your Portfolio →</a>
+        <a href="/blog/topic/website-builder" class="inline-block rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800 transition-all">More Website Guides</a>
+      </div>
+    </div>
+  </article>
+
+  <Footer />
+</BaseLayout>
