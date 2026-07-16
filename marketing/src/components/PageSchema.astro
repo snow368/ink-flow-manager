@@ -1,5 +1,5 @@
 ---
-export type SchemaType = 'software' | 'organization' | 'article' | 'faq' | 'breadcrumb';
+export type SchemaType = 'software' | 'organization' | 'article' | 'faq' | 'comparison' | 'breadcrumb';
 
 interface Props {
   type: SchemaType;
@@ -20,13 +20,7 @@ const schemas: Record<SchemaType, object> = {
     "description": data.description || "Complete tattoo studio management platform. Booking, deposits, waivers, CRM, and aftercare.",
     "url": site,
     ...(data.offers ? {
-      "offers": Array.isArray(data.offers) ? data.offers.map((o: any) => ({
-        "@type": "Offer",
-        "name": o.name || undefined,
-        "price": o.price,
-        "priceCurrency": o.currency || "USD",
-        "description": o.description || undefined,
-      })) : {
+      "offers": {
         "@type": "Offer",
         "price": data.offers.price || "0",
         "priceCurrency": data.offers.currency || "USD",
@@ -84,6 +78,13 @@ const schemas: Record<SchemaType, object> = {
       "name": q.question,
       "acceptedAnswer": { "@type": "Answer", "text": q.answer },
     })),
+  },
+  comparison: {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": data.productName || "InkFlow",
+    "description": data.description || "",
+    "brand": { "@type": "Brand", "name": "InkFlow" },
   },
   breadcrumb: {
     "@context": "https://schema.org",

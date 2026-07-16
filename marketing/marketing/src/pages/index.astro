@@ -7,8 +7,18 @@ import FAQSchema from '../components/FAQSchema.astro';
 
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="Tattoo Studio Management Software" description="All-in-one tattoo studio platform. Booking, POS, CRM, digital waivers, inventory and aftercare in one app. Trusted by 500+ studios. Start free." />
+<BaseLayout lastUpdated="2026-06-17">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "InkFlow",
+  "url": "https://ink-flows.com",
+  "description": "All-in-one tattoo studio management software — booking, waivers, CRM, aftercare automation"
+}
+</script>
+  <SEOHead slot="head" title="Tattoo Studio Management Software — All-in-One | InkFlow" description="All-in-one tattoo studio management software. Booking, CRM, payments, inventory, aftercare. Purpose-built for studios. Start free at InkFlow." />
   <FAQSchema questions={[
     { question: "Is InkFlow really free for solo artists?", answer: "Yes. Our Free plan supports solo artists with basic booking and client management. No credit card required, no time limit. You can upgrade anytime." },
     { question: "Can I accept deposits through InkFlow?", answer: "Absolutely. InkFlow integrates with Stripe to collect deposits at the time of booking. Set any deposit amount — flat fee or percentage. This alone reduces no-shows by up to 80%." },

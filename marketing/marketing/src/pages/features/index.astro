@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 
 const features = [
   {
@@ -104,6 +105,13 @@ const features = [
     icon: '✅',
   },
   {
+    title: 'Ink Passport',
+    slug: 'tattoo-ink-passport',
+    tagline: 'EU REACH compliant digital ink records',
+    desc: 'Generate digital ink passports for every session. Record ink brand, batch/lot numbers, expiration dates. Compliant with EU standard EN17169:2020.',
+    icon: '🛂',
+  },
+  {
     title: 'Supply Brands Directory',
     slug: 'supply-brands',
     tagline: 'Find and review tattoo supply brands',
@@ -113,9 +121,19 @@ const features = [
 ];
 ---
 
-<BaseLayout pageTitle="Features">
+<BaseLayout pageTitle="Features" lastUpdated="2026-06-22">
   <SEOHead slot="head" title="All InkFlow Features — Booking, CRM, Waivers & More" description="InkFlow gives you 15+ features to run your tattoo studio: booking, deposits, CRM, waivers, inventory, aftercare, analytics, POS, and more. All in one platform." />
   <Navbar />
+
+  <!-- FAQPage Schema -->
+  <FAQSchema
+    questions={[
+      { question: "What features does InkFlow offer for tattoo studios?", answer: "InkFlow offers 15+ features purpose-built for tattoo studios: online booking with deposit collection, digital waivers with court-admissible PDFs, client CRM, aftercare automation, inventory tracking, commission splits, analytics, POS, compliance documentation, and more — all in one platform." },
+      { question: "Does InkFlow have a free plan?", answer: "Yes. InkFlow offers a free plan that includes booking, digital waivers, CRM, and automated reminders — at $0/month forever. Paid plans start at competitive rates and add features like aftercare automation, multi-artist scheduling, and commission tracking." },
+      { question: "Is InkFlow better than using separate tools for booking, waivers, and CRM?", answer: "Yes. With InkFlow, booking, waivers, aftercare, CRM, inventory, and payments all share one database and one client profile. No manual data transfer between tools, no separate logins, no integration headaches. Studios switching from multiple tools report saving 5-7 hours per week on admin." },
+      { question: "Can I try InkFlow before committing?", answer: "Yes. InkFlow's free plan gives you full access to core features — no time limit, no credit card required. Start with booking and waivers, add more features as your studio grows." },
+    ]}
+  />
 
   <!-- Hero -->
   <section class="pt-24 pb-16 sm:pt-32">
@@ -148,6 +166,46 @@ const features = [
             </div>
           </a>
         ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">What features does InkFlow offer for tattoo studios?</summary>
+          <p class="mt-2 text-sm text-gray-400">InkFlow offers 15+ features purpose-built for tattoo studios: online booking with deposit collection, digital waivers with court-admissible PDFs, client CRM, aftercare automation, inventory tracking, commission splits, analytics, POS, compliance documentation, and more — all in one platform.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does InkFlow have a free plan?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. InkFlow offers a free plan that includes booking, digital waivers, CRM, and automated reminders — at $0/month forever. <a href="/pricing" class="text-accent-400 hover:underline">See pricing →</a></p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is InkFlow better than using separate tools for booking, waivers, and CRM?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. With InkFlow, booking, waivers, aftercare, CRM, inventory, and payments all share one database and one client profile. No manual data transfer between tools, no separate logins. Studios switching from multiple tools report saving 5-7 hours per week on admin.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I try InkFlow before committing?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. InkFlow's free plan gives you full access to core features — no time limit, no credit card required. Start with booking and waivers, add more features as your studio grows.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Resources -->
+  <section class="border-t border-ink-800/50 py-12 bg-ink-900/30">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-lg border border-ink-800 p-6">
+        <h2 class="text-lg font-semibold text-white">Related Resources</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>→ <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">Booking Software Features</a> — detailed booking feature walkthrough</li>
+          <li>→ <a href="/features/tattoo-waiver-software" class="text-accent-400 hover:underline">Digital Waivers</a> — paperless consent forms for tattoo studios</li>
+          <li>→ <a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">Aftercare Automation</a> — turn one-time clients into repeat visitors</li>
+          <li>→ <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">Best Tattoo Studio Software Compared</a> — InkFlow vs the competition</li>
+        </ul>
       </div>
     </div>
   </section>

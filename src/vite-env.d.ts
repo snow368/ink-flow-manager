@@ -1,4 +1,5 @@
 ﻿/// <reference types="vite/client" />
+/// <reference types="vite-plugin-pwa/client" />
 
 /* Google Identity Services (GIS) — loaded from CDN at runtime */
 declare namespace google.accounts.id {

@@ -7,8 +7,8 @@ import FAQSchema from '../../components/FAQSchema.astro';
 import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
 ---
 
-<BaseLayout lastUpdated="2026-06-13">
-  <SEOHead slot="head" title="Free Tattoo Consent Form Generator | InkFlow" description="Generate free tattoo consent forms for your studio. Customizable templates, PDF download, print-ready. No signup required." />
+<BaseLayout>
+  <SEOHead slot="head" title="Free Tattoo Consent Form Generator — Printable Waiver Template" description="Generate a free tattoo consent form template. Add studio info, medical disclaimers, print or save as PDF. Free tool, no signup." />
   <FAQSchema questions={[
     { question: "Is the consent form generator really free?", answer: "Yes. Generate unlimited consent forms for free. No account or signup required." },
     { question: "Are the generated waivers legally binding?", answer: "The template includes standard waiver language, but we recommend having a lawyer review it for your jurisdiction." },
@@ -17,38 +17,6 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
   ]} />
   <Navbar />
 
-
-  <!-- HowTo Schema -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-  "name": "Free Tattoo Waiver Generator",
-  "description": "Generate a free tattoo waiver form for your studio.",
-  "step": [
-    {
-      "@type": "HowToStep",
-      "position": 1,
-      "name": "Enter studio details",
-      "text": "Fill in studio name and address."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 2,
-      "name": "Select waiver fields",
-      "text": "Choose medical questions, consent, photo release."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 3,
-      "name": "Generate waiver",
-      "text": "Printable PDF or shareable link generated."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 4,
-      "name": "Collect signature",
-      "text": "Client signs digitally. Stored with audit trail."
-    }
-  ]
-})} />
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
@@ -110,30 +78,6 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist, occasional clients</h3><p class="mt-1 text-sm text-gray-400">The free printable generator works. Print, sign, file. Just keep organized records for inspections.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Busy studio with daily clients</h3><p class="mt-1 text-sm text-gray-400">Digital waivers save 5+ minutes per check-in. Clients sign on their phone via QR code. InkFlow's digital waivers are free.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Compliance-focused studio</h3><p class="mt-1 text-sm text-gray-400">Full audit trails with timestamps and IP logs meet health department standards. Export PDFs for inspections in seconds.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Related Studio Software (tool -> product internal links, Phase 1 #3) -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Run Your Studio on InkFlow</h2>
-      <p class="mt-3 text-center text-gray-400">Turn meaning research into booked, managed, and aftercared clients.</p>
-      <div class="mt-8 grid gap-4 sm:grid-cols-2">
-        <a href="/features/tattoo-waiver-software" class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300 text-lg font-bold group-hover:bg-accent-500/25 transition-colors">&#9881;</div>
-          <div>
-            <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">Waiver software features</p>
-            <p class="mt-0.5 text-xs text-gray-500">QR check-in & e-sign &rarr;</p>
-          </div>
-        </a>
-        <a href="/compare/best-tattoo-waiver-app" class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300 text-lg font-bold group-hover:bg-accent-500/25 transition-colors">&#9881;</div>
-          <div>
-            <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">Waiver app comparison</p>
-            <p class="mt-0.5 text-xs text-gray-500">See how we stack up &rarr;</p>
-          </div>
-        </a>
       </div>
     </div>
   </section>

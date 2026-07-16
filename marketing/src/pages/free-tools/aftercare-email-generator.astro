@@ -7,8 +7,8 @@ import FAQSchema from '../../components/FAQSchema.astro';
 import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.astro';
 ---
 
-<BaseLayout lastUpdated="2026-06-12">
-  <SEOHead slot="head" title="Free Tattoo Aftercare Email Template Generator | InkFlow" description="Create professional tattoo aftercare email templates for your studio. Customize and send in minutes. Free tool, no signup needed." />
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Aftercare Email Template Generator — Free Tool" description="Generate professional tattoo aftercare emails for your clients. Free template generator with SMS templates. Copy and send in seconds. No signup required." />
   <FAQSchema questions={[
     { question: "Is the aftercare email generator free?", answer: "Yes. Generate unlimited aftercare email templates for free. No account or signup required." },
     { question: "Can I customize the generated emails?", answer: "Yes. You can edit the generated template before copying. Adjust the tone, add studio-specific details, or modify the instructions." },
@@ -17,38 +17,6 @@ import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.as
   ]} />
   <Navbar />
 
-
-  <!-- HowTo Schema -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-  "name": "Tattoo Aftercare Email Template Generator",
-  "description": "Generate a personalized aftercare email template for tattoo clients. Choose tone and customize.",
-  "step": [
-    {
-      "@type": "HowToStep",
-      "position": 1,
-      "name": "Enter client details",
-      "text": "Fill in client name and tattoo type."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 2,
-      "name": "Select email tone",
-      "text": "Choose professional, friendly, or detailed tone."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 3,
-      "name": "Copy the template",
-      "text": "Generated instantly. Copy to clipboard."
-    },
-    {
-      "@type": "HowToStep",
-      "position": 4,
-      "name": "Send to client",
-      "text": "Paste into email or SMS and send."
-    }
-  ]
-})} />
   <!-- HERO -->
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
@@ -188,30 +156,6 @@ import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.as
   </section>
 
   <!-- CTA -->
-  <!-- Related Studio Software (tool -> product internal links, Phase 1 #3) -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Run Your Studio on InkFlow</h2>
-      <p class="mt-3 text-center text-gray-400">Turn meaning research into booked, managed, and aftercared clients.</p>
-      <div class="mt-8 grid gap-4 sm:grid-cols-2">
-        <a href="/features/tattoo-aftercare-software-automation" class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300 text-lg font-bold group-hover:bg-accent-500/25 transition-colors">&#9881;</div>
-          <div>
-            <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">Aftercare automation suite</p>
-            <p class="mt-0.5 text-xs text-gray-500">Day 3 / 7 / 14 sequences &rarr;</p>
-          </div>
-        </a>
-        <a href="/blog/tattoo-aftercare-email-automation" class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300 text-lg font-bold group-hover:bg-accent-500/25 transition-colors">&#9881;</div>
-          <div>
-            <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">Email automation guide</p>
-            <p class="mt-0.5 text-xs text-gray-500">Read the guide &rarr;</p>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
   <section class="border-t border-ink-800/50 py-16 text-center">
     <h2 class="text-2xl font-bold text-white">Stop Writing Aftercare Emails by Hand</h2>
     <p class="mt-3 text-gray-400">InkFlow sends automated aftercare sequences at day 3, 7, and 14. Set it once, runs on autopilot. 40% more healed photos, 2x more reviews.</p>

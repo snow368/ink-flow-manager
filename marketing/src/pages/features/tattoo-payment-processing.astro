@@ -6,23 +6,7 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout lastUpdated="2026-07-02" author="InkFlow Team">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "InkFlow",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock"
-  }
-}
-</script>
+<BaseLayout>
   <FAQSchema questions={[
     { question: "What payment methods does InkFlow support?", answer: "Credit card, debit card, Apple Pay, and Google Pay — all processed through Stripe. Deposits, balance collection, tips, and retail sales." },
     { question: "Does InkFlow add any markup on top of Stripe fees?", answer: "No. You pay only Stripe's standard 2.9% + $0.30 per transaction. InkFlow does not add any platform markup." },
@@ -37,21 +21,10 @@ import FAQSchema from '../../components/FAQSchema.astro';
       <div class="mx-auto max-w-3xl">
         <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO PAYMENT PROCESSING</p>
         <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Payment Processing: Deposits, Payments, Commissions in One Place</h1>
-        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Managing deposits, payments, and commissions across separate tools creates accounting headaches. POS terminals cost $300+ and lock you into high processing fees.</p>
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow unifies deposits, final payments, and commission splits in one system. Powered by Stripe — 2.9% + $0.30 with zero markup from InkFlow. No hardware needed.</p>
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Artists get paid faster. Commission splits are automatic. No separate POS terminal, no extra fees. One 5-artist studio saves $3,600/year in processing fees alone.</p>
+        <p class="mt-6 text-lg text-gray-400">InkFlow's tattoo payment processing collects deposits at booking, sends payment links after sessions, and splits commissions automatically — no separate POS terminal needed. Stripe-powered with no platform markup.</p>
         <div class="mt-8 flex flex-wrap gap-4">
           <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
           <a href="/pricing" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See Pricing</a>
-
-<!-- RELATED FEATURES -->
-<section class="border-t border-ink-800/30 py-12">
-  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-xl font-bold text-white">Related Features</h2>
-    <div class="mt-6 flex flex-wrap justify-center gap-4">\n      <a href="/features/tattoo-booking-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Booking Software</a>\n      <a href="/features/tattoo-crm-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Crm Software</a>\n      <a href="/features/tattoo-referral-program" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Referral Program</a>
-    </div>
-  </div>
-</section>
         </div>
       </div>
     </div>
@@ -114,7 +87,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
             <h4 class="mt-4 text-lg font-semibold text-white">Balance Collection, Tips, and Retail — All from One Link</h4>
             <p class="text-sm text-gray-400">The same link handles deposit balance collection, tip addition, and retail product sales (aftercare balms, gift cards). Clients choose what to pay for.</p>
             <h5 class="mt-3 text-base font-medium text-white">Vs Square: No Terminal Rental ($0 vs $79-$199/mo)</h5>
-            <p class="text-sm text-gray-400">Square's POS terminal starts at $79/month plus transaction fees. InkFlow's payment links cost $0 in platform fees — only Stripe's standard 2.9%+$0.30 per transaction. Explore <a href="/features/tattoo-payment-processing" class="text-accent-400 hover:underline">InkFlow's tattoo POS system features for checkout, tips, and retail sales</a> without hardware costs.</p>
+            <p class="text-sm text-gray-400">Square's POS terminal starts at $79/month plus transaction fees. InkFlow's payment links cost $0 in platform fees — only Stripe's standard 2.9%+$0.30 per transaction.</p>
             <h6 class="mt-2 text-sm font-medium text-gray-400">No Hardware, No Contracts, No Monthly Minimum</h6>
             <p class="text-sm text-gray-400">No terminal to buy, no contract to sign, no monthly minimum to meet. Works with any smartphone or tablet. Artists can process payments from anywhere in the studio.</p>
           </div>
@@ -129,7 +102,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
             <h5 class="mt-3 text-base font-medium text-white">Vs Vagaro: Built-In vs Manual Entry</h5>
             <p class="text-sm text-gray-400">Vagaro requires manual commission entry or spreadsheet tracking. InkFlow's commission software is built into every transaction — calculated and recorded automatically.</p>
             <h6 class="mt-2 text-sm font-medium text-gray-400">Monthly Payout Reports for Tax Season</h6>
-            <p class="text-sm text-gray-400">Export per-artist payout summaries by month, quarter, or year. Each report includes total sessions, gross revenue, commission rate, and net payout. Ready for accountant review. Pair commission tracking with <a href="/tattoo-deposit-software" class="text-accent-400 hover:underline">tattoo deposit software that locks appointments and secures payment upfront</a>.</p>
+            <p class="text-sm text-gray-400">Export per-artist payout summaries by month, quarter, or year. Each report includes total sessions, gross revenue, commission rate, and net payout. Ready for accountant review.</p>
           </div>
           <div class="rounded-xl border border-ink-800 bg-ink-900/50 p-8 text-center">
             <span class="text-4xl">📊</span>
@@ -220,29 +193,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
   <section class="py-16 text-center border-t border-ink-800/50">
     <h2 class="text-2xl font-bold text-white">Start Collecting Deposits Today</h2>
     <p class="mt-2 text-gray-400">Free plan includes deposit collection, payment links, and commission tracking.</p>
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
-  <!-- INDUSTRY DATA -->
-  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Payment Processing for Tattoo Studios — Key Metrics</h2>
-      <div class="mt-10 grid gap-6 sm:grid-cols-3">
-        
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">80%</div>
-          <div class="mt-2 text-sm text-gray-400">No-show reduction when deposits collected at booking (industry avg)</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">$50</div>
-          <div class="mt-2 text-sm text-gray-400">Avg deposit amount across US tattoo studios</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">2.8x</div>
-          <div class="mt-2 text-sm text-gray-400">Higher avg ticket with payment links vs in-person (US studios)</div>
-        </div>
-      </div>
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
-    </div>
-  </section>Start Free →</a>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
   </section>
   <Footer />
 </BaseLayout>

@@ -7,27 +7,19 @@ import PageSchema from '../components/PageSchema.astro';
 import FAQSchema from '../components/FAQSchema.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="InkFlow Pricing — Free, Starter $9.99, Pro $29.99, Plus $49.99 | Tattoo Studio Software" description="Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo for multi-location. Annual plans available. Start free, upgrade when you grow." />
+<BaseLayout lastUpdated="2026-06-18">
+  <SEOHead slot="head" title="InkFlow Pricing — Free, $9.99, or $29.99 | Tattoo Software" description="InkFlow pricing: Free plan, Starter $9.99/mo, Pro $29.99/mo. All features included at every tier. No credit card needed. Cancel anytime." />
   <PageSchema type="software" data={{
     description: "Tattoo studio management software. Free forever, Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
-    offers: { price: "0", currency: "USD" },
+    offers: [
+      { name: "Free", price: "0", currency: "USD", description: "Forever free for 1 artist, basic manual tools" },
+      { name: "Starter", price: "9.99", currency: "USD", description: "Online booking, digital waivers, CRM, SMS reminders, free website page" },
+      { name: "Pro", price: "29.99", currency: "USD", description: "Up to 5 artists, commission splitting, aftercare automation, inventory, 10-page website" },
+      { name: "Plus", price: "49.99", currency: "USD", description: "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
+    ],
     aggregateRating: { value: "4.8", count: "127" },
   }} />
-  <!-- Pricing offers schema (all plans) -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "InkFlow Plans",
-    "brand": { "@type": "Brand", "name": "InkFlow" },
-    "description": "Free for solo artists. Starter $9.99/mo, Pro $29.99/mo, Plus $49.99/mo.",
-    "offers": [
-      { "@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "USD", "description": "Forever free for 1 artist, basic manual tools" },
-      { "@type": "Offer", "name": "Starter", "price": "9.99", "priceCurrency": "USD", "description": "Online booking, digital waivers, CRM, SMS reminders, free website page" },
-      { "@type": "Offer", "name": "Pro", "price": "29.99", "priceCurrency": "USD", "description": "Up to 5 artists, commission splitting, aftercare automation, inventory, 10-page website" },
-      { "@type": "Offer", "name": "Plus", "price": "49.99", "priceCurrency": "USD", "description": "Multi-location, cross-shop analytics, custom domain, unlimited website pages" },
-    ]
-  })} />
+  <!-- pricing plans represented via SoftwareApplication offers above -->
   <FAQSchema questions={[
     { question: "Is there a free plan?", answer: "Yes. Free forever — basic manual client management and booking. No cloud sync, no online booking. Upgrade to Starter for the full experience." },
     { question: "What is the difference between Free and Starter?", answer: "Free is manual and local-only. Starter adds online booking, digital waivers, CRM with cloud sync, SMS/email reminders, and payment collection." },

@@ -176,7 +176,6 @@ export default function Me() {
         )}
       </div>
 
-      </div>
     </div>
   );
 }

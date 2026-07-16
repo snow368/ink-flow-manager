@@ -7,9 +7,20 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout pageTitle="Multi-Artist Commission Tracking">
+<BaseLayout pageTitle="Multi-Artist Commission Tracking" lastUpdated="2026-06-13">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Multi-Artist Commission Tracking Explained — 2026",
+  "datePublished": "2026-07-01",
+  "dateModified": "2026-07-01",
+  "author": { "@type": "Organization", "name": "InkFlow" }
+}
+</script>
   <BlogSchema title="Multi-Artist Commission Tracking Explained — 2026" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." publishedDate="2026-05-20" tags={["commission tracking", "artist payouts", "studio management"]} />
-  <SEOHead slot="head" title="Multi-Artist Commission Tracking Explained — 2026" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." />
+  <SEOHead slot="head" title="Multi-Artist Commission Tracking Explained — 2026" description="Learn how to track artist commissions in your tattoo studio. Set different rates, automate payouts, and eliminate spreadsheet math." appSchema={false} />
   <Navbar />
 
   <article class="pt-24 pb-16 sm:pt-32">
@@ -48,7 +59,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
         <li><strong>Artist disputes</strong> — Without a transparent system, artists question whether they're being paid correctly</li>
         <li><strong>Tax headaches</strong> — Poor records make 1099 preparation and tax filing more difficult than it needs to be</li>
       </ul>
-      <p><a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow's POS and commission system</a> eliminates these problems by calculating commissions automatically based on the rates you set for each artist.</p>
+      <p><a href="/features/tattoo-payment-processing" class="text-accent-400 hover:underline">InkFlow's POS and commission system</a> eliminates these problems by calculating commissions automatically based on the rates you set for each artist.</p>
 
       <h2>Common Commission Models for Tattoo Studios</h2>
       <p>Different studios use different commission structures. The most common models are:</p>
@@ -138,13 +149,13 @@ import FAQSchema from '../../components/FAQSchema.astro';
       <p>This depends on your studio policy. Some studios let artists keep 100% of tips, while others include tips in the commission calculation. Whatever you choose, be consistent and transparent.</p>
 
       <h3>How do I handle commission for walk-ins and online bookings?</h3>
-      <p>All transactions should be tracked through your POS regardless of how the client booked. <a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow's POS system</a> automatically links every payment to the artist who performed the service.</p>
+      <p>All transactions should be tracked through your POS regardless of how the client booked. <a href="/features/tattoo-payment-processing" class="text-accent-400 hover:underline">InkFlow's POS system</a> automatically links every payment to the artist who performed the service.</p>
 
       <h3>Do I need different commission rates for apprentices?</h3>
       <p>Yes, graduating rates work best for apprentices. Start lower (40-50%) and increase as they reach milestones. This protects your training investment while giving them a clear path to full commission.</p>
 
       <h3>What's the best software for commission tracking?</h3>
-      <p><a href="/features/tattoo-pos-system" class="text-accent-400 hover:underline">InkFlow</a> is purpose-built for tattoo studios with automatic commission calculation, per-artist rates, supply deduction tracking, and payout reports — starting at $29.99/month for up to 5 artists.</p>
+      <p><a href="/features/tattoo-payment-processing" class="text-accent-400 hover:underline">InkFlow</a> is purpose-built for tattoo studios with automatic commission calculation, per-artist rates, supply deduction tracking, and payout reports — starting at $29.99/month for up to 5 artists.</p>
     </div>
   </section>
 
@@ -166,7 +177,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
             Start Free Trial →
           </a>
-          <a href="/features/tattoo-pos-system" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+          <a href="/features/tattoo-payment-processing" class="rounded-lg border border-ink-700 px-8 py-3.5 text-base font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
             See POS & Commissions
           </a>
         </div>

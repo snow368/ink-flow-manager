@@ -690,48 +690,326 @@ export function renderShopPage(d: ShopData, baseUrl: string): string {
   return layout(sections.join('\n'), d, t, baseUrl);
 }
 
+/** Hero + large gallery grid */
+function renderHeroGrid(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionFull(d, t, baseUrl),
+    gallerySectionBig(d.photos, t, d.studioName),
+    servicesSection(d, t),
+    instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken),
+    mapSection(d, t),
+    ctaSection(d, t, baseUrl),
+    footerMinimal(d, t, baseUrl),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Link-in-bio (Linktree style) */
+function renderLinkBio(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return layout(renderLinkBioContent(d, t, baseUrl), d, t, baseUrl);
+}
+
+/** Multi-artist studio roster */
+function renderStudioRoster(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionCompact(d, t, baseUrl),
+    artistsSection(d, t),
+    servicesSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    bookingSection(d, t, baseUrl),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Card-based everything */
+function renderCardsLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionCompact(d, t, baseUrl),
+    servicesCards(d, t),
+    galleryCards(d.photos, t, d.studioName),
+    mapSection(d, t),
+    ctaCard(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Split screen sections */
+function renderSplitLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionSplit(d, t, baseUrl),
+    aboutSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    bookingSection(d, t, baseUrl),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Editorial / magazine style */
+function renderEditorialLayout(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const sections = [
+    claimBannerEl(d, t, baseUrl),
+    heroSectionEditorial(d, t, baseUrl),
+    aboutSection(d, t),
+    gallerySection(d.photos, t, d.studioName),
+    instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken),
+    ctaSection(d, t, baseUrl),
+    footerSection(d, t),
+  ];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+/** Minimal with sticky bottom bar */
+function renderMinimalBar(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return layout(renderMinimalBarContent(d, t, baseUrl), d, t, baseUrl);
+}
+
+// ---- New section variants ----
+
+function heroSectionFull(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center; background-attachment: fixed;' : 'background: ' + t.bgAlt + ';';
+  return '<section class="hero" style="min-height:80vh;display:flex;align-items:center;justify-content:center;text-align:center;' + bgImage + '"><div class="hero-content" style="max-width:800px;padding:2rem;"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2.5rem,7vw,4.5rem);color:#fff;margin:0 0 0.5rem">' + safe(d.studioName) + '</h1>' + (d.bio ? '<p style="font-family:' + t.fontBody + ';font-size:1.2rem;color:rgba(255,255,255,0.85);margin:0 auto 1.5rem;max-width:600px">' + safe(d.bio) + '</p>' : '') + '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" class="btn-primary" style="display:inline-block;padding:1rem 2.5rem;background:' + t.accent + ';color:#fff;text-decoration:none;font-weight:700;font-size:1.1rem;border-radius:50px;min-height:44px">Book Appointment</a></div></section>';
+}
+
+function heroSectionCompact(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:4rem 2rem;text-align:center;background:' + t.bg + '"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,5vw,3rem);color:' + t.text + ';margin:0">' + safe(d.studioName) + '</h1>' + (d.rating ? '<div style="color:' + t.starColor + ';font-size:1.2rem;margin-top:0.5rem">' + stars(d.rating) + ' ' + d.rating + '</div>' : '') + (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="display:inline-block;margin-top:1rem;padding:0.75rem 2rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600">Call Now</a>' : '') + '</section>';
+}
+
+function heroSectionSplit(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'url(' + safe(d.photos[0]) + ')' : t.bgAlt;
+  return '<section style="display:grid;grid-template-columns:1fr 1fr;min-height:70vh">' +
+    '<div style="background:linear-gradient(rgba(0,0,0,0.2),rgba(0,0,0,0.5)),' + bgImage + ';background-size:cover;background-position:center"></div>' +
+    '<div style="display:flex;flex-direction:column;justify-content:center;padding:3rem;background:' + t.bg + ';color:' + t.text + '">' +
+    '<h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,4vw,3.5rem);margin:0 0 1rem">' + safe(d.studioName) + '</h1>' +
+    '<p style="font-family:' + t.fontBody + ';font-size:1rem;color:' + t.textMuted + ';margin-bottom:1.5rem">' + (d.bio || 'Professional tattoo studio serving ' + safe(d.city) + '.') + '</p>' +
+    '</div></section>';
+}
+
+function heroSectionEditorial(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center;' : 'background: ' + t.bgAlt + ';';
+  return '<section style="position:relative;min-height:90vh;' + bgImage + 'display:flex;align-items:flex-end"><div style="padding:3rem 2rem;background:linear-gradient(transparent,' + t.bg + ');width:100%"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2.5rem,6vw,4rem);color:' + t.text + ';margin:0">' + safe(d.studioName) + '</h1><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:1.1rem;margin-top:0.5rem">' + safe(d.city) + ', ' + safe(d.state) + '</p></div></section>';
+}
+
+function artistsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:900px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Our Artists</h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem">' +
+    [1,2,3].map(i => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:' + t.borderRadius + ';padding:2rem;text-align:center"><div style="width:80px;height:80px;border-radius:50%;background:' + t.border + ';margin:0 auto 1rem"></div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1.1rem;margin:0 0 0.25rem">Artist ' + i + '</h3><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem;margin:0">Specialist in custom work</p></div>').join('\n') +
+    '</div></div></section>';
+}
+
+function servicesCards(d: ShopData, t: ThemeVars): string {
+  const services = d.services?.length ? d.services : ['Custom Tattoos', 'Cover-ups', 'Fine Line', 'Black & Grey', 'Color Work', 'Consultation'];
+  return '<section style="padding:4rem 2rem;background:' + t.bg + '"><div style="max-width:1000px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Services</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem">' + services.map(s => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:16px;padding:2rem;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.15)"><div style="width:48px;height:48px;border-radius:50%;background:' + t.accent + '20;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem">✦</div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1rem;margin:0">' + safe(s) + '</h3></div>').join('') + '</div></div></section>';
+}
+
+function gallerySectionBig(photos: string[], t: ThemeVars, studioName: string): string {
+  if (!photos?.length) return '';
+  return '<section style="padding:3rem 1rem;background:' + t.bg + '"><div style="max-width:1200px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 1.5rem">Our Work</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;grid-auto-flow:dense">' + photos.slice(0, 12).map((p, i) => '<a href="' + safe(p) + '" style="grid-row:span ' + (i % 3 === 0 ? 2 : 1) + ';border-radius:12px;overflow:hidden;display:block"><img src="' + safe(p) + '" alt="" style="width:100%;height:100%;object-fit:cover;transition:transform .3s" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'"></a>').join('\n') + '</div></div></section>';
+}
+
+function galleryCards(photos: string[], t: ThemeVars, studioName: string): string {
+  if (!photos?.length) return '';
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:1000px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:2rem;margin:0 0 2rem">Portfolio</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1.5rem">' + photos.slice(0, 8).map(p => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:16px;overflow:hidden;padding:0.75rem"><img src="' + safe(p) + '" alt="" style="width:100%;height:200px;object-fit:cover;border-radius:12px"><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.8rem;margin:0.5rem 0 0;text-align:center;padding:0.25rem">Tattoo at ' + safe(studioName) + '</p></div>').join('\n') + '</div></div></section>';
+}
+
+function ctaCard(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:4rem 2rem;text-align:center;background:' + t.bg + '"><div style="max-width:500px;margin:0 auto;background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:20px;padding:3rem 2rem"><h2 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:1.6rem;margin:0 0 0.5rem">Ready to Book?</h2><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';margin-bottom:1.5rem;font-size:0.95rem">Book your appointment online — deposits and reminders included.</p><a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="display:inline-block;padding:1rem 2rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:700">Book Now</a></div></section>';
+}
+
+function footerMinimal(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<footer style="padding:1.5rem;text-align:center;background:' + t.bg + ';border-top:1px solid ' + t.border + ';font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem">' + safe(d.studioName) + ' &mdash; ' + safe(d.city) + ', ' + safe(d.state) + ' &middot; <a href="' + safe(baseUrl) + '" style="color:' + t.accent + ';text-decoration:none">InkFlow</a></footer>';
+}
+
+function renderLinkBioContent(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const links = [
+    { label: 'Book Appointment', url: baseUrl + '/book?slug=' + d.slug + '&embed=1', icon: '📅' },
+    { label: 'View Portfolio', url: baseUrl + '/s/' + d.slug, icon: '🖼️' },
+  ];
+  if (d.instagram) links.push({ label: 'Instagram', url: 'https://instagram.com/' + d.instagram.replace(/^@/, ''), icon: '📸' });
+  if (d.phone) links.push({ label: 'Call ' + d.phone, url: 'tel:' + d.phone, icon: '📞' });
+  if (d.address) links.push({ label: 'Get Directions', url: 'https://maps.google.com/?q=' + encodeUri(d.address + ', ' + d.city + ', ' + d.state), icon: '📍' });
+
+  return claimBannerEl(d, t, baseUrl) +
+    '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:' + t.bg + '">' +
+    '<div style="width:80px;height:80px;border-radius:50%;background:' + t.card + ';border:3px solid ' + t.accent + ';display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:' + t.accent + ';margin-bottom:1rem">' + (d.studioName.charAt(0)) + '</div>' +
+    '<h1 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:1.4rem;margin:0;text-align:center">' + safe(d.studioName) + '</h1>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.9rem;margin:0.25rem 0 1.5rem;text-align:center">' + safe(d.city) + ', ' + safe(d.state) + (d.rating ? ' &middot; ' + stars(d.rating) + ' ' + d.rating : '') + '</p>' +
+    '<div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;max-width:400px">' + links.map(l => '<a href="' + safe(l.url) + '" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0.75rem;padding:1rem 1.25rem;background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:14px;text-decoration:none;color:' + t.text + ';font-family:' + t.fontBody + ';font-weight:500;font-size:0.95rem;transition:transform .15s" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'"><span style="font-size:1.2rem">' + l.icon + '</span><span style="flex:1">' + l.label + '</span><span style="color:' + t.textMuted + '">→</span></a>').join('\n') + '</div>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.75rem;margin-top:2rem">Powered by <a href="https://ink-flows.com" style="color:' + t.accent + ';text-decoration:none">InkFlow</a></p></div>';
+}
+
+function renderMinimalBarContent(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bgImage = d.photos?.[0] ? 'background-image: url(' + safe(d.photos[0]) + '); background-size: cover; background-position: center;' : 'background: ' + t.bgAlt + ';';
+  return claimBannerEl(d, t, baseUrl) +
+    '<div style="padding-bottom:80px;min-height:100vh;' + bgImage + 'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem 2rem 6rem">' +
+    '<h1 style="font-family:' + t.fontHeading + ';color:' + t.text + ';font-size:clamp(1.8rem,4vw,2.5rem);text-shadow:0 2px 10px rgba(0,0,0,0.3)">' + safe(d.studioName) + '</h1>' +
+    (d.bio ? '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';max-width:400px;margin:0.5rem auto 1.5rem">' + safe(d.bio) + '</p>' : '') +
+    '</div>' +
+    '<div style="position:fixed;bottom:0;left:0;right:0;background:' + t.card + ';border-top:1px solid ' + t.border + ';padding:0.75rem 1rem;display:flex;gap:0.5rem;justify-content:center;z-index:100">' +
+    (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="flex:1;padding:0.75rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600;text-align:center;font-size:0.9rem">📞 Call</a>' : '') +
+    '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="flex:2;padding:0.75rem;background:' + t.accent + ';color:#fff;text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:600;text-align:center;font-size:0.9rem">📅 Book Now</a>' +
+    (d.instagram ? '<a href="https://instagram.com/' + d.instagram.replace(/^@/, '') + '" style="flex:1;padding:0.75rem;border:1px solid ' + t.border + ';color:' + t.text + ';text-decoration:none;border-radius:' + t.borderRadius + ';font-weight:500;text-align:center;font-size:0.9rem">📸 IG</a>' : '') +
+    '</div>';
+}
+
 export const ALL_TEMPLATES = [
-  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless' },
-  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red' },
-  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel' },
-  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold' },
-  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black' },
-  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones' },
-  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white' },
-  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green' },
-  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold' },
-  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan on dark' },
-  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete' },
-  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like' },
-  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels' },
-  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark' },
-  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy' },
-  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold' },
-  { id: 'japanese', name: 'Japanese', tier: 'pro', desc: 'Traditional irezumi red' },
-  { id: 'midnight', name: 'Midnight', tier: 'free', desc: 'Deep blue night' },
-  { id: 'cyberpunk', name: 'Cyberpunk', tier: 'pro', desc: 'Neon magenta cyber' },
-  { id: 'botanical', name: 'Botanical', tier: 'free', desc: 'Sage green' },
-  { id: 'metallic', name: 'Metallic', tier: 'plus', desc: 'Silver chrome' },
-  { id: 'sunset', name: 'Sunset', tier: 'pro', desc: 'Warm orange glow' },
-  { id: 'sakura', name: 'Sakura', tier: 'pro', desc: 'Cherry blossom pink' },
-  { id: 'tribal', name: 'Tribal', tier: 'free', desc: 'Black & grey' },
-  { id: 'steampunk', name: 'Steampunk', tier: 'plus', desc: 'Brass & bronze' },
-  { id: 'arctic', name: 'Arctic', tier: 'free', desc: 'Cool ice blue' },
-  { id: 'desert', name: 'Desert', tier: 'free', desc: 'Warm desert tones' },
-  { id: 'punk', name: 'Punk', tier: 'pro', desc: 'High-contrast yellow' },
-  { id: 'celestial', name: 'Celestial', tier: 'plus', desc: 'Gold on midnight' },
-  { id: 'neonoir', name: 'Neonoir', tier: 'pro', desc: 'Red noir dramatic' },
-  { id: 'lavender', name: 'Lavender', tier: 'free', desc: 'Soft purple' },
-  { id: 'biomechanical', name: 'Biomechanical', tier: 'pro', desc: 'Metallic red & grey' },
-  { id: 'chicano', name: 'Chicano', tier: 'pro', desc: 'Warm brown & gold' },
-  { id: 'maori', name: 'Maori', tier: 'free', desc: 'Tribal red & black' },
-  { id: 'trash-polka', name: 'Trash Polka', tier: 'plus', desc: 'Collage red chaos' },
-  { id: 'new-school', name: 'New School', tier: 'pro', desc: 'Bright neon cartoon' },
-  { id: 'halloween', name: 'Halloween', tier: 'free', desc: 'Orange & black' },
-  { id: 'nordic', name: 'Nordic', tier: 'free', desc: 'Cool steel blue' },
-  { id: 'tropical', name: 'Tropical', tier: 'pro', desc: 'Coral & teal' },
-  { id: 'monochrome', name: 'Monochrome', tier: 'free', desc: 'Clean grey scale' },
-  { id: 'retro-wave', name: 'Retro Wave', tier: 'plus', desc: '80s sunset neon' },
+  // === classic (single page scroll) — 5 ===
+  { id: 'minimal', name: 'Minimal', tier: 'free', desc: 'Clean white, timeless', layout: 'classic' },
+  { id: 'vintage', name: 'Vintage', tier: 'free', desc: 'Warm retro feel', layout: 'classic' },
+  { id: 'moody', name: 'Moody', tier: 'free', desc: 'Dark with gold', layout: 'classic' },
+  { id: 'desert', name: 'Desert', tier: 'free', desc: 'Warm desert tones', layout: 'classic' },
+  { id: 'retro-wave', name: 'Retro Wave', tier: 'plus', desc: '80s sunset neon', layout: 'classic' },
+
+  // === hero-grid (full hero + masonry gallery) — 5 ===
+  { id: 'studio', name: 'Studio', tier: 'pro', desc: 'Gallery warm tones', layout: 'hero-grid' },
+  { id: 'coastal', name: 'Coastal', tier: 'plus', desc: 'Light & breezy', layout: 'hero-grid' },
+  { id: 'arctic', name: 'Arctic', tier: 'free', desc: 'Cool ice blue', layout: 'hero-grid' },
+  { id: 'watercolor', name: 'Watercolor', tier: 'plus', desc: 'Soft pastels', layout: 'hero-grid' },
+  { id: 'lavender', name: 'Lavender', tier: 'free', desc: 'Soft purple', layout: 'hero-grid' },
+
+  // === link-bio (Linktree style) — 5 ===
+  { id: 'brutalist', name: 'Brutalist', tier: 'pro', desc: 'Heavy black & white', layout: 'link-bio' },
+  { id: 'tribal', name: 'Tribal', tier: 'free', desc: 'Black & grey', layout: 'link-bio' },
+  { id: 'punk', name: 'Punk', tier: 'pro', desc: 'High-contrast yellow', layout: 'link-bio' },
+  { id: 'maori', name: 'Maori', tier: 'free', desc: 'Tribal red & black', layout: 'link-bio' },
+  { id: 'monochrome', name: 'Monochrome', tier: 'free', desc: 'Clean grey scale', layout: 'link-bio' },
+
+  // === studio-roster (multi-artist cards) — 5 ===
+  { id: 'traditional', name: 'Traditional', tier: 'free', desc: 'Bold American red', layout: 'studio-roster' },
+  { id: 'nature', name: 'Nature', tier: 'pro', desc: 'Forest green', layout: 'studio-roster' },
+  { id: 'woodcut', name: 'Woodcut', tier: 'plus', desc: 'Dark print-like', layout: 'studio-roster' },
+  { id: 'botanical', name: 'Botanical', tier: 'free', desc: 'Sage green', layout: 'studio-roster' },
+  { id: 'tropical', name: 'Tropical', tier: 'pro', desc: 'Coral & teal', layout: 'studio-roster' },
+
+  // === cards (card-based everything) — 5 ===
+  { id: 'edgy', name: 'Edgy', tier: 'pro', desc: 'Neon pink on black', layout: 'cards' },
+  { id: 'neon', name: 'Neon', tier: 'pro', desc: 'Cyan on dark', layout: 'cards' },
+  { id: 'metallic', name: 'Metallic', tier: 'plus', desc: 'Silver chrome', layout: 'cards' },
+  { id: 'cyberpunk', name: 'Cyberpunk', tier: 'pro', desc: 'Neon magenta cyber', layout: 'cards' },
+  { id: 'new-school', name: 'New School', tier: 'pro', desc: 'Bright neon cartoon', layout: 'cards' },
+
+  // === split (split screen sections) — 5 ===
+  { id: 'royal', name: 'Royal', tier: 'pro', desc: 'Deep purple & gold', layout: 'split' },
+  { id: 'midnight', name: 'Midnight', tier: 'free', desc: 'Deep blue night', layout: 'split' },
+  { id: 'celestial', name: 'Celestial', tier: 'plus', desc: 'Gold on midnight', layout: 'split' },
+  { id: 'sunset', name: 'Sunset', tier: 'pro', desc: 'Warm orange glow', layout: 'split' },
+  { id: 'chicano', name: 'Chicano', tier: 'pro', desc: 'Warm brown & gold', layout: 'split' },
+
+  // === editorial (magazine style) — 5 ===
+  { id: 'gothic', name: 'Gothic', tier: 'plus', desc: 'Ornate dark', layout: 'editorial' },
+  { id: 'japanese', name: 'Japanese', tier: 'pro', desc: 'Traditional irezumi red', layout: 'editorial' },
+  { id: 'steampunk', name: 'Steampunk', tier: 'plus', desc: 'Brass & bronze', layout: 'editorial' },
+  { id: 'neonoir', name: 'Neonoir', tier: 'pro', desc: 'Red noir dramatic', layout: 'editorial' },
+  { id: 'halloween', name: 'Halloween', tier: 'free', desc: 'Orange & black', layout: 'editorial' },
+
+  // === minimal-bar (sticky bottom bar) — 5 ===
+  { id: 'industrial', name: 'Industrial', tier: 'plus', desc: 'Steel & concrete', layout: 'minimal-bar' },
+  { id: 'urban', name: 'Urban', tier: 'plus', desc: 'Graffiti bold', layout: 'minimal-bar' },
+  { id: 'sakura', name: 'Sakura', tier: 'pro', desc: 'Cherry blossom pink', layout: 'minimal-bar' },
+  { id: 'biomechanical', name: 'Biomechanical', tier: 'pro', desc: 'Metallic red & grey', layout: 'minimal-bar' },
+  { id: 'trash-polka', name: 'Trash Polka', tier: 'plus', desc: 'Collage red chaos', layout: 'minimal-bar' },
+
+  // === extra (traditional kept, plus nordic) — 1 ===
+  { id: 'nordic', name: 'Nordic', tier: 'free', desc: 'Cool steel blue', layout: 'classic' },
+
+  // === gallery-focus (12) ===
+  { id: 'americana', name: 'Americana', tier: 'free', desc: 'Classic red, white & blue', layout: 'gallery-focus' },
+  { id: 'fine-line', name: 'Fine Line', tier: 'pro', desc: 'Delicate & precise', layout: 'gallery-focus' },
+  { id: 'blackwork', name: 'Blackwork', tier: 'free', desc: 'Pure black & white', layout: 'gallery-focus' },
+  { id: 'ornamental', name: 'Ornamental', tier: 'plus', desc: 'Intricate symmetry', layout: 'gallery-focus' },
+  { id: 'geometric', name: 'Geometric', tier: 'pro', desc: 'Precision patterns', layout: 'gallery-focus' },
+  { id: 'stipple', name: 'Stipple', tier: 'pro', desc: 'Dotted shading & texture', layout: 'gallery-focus' },
+  { id: 'etching', name: 'Etching', tier: 'plus', desc: 'Fine line print style', layout: 'gallery-focus' },
+  { id: 'surrealism', name: 'Surrealism', tier: 'plus', desc: 'Dreamlike & imaginative', layout: 'gallery-focus' },
+  { id: 'illustrative', name: 'Illustrative', tier: 'pro', desc: 'Bold storytelling style', layout: 'gallery-focus' },
+  { id: 'photorealism', name: 'Photorealism', tier: 'plus', desc: 'True-to-life detail', layout: 'gallery-focus' },
+  { id: 'dotwork', name: 'Dotwork', tier: 'free', desc: 'Pattern & precision', layout: 'gallery-focus' },
+  { id: 'micro-realism', name: 'Micro Realism', tier: 'pro', desc: 'Tiny precise realism', layout: 'gallery-focus' },
+
+  // === mobile-first (12) ===
+  { id: 'neo-tribal', name: 'Neo Tribal', tier: 'pro', desc: 'Modern tribal patterns', layout: 'mobile-first' },
+  { id: 'patchwork', name: 'Patchwork', tier: 'free', desc: 'Mix of styles & colors', layout: 'mobile-first' },
+  { id: 'handpoke', name: 'Hand Poke', tier: 'free', desc: 'Raw handmade feel', layout: 'mobile-first' },
+  { id: 'minimal-line', name: 'Minimal Line', tier: 'free', desc: 'Thin lines & simplicity', layout: 'mobile-first' },
+  { id: 'single-needle', name: 'Single Needle', tier: 'pro', desc: 'Ultra-fine precision', layout: 'mobile-first' },
+  { id: 'micro-tattoo', name: 'Micro', tier: 'pro', desc: 'Tiny & delicate', layout: 'mobile-first' },
+  { id: 'abstract', name: 'Abstract', tier: 'plus', desc: 'Artistic & unconventional', layout: 'mobile-first' },
+  { id: 'line-art', name: 'Line Art', tier: 'free', desc: 'Clean continuous lines', layout: 'mobile-first' },
+  { id: 'sketch', name: 'Sketch', tier: 'pro', desc: 'Raw pencil-like strokes', layout: 'mobile-first' },
+  { id: 'negative-space', name: 'Negative Space', tier: 'plus', desc: 'Dark with bright accents', layout: 'mobile-first' },
+  { id: 'white-ink', name: 'White Ink', tier: 'free', desc: 'Pale on deep black', layout: 'mobile-first' },
+  { id: 'stick-poke', name: 'Stick n Poke', tier: 'free', desc: 'Earthy handmade vibe', layout: 'mobile-first' },
+
+  // === social-proof (12) ===
+  { id: 'letterhead', name: 'Letterhead', tier: 'plus', desc: 'Elegant printed feel', layout: 'social-proof' },
+  { id: 'script', name: 'Script', tier: 'pro', desc: 'Warm gold lettering', layout: 'social-proof' },
+  { id: 'black-letter', name: 'Blackletter', tier: 'free', desc: 'Crimson & parchment', layout: 'social-proof' },
+  { id: 'old-school', name: 'Old School', tier: 'free', desc: 'Classic navy & gold', layout: 'social-proof' },
+  { id: 'flash', name: 'Flash', tier: 'plus', desc: 'Hot pink pop art', layout: 'social-proof' },
+  { id: 'painterly', name: 'Painterly', tier: 'pro', desc: 'Sage & canvas tones', layout: 'social-proof' },
+  { id: 'wash', name: 'Wash', tier: 'free', desc: 'Soft indigo wash', layout: 'social-proof' },
+  { id: 'charcoal', name: 'Charcoal', tier: 'plus', desc: 'Smoky dark & amber', layout: 'social-proof' },
+  { id: 'pastel', name: 'Pastel', tier: 'free', desc: 'Soft pink & mint', layout: 'social-proof' },
+  { id: 'neo-academic', name: 'Neo Academic', tier: 'pro', desc: 'Scholarly burgundy', layout: 'social-proof' },
+  { id: 'avant-garde', name: 'Avant Garde', tier: 'plus', desc: 'Bold lime & magenta', layout: 'social-proof' },
+  { id: 'bauhaus', name: 'Bauhaus', tier: 'pro', desc: 'Yellow black minimal', layout: 'social-proof' },
+
+  // === process-funnel (12) ===
+  { id: 'irezumi', name: 'Irezumi', tier: 'pro', desc: 'Japanese traditional red', layout: 'process-funnel' },
+  { id: 'hannya', name: 'Hannya', tier: 'pro', desc: 'Dark mask aesthetic', layout: 'process-funnel' },
+  { id: 'dragon', name: 'Dragon', tier: 'free', desc: 'Jade green & black', layout: 'process-funnel' },
+  { id: 'koi', name: 'Koi', tier: 'free', desc: 'Orange & navy', layout: 'process-funnel' },
+  { id: 'tiger', name: 'Tiger', tier: 'pro', desc: 'Amber & black stripe', layout: 'process-funnel' },
+  { id: 'oni', name: 'Oni', tier: 'pro', desc: 'Crimson demon bold', layout: 'process-funnel' },
+  { id: 'phoenix', name: 'Phoenix', tier: 'plus', desc: 'Scarlet & flame', layout: 'process-funnel' },
+  { id: 'serpent', name: 'Serpent', tier: 'plus', desc: 'Emerald dark scale', layout: 'process-funnel' },
+  { id: 'foo-dog', name: 'Foo Dog', tier: 'plus', desc: 'Imperial red & gold', layout: 'process-funnel' },
+  { id: 'geisha', name: 'Geisha', tier: 'pro', desc: 'Cherry blossom soft', layout: 'process-funnel' },
+  { id: 'samurai', name: 'Samurai', tier: 'plus', desc: 'Steel blue & crimson', layout: 'process-funnel' },
+  { id: 'wave', name: 'Wave', tier: 'free', desc: 'Cerulean woodblock', layout: 'process-funnel' },
+
+  // === full-experience (12) ===
+  { id: 'museum', name: 'Museum', tier: 'free', desc: 'Warm beige curated', layout: 'full-experience' },
+  { id: 'gallery', name: 'Gallery', tier: 'free', desc: 'Pure white gallery', layout: 'full-experience' },
+  { id: 'collection', name: 'Collection', tier: 'plus', desc: 'Deep teal & gold', layout: 'full-experience' },
+  { id: 'anthology', name: 'Anthology', tier: 'plus', desc: 'Plum & rose gold', layout: 'full-experience' },
+  { id: 'monograph', name: 'Monograph', tier: 'free', desc: 'Slate & warm grey', layout: 'full-experience' },
+  { id: 'portfolio', name: 'Portfolio', tier: 'free', desc: 'Cream & burgundy', layout: 'full-experience' },
+  { id: 'retrospective', name: 'Retrospective', tier: 'pro', desc: 'Oxblood dramatic', layout: 'full-experience' },
+  { id: 'showcase', name: 'Showcase', tier: 'pro', desc: 'Charcoal & teal', layout: 'full-experience' },
+  { id: 'compilation', name: 'Compilation', tier: 'plus', desc: 'Navy & copper', layout: 'full-experience' },
+  { id: 'treasury', name: 'Treasury', tier: 'plus', desc: 'Forest green & gold', layout: 'full-experience' },
+  { id: 'compendium', name: 'Compendium', tier: 'free', desc: 'Stone & cedar', layout: 'full-experience' },
+  { id: 'archive', name: 'Archive', tier: 'pro', desc: 'Steel & white', layout: 'full-experience' },
+
+  // === NEW: Bento Grid (5) ===
+  { id: 'bento-dark', name: 'Bento Dark', tier: 'pro', desc: 'Dark card grid', layout: 'bento-showcase' },
+  { id: 'bento-light', name: 'Bento Light', tier: 'pro', desc: 'Light card grid', layout: 'bento-services' },
+  { id: 'bento-amber', name: 'Bento Amber', tier: 'plus', desc: 'Amber bento cards', layout: 'bento-showcase' },
+  { id: 'bento-slate', name: 'Bento Slate', tier: 'free', desc: 'Slate grey bento', layout: 'bento-services' },
+  { id: 'bento-rose', name: 'Bento Rose', tier: 'plus', desc: 'Rose bento grid', layout: 'bento-showcase' },
+
+  // === NEW: Booking Hero (5) ===
+  { id: 'book-now', name: 'Book Now', tier: 'pro', desc: 'Booking form hero', layout: 'booking-hero' },
+  { id: 'book-quick', name: 'Quick Book', tier: 'free', desc: 'Quick booking', layout: 'booking-min' },
+  { id: 'book-direct', name: 'Direct Book', tier: 'pro', desc: 'Direct booking hero', layout: 'booking-hero' },
+  { id: 'book-express', name: 'Express', tier: 'plus', desc: 'Express booking', layout: 'booking-min' },
+  { id: 'book-premier', name: 'Premier Book', tier: 'pro', desc: 'Premier booking', layout: 'booking-hero' },
+
+  // === NEW: Carousel Gallery (5) ===
+  { id: 'carousel-dark', name: 'Carousel Dark', tier: 'free', desc: 'Dark carousel', layout: 'carousel-first' },
+  { id: 'carousel-light', name: 'Carousel Light', tier: 'plus', desc: 'Light carousel', layout: 'carousel-showcase' },
+  { id: 'carousel-neon', name: 'Carousel Neon', tier: 'pro', desc: 'Neon carousel', layout: 'carousel-first' },
+  { id: 'carousel-warm', name: 'Carousel Warm', tier: 'free', desc: 'Warm carousel', layout: 'carousel-showcase' },
+  { id: 'carousel-plum', name: 'Carousel Plum', tier: 'plus', desc: 'Plum carousel', layout: 'carousel-first' },
 ];
 
 /** Guess template from photo style keywords (lightweight — no API call) */
@@ -779,3 +1057,412 @@ export function guessTemplate(photos: string[], name: string): string {
   if (/retro|wave|80s|vapor|synth|neon.pastel/i.test(n)) return 'retro-wave';
   return 'minimal';
 }
+
+// ============================================================
+// Section-based template composition system
+// Each template = an array of section types that get assembled
+// ============================================================
+
+type SectionType =
+  | 'hero' | 'hero-full' | 'hero-split' | 'hero-compact' | 'hero-editorial' | 'hero-centered' | 'hero-minimal'
+  | 'hero-bento' | 'hero-booking'
+  | 'gallery' | 'gallery-big' | 'gallery-cards' | 'gallery-carousel'
+  | 'services' | 'services-cards'
+  | 'booking' | 'booking-compact'
+  | 'about' | 'about-minimal'
+  | 'instagram'
+  | 'map'
+  | 'cta' | 'cta-card' | 'cta-bar'
+  | 'footer' | 'footer-minimal' | 'footer-bar'
+  | 'artists'
+  | 'stats'
+  | 'reviews'
+  | 'process';
+
+interface LayoutConfig {
+  sections: SectionType[];
+  desc: string;
+}
+
+function renderSection(section: SectionType, d: ShopData, t: ThemeVars, baseUrl: string, i: number, total: number): string {
+  switch (section) {
+    case 'hero': return heroSection(d, t, baseUrl);
+    case 'hero-full': return heroSectionFull(d, t, baseUrl);
+    case 'hero-split': return heroSectionSplit(d, t, baseUrl);
+    case 'hero-compact': return heroSectionCompact(d, t, baseUrl);
+    case 'hero-editorial': return heroSectionEditorial(d, t, baseUrl);
+    case 'hero-centered': return heroSectionCentered(d, t);
+    case 'hero-minimal': return heroSectionMinimal(d, t);
+    case 'gallery': return gallerySection(d.photos, t, d.studioName);
+    case 'gallery-big': return gallerySectionBig(d.photos, t, d.studioName);
+    case 'gallery-cards': return galleryCards(d.photos, t, d.studioName);
+    case 'services': return servicesSection(d, t);
+    case 'services-cards': return servicesCards(d, t);
+    case 'booking': return bookingSection(d, t, baseUrl);
+    case 'booking-compact': return bookingSectionCompact(d, t, baseUrl);
+    case 'about': return aboutSection(d, t);
+    case 'about-minimal': return aboutSectionMinimal(d, t);
+    case 'instagram': return instagramSection(d.instagram || '', t, d.claimed, baseUrl + '/claim?slug=' + d.slug + '&token=' + d.claimToken);
+    case 'map': return mapSection(d, t);
+    case 'cta': return ctaSection(d, t, baseUrl);
+    case 'cta-card': return ctaCard(d, t, baseUrl);
+    case 'cta-bar': return ctaBar(d, t);
+    case 'footer': return footerSection(d, t);
+    case 'footer-minimal': return footerMinimal(d, t, baseUrl);
+    case 'footer-bar': return footerStickyBar(d, t, baseUrl);
+    case 'artists': return artistsSection(d, t);
+    case 'stats': return statsSection(d, t);
+    case 'reviews': return reviewsSection(d, t);
+    case 'process': return processSection(d, t);
+    case 'hero-bento': return heroSectionBento(d, t, baseUrl);
+    case 'gallery-carousel': return gallerySectionCarousel(d.photos, t, d.studioName);
+    case 'hero-booking': return heroSectionBooking(d, t, baseUrl);
+    default: return '';
+  }
+}
+
+function renderFromConfig(d: ShopData, t: ThemeVars, baseUrl: string, config: LayoutConfig): string {
+  const sections = [claimBannerEl(d, t, baseUrl), ...config.sections.map((sec, i) => renderSection(sec, d, t, baseUrl, i, config.sections.length))];
+  return layout(sections.join('\n'), d, t, baseUrl);
+}
+
+// ---- Additional section variants ----
+
+function heroSectionCentered(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:5rem 2rem 3rem;text-align:center;background:' + t.bg + '"><div style="max-width:700px;margin:0 auto"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,5vw,3.5rem);color:' + t.text + ';margin:0 0 0.5rem">' + safe(d.studioName) + '</h1>' + (d.bio ? '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:1.05rem;line-height:1.7;margin:0 auto 1.5rem;max-width:550px">' + safe(d.bio) + '</p>' : '') + (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="display:inline-block;padding:0.85rem 2rem;background:' + t.accent + ';color:#fff;border-radius:50px;text-decoration:none;font-weight:600">Book Now</a>' : '') + '</div></section>';
+}
+
+function heroSectionMinimal(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bg + '"><h1 style="font-family:' + t.fontHeading + ';font-size:clamp(1.5rem,3vw,2rem);color:' + t.text + ';margin:0;text-align:center">' + safe(d.studioName) + '</h1></section>';
+}
+
+function bookingSectionCompact(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<section style="padding:3rem 2rem;text-align:center;background:' + t.bgAlt + '"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';font-size:1.6rem;margin:0 0 0.5rem">Book an Appointment</h2><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';margin-bottom:1rem">Deposits, reminders, instant confirmation.</p><a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="display:inline-block;padding:0.85rem 2rem;background:' + t.accent + ';color:#fff;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600">Book Now →</a></section>';
+}
+
+function ctaBar(d: ShopData, t: ThemeVars): string {
+  return '<div style="padding:1rem 2rem;text-align:center;background:' + t.accent + '"><a href="tel:' + safe(d.phone) + '" style="color:#fff;text-decoration:none;font-weight:600;font-family:' + t.fontBody + '">📞 ' + safe(d.phone) + '</a> <span style="color:rgba(255,255,255,0.6);margin:0 0.5rem">|</span> <a href="https://app.ink-flows.com/register" style="color:#fff;text-decoration:none;font-weight:600;font-family:' + t.fontBody + '">Get a Free Website →</a></div>';
+}
+
+function footerStickyBar(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  return '<footer style="position:fixed;bottom:0;left:0;right:0;background:' + t.card + ';border-top:1px solid ' + t.border + ';padding:0.75rem;display:flex;gap:0.5rem;z-index:100;font-family:' + t.fontBody + '">' +
+    (d.phone ? '<a href="tel:' + safe(d.phone) + '" style="flex:1;padding:0.75rem;background:' + t.accent + ';color:#fff;text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600;font-size:0.85rem">Call</a>' : '') +
+    '<a href="' + safe(baseUrl) + '/book?slug=' + d.slug + '&embed=1" style="flex:2;padding:0.75rem;background:' + t.accent + ';color:#fff;text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-weight:600;font-size:0.85rem">Book Appointment</a>' +
+    (d.instagram ? '<a href="https://instagram.com/' + d.instagram.replace(/^@/,'') + '" style="flex:1;padding:0.75rem;border:1px solid ' + t.border + ';color:' + t.text + ';text-align:center;border-radius:' + t.borderRadius + ';text-decoration:none;font-size:0.85rem">IG</a>' : '') +
+    '</footer>';
+}
+
+function statsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bgAlt + '"><div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center">' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.reviewCount || 127) + '+</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Happy Clients</p></div>' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.rating || 4.9) + '</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Rating</p></div>' +
+    '<div><p style="font-size:2rem;font-weight:700;color:' + t.accent + ';margin:0">' + (d.services?.length || 6) + '+</p><p style="font-size:0.85rem;color:' + t.textMuted + ';margin:0">Services</p></div>' +
+    '</div></section>';
+}
+
+function reviewsSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bg + '"><div style="max-width:700px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:1.8rem;margin:0 0 2rem">What Clients Say</h2>' +
+    '<div style="display:grid;gap:1rem">' +
+    [1,2,3].map(i => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:12px;padding:1.25rem"><div style="color:' + t.starColor + ';margin-bottom:0.5rem">★★★★★</div><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.9rem;font-style:italic;margin:0">"Amazing work! Highly recommend this studio."</p><p style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:0.8rem;margin-top:0.5rem;font-weight:600">— Happy Client</p></div>').join('') +
+    '</div></div></section>';
+}
+
+function processSection(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:4rem 2rem;background:' + t.bgAlt + '"><div style="max-width:800px;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:1.8rem;margin:0 0 2.5rem">How It Works</h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.5rem">' +
+    [{n:'1. Consult',d:'Share your idea. We\'ll discuss design, placement, and pricing.'},{n:'2. Design',d:'We create a custom design based on your vision.'},{n:'3. Tattoo',d:'Your appointment day. Sit back and trust the process.'},{n:'4. Heal',d:'We guide you through aftercare for perfect healing.'}].map(s => '<div style="text-align:center"><div style="width:48px;height:48px;border-radius:50%;background:' + t.accent + '20;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;font-weight:700;color:' + t.accent + '">' + s.n[0] + '</div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1rem;margin:0 0 0.25rem">' + s.n + '</h3><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem;margin:0">' + s.d + '</p></div>').join('') +
+    '</div></div></section>';
+}
+
+// ---- Bento grid hero — asymmetric card layout ----
+function heroSectionBento(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const cards = [
+    { span: 'col-span-2 row-span-2', icon: '🎨', title: 'Custom Work', text: 'Every piece is designed for you.' },
+    { span: 'col-span-1 row-span-1', icon: '⭐', title: (d.rating || '4.9') + ' Stars', text: d.reviewCount + '+ reviews' },
+    { span: 'col-span-1 row-span-1', icon: '📅', title: 'Book Online', text: 'Instant confirmation' },
+    { span: 'col-span-2 row-span-1', icon: '📍', title: 'Visit Us', text: d.city + ', ' + d.state },
+  ];
+  return '<section style="padding:5rem 2rem;background:' + t.bg + '"><div style="max-width:1000px;margin:0 auto">' +
+    '<h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,5vw,3.5rem);color:' + t.text + ';text-align:center;margin:0 0 3rem">' + safe(d.studioName) + '</h1>' +
+    '<div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;max-width:800px;margin:0 auto">' +
+    cards.map(c => '<div style="background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:16px;padding:1.5rem;' + (c.span.includes('row-span-2') ? 'grid-row:span 2;display:flex;flex-direction:column;justify-content:center;' : '') + '"><div style="font-size:1.5rem;margin-bottom:0.5rem">' + c.icon + '</div><h3 style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1rem;margin:0 0 0.25rem;font-weight:600">' + c.title + '</h3><p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.85rem;margin:0;line-height:1.4">' + c.text + '</p></div>').join('') +
+    '</div>' +
+    (d.phone ? '<div style="text-align:center;margin-top:2rem"><a href="tel:' + safe(d.phone) + '" style="display:inline-block;padding:1rem 2.5rem;background:' + t.accent + ';color:#fff;border-radius:50px;text-decoration:none;font-weight:700;font-size:1.1rem">Call ' + safe(d.phone) + '</a></div>' : '') +
+    '</div></section>';
+}
+
+// ---- Carousel gallery — horizontal scroll ----
+function gallerySectionCarousel(photos: string[], t: ThemeVars, studioName: string): string {
+  if (!photos?.length) return '';
+  const items = photos.slice(0, 10).map(p =>
+    '<div style="flex:0 0 280px;scroll-snap-align:start;border-radius:12px;overflow:hidden"><img src="' + safe(p) + '" alt="" style="width:100%;height:320px;object-fit:cover"></div>'
+  ).join('\n');
+  return '<section style="padding:3rem 1rem;background:' + t.bgAlt + '"><div style="max-width:100%;margin:0 auto"><h2 style="font-family:' + t.fontHeading + ';color:' + t.accent + ';text-align:center;font-size:1.8rem;margin:0 0 1.5rem">Portfolio</h2>' +
+    '<div style="display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:1rem;-webkit-overflow-scrolling:touch">' + items + '</div>' +
+    '<p style="text-align:center;margin-top:0.75rem"><a href="https://instagram.com/' + studioName.replace(/ /g,'') + '" style="color:' + t.accent + ';font-family:' + t.fontBody + ';font-size:0.85rem">View all on Instagram →</a></p></div></section>';
+}
+
+// ---- Booking-first hero — booking form as the main content ----
+function heroSectionBooking(d: ShopData, t: ThemeVars, baseUrl: string): string {
+  const bookUrl = baseUrl + '/book?slug=' + d.slug + '&embed=1&studio=' + encodeUri(d.studioName);
+  return '<section style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:' + t.bg + '"><div style="max-width:500px;width:100%;text-align:center">' +
+    '<h1 style="font-family:' + t.fontHeading + ';font-size:clamp(2rem,4vw,3rem);color:' + t.text + ';margin:0 0 0.25rem">' + safe(d.studioName) + '</h1>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:1.05rem;margin:0 0 1.5rem">' + safe(d.city) + ', ' + safe(d.state) + (d.rating ? ' &middot; ' + stars(d.rating) + ' ' + d.rating : '') + '</p>' +
+    '<div style="border-radius:16px;overflow:hidden;border:1px solid ' + t.border + ';background:' + t.card + '">' +
+    '<iframe src="' + safe(bookUrl) + '" width="100%" height="520" frameborder="0" loading="lazy" style="display:block" title="Book an appointment"></iframe></div>' +
+    '<p style="font-family:' + t.fontBody + ';color:' + t.textMuted + ';font-size:0.8rem;margin-top:0.75rem">Deposit required &middot; Instant confirmation &middot; Free to book</p></div></section>';
+}
+
+function aboutSectionMinimal(d: ShopData, t: ThemeVars): string {
+  return '<section style="padding:3rem 2rem;background:' + t.bg + '"><div style="max-width:650px;margin:0 auto"><p style="font-family:' + t.fontBody + ';color:' + t.text + ';font-size:1.05rem;line-height:1.8;text-align:center">' + (d.bio || safe(d.studioName) + ' is a professional tattoo studio serving ' + safe(d.city) + '.') + '</p></div></section>';
+}
+
+// ============================================================
+// 50+ Template Configurations
+// Each template = different section composition
+// ============================================================
+
+const LAYOUT_CONFIGS: Record<string, LayoutConfig> = {};
+
+// --- Classic variants (7) ---
+LAYOUT_CONFIGS['classic'] = { sections: ['hero','booking','about','services','gallery','instagram','map','cta','footer'], desc: 'Full single-page scroll' };
+LAYOUT_CONFIGS['classic-alt'] = { sections: ['hero','about','services','gallery','booking','instagram','cta','footer'], desc: 'Scroll with booking after gallery' };
+LAYOUT_CONFIGS['classic-min'] = { sections: ['hero','services','gallery','booking','footer'], desc: 'Minimal classic' };
+
+// --- Hero-first variants (8) ---
+LAYOUT_CONFIGS['hero-full'] = { sections: ['hero-full','gallery-big','services','instagram','map','cta','footer-minimal'], desc: 'Full screen hero + big gallery' };
+LAYOUT_CONFIGS['hero-split'] = { sections: ['hero-split','gallery','services-cards','booking','cta','footer'], desc: 'Split screen hero' };
+LAYOUT_CONFIGS['hero-centered'] = { sections: ['hero-centered','stats','gallery-cards','services','booking-compact','footer-minimal'], desc: 'Centered hero with stats' };
+LAYOUT_CONFIGS['hero-editorial'] = { sections: ['hero-editorial','about','gallery-big','instagram','cta','footer-minimal'], desc: 'Magazine style hero' };
+LAYOUT_CONFIGS['hero-compact'] = { sections: ['hero-compact','gallery','services','booking','footer'], desc: 'Compact hero' };
+LAYOUT_CONFIGS['hero-minimal'] = { sections: ['hero-minimal','gallery-cards','services-cards','booking-compact','footer-minimal'], desc: 'Minimal hero' };
+LAYOUT_CONFIGS['hero-story'] = { sections: ['hero','about-minimal','process','gallery','booking','cta','footer'], desc: 'Story-first layout' };
+LAYOUT_CONFIGS['hero-reviews'] = { sections: ['hero','reviews','gallery','services','booking','cta','footer'], desc: 'Reviews right after hero' };
+
+// --- Gallery-first variants (7) ---
+LAYOUT_CONFIGS['gallery-first'] = { sections: ['hero-compact','gallery','services','booking','footer'], desc: 'Gallery right after compact hero' };
+LAYOUT_CONFIGS['gallery-big'] = { sections: ['hero','gallery-big','services-cards','booking-compact','footer-minimal'], desc: 'Big gallery with minimal sections' };
+LAYOUT_CONFIGS['gallery-cards'] = { sections: ['hero','gallery-cards','services','booking','footer'], desc: 'Card-style gallery' };
+LAYOUT_CONFIGS['gallery-masonry'] = { sections: ['hero-minimal','gallery-big','about','booking','footer'], desc: 'Masonry gallery layout' };
+LAYOUT_CONFIGS['gallery-stats'] = { sections: ['hero-centered','stats','gallery-big','booking-compact','footer-minimal'], desc: 'Gallery with stats bar' };
+LAYOUT_CONFIGS['gallery-showcase'] = { sections: ['hero','gallery','services-cards','cta-card','footer-minimal'], desc: 'Gallery showcase with card CTA' };
+LAYOUT_CONFIGS['gallery-process'] = { sections: ['hero','process','gallery-big','booking','footer'], desc: 'Gallery with process steps' };
+
+// --- Services-first variants (5) ---
+LAYOUT_CONFIGS['services-first'] = { sections: ['hero','services-cards','gallery','booking','footer'], desc: 'Services highlighted first' };
+LAYOUT_CONFIGS['services-cards'] = { sections: ['hero','services-cards','gallery-cards','booking-compact','footer'], desc: 'All cards layout' };
+LAYOUT_CONFIGS['services-list'] = { sections: ['hero','services','gallery','booking','cta','footer'], desc: 'Simple services list' };
+LAYOUT_CONFIGS['services-process'] = { sections: ['hero','services-cards','process','booking-compact','footer'], desc: 'Services + process' };
+LAYOUT_CONFIGS['services-reviews'] = { sections: ['hero','services','reviews','gallery','booking','footer'], desc: 'Services with reviews' };
+
+// --- Centered/minimal variants (6) ---
+LAYOUT_CONFIGS['centered-min'] = { sections: ['hero-centered','gallery-cards','booking-compact','footer-minimal'], desc: 'Minimal centered everything' };
+LAYOUT_CONFIGS['centered-stats'] = { sections: ['hero-centered','stats','gallery','booking-compact','footer-minimal'], desc: 'Centered with stats' };
+LAYOUT_CONFIGS['centered-process'] = { sections: ['hero-centered','process','gallery-cards','booking','footer-minimal'], desc: 'Centered with process' };
+LAYOUT_CONFIGS['link-bio'] = { sections: [], desc: 'Linktree-style (uses renderLinkBioContent)' };
+LAYOUT_CONFIGS['link-bio-min'] = { sections: [], desc: 'Minimal link page' };
+LAYOUT_CONFIGS['single-section'] = { sections: ['hero','gallery','booking','footer'], desc: 'Just 4 sections' };
+
+// --- Artist/studio roster variants (4) ---
+LAYOUT_CONFIGS['studio-roster'] = { sections: ['hero-compact','artists','services','gallery','booking','footer'], desc: 'Multi-artist studio' };
+LAYOUT_CONFIGS['studio-roster-alt'] = { sections: ['hero','artists','gallery','services','booking','footer'], desc: 'Artists after hero' };
+LAYOUT_CONFIGS['studio-min'] = { sections: ['hero-compact','artists','booking','footer'], desc: 'Minimal artist roster' };
+
+// --- Review/social proof variants (5) ---
+LAYOUT_CONFIGS['reviews-first'] = { sections: ['hero','reviews','gallery','services','booking','footer'], desc: 'Reviews highlighted' };
+LAYOUT_CONFIGS['reviews-stats'] = { sections: ['hero','stats','reviews','gallery','booking','footer'], desc: 'Social proof heavy' };
+LAYOUT_CONFIGS['social-proof'] = { sections: ['hero','stats','reviews','gallery','services','booking-compact','footer-minimal'], desc: 'Maximum social proof' };
+
+// --- Special layouts (5) ---
+LAYOUT_CONFIGS['editorial'] = { sections: ['hero-editorial','about','gallery','instagram','cta','footer-minimal'], desc: 'Magazine editorial' };
+LAYOUT_CONFIGS['editorial-full'] = { sections: ['hero-editorial','gallery-big','about-minimal','cta-card','footer-minimal'], desc: 'Full editorial with big images' };
+LAYOUT_CONFIGS['card-heavy'] = { sections: ['hero','services-cards','gallery-cards','cta-card','footer'], desc: 'Everything in cards' };
+LAYOUT_CONFIGS['minimal-bar'] = { sections: ['hero','gallery','booking-compact','footer-bar'], desc: 'Sticky bottom bar' };
+LAYOUT_CONFIGS['minimal-bar-alt'] = { sections: ['hero-centered','gallery-cards','footer-bar'], desc: 'Centered with sticky bar' };
+
+// --- Process/funnel variants (3) ---
+LAYOUT_CONFIGS['process-first'] = { sections: ['hero','process','gallery','booking','footer'], desc: 'Process first' };
+LAYOUT_CONFIGS['funnel'] = { sections: ['hero','process','services','reviews','booking','footer'], desc: 'Sales funnel layout' };
+LAYOUT_CONFIGS['process-full'] = { sections: ['hero','process','services-cards','reviews','gallery','booking','cta','footer'], desc: 'Full funnel' };
+
+// --- Expanded combos (50+) ---
+LAYOUT_CONFIGS['hero-gallery-reviews'] = { sections: ['hero','gallery','reviews','booking','footer'], desc: 'Hero + gallery + social proof' };
+LAYOUT_CONFIGS['hero-services-reviews'] = { sections: ['hero','services','reviews','gallery','booking','footer'], desc: 'Services then reviews' };
+LAYOUT_CONFIGS['hero-stats-gallery'] = { sections: ['hero','stats','gallery','booking','footer'], desc: 'Stats bar after hero' };
+LAYOUT_CONFIGS['hero-process-booking'] = { sections: ['hero','process','booking','footer'], desc: 'Quick funnel' };
+LAYOUT_CONFIGS['hero-gallery-process'] = { sections: ['hero','gallery','process','booking','cta','footer'], desc: 'Gallery then process' };
+LAYOUT_CONFIGS['hero-booking-gallery'] = { sections: ['hero','booking','gallery','services','footer'], desc: 'Book then browse' };
+LAYOUT_CONFIGS['hero-map-booking'] = { sections: ['hero','map','booking','footer'], desc: 'Location first' };
+LAYOUT_CONFIGS['hero-about-services-gallery'] = { sections: ['hero','about','services','gallery','booking','footer'], desc: 'About the studio' };
+LAYOUT_CONFIGS['hero-gallery-services'] = { sections: ['hero','gallery','services','booking','footer'], desc: 'Gallery first' };
+LAYOUT_CONFIGS['hero-reviews-gallery'] = { sections: ['hero','reviews','gallery','booking','footer'], desc: 'Reviews then portfolio' };
+LAYOUT_CONFIGS['hero-stats-process'] = { sections: ['hero','stats','process','booking','footer'], desc: 'Stats + process' };
+LAYOUT_CONFIGS['hero-gallery-map'] = { sections: ['hero','gallery','map','booking','footer'], desc: 'Gallery + location' };
+LAYOUT_CONFIGS['hero-services-booking'] = { sections: ['hero','services','booking','gallery','footer'], desc: 'Book after services' };
+LAYOUT_CONFIGS['hero-about-booking'] = { sections: ['hero','about','booking','gallery','footer'], desc: 'About then book' };
+LAYOUT_CONFIGS['hero-instagram-booking'] = { sections: ['hero','instagram','booking','footer'], desc: 'Instagram first' };
+
+// --- Full experience variants (15) ---
+LAYOUT_CONFIGS['full-experience'] = { sections: ['hero','stats','about','services','gallery','reviews','process','instagram','map','booking','cta','footer'], desc: 'Everything' };
+LAYOUT_CONFIGS['full-gallery'] = { sections: ['hero','gallery','services','process','booking','footer'], desc: 'Gallery focused full' };
+LAYOUT_CONFIGS['full-services'] = { sections: ['hero','services','gallery','reviews','booking','cta','footer'], desc: 'Services focused' };
+LAYOUT_CONFIGS['full-social'] = { sections: ['hero','stats','reviews','gallery','instagram','booking','footer'], desc: 'Social proof focused' };
+LAYOUT_CONFIGS['full-minimal'] = { sections: ['hero','gallery','booking','footer'], desc: 'Minimal full' };
+LAYOUT_CONFIGS['full-about'] = { sections: ['hero','about','process','gallery','booking','footer'], desc: 'About + process' };
+LAYOUT_CONFIGS['full-booking'] = { sections: ['hero','booking','gallery','services','map','footer'], desc: 'Booking focused' };
+LAYOUT_CONFIGS['full-location'] = { sections: ['hero','about','services','map','booking','footer'], desc: 'Location focused' };
+LAYOUT_CONFIGS['full-portfolio'] = { sections: ['hero','gallery','instagram','booking','footer'], desc: 'Portfolio focused' };
+LAYOUT_CONFIGS['full-artist'] = { sections: ['hero','artists','gallery','booking','footer'], desc: 'Artist focused' };
+
+// --- Compact/mobile-first variants (12) ---
+LAYOUT_CONFIGS['compact'] = { sections: ['hero-compact','gallery','booking','footer'], desc: 'Compact everything' };
+LAYOUT_CONFIGS['compact-services'] = { sections: ['hero-compact','services-cards','booking','footer'], desc: 'Compact services' };
+LAYOUT_CONFIGS['compact-gallery'] = { sections: ['hero-compact','gallery-cards','booking-compact','footer-minimal'], desc: 'Compact gallery' };
+LAYOUT_CONFIGS['compact-min'] = { sections: ['hero-minimal','gallery','booking-compact','footer-minimal'], desc: 'Ultra compact' };
+LAYOUT_CONFIGS['compact-stats'] = { sections: ['hero-compact','stats','booking','footer'], desc: 'Compact with stats' };
+LAYOUT_CONFIGS['compact-process'] = { sections: ['hero-compact','process','booking','footer'], desc: 'Compact funnel' };
+LAYOUT_CONFIGS['mobile-first'] = { sections: ['hero','gallery','booking-compact','footer-bar'], desc: 'Mobile-first with sticky bar' };
+LAYOUT_CONFIGS['mobile-gallery'] = { sections: ['hero-minimal','gallery-cards','booking-compact','footer-bar'], desc: 'Mobile gallery' };
+LAYOUT_CONFIGS['hero-btn-booking'] = { sections: ['hero','booking-compact','footer-bar'], desc: '3 section mobile' };
+LAYOUT_CONFIGS['hero-artists'] = { sections: ['hero','artists','gallery','booking','footer'], desc: 'Hero + artist roster' };
+
+// --- Niche variants (10) ---
+LAYOUT_CONFIGS['booking-first'] = { sections: ['booking','gallery','services','footer'], desc: 'Book first, ask later' };
+LAYOUT_CONFIGS['map-highlight'] = { sections: ['hero','map','services','booking','footer'], desc: 'Map highlighted' };
+LAYOUT_CONFIGS['instagram-highlight'] = { sections: ['hero','instagram','gallery','booking','footer'], desc: 'Instagram highlighted' };
+LAYOUT_CONFIGS['reviews-highlight'] = { sections: ['hero','reviews','stats','booking','footer'], desc: 'Reviews highlighted' };
+LAYOUT_CONFIGS['process-highlight'] = { sections: ['hero','process','booking','footer'], desc: 'Process highlighted' };
+LAYOUT_CONFIGS['about-highlight'] = { sections: ['hero','about','process','booking','footer'], desc: 'About highlighted' };
+LAYOUT_CONFIGS['services-highlight'] = { sections: ['hero','services-cards','booking','footer'], desc: 'Services highlighted' };
+LAYOUT_CONFIGS['gallery-highlight'] = { sections: ['hero','gallery-big','booking','footer'], desc: 'Gallery highlighted' };
+LAYOUT_CONFIGS['hero-only'] = { sections: ['hero','booking','footer'], desc: 'Minimalist' };
+
+// ===== Assign 100+ template configs to 41 color themes =====
+// Each color theme gets 2-3 layout variations = 82-123 combinations
+
+// ── NEW: Bento / Carousel / Booking-First ──
+LAYOUT_CONFIGS['bento-showcase'] = { sections: ['hero-bento','gallery-carousel','booking-compact','footer-minimal'], desc: 'Bento grid + carousel gallery' };
+LAYOUT_CONFIGS['bento-services'] = { sections: ['hero-bento','services-cards','gallery-carousel','booking-compact','footer-minimal'], desc: 'Bento grid with services' };
+LAYOUT_CONFIGS['booking-hero'] = { sections: ['hero-booking','gallery','footer'], desc: 'Booking form as hero' };
+LAYOUT_CONFIGS['booking-min'] = { sections: ['hero-booking','gallery-cards','footer-minimal'], desc: 'Booking hero minimal' };
+LAYOUT_CONFIGS['carousel-first'] = { sections: ['hero-compact','gallery-carousel','booking-compact','footer'], desc: 'Carousel gallery first' };
+LAYOUT_CONFIGS['carousel-showcase'] = { sections: ['hero','gallery-carousel','services-cards','booking','footer-minimal'], desc: 'Carousel gallery showcase' };
+
+// ===== Assign layout configs to ALL_TEMPLATES =====
+// 41 templates × their layout configs
+export const TEMPLATE_LAYOUTS: Record<string, string> = {
+  // ======= CLASSIC family (6 themes × unique configs) =======
+  minimal: 'classic',
+  vintage: 'classic-alt',
+  moody: 'classic-min',
+  desert: 'gallery-first',
+  'retro-wave': 'hero-gallery-services',
+  nordic: 'hero-about-services-gallery',
+  // ======= HERO-GRID family (5 themes × unique configs) =======
+  studio: 'hero-full',
+  coastal: 'hero-centered',
+  arctic: 'hero-minimal',
+  watercolor: 'hero-split',
+  lavender: 'hero-reviews',
+  // ======= LINK-BIO family (5 themes × unique configs) =======
+  brutalist: 'link-bio',
+  tribal: 'link-bio-min',
+  punk: 'single-section',
+  maori: 'centered-min',
+  monochrome: 'hero-btn-booking',
+  // ======= STUDIO-ROSTER family (5 themes × unique configs) =======
+  traditional: 'studio-roster',
+  nature: 'studio-roster-alt',
+  woodcut: 'studio-min',
+  botanical: 'full-artist',
+  tropical: 'hero-artists',
+  // ======= CARDS family (5 themes × unique configs) =======
+  edgy: 'card-heavy',
+  neon: 'services-cards',
+  metallic: 'gallery-cards',
+  cyberpunk: 'compact-services',
+  'new-school': 'compact-gallery',
+  // ======= SPLIT family (5 themes × unique configs) =======
+  royal: 'hero-split',
+  midnight: 'centered-min',
+  celestial: 'centered-stats',
+  sunset: 'hero-story',
+  chicano: 'hero-centered',
+  // ======= EDITORIAL family (5 themes × unique configs) =======
+  gothic: 'editorial-full',
+  japanese: 'editorial',
+  steampunk: 'full-experience',
+  neonoir: 'reviews-first',
+  halloween: 'social-proof',
+  // ======= MINIMAL-BAR family (5 themes × unique configs) =======
+  industrial: 'minimal-bar',
+  urban: 'minimal-bar-alt',
+  sakura: 'compact-min',
+  biomechanical: 'hero-compact',
+  'trash-polka': 'funnel',
+  // ======= GALLERY-FOCUS family (12 themes × unique configs) =======
+  americana: 'gallery-first',
+  'fine-line': 'gallery-big',
+  blackwork: 'gallery-cards',
+  ornamental: 'gallery-masonry',
+  geometric: 'gallery-stats',
+  stipple: 'gallery-showcase',
+  etching: 'gallery-process',
+  surrealism: 'gallery-highlight',
+  illustrative: 'hero-gallery-process',
+  photorealism: 'hero-gallery-services',
+  dotwork: 'hero-gallery-map',
+  'micro-realism': 'hero-gallery-reviews',
+  // ======= MOBILE-FIRST family (12 themes × unique configs) =======
+  'neo-tribal': 'compact',
+  patchwork: 'compact-gallery',
+  handpoke: 'compact-min',
+  'minimal-line': 'compact-stats',
+  'single-needle': 'compact-process',
+  'micro-tattoo': 'mobile-first',
+  abstract: 'mobile-gallery',
+  'line-art': 'compact-services',
+  sketch: 'services-highlight',
+  'negative-space': 'services-first',
+  'white-ink': 'services-list',
+  'stick-poke': 'services-process',
+  // ======= SOCIAL-PROOF family (12 themes × unique configs) =======
+  letterhead: 'hero-services-reviews',
+  script: 'reviews-stats',
+  'black-letter': 'editorial',
+  'old-school': 'services-reviews',
+  flash: 'instagram-highlight',
+  painterly: 'hero-story',
+  wash: 'about-highlight',
+  charcoal: 'centered-process',
+  pastel: 'map-highlight',
+  'neo-academic': 'hero-about-booking',
+  'avant-garde': 'hero-instagram-booking',
+  bauhaus: 'hero-map-booking',
+  // ======= PROCESS-FUNNEL family (12 themes × unique configs) =======
+  irezumi: 'process-first',
+  hannya: 'process-full',
+  dragon: 'funnel',
+  koi: 'hero-process-booking',
+  tiger: 'hero-stats-process',
+  oni: 'process-highlight',
+  phoenix: 'full-experience',
+  serpent: 'full-gallery',
+  'foo-dog': 'full-services',
+  geisha: 'full-about',
+  samurai: 'hero-reviews-gallery',
+  wave: 'hero-services-booking',
+  // ======= FULL-EXPERIENCE family (12 themes × unique configs) =======
+  museum: 'full-booking',
+  gallery: 'full-location',
+  collection: 'full-portfolio',
+  anthology: 'editorial-full',
+  monograph: 'full-minimal',
+  portfolio: 'full-social',
+  retrospective: 'reviews-highlight',
+  showcase: 'hero-editorial',
+  compilation: 'booking-first',
+  treasury: 'hero-stats-gallery',
+  compendium: 'hero-only',
+  archive: 'hero-split',
+};

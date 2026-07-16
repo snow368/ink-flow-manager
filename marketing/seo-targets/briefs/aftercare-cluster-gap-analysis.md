@@ -2,7 +2,7 @@
 
 > 生成：2026-07-16 ｜ 用途：在动笔扩写 aftercare 7 篇前，校准「每篇主打词 + 意图 + SERP 差距 + 内容厚度差」。
 > 配套文件：`aftercare-cluster-brief.md`（已有逐页 content brief，本文件补「实际 vs 目标」差距与意图核验）。
-> ⚠️ 实时 SERP 抓取被沙箱地理重定向挡掉（只回查询标题），下文 SERP 竞争格局基于已知 aftercare SERP 生态，**精确排名需你本机跑一次 SERP/ GSC 复核**（见 §4）。
+> ✅ SERP 竞争格局已用内置 WebSearch 抓取真实 Top5（2026-07-16）。**我方当前排名**仍需你本机 GSC 复核（见 §4.4），但对手是谁、内容差距在哪已可逐项对标。
 
 ---
 
@@ -60,18 +60,52 @@
 
 ## 4. SERP / 竞争对手差距（需本机复核精确排名）
 
-### 4.1 aftercare SERP 生态（已知）
-| 类型 | 代表站点 | 他们有、我们缺的 |
-|------|---------|------------------|
-| 产品品牌 | Saniderm, Tattoo Goo, Hustle Butter, After Inked, Bepanthen, H2Ocean | 成分级对比、how-to 视频、品牌权威、联盟转化 |
-| 纹身资讯/目录 | Tattoo.com, Tattoodo, AuthorityTattoo, TattooFind | 工作室口吻、大量 UGC 照片、内链网 |
-| 医疗/健康 | Healthline, Medical News Today, Mayo, AAD, NHS, Cleveland Clinic | **medically-reviewed 徽章**、引用文献、专业插画 |
-| 论坛 UGC | reddit.com/r/tattoo（排 "best tattoo aftercare reddit"） | 真实用户经验、长尾覆盖 |
+### 4.1 真实 SERP Top5（2026-07-16 WebSearch 抓取的 Top5）
 
-### 4.2 我们的差异化优势（必须放大）
-**"按类型与部位差异化护理" 独家角度**——竞品几乎都是「按天一刀切」流程。这是我们能吃 Featured Snippet 与「更权威」的支点，brief §1 已定，扩写时务必强化（每篇都挂这个钩子）。
+| 主打词 | SERP Top5 真实对手 | 对手类型 | 对手页面形态 |
+|--------|-------------------|---------|------------|
+| **tattoo aftercare** | Cleveland Clinic、Healthline、dhtattoo.co.nz、inkrementaltattoo.com、saigontattooclub.com | 2 医疗权威 + 3 工作室 | 长指南（含按周时间线、产品建议、并发症） |
+| **best tattoo aftercare balm** | vitiumtattoo.com（品牌对比表+FAQ）、reviewtattoo.com（实测 8 款+Amazon 评分价格）、glow.com.au（澳洲打分榜）、reuzel.com（品牌+5 维标准） | 品牌站 + 评测站 | **顶部对比表 + 价格 + 评分 + Amazon 链接** |
+| **infected tattoo** | Medical News Today、Cleveland Clinic、Healthline、Apollo Hospitals、OSF HealthCare | **100% 医疗/医院** | 症状清单、治疗、何时就医、引用医生 |
+| **aftercare for color tattoo** | tattootwins.com.au（黑 vs 彩差异）、nivea.co.uk（4 贴士）、vietinktattoo.com（致褪色的错）、Cleveland Clinic、gtattoo.ca | 工作室 + 护肤品牌 + 医疗 | 色彩专属建议 + 防晒强调 |
+| **tattoo aftercare second skin** | saniderm.com（知识库）、saniderm.com/how-to-use、**品牌自身霸屏**、beanweilertattoos、scratchtattoos、azkubicki | 1 品牌官方 + 4 工作室 | 贴/撕教程、佩戴时长、渗液说明 |
+| **tattoo aftercare day 1 / healing timeline** | rinattattarin.com（LA 师傅 24 年经验逐日）、monolithstudio、thundercattattoostudios（Day1-2/3-7/8-14/W3-4 清单）、tattoora.com.au、tattoobuild.com | 工作室为主 | **分阶段逐日清单 + 一手师傅经验** |
+| **tattoo aftercare swimming** | peachytattoos、fiercetattoostudio、bangertattoocare.com（按水源/部位极细）、usms.org（游泳组织） | 工作室 + 垂类组织 | **按水源分级（泳池/海/湖/温泉）+ 风险 + 万一游了怎么办** |
 
-### 4.3 缺失内容元素清单（对标竞品补）
+### 4.2 逐页「要打败/对标谁 + 必含段」（写前对照）
+
+**① `tattoo-aftercare-guide`（支柱）** — 对标 Cleveland Clinic / Healthline 的医学严谨 + 工作室实操
+- 必含：分阶段时间线（第1周/2–4周/5周+）、by-type 小节（线条/写实/水彩/彩色/覆盖疤）、by-placement 修正（关节/手脚/肋骨）、产品建议（洁面+保湿，点名 Aquaphor/Bepanthen/Hustle Butter 但说明差异）、并发症警示、**可打印护理卡 CTA**。
+- 厚度：2800–3500 词；E-E-A-T：Sarah Chen + 具名皮肤科 reviewer。
+
+**② `aftercare-products`** — 对标 vitiumtattoo / reviewtattoo 的**对比表形态**（证实商业意图）
+- 必含：**对比表**（产品/价格带/核心成分/适用阶段/肤质/是否纯素）、"我们怎么打分"方法论、按肤质推荐、常见误区（凡士林封毛孔）、软 CTA。
+- 厚度：1400–1800 词；意图改「商业+信息」。
+
+**③ `aftercare-issues`（YMYL）** — 对标 Medical News Today / Cleveland Clinic
+- 必含：症状 vs 正常发红对照表、**何时就医流程图**（发烧/蔓延红线/脓液→立即就医）、家庭护理边界、具名医生 reviewer（缺则几乎排不上）。
+- 厚度：1400–1800 词；E-E-A-T：YMYL 强制 medical reviewer。
+
+**④ `aftercare-color-tattoo`** — 对标 tattootwins / vietinktattoo
+- 必含：彩色比黑灰更易褪色的机制、UV 是头号敌人（量化 SPF50+ 建议）、fresh-vs-healed 描述、按颜色类型（红/黄/白）注意事项、长期防晒习惯。
+- 厚度：1200–1600 词。
+
+**⑤ `aftercare-second-skin`** — 对标 saniderm 官方 + 工作室教程
+- 必含：贴法（裁剪+从中间向外抚平）、佩戴时长（首片≤24h、二片3–5天、总共≤7天）、撕除（温水下平行撕）、渗液"ink sack"正常说明、过敏处理、传统 vs second skin 差异。
+- 厚度：1100–1500 词。
+
+**⑥ `aftercare-timeline`** — 对标 thundercattattoostudios 分阶段清单
+- 必含：Day1-2 / 3-7 / 8-14 / 15-21 / W3-6 五阶段清单、**部位修正系数**（手脚/关节更慢）、milky phase 解释、Featured Snippet 表格候选。
+- 厚度：1200–1600 词。
+
+**⑦ `aftercare-activities`** — 对标 bangertattoocare 按水源分级
+- 必含：**按水源时间表**（泳池2–4周/海2–4周/湖4–6周/温泉4–6周）、按部位（手脚更久）、万一提前游了怎么办、健身/出汗/出汗瑜伽分级、宠物毛发风险。
+- 厚度：1000–1400 词。
+
+### 4.3 我们的差异化优势（必须放大）
+**"按类型与部位差异化护理" 独家角度**——竞品（除 tattootwins 略提黑/彩）几乎都是「按天一刀切」流程。这是我们能吃 Featured Snippet 与「更权威」的支点，brief §1 已定，扩写时务必强化（每篇都挂这个钩子）。
+
+### 4.4 缺失内容元素清单（对标竞品补）
 - [ ] 真实 fresh-vs-healed 照片（每类型至少 1 组对比图）
 - [ ] 产品成分级横评表（含价格带/适用阶段/肤质）
 - [ ] 可下载/打印 aftercare 护理卡（PDF，易获外链）
@@ -79,20 +113,18 @@
 - [ ] 信息页 → InkFlow 软 CTA
 - [ ] （可选）嵌入式 how-to 短视频
 
-### 4.4 ⚠️ 精确排名待复核
-沙箱 SERP 抓取被地理重定向，无法给精确位置。请本机做一次（任选）：
-- GSC → 表现 → 查询，看这 7 个主打词当前排名/展示；
-- 或本机跑 SERP 工具，把每词 Top10 URL 填回下表（模板）：
+### 4.5 ⚠️ 我方排名待 GSC 复核（对手已锁定）
+WebSearch 已给出对手 Top5，但**我方当前排名**沙箱仍无法定位（需 GSC）。请本机填下表：
 
-| 主打词 | 我方排名 | Top1 | Top2 | Top3 | 我们的内容差距 |
-|--------|---------|------|------|------|---------------|
-| tattoo aftercare | ? | | | | |
-| best tattoo aftercare balm | ? | | | | |
-| infected tattoo | ? | | | | |
-| aftercare for color tattoo | ? | | | | |
-| tattoo aftercare second skin | ? | | | | |
-| tattoo healing timeline | ? | | | | |
-| tattoo aftercare swimming | ? | | | | |
+| 主打词 | 我方排名 | Top1 | Top2 | Top3 |
+|--------|---------|------|------|------|
+| tattoo aftercare | ? | Cleveland Clinic | Healthline | dhtattoo.co.nz |
+| best tattoo aftercare balm | ? | vitiumtattoo | reviewtattoo | glow.com.au |
+| infected tattoo | ? | Medical News Today | Cleveland Clinic | Healthline |
+| aftercare for color tattoo | ? | tattootwins | nivea | vietinktattoo |
+| tattoo aftercare second skin | ? | saniderm (KB) | saniderm (how-to) | beanweilertattoos |
+| tattoo healing timeline | ? | rinattattarin | monolithstudio | thundercattattoostudios |
+| tattoo aftercare swimming | ? | peachytattoos | fierce tattoo | bangertattoocare |
 
 ---
 

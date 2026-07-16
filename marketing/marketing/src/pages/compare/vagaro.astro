@@ -5,22 +5,132 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="InkFlow vs Vagaro â€” Full Comparison for Tattoo Studios" description="Compare InkFlow vs Vagaro for tattoo studios. Vagaro is built for salons â€” InkFlow is built for tattoo shops. See how they stack up on price and features." />
+<BaseLayout lastUpdated="2026-06-28" author="InkFlow Team" reviewedBy="Tattoo Studio Operations">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Can I keep my Vagaro client data?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Export your client CSV from Vagaro and import to InkFlow. Your appointment history won't transfer, but all client contact info will."} },
+    {"@type": "Question", "name": "Does InkFlow have a mobile app like Vagaro?", "acceptedAnswer": {"@type": "Answer", "text": "InkFlow is a Progressive Web App (PWA) ¡ª it works on any device through the browser. Artists can check clients in, sign waivers, and process payments from iPhone, iPad, or Android. No separate app to install."} },
+    {"@type": "Question", "name": "Can I run both Vagaro and InkFlow during transition?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. There's no contract lock-in. Use InkFlow for new bookings and gradually transition your clients. We recommend a 2-week parallel run."} },
+    {"@type": "Question", "name": "Does InkFlow support Vagaro's gift cards?", "acceptedAnswer": {"@type": "Answer", "text": "Gift cards are not currently supported in InkFlow. If gift cards are critical to your business, this is one area where Vagaro has an advantage."} },
+    {"@type": "Question", "name": "What payment processors does InkFlow support?", "acceptedAnswer": {"@type": "Answer", "text": "InkFlow integrates with Stripe. Rates are standard Stripe processing fees (2.9% + $0.30) ¡ª InkFlow adds zero markup. Vagaro charges additional processing fees on top of payment processor rates."} }
+  ]
+}
+</script>
+
+  <SEOHead slot="head" title="InkFlow vs Vagaro for Tattoo Studios â€?Full Comparison" description="Vagaro is built for salons. InkFlow is built for tattoo shops. See pricing breakdown, comparison, and migration guide. Start free." />
   <Navbar />
 
-  <section class="pt-24 pb-16 sm:pt-32">
+
+  <!-- Comparison Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow vs Vagaro",
+  "description": "InkFlow vs Vagaro - Comparison for tattoo studio management. Vagaro is built for salons.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "brand": {
+    "@type": "Brand",
+    "name": "InkFlow"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+})} />
+  <!-- Hero -->
+  <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="mx-auto max-w-3xl">
-        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Vagaro for Tattoo Studios</h1>
-        <p class="mt-4 text-lg text-gray-400">Vagaro is a powerful all-in-one platform for salons and spas. But tattoo studios have specific needs that generic platforms don't address well.</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">InkFlow vs Vagaro for Tattoo Studios (2026)</h1>
+        <p class="mt-4 text-lg text-gray-400">Vagaro powers 50,000+ salons worldwide. But tattoo studios have different needs â€?waivers, aftercare, artist commissions. Here's an honest comparison so you can decide.</p>
       </div>
     </div>
   </section>
 
-  <!-- Comparison Table -->
+  <!-- Quick Verdict -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
+        <h2 class="text-xl font-bold text-white">Quick Verdict</h2>
+        <p class="mt-4 text-gray-400">
+          Vagaro is a competent platform for salons and spas. For tattoo studios, you'll pay extra for essential features like waivers ($10/mo), deal with a booking flow designed for haircuts and facials, and spend weeks configuring workarounds.
+        </p>
+        <p class="mt-3 text-gray-400">
+          <strong class="text-accent-300">InkFlow</strong> was purpose-built for tattoo studios. Digital waivers are included, commission tracking works like shop rent, aftercare automation brings clients back, and it integrates with your existing Stripe â€?no hardware or term contracts.
+        </p>
+        <div class="mt-6">
+          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Breakdown -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Pricing Breakdown</h2>
+      <p class="mt-2 text-gray-400 text-sm">What each platform costs for different studio sizes. All prices annual billing.</p>
+      <div class="mt-8 space-y-6">
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 1: Solo Artist Starting Out</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Free</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$0</p>
+              <p class="text-xs text-gray-500 mt-1">Booking, waivers, CRM, 1 artist</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Vagaro Solo</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$23.99/mo</p>
+              <p class="text-xs text-gray-600 mt-1">+$10/mo for waivers = <strong class="text-gray-400">$33.99/mo</strong></p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 2: 3-Artist Studio</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Pro</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$29.99/mo</p>
+              <p class="text-xs text-gray-500 mt-1">Up to 10 artists, all features</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Vagaro Pro</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$53.97/mo</p>
+              <p class="text-xs text-gray-600 mt-1">$23.99 base + $10Ã—3 providers + $10 waiver = $63.97</p>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-6">
+          <h3 class="text-lg font-semibold text-white">Scenario 3: 5-Artist Shop</h3>
+          <div class="mt-3 grid grid-cols-2 gap-4">
+            <div class="rounded-lg bg-accent-500/5 p-4">
+              <p class="font-bold text-accent-300">InkFlow Pro</p>
+              <p class="text-2xl font-extrabold text-white mt-1">$29.99/mo</p>
+              <p class="text-xs text-gray-500 mt-1">All artists included</p>
+            </div>
+            <div class="rounded-lg bg-ink-900 p-4">
+              <p class="font-bold text-gray-400">Vagaro Pro Plus</p>
+              <p class="text-2xl font-extrabold text-gray-500 mt-1">$103.97/mo</p>
+              <p class="text-xs text-gray-600 mt-1">$43.99 base + $10Ã—5 providers + $10 waiver</p>
+            </div>
+          </div>
+          <p class="mt-3 text-sm text-gray-500">At 5 artists, Vagaro costs <strong class="text-gray-400">3.5Ã— more</strong> than InkFlow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Comparison Table -->
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Feature Comparison</h2>
       <div class="overflow-hidden rounded-xl border border-ink-800">
         <table class="w-full text-sm">
           <thead>
@@ -34,18 +144,18 @@ import Footer from '../../components/Footer.astro';
             {[
               { f: 'Starting Price', i: '$0/mo (Free plan)', b: '$23.99/mo (1 calendar)' },
               { f: 'Additional Providers', i: 'Included in plan', b: '$10/user/month' },
-              { f: 'Tattoo-Specific', i: 'âœ… Purpose-built', b: 'âš ï¸ Salon roots' },
-              { f: 'Digital Waivers', i: 'âœ… Included in all plans', b: 'âŒ +$10/mo add-on' },
-              { f: 'Deposit Collection', i: 'âœ… At booking', b: 'âœ… Available' },
-              { f: 'Commission Splitting', i: 'âœ… Auto-calculated', b: 'âœ… Available' },
-              { f: 'Aftercare Automation', i: 'âœ… Built-in', b: 'âŒ Not available' },
-              { f: 'Inventory Tracking', i: 'âœ… Ink, needles, supplies', b: 'âœ… Available' },
-              { f: 'Client CRM', i: 'âœ… 360Â° history + tags', b: 'âœ… Basic CRM' },
+              { f: 'Tattoo-Specific', i: 'âœ?Purpose-built', b: 'âš ï¸ Salon roots' },
+              { f: 'Digital Waivers', i: 'âœ?Included in all plans', b: 'â?+$10/mo add-on' },
+              { f: 'Deposit Collection', i: 'âœ?At booking', b: 'âœ?Available' },
+              { f: 'Commission Splitting', i: 'âœ?Auto-calculated', b: 'âœ?Available' },
+              { f: 'Aftercare Automation', i: 'âœ?Built-in', b: 'â?Not available' },
+              { f: 'Inventory Tracking', i: 'âœ?Ink, needles, supplies', b: 'âœ?Available' },
+              { f: 'Client CRM', i: 'âœ?360Â° history + tags', b: 'âœ?Basic CRM' },
               { f: 'Payment Processing', i: '2.9% + $0.30', b: '2.75% (card-present)' },
-              { f: 'POS Hardware', i: 'âŒ Not needed (links)', b: 'âœ… PayPro $300+ (terminal)' },
-              { f: 'Free Trial', i: 'âœ… No credit card', b: 'âœ… Available' },
-              { f: 'Portfolio Gallery', i: 'âœ… Artist profiles', b: 'âŒ Limited' },
-              { f: 'Setup Complexity', i: 'âœ… 5 minutes', b: 'âš ï¸ Weeks to configure' },
+              { f: 'POS Hardware', i: 'â?Not needed (links)', b: 'âœ?PayPro $300+ (terminal)' },
+              { f: 'Free Trial', i: 'âœ?No credit card', b: 'âœ?Available' },
+              { f: 'Portfolio Gallery', i: 'âœ?Artist profiles', b: 'â?Limited' },
+              { f: 'Setup Complexity', i: 'âœ?5 minutes', b: 'âš ï¸ Weeks to configure' },
             ].map(row => (
               <tr class="hover:bg-ink-900/30 transition-colors">
                 <td class="p-4 text-gray-300 font-medium">{row.f}</td>
@@ -59,21 +169,121 @@ import Footer from '../../components/Footer.astro';
     </div>
   </section>
 
-  <!-- Quick Verdict -->
+  <!-- Who Is Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is Vagaro Best For?</h2>
+        <p class="mt-3 text-gray-400">Vagaro is a strong choice for <strong class="text-white">salons, spas, and barbershops</strong> that need POS hardware, retail inventory, and a full marketing suite (email campaigns, gift cards, loyalty programs). If your primary business is haircuts, facials, or nail services, Vagaro's feature set is mature and reliable.</p>
+        <p class="mt-2 text-gray-400">Vagaro also offers a client app and integrated phone system that some multi-location businesses rely on.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white">Who Is InkFlow Best For?</h2>
+        <p class="mt-3 text-gray-400">InkFlow is built specifically for <strong class="text-white">tattoo studios</strong> â€?from solo artists to multi-artist shops with apprentices, guest artists, and booth renters. If you need:</p>
+        <ul class="mt-3 space-y-2 text-gray-400">
+          <li class="flex gap-2">â€?Tattoo-specific digital waivers (not generic liability forms)</li>
+          <li class="flex gap-2">â€?Commission tracking designed for shop rent and split schedules</li>
+          <li class="flex gap-2">â€?Aftercare automation that sends care instructions and product reminders</li>
+          <li class="flex gap-2">â€?Ink, needle, and supply inventory (not salon retail stock)</li>
+          <li class="flex gap-2">â€?Artist portfolio gallery as a core feature, not an afterthought</li>
+        </ul>
+        <p class="mt-2 text-gray-400">InkFlow is also significantly more affordable for tattoo studios at every tier.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Real Talk -->
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
-        <h2 class="text-xl font-bold text-white">The Bottom Line</h2>
-        <p class="mt-4 text-gray-400">
-          Vagaro is a capable platform â€” if you run a salon. For tattoo studios, you'll pay extra for waivers ($10/mo), deal with features designed for haircuts and facials, and spend weeks configuring workarounds.
-        </p>
-        <p class="mt-2 text-gray-400">
-          <strong class="text-accent-300">InkFlow</strong> was built from the ground up for tattoo studios. Digital waivers included, commission tracking designed for shop setups, aftercare automation that keeps clients coming back. And it integrates with your existing Stripe account â€” no extra hardware or contracts.
-        </p>
-        <div class="mt-6">
-          <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†’</a>
+      <h2 class="text-2xl font-bold text-white">Real Talk: What Vagaro Does Better</h2>
+      <p class="mt-2 text-gray-400 text-sm">No product is perfect. Here's where Vagaro has advantages.</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">POS Hardware Integration</h3>
+          <p class="mt-2 text-sm text-gray-400">Vagaro offers PayPro POS terminals for walk-in retail sales. InkFlow uses Stripe payment links â€?no hardware, but also no countertop POS for selling retail products.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Marketing Suite</h3>
+          <p class="mt-2 text-sm text-gray-400">Vagaro includes built-in email marketing, gift cards, and loyalty programs. InkFlow focuses on booking and operations â€?marketing automation is on the roadmap.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 p-5">
+          <h3 class="font-semibold text-white">Maturity & Scale</h3>
+          <p class="mt-2 text-sm text-gray-400">Vagaro has been around since 2009 and supports multi-location chains with dedicated account management. InkFlow is newer and best suited for independent studios (1-10 artists).</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Migration Guide -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Migrating from Vagaro to InkFlow</h2>
+      <p class="mt-2 text-gray-400 text-sm">Moving your studio data takes about 30 minutes.</p>
+      <ol class="mt-8 space-y-4">
+        <li class="flex gap-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">1</span>
+          <div><strong class="text-white">Export your client list from Vagaro</strong><p class="text-sm text-gray-400 mt-1">Vagaro â†?Clients â†?Export â†?CSV. Includes name, email, phone.</p></div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">2</span>
+          <div><strong class="text-white">Create your InkFlow account</strong><p class="text-sm text-gray-400 mt-1"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Sign up free</a> â€?no credit card required. Set up your studio profile.</p></div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">3</span>
+          <div><strong class="text-white">Import your clients</strong><p class="text-sm text-gray-400 mt-1">Use InkFlow's CSV import to upload your client database. Done.</p></div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/20 text-accent-400 font-bold text-sm">4</span>
+          <div><strong class="text-white">Connect Stripe and go live</strong><p class="text-sm text-gray-400 mt-1">Connect your existing Stripe account (or create one). Your booking page is live immediately.</p></div>
+        </li>
+      </ol>
+      <div class="mt-6 rounded-lg bg-ink-900/50 border border-ink-800 p-4">
+        <p class="text-sm text-gray-400">ðŸ“ž <strong class="text-white">Need help migrating?</strong> We offer free migration assistance. Email hello@ink-flows.com and we'll transfer your data for you.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ + Schema -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I keep my Vagaro client data?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Export your client CSV from Vagaro and import to InkFlow. Your appointment history won't transfer, but all client contact info will.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does InkFlow have a mobile app like Vagaro?</summary>
+          <p class="mt-2 text-sm text-gray-400">InkFlow is a Progressive Web App (PWA) â€?it works on any device through the browser. Artists can check clients in, sign waivers, and process payments from iPhone, iPad, or Android. No separate app to install.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I run both Vagaro and InkFlow during transition?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. There's no contract lock-in. Use InkFlow for new bookings and gradually transition your clients. We recommend a 2-week parallel run.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does InkFlow support Vagaro's gift cards?</summary>
+          <p class="mt-2 text-sm text-gray-400">Gift cards are not currently supported in InkFlow. If gift cards are critical to your business, this is one area where Vagaro has an advantage.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">What payment processors does InkFlow support?</summary>
+          <p class="mt-2 text-sm text-gray-400">InkFlow integrates with Stripe. Rates are standard Stripe processing fees (2.9% + $0.30) â€?InkFlow adds zero markup. Vagaro charges additional processing fees on top of payment processor rates.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Built for Tattoo Studios, Not Salons</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Stop paying for features you don't need and workarounds for the ones you do. InkFlow is free to start â€?no credit card, no contract.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free â†?/a>
+    <p class="mt-4 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+  </section>
+
+  <!-- Methodology -->
+  <section class="border-t border-ink-800/50 py-8">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs text-gray-600">Methodology: Comparison based on publicly available pricing and feature information as of July 2026. Actual pricing may vary based on promotions, negotiated rates, and regional availability. We aim to update this page quarterly. Sources include Vagaro's official website, Stripe pricing page, and InkFlow internal data.</p>
     </div>
   </section>
 

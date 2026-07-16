@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 ---
 
-<BaseLayout>
+<BaseLayout lastUpdated="2026-06-09">
   <SEOHead slot="head" title="Contact InkFlow — Get in Touch" description="Questions about InkFlow? Contact us at hello@ink-flows.com. We're here to help your studio." />
   <Navbar />
 
@@ -14,6 +14,52 @@ import Footer from '../components/Footer.astro';
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Contact Us</h1>
       <p class="mt-4 text-lg text-gray-400">Have a question? We'd love to hear from you.</p>
       <p class="mt-8 text-gray-400">Email: <a href="mailto:hello@ink-flows.com" class="text-accent-400 hover:underline">hello@ink-flows.com</a></p>
+    </div>
+  </section>
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 sm:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <h2 class="text-white font-bold text-base">Email Support</h2>
+          <p class="mt-2 text-sm text-gray-400">General questions, account help, or sales inquiries</p>
+          <a href="mailto:hello@ink-flows.com" class="mt-3 inline-block text-accent-400 hover:underline text-sm">hello@ink-flows.com</a>
+          <p class="mt-2 text-xs text-gray-500">Reply within 24 hours</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <h2 class="text-white font-bold text-base">Live Chat</h2>
+          <div class="mt-2 text-sm text-gray-400">
+            <p>Available in-app during business hours</p>
+            <p class="mt-2">Mon-Fri, 9am-5pm EST</p>
+          </div>
+          <a href="https://app.ink-flows.com/register" class="mt-3 inline-block text-accent-400 hover:underline text-sm">Start free →</a>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <h2 class="text-white font-bold text-base">Partnerships</h2>
+          <p class="mt-2 text-sm text-gray-400">Supply brand partnerships, affiliate inquiries, or press</p>
+          <a href="mailto:partners@ink-flows.com" class="mt-3 inline-block text-accent-400 hover:underline text-sm">partners@ink-flows.com</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Quick Answers</h2>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-bold text-sm">How long does setup take?</h3>
+          <p class="mt-2 text-sm text-gray-400">Most studios are fully set up in under an hour. Import your client list, set up services and pricing, and you're ready. <a href="/pricing" class="text-accent-400 hover:underline">See plans.</a></p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-bold text-sm">Can I migrate from another system?</h3>
+          <p class="mt-2 text-sm text-gray-400">Yes. We help you import data from Booksy, Tattoo Studio Pro, Tattoogenda, Square Appointments, or spreadsheets. <a href="/features/tattoo-crm-software" class="text-accent-400 hover:underline">Our CRM supports CSV import.</a></p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <h3 class="text-white font-bold text-sm">Is there a free plan?</h3>
+          <p class="mt-2 text-sm text-gray-400">Yes. InkFlow has a free plan with core features including booking, client management, and digital waivers. No credit card required. <a href="/pricing" class="text-accent-400 hover:underline">Compare plans.</a></p>
+        </div>
+      </div>
     </div>
   </section>
   <Footer />

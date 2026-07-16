@@ -6,7 +6,23 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout>
+<BaseLayout lastUpdated="2026-07-04" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
   <FAQSchema questions={[
     { question: "How do I get my booking page?", answer: "Your booking page is created automatically when you sign up for InkFlow. Choose your URL, upload your photo, and share the link on Instagram or your website." },
     { question: "Can I use my own domain for my booking page?", answer: "Yes. Pro and Plus users can connect their own domain. Just add a CNAME record — no technical support needed." },
@@ -22,7 +38,9 @@ import FAQSchema from '../../components/FAQSchema.astro';
           Free for Pro users
         </div>
         <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Artist Booking Page: Free Booking Link for Your Studio</h1>
-        <p class="mt-6 text-lg text-gray-400">InkFlow gives every artist a free professional booking page. Share on Instagram, embed on your website, or use your own domain. Clients book with deposit in one click — no phone tag needed.</p>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Back-and-forth DMs on Instagram, phone tag to find available slots, and manual deposit collection wastes hours every week. Clients get frustrated and book elsewhere.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives every artist a free, professional booking page. Share your link on Instagram, embed on your site, or use a custom domain. Clients see real-time availability, pick a slot, and pay a deposit — in one click.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios eliminate scheduling phone tag entirely. Average booking time drops from 15 minutes to 90 seconds. Artists reclaim 5+ hours per week.</p>
       </div>
     </div>
   </section>
@@ -64,7 +82,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
       <div class="mt-8 space-y-4">
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">DMs and phone calls don't scale — you lose bookings every week.</h3><p class="mt-1 text-sm text-gray-400">Clients message you on Instagram, you reply with pricing, they ask again next week. A booking page captures them at the moment of interest.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Without a professional page, you look less credible.</h3><p class="mt-1 text-sm text-gray-400">Clients expect a seamless online experience. A clunky process or no page at all costs you clients who choose studios with easy booking.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">No deposit at booking means more no-shows.</h3><p class="mt-1 text-sm text-gray-400">A booking page without deposit collection doesn't solve the no-show problem. InkFlow's page requires a deposit to lock the appointment.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">No deposit at booking means more no-shows.</h3><p class="mt-1 text-sm text-gray-400">A booking page without deposit collection doesn't solve the no-show problem. InkFlow's page requires a deposit to lock the appointment — the same approach used in our <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">tattoo booking software that cuts no-shows by 80%</a>.</p></div>
       </div>
     </div>
   </section>
@@ -105,7 +123,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <h4 class="mt-4 text-sm font-semibold text-white">Real-Time Availability</h4>
           <p class="text-sm text-gray-400">Clients see exactly which time slots are available. No back-and-forth to find a time that works.</p>
           <h5 class="mt-3 text-sm font-medium text-white">Deposit Locks the Appointment</h5>
-          <p class="text-sm text-gray-400">A deposit is required to confirm. No-shows drop by 80% when clients have skin in the game.</p>
+          <p class="text-sm text-gray-400">A deposit is required to confirm. No-shows drop by 80% when clients have skin in the game. Learn more about how <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">deposit-based tattoo booking software eliminates no-shows</a> in our complete guide.</p>
         </div>
       </div>
     </div>

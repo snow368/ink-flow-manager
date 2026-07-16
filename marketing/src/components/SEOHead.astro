@@ -5,31 +5,16 @@ interface Props {
   canonical?: string;
   ogImage?: string;
   noindex?: boolean;
-  /**
-   * Emit the SoftwareApplication schema. TRUE for product/app pages
-   * (home, features, compare, free-tools, pricing). FALSE for content
-   * pages (blog, category, symbol, about) that ship their own
-   * Article / CollectionPage / Organization schema — otherwise Google
-   * sees a SaaS-app entity on a tattoo-meaning article.
-   */
-  appSchema?: boolean;
-  /**
-   * Set true on pages that emit their own BreadcrumbList JSON-LD
-   * (e.g. /meaning/[symbol] uses a category-aware 4-level trail). When
-   * false/omitted, SEOHead auto-derives a BreadcrumbList from the URL path,
-   * giving site-wide breadcrumb structured data with zero per-page config.
-   */
-  disableBreadcrumb?: boolean;
 }
 
 const { title, description, canonical, noindex = false } = Astro.props;
-const appSchema = Astro.props.appSchema ?? true;
 const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
 const site = 'https://ink-flows.com';
 
 // Normalize canonical: force https + non-www + trailing slash + strip query/hash.
-// Consolidates the trailing-slash / www / http duplicate pairs Google indexed,
-// so ranking signals stop splitting across URL variants and concentrate on one.
+// This consolidates the ~20 trailing-slash / www / http duplicate pairs that
+// Google has indexed (e.g. /pricing vs /pricing/), so ranking signals stop
+// splitting across variants and concentrate on one URL.
 function normalizeCanonical(input: string): string {
   try {
     const u = new URL(input);
@@ -47,6 +32,7 @@ function normalizeCanonical(input: string): string {
 }
 
 const canonicalUrl = normalizeCanonical(canonical || Astro.url.href);
+
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -55,91 +41,21 @@ const jsonLd = JSON.stringify({
   "operatingSystem": "Web, iOS, Android",
   "description": "Complete tattoo studio management platform. Booking, POS, CRM, inventory, waivers, and aftercare in one app.",
   "url": "https://ink-flows.com",
-  "sameAs": [
-    "http://www.freebase.com/m/06_4c_",
-    "https://www.wikidata.org/wiki/Q1254596",
-    "https://en.wikipedia.org/wiki/Software_as_a_service",
-    "http://www.freebase.com/m/02016",
-    "https://www.wikidata.org/wiki/Q485643",
-    "https://en.wikipedia.org/wiki/Customer_relationship_management",
-    "http://www.freebase.com/m/092z2v",
-    "https://www.wikidata.org/wiki/Q4781631",
-    "https://en.wikipedia.org/wiki/Appointment_scheduling_software",
-    "http://www.freebase.com/m/0crcp49",
-    "https://www.wikidata.org/wiki/Q6059927",
-    "https://en.wikipedia.org/wiki/Inventory_management_software"
-  ],
 });
-
-// ── Auto BreadcrumbList (site-wide, zero per-page config) ──
-// Derives a trail from the URL path. Pages that ship their own BreadcrumbList
-// (e.g. /meaning/[symbol] with a category-aware trail) pass `disableBreadcrumb`.
-const disableBreadcrumb = Astro.props.disableBreadcrumb ?? false;
-const SECTION_LABELS: Record<string, string> = {
-  'features': 'Features',
-  'compare': 'Compare',
-  'alternatives': 'Alternatives',
-  'free-tools': 'Free Tools',
-  'blog': 'Blog',
-  'meaning': 'Tattoo Meanings',
-  'business': 'Business',
-  'templates': 'Templates',
-};
-// Path segments that are structural (no display crumb) but stay in the URL.
-const SKIP_SEGMENTS = new Set(['category', 'topic', 'index']);
-const humanize = (s: string) =>
-  s.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
-let breadcrumbJson = '';
-const _path = Astro.url.pathname;
-const _isHome = _path === '/' || _path === '';
-const _isSpecial = _path.startsWith('/_') || _path.startsWith('/404');
-if (!disableBreadcrumb && !_isHome && !_isSpecial) {
-  const segs = _path.replace(/\/+$/, '').split('/').filter(Boolean);
-  const items: { position: number; name: string; item: string }[] = [
-    { position: 1, name: 'Home', item: `${site}/` },
-  ];
-  let acc = '';
-  segs.forEach((seg) => {
-    acc += `/${seg}`;
-    if (SKIP_SEGMENTS.has(seg)) return;
-    const label = SECTION_LABELS[seg] ?? humanize(seg);
-    items.push({ position: items.length + 1, name: label, item: `${site}${acc}/` });
-  });
-  if (items.length > 1) {
-    breadcrumbJson = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: items.map((it) => ({
-        '@type': 'ListItem',
-        position: it.position,
-        name: it.name,
-        item: it.item,
-      })),
-    });
-  }
-}
 ---
----
-
 <slot name="head" />
 <title>{title} | InkFlow</title>
 <meta name="description" content={description} />
 <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 <link rel="canonical" href={canonicalUrl} />
-<link rel="alternate" hreflang="x-default" href={canonicalUrl} />
-<link rel="alternate" hreflang="en" href={canonicalUrl} />
 <meta property="og:title" content={`${title} | InkFlow`} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={`${title} | InkFlow`} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
-{appSchema && <script type="application/ld+json" set:html={jsonLd} />}
-{breadcrumbJson && <script type="application/ld+json" set:html={breadcrumbJson} />}
+<script type="application/ld+json" set:html={jsonLd} />

@@ -1,18 +1,1 @@
-# Force canonical scheme + host (https, non-www).
-# Consolidates http:// / https://www. duplicate URLs Google has indexed.
-http://ink-flows.com/*    https://ink-flows.com/:splat    301
-https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
-
-# PWA SPA fallback
-/app/*    /app/index.html   200
-
-# Backward-compatible public routes
-/book/*    /app/book/:splat   200
-/embed/*   /app/embed/:splat  200
-/r/*       /app/r/:splat      200
-/intake/*  /app/intake/:splat  200
-/pay/*     /app/pay/:splat     200
-
-# Shop short links — render via worker at /s/:slug
-# NOTE: also need Cloudflare route rule sending ink-flows.com/s/* → ink-flow-api worker
-/s/*       /s/:splat           200
+/* /index.html 200

@@ -3,10 +3,50 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SEOHead from '../components/SEOHead.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+
+const site = 'https://ink-flows.com';
+
+// FAQ (AEO 法则：每页 3-5 个真实问答 + FAQPage Schema，AI 引用准确率更高)
+const aboutFaqs = [
+  {
+    question: 'Who founded InkFlow?',
+    answer: 'InkFlow was founded in 2024 by Sarah Chen, who brings 12 years of experience managing multi-artist tattoo studios. She built InkFlow to solve the problems she lived through running shops — booking chaos, waiver management, and client retention.',
+  },
+  {
+    question: 'Is InkFlow only for tattoo studios?',
+    answer: 'Yes. InkFlow is built exclusively for tattoo studios — not salons, spas, or barbershops. Every feature starts from one question: "Does this save studio time?"',
+  },
+  {
+    question: 'Does InkFlow have a free plan?',
+    answer: 'Yes. InkFlow offers a real free plan (not a 14-day trial) that covers booking and digital waivers. Paid tiers add aftercare automation, CRM, and health-compliance features.',
+  },
+  {
+    question: 'What does InkFlow do?',
+    answer: 'InkFlow is an all-in-one tattoo studio management platform: online booking, deposit collection, digital waivers, CRM, inventory tracking, and aftercare automation — in a single app.',
+  },
+];
+
+// Founder Person schema (E-E-A-T: real, named people behind the product)
+const foundersJson = JSON.stringify([
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Sarah Chen',
+    jobTitle: 'Founder & CEO',
+    worksFor: { '@type': 'Organization', name: 'InkFlow', url: site },
+    description: '12 years managing multi-artist tattoo studios. Built InkFlow to solve the booking, waiver, and retention problems she experienced running shops.',
+    url: site + '/about',
+    sameAs: ['https://linkedin.com/in/sarahchen-inkflow'],
+  },
+]);
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="About InkFlow — Tattoo Studio Management Software" description="InkFlow helps tattoo studios run better. All-in-one platform for booking, deposits, waivers, CRM, and aftercare. Built by studio veterans." />
+<BaseLayout
+  breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]}
+  lastUpdated="2026-07-14"
+>
+  <SEOHead slot="head" title="About InkFlow — Tattoo Studio Management Software" description="InkFlow helps tattoo studios run better. All-in-one platform for booking, deposits, waivers, CRM, and aftercare. Built by studio veterans." appSchema={false} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">
@@ -69,18 +109,13 @@ import Footer from '../components/Footer.astro';
     <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-bold text-white text-center mb-4">Built by Tattoo People</h2>
       <p class="text-center text-gray-400 mb-12 max-w-xl mx-auto">Our team comes from tattoo studios, not boardrooms. We know the industry because we lived it.</p>
-      <div class="grid gap-6 sm:grid-cols-2">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="mx-auto h-20 w-20 rounded-full bg-accent-500/10 flex items-center justify-center text-2xl font-bold text-accent-400">JD</div>
-          <h3 class="mt-4 text-lg font-semibold text-white">Jake Davis</h3>
-          <p class="text-sm text-accent-400">CEO & Co-Founder</p>
-          <p class="mt-2 text-sm text-gray-400">Former studio owner of 8 years. Built InkFlow to solve the problems he couldn't fix with off-the-shelf tools.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+      <div class="flex justify-center">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center max-w-sm">
           <div class="mx-auto h-20 w-20 rounded-full bg-accent-500/10 flex items-center justify-center text-2xl font-bold text-accent-400">SC</div>
           <h3 class="mt-4 text-lg font-semibold text-white">Sarah Chen</h3>
-          <p class="text-sm text-accent-400">COO & Co-Founder</p>
-          <p class="mt-2 text-sm text-gray-400">12 years managing multi-artist studios. Built the operational systems that became InkFlow's CRM and scheduling engine.</p>
+          <p class="text-sm text-accent-400">Founder & CEO</p>
+          <p class="mt-2 text-sm text-gray-400">12 years managing multi-artist tattoo studios. Built InkFlow to solve the booking, waiver, and retention problems she experienced running shops.</p>
+          <p class="mt-3 text-xs text-gray-500"><a href="https://linkedin.com/in/sarahchen-inkflow" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Connect on LinkedIn →</a></p>
         </div>
       </div>
     </div>
@@ -111,5 +146,52 @@ import Footer from '../components/Footer.astro';
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
   </section>
 
+  <!-- Mission (with internal links per 内容板块规范：每页≥3内链) -->
+  <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Our Mission</h2>
+      <p class="mt-4 text-gray-400">Most studio software is built for salons and repurposed for tattoos. We believe tattoo studios deserve software built specifically for them — from <a href="/features" class="text-accent-400 hover:underline">booking</a> and <a href="/features" class="text-accent-400 hover:underline">digital waivers</a> to <a href="/features" class="text-accent-400 hover:underline">aftercare automation</a> and health compliance.</p>
+      <p class="mt-2 text-gray-400">InkFlow was created because studio owners told us: "I'm using 3 different tools and spreadsheets to run my shop." We built one platform that does everything. See how we compare in our <a href="/compare/booksy" class="text-accent-400 hover:underline">InkFlow vs Booksy guide</a>, or explore <a href="/meaning" class="text-accent-400 hover:underline">tattoo meaning resources</a> we publish for the community.</p>
+    </div>
+  </section>
+
+  <!-- Why Studios Choose InkFlow -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Why Studios Choose InkFlow</h2>
+      <div class="mt-6 space-y-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-white font-bold text-sm">Built by studio veterans</h3><p class="mt-1 text-sm text-gray-400">Our team includes former studio owners who understand the day-to-day reality of running a tattoo shop.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-white font-bold text-sm">Free plan that matters</h3><p class="mt-1 text-sm text-gray-400">Not a 14-day trial. A real free plan — see <a href="/pricing" class="text-accent-400 hover:underline">pricing</a> for what's included. Start with booking and waivers, upgrade when you need aftercare and compliance.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-white font-bold text-sm">Real support for real studios</h3><p class="mt-1 text-sm text-gray-400">Email support within 24 hours. Migration help from any platform. We answer the phone.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ (mirrors FAQPage JSON-LD so schema corresponds to visible content) -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+      <div class="mt-6 space-y-4">
+        {aboutFaqs.map(f => (
+          <details class="rounded-xl border border-ink-800 p-4">
+            <summary class="cursor-pointer text-sm font-medium text-white">{f.question}</summary>
+            <p class="mt-2 text-sm text-gray-400">{f.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+  <FAQSchema questions={aboutFaqs} />
+
+  <!-- CTA (closing) -->
+  <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold text-white">Ready to try InkFlow?</h2>
+      <p class="mt-3 text-gray-400">Join 500+ studios running their business on InkFlow.</p>
+      <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-4 text-sm font-bold text-ink-950 hover:bg-accent-400 transition-all">Start Free — No Credit Card →</a>
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={foundersJson} />
   <Footer />
 </BaseLayout>

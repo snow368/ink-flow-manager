@@ -1,286 +1,94 @@
 ---
-
 import BaseLayout from '../../layouts/BaseLayout.astro';
-
 import SEOHead from '../../components/SEOHead.astro';
-
 import Navbar from '../../components/Navbar.astro';
-
 import Footer from '../../components/Footer.astro';
-
 import FAQSchema from '../../components/FAQSchema.astro';
-
 ---
 
-
-
-<BaseLayout lastUpdated="2026-07-08" author="InkFlow Team">
-
-
-
-<script type="application/ld+json">
-
-{
-
-  "@context": "https://schema.org",
-
-  "@type": "SoftwareApplication",
-
-  "name": "InkFlow",
-
-  "applicationCategory": "BusinessApplication",
-
-  "operatingSystem": "Web",
-
-  "offers": {
-
-    "@type": "Offer",
-
-    "price": "0",
-
-    "priceCurrency": "USD",
-
-    "availability": "https://schema.org/InStock"
-
-  }
-
-}
-
-</script>
-
-  <SEOHead slot="head" title="Tattoo Client Portal — Appointments & Waivers | InkFlow" description="Tattoo client portal for appointments, waivers, and history. Self-service booking and check-in. Clients love the convenience. Start free." />
-
+<BaseLayout>
+  <SEOHead slot="head" title="Tattoo Client Portal — Appointments, Waivers &amp; History in One Place" description="InkFlow's tattoo client portal gives clients access to their appointment history, signed waivers, and upcoming bookings. No more 'can you send me my waiver?' Start free." />
   <FAQSchema questions={[
-
     { question: "What can clients see in the portal?", answer: "Clients can view their appointment history, signed waivers, upcoming bookings, and past tattoo photos. They can also reschedule or cancel appointments." },
-
     { question: "Do clients need to create an account?", answer: "No account needed for booking. A portal account is created automatically after their first appointment. They access it via a secure link." },
-
     { question: "Can clients download their waivers?", answer: "Yes. Clients can download and print any signed waiver from their portal at any time." },
-
   ]} />
-
   <Navbar />
 
-
-
   <section class="pt-24 pb-16 sm:pt-32">
-
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-
       <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO CLIENT PORTAL</p>
-
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Client Portal: Appointments, Waivers &amp; History in One Place</h1>
-
-      <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Clients constantly message "can you send me my waiver?" or "what time was my appointment?" Your front desk spends hours on these requests.</p>
-
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow client portal gives every client access to their appointment history, signed waivers, and upcoming bookings — all from their phone. Self-service, always available.</p>
-
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> One 3-artist studio reduced front desk waiver requests by 80% in the first month. Clients love having everything in one place.</p>
-
+      <p class="mt-6 text-lg text-gray-400">InkFlow's client portal gives every client access to their appointment history, signed waivers, and upcoming bookings — all from their phone. No more "can you send me my waiver?" requests.</p>
       <div class="mt-8 flex flex-wrap gap-4">
-
         <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
-
       </div>
-
     </div>
-
   </section>
-
-
 
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-
       <h2 class="text-2xl font-bold text-white text-center">Why Every Studio Needs a Client Portal</h2>
-
       <div class="mt-8 space-y-4">
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Clients constantly ask to resend their waivers or check appointment times.</h3><p class="mt-1 text-sm text-gray-400">A portal puts everything in their hands. Waivers, history, upcoming bookings — accessible anytime without calling the studio.</p></div>
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual appointment management creates extra admin work.</h3><p class="mt-1 text-sm text-gray-400">Clients can reschedule or cancel through the portal — no phone calls, no back-and-forth DMs. Your front desk spends less time on scheduling.</p></div>
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Clients want to see their tattoo history and photos.</h3><p class="mt-1 text-sm text-gray-400">A portal with past work photos becomes a portfolio your clients can share. Free marketing for your studio.</p></div>
-
       </div>
-
     </div>
-
   </section>
-
-
 
   <section class="border-t border-ink-800/50 py-16">
-
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
       <h2 class="text-2xl font-bold text-white text-center">Portal Features Built for Tattoo Clients</h2>
-
       <div class="mt-12 space-y-16">
-
       <div class="grid gap-8 md:grid-cols-2 items-center">
-
         <div>
-
           <h3 class="text-2xl font-bold text-white">Full Appointment History &amp; Upcoming Bookings</h3>
-
           <p class="mt-4 text-gray-400">Clients see every past and upcoming appointment. Reschedule or cancel with one click — no phone call needed.</p>
-
           <h4 class="mt-4 text-lg font-semibold text-white">Self-Service Rescheduling</h4>
-
           <p class="text-sm text-gray-400">Clients can reschedule within your cancellation policy window. Deposits transfer automatically. No front desk intervention needed.</p>
-
           <h5 class="mt-3 text-base font-medium text-white">Automatic Reminders via Portal</h5>
-
           <p class="text-sm text-gray-400">Clients receive push notifications for upcoming appointments directly through the portal — in addition to SMS and email reminders.</p>
-
         </div>
-
         <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-
-          <p class="text-sm text-gray-400"><img src="/images/features/portal.svg" alt="Client portal in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
-
+          <p class="text-sm text-gray-400">[Screenshot: Client portal]</p>
         </div>
-
       </div>
-
-
 
       <div class="grid gap-8 md:grid-cols-2 items-center">
-
         <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-
-          <p class="text-sm text-gray-400"><img src="/images/features/waivers.svg" alt="Waiver download in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
-
+          <p class="text-sm text-gray-400">[Screenshot: Waiver download]</p>
         </div>
-
         <div class="order-1 md:order-2">
-
           <h3 class="text-2xl font-bold text-white">Signed Waivers Available for Download Anytime</h3>
-
           <p class="mt-4 text-gray-400">Every signed waiver is stored in the client's portal. Download, print, or share — no more "can you send me my waiver?"</p>
-
           <h4 class="mt-4 text-lg font-semibold text-white">Legal Record Access</h4>
-
           <p class="text-sm text-gray-400">Clients and studios both have access to signed waivers with full audit trails. Perfect for compliance and dispute resolution.</p>
-
           <h5 class="mt-3 text-base font-medium text-white">PDF Export with All Signatures</h5>
-
           <p class="text-sm text-gray-400">Each waiver exports as PDF with timestamp, IP address, and signature hash. Court-admissible and compliant with ESIGN/UETA.</p>
-
         </div>
-
       </div>
-
     </div>
-
     </div>
-
   </section>
-
-
 
   <!-- BUYER GUIDE -->
-
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-
       <h2 class="text-2xl font-bold text-white text-center">Is a Client Portal Right for Your Studio?</h2>
-
       <p class="mt-3 text-center text-gray-400">The value of a client portal scales with your client volume and appointment frequency.</p>
-
       <div class="mt-8 space-y-4">
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Small studio, mostly repeat clients</h3><p class="text-sm text-gray-400 mt-1">A portal reduces "can you send me my waiver?" requests. Clients self-serve appointment history and past work photos.</p></div>
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">High-volume studio, many new clients</h3><p class="text-sm text-gray-400 mt-1">A portal reduces front desk workload — clients check their own schedules, download waivers, and reschedule. Your team focuses on service, not admin.</p></div>
-
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio focused on client experience</h3><p class="text-sm text-gray-400 mt-1">A portal with past work galleries creates a "tattoo journey" that clients love to share. Free word-of-mouth marketing for your studio.</p></div>
-
       </div>
-
     </div>
-
   </section>
-
-
 
   <section class="border-t border-ink-800/50 py-16 text-center">
-
     <h2 class="text-2xl font-bold text-white">Give Clients Access to Their Info</h2>
-
     <p class="mt-3 text-gray-400">Free plan includes client portal access. No extra setup needed.</p>
-
-    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">
-
-  <!-- INDUSTRY DATA -->
-
-  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
-
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-
-      <h2 class="text-2xl font-bold text-white text-center">Client Portal — Self-Service by the Numbers</h2>
-
-      <div class="mt-10 grid gap-6 sm:grid-cols-3">
-
-        
-
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-
-          <div class="text-3xl font-bold text-accent-400">73%</div>
-
-          <div class="mt-2 text-sm text-gray-400">Of clients prefer self-service rescheduling over calls (survey)</div>
-
-        </div>
-
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-
-          <div class="text-3xl font-bold text-accent-400">15 min</div>
-
-          <div class="mt-2 text-sm text-gray-400">Avg staff time saved per client with self-check-in (studios)</div>
-
-        </div>
-
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-
-          <div class="text-3xl font-bold text-accent-400">92%</div>
-
-          <div class="mt-2 text-sm text-gray-400">Client satisfaction rate with digital portal access</div>
-
-        </div>
-
-      </div>
-
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
-
-    </div>
-
-  </section>Try InkFlow Free →</a>
-
-
-
-<!-- RELATED FEATURES -->
-
-<section class="border-t border-ink-800/30 py-12">
-
-  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-
-    <h2 class="text-xl font-bold text-white">Related Features</h2>
-
-    <div class="mt-6 flex flex-wrap justify-center gap-4">\n      <a href="/features/tattoo-crm-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Crm Software</a>\n      <a href="/features/tattoo-booking-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Booking Software</a>\n      <a href="/features/tattoo-waiver-software" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Waiver Software</a>
-
-    </div>
-
-  </div>
-
-</section>
-
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
   </section>
-
   <Footer />
-
 </BaseLayout>
-

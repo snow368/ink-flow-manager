@@ -11,10 +11,10 @@
 | 技能 | 文件 | 适用项目 |
 |------|------|---------|
 | KD 判断方法（工具+手动） | framework/keyword-research.md | SaaS/B2B/B2C/内容站 |
-| 关键词选取方法论（5维评分） | framework/keyword-selection-methodology.md | 通用 |
-| 搜索意图分类 | framework/keyword-selection-methodology.md | 通用 |
-| 关键词分组聚合 | framework/keyword-selection-methodology.md | 通用 |
-| 竞品关键词差距分析 | framework/keyword-selection-methodology.md | 通用 |
+| 关键词选取方法论（5维评分） | framework/keyword-research.md §1.3 | 通用 |
+| 搜索意图分类 | framework/keyword-research.md §1.1 | 通用 |
+| 关键词分组聚合（三阶段闭环） | framework/keyword-research.md §二 | 通用 |
+| 竞品关键词差距分析 | framework/keyword-research.md §三 | 通用 |
 | 低KD长尾扩展 | sources/CoderJeffLee.md | SaaS/内容站 |
 | 信息溯源找新词 | sources/hezhiyan7.md | 内容站 |
 
