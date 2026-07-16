@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "InkFlow",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Tattoo Artist Website — Portfolio, Booking & Instagram",
+        "url": "https://ink-flows.com/features/tattoo-artist-website",
+        "datePublished": "2026-07-16",
+        "dateModified": "2026-07-16",
+        "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
+        "reviewedBy": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow" },
+        "citation": [
+          "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+          "https://developers.google.com/search/docs/appearance/google-images"
+        ]
+      }
+    ]
+  })} />
+  <SEOHead slot="head" title="Tattoo Artist Website — Portfolio, Booking & Instagram | InkFlow" description="Build a tattoo artist website with portfolio gallery, online booking, and Instagram import. Free to start at ink-flows.com/s/yourstudio. Get found on Google." appSchema={false} />
+  <FAQSchema questions={[
+    { question: "Do I need a website if I already have Instagram?", answer: "Instagram is where clients discover you, but they research on Google before booking. A website shows up in search results, displays your full portfolio, and lets clients book without leaving the page. Instagram can't do any of that." },
+    { question: "Can I build it without coding or a designer?", answer: "Yes. Claim your free page at ink-flows.com/s/yourstudio, import your Instagram, pick a theme, and you're live in minutes. No code, no designer." },
+    { question: "Will my artist website show up on Google?", answer: "Yes. Every page is server-side rendered with SEO meta tags and submitted to Google automatically via sitemap. Solo artists routinely appear for searches like 'fine line tattoo artist [city]'." },
+    { question: "Can I use my own domain name?", answer: "Yes. Pro lets you use your own independent domain — yourname.com — instead of the short link. Note this is your own domain, not a subdomain." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO ARTIST WEBSITE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">A Tattoo Artist Website That Books You While You Work</h1>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Instagram hides your best work behind an algorithm, and a link-in-bio page doesn't rank on Google. Clients who want to book you can't find a real site.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives every artist a free website with portfolio, booking, and Instagram — optimized to show up in Google search.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Claim your page in 30 seconds. Your portfolio gets indexed, and clients book directly from your site.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
+          <a href="/features/free-tattoo-website" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">How It Works</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Everything a Solo Artist Needs</h2>
+      <p class="mt-3 text-center text-gray-400">Your personal brand, your work, your bookings — one page.</p>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🎨</div>
+          <h3 class="text-white font-semibold">Portfolio Gallery</h3>
+          <p class="mt-1 text-sm text-gray-400">Import Instagram or upload your best pieces. A responsive gallery that looks sharp on every device.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📅</div>
+          <h3 class="text-white font-semibold">Online Booking</h3>
+          <p class="mt-1 text-sm text-gray-400">Clients book with name, phone, and message — you get notified instantly. No integration needed.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📸</div>
+          <h3 class="text-white font-semibold">Instagram Import</h3>
+          <p class="mt-1 text-sm text-gray-400">Enter your handle and recent posts appear automatically. Keep Instagram for reach, InkFlow for bookings.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">⭐</div>
+          <h3 class="text-white font-semibold">Reviews & Social Proof</h3>
+          <p class="mt-1 text-sm text-gray-400">Display your Google rating automatically. Build trust before clients contact you.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔗</div>
+          <h3 class="text-white font-semibold">Custom Domain (Pro)</h3>
+          <p class="mt-1 text-sm text-gray-400">Use your own independent domain — yourname.com — on Pro. Same page, your brand.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔍</div>
+          <h3 class="text-white font-semibold">Auto SEO & Sitemap</h3>
+          <p class="mt-1 text-sm text-gray-400">Every page gets Schema.org data and automatic Google submission. Built to be found.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VS LINKTREE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Your Website vs a Link-in-Bio Page</h2>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Artist Site</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Linktree / Lnk.Bio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Ranks on Google</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">External links</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 text-gray-600">External link</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Your own domain (Pro)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">✗ (subdomain only)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Do I need a website if I already have Instagram?</summary>
+          <p class="mt-2 text-sm text-gray-400">Instagram is where clients discover you, but they research on Google before booking. A website shows up in search results, displays your full portfolio, and lets clients book without leaving the page. Instagram can't do any of that.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I build it without coding or a designer?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Claim your free page at ink-flows.com/s/yourstudio, import your Instagram, pick a theme, and you're live in minutes. No code, no designer.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Will my artist website show up on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every page is server-side rendered with SEO meta tags and submitted to Google automatically via sitemap. Solo artists routinely appear for searches like "fine line tattoo artist [city]".</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use my own domain name?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Pro lets you use your own independent domain — yourname.com — instead of the short link. Note this is your own domain, not a subdomain.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Explore More</h2>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/features/tattoo-studio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Studio Website</h3><p class="mt-1 text-xs text-gray-400">For multi-artist shops</p></a>
+        <a href="/features/tattoo-portfolio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Portfolio Website</h3><p class="mt-1 text-xs text-gray-400">Showcase your work</p></a>
+        <a href="/alternatives/best-tattoo-website-builders" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Best Builders</h3><p class="mt-1 text-xs text-gray-400">Compared & ranked</p></a>
+        <a href="/blog/topic/website-builder" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">All Resources</h3><p class="mt-1 text-xs text-gray-400">Website Builder hub</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTHOR -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-sm text-gray-400">
+      <p><strong class="text-white">Written &amp; reviewed by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow — 12 years running multi-artist tattoo studios. This guide is fact-checked against artist websites InkFlow builds and hosts for 500+ studios.</p>
+      <p class="mt-2 text-xs text-gray-500">Published July 16, 2026 · Last updated July 16, 2026.</p>
+      <p class="mt-2 text-xs text-gray-500">Sources: <a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google Search Central — SEO Starter Guide</a> · <a href="https://developers.google.com/search/docs/appearance/google-images" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google — Image SEO best practices</a> · InkFlow platform data across 500+ studios (2026).</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Your Artist Website Is Waiting. Claim It Free.</h2>
+    <p class="mt-3 text-gray-400">No credit card. No designer. Live in 30 seconds.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

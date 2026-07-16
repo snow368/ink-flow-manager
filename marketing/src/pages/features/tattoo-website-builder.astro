@@ -1,0 +1,177 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "InkFlow",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Tattoo Website Builder — Built for Artists, Not Coders",
+        "url": "https://ink-flows.com/features/tattoo-website-builder",
+        "datePublished": "2026-07-16",
+        "dateModified": "2026-07-16",
+        "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
+        "reviewedBy": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow" },
+        "citation": [
+          "https://developers.google.com/search/docs/crawling-indexing/301-redirects",
+          "https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing"
+        ]
+      }
+    ]
+  })} />
+  <SEOHead slot="head" title="Tattoo Website Builder — Built for Artists, Not Coders | InkFlow" description="InkFlow is a tattoo website builder with booking, portfolio, and Google SEO built in. No drag-and-drop, no plugins — just claim your page and go live free." appSchema={false} />
+  <FAQSchema questions={[
+    { question: "How is InkFlow different from Wix or Squarespace?", answer: "Wix and Squarespace are generic builders — you assemble blocks, install plugins, and configure SEO yourself. InkFlow is tattoo-specific: booking, portfolio, and Google indexing are built in and work out of the box. You claim a page, not a blank canvas." },
+    { question: "Do I have to drag and drop anything?", answer: "No. InkFlow auto-generates your page from Google Maps data and your Instagram. You pick a theme and edit text — no layout work." },
+    { question: "Is it free?", answer: "Yes. The free plan includes your website, portfolio, booking, and Google indexing. Pro adds a custom independent domain and removes InkFlow branding." },
+    { question: "Will my site rank on Google?", answer: "Yes. Every page is server-side rendered with SEO meta and submitted to Google automatically — unlike link-in-bio pages that search engines ignore." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO WEBSITE BUILDER</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">A Tattoo Website Builder That Skips the Drag-and-Drop</h1>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Generic builders make you design from scratch, install booking and gallery plugins, and configure SEO — weeks of work before you're live.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow is built for tattoo studios. Booking, portfolio, and Google indexing are included — you claim a <a href="/features/free-tattoo-website" class="text-accent-400 hover:underline">free page</a> and go live in minutes.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> A real, Google-indexed website without learning a builder or hiring help.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
+          <a href="/alternatives/best-tattoo-website-builders" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Compare Builders</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VS GENERIC -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">InkFlow vs a Generic Builder</h2>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Wix / Squarespace</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Setup from blank canvas</td><td class="text-center py-3 pr-4 text-accent-400">✗ (pre-built)</td><td class="text-center py-3 text-gray-600">✓ required</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking built-in</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">Plugin / paid</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">✓ (Instagram import)</td><td class="text-center py-3 text-gray-600">Manual</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Tattoo SEO presets</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">Manual config</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Time to live</td><td class="text-center py-3 pr-4 text-accent-400">Minutes</td><td class="text-center py-3 text-gray-600">Days–weeks</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What's Included</h2>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Pre-Built Studio Page</h3><p class="mt-1 text-sm text-gray-400">Generated from Google Maps + your Instagram. No layout work.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Booking Form</h3><p class="mt-1 text-sm text-gray-400">Clients book on your page; you're notified instantly.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">100+ Themes</h3><p class="mt-1 text-sm text-gray-400">Switch the whole look in one click.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Auto SEO</h3><p class="mt-1 text-sm text-gray-400">Meta tags, Schema, and sitemap submission included.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Custom Domain (Pro)</h3><p class="mt-1 text-sm text-gray-400">Your own independent domain, not a subdomain.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">Free to Start</h3><p class="mt-1 text-sm text-gray-400">No credit card. Upgrade only for custom domain and branding.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How is InkFlow different from Wix or Squarespace?</summary>
+          <p class="mt-2 text-sm text-gray-400">Wix and Squarespace are generic builders — you assemble blocks, install plugins, and configure SEO yourself. InkFlow is tattoo-specific: booking, portfolio, and Google indexing are built in and work out of the box. You claim a page, not a blank canvas.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Do I have to drag and drop anything?</summary>
+          <p class="mt-2 text-sm text-gray-400">No. InkFlow auto-generates your page from Google Maps data and your Instagram. You pick a theme and edit text — no layout work.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is it free?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. The free plan includes your website, portfolio, booking, and Google indexing. Pro adds a custom independent domain and removes InkFlow branding.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Will my site rank on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every page is server-side rendered with SEO meta and submitted to Google automatically — unlike link-in-bio pages that search engines ignore.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- MIGRATION -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Moving From Wix or Squarespace to InkFlow</h2>
+      <p class="mt-4 text-gray-300"><strong class="text-white">Short answer:</strong> you keep your images and your Google history — you just stop maintaining a builder. Do it in five steps, and the one that protects your search rankings is the redirect step. Most studios are live the same day.</p>
+      <ol class="mt-8 space-y-4 list-decimal pl-6">
+        <li class="text-sm text-gray-400"><strong class="text-white">Export your images first.</strong> Download your full gallery from Wix or Squarespace before you touch anything else — your healed-work photos are the asset you can't recreate.</li>
+        <li class="text-sm text-gray-400"><strong class="text-white">Claim your InkFlow page.</strong> Search your shop; if it's pre-built from Google Maps data, just verify your email. Otherwise create it in the Website Wizard — no blank canvas.</li>
+        <li class="text-sm text-gray-400"><strong class="text-white">Re-import and re-theme.</strong> Upload the images (or connect Instagram) and pick one of 100+ themes. Booking, portfolio, and SEO presets are already wired in — nothing to configure.</li>
+        <li class="text-sm text-gray-400"><strong class="text-white">Turn on booking.</strong> Your booking form is live immediately; there's no plugin to install or paid add-on to enable the way there is on generic builders.</li>
+        <li class="text-sm text-gray-400"><strong class="text-white">Redirect your old URLs (Pro).</strong> Point your custom domain at InkFlow and set 301 redirects from old page URLs to the matching new ones. This is the step people skip — and it's why some migrations lose rankings.</li>
+      </ol>
+      <div class="mt-8 rounded-xl border border-accent-500/20 bg-accent-500/5 p-5">
+        <h3 class="text-white font-semibold text-sm">The one migration mistake that costs rankings</h3>
+        <p class="mt-2 text-sm text-gray-400">When you change platforms and don't redirect your old URLs, Google treats every old page as a dead end (404) and the ranking equity you built evaporates. A <a href="https://developers.google.com/search/docs/crawling-indexing/301-redirects" class="text-accent-400 hover:underline" target="_blank" rel="noopener">301 redirect</a> tells Google "this page moved here permanently," so your existing rankings and backlinks carry over to the new URL. Map each old URL to its closest new page before you switch DNS — never redirect everything to the homepage, which Google can treat as a soft 404.</p>
+      </div>
+      <p class="mt-6 text-sm text-gray-400">Unlike starting over, this keeps your images, your bookings, and your search history intact.</p>
+    </div>
+  </section>
+
+  <!-- RELATED -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Explore More</h2>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/features/free-tattoo-website" class="rounded-xl border border-accent-500/30 bg-accent-500/5 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Free Tattoo Website</h3><p class="mt-1 text-xs text-gray-400">Start here — your page</p></a>
+        <a href="/features/tattoo-artist-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Artist Website</h3><p class="mt-1 text-xs text-gray-400">Solo artists</p></a>
+        <a href="/features/tattoo-studio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Studio Website</h3><p class="mt-1 text-xs text-gray-400">Multi-artist</p></a>
+        <a href="/features/tattoo-portfolio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Portfolio Website</h3><p class="mt-1 text-xs text-gray-400">Showcase work</p></a>
+        <a href="/blog/topic/website-builder" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">All Resources</h3><p class="mt-1 text-xs text-gray-400">Website Builder hub</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTHOR -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-sm text-gray-400">
+      <p><strong class="text-white">Written &amp; reviewed by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow — 12 years running multi-artist tattoo studios. This guide is fact-checked against migrations InkFlow has run for studios moving off Wix and Squarespace.</p>
+      <p class="mt-2 text-xs text-gray-500">Published July 16, 2026 · Last updated July 16, 2026.</p>
+      <p class="mt-2 text-xs text-gray-500">Sources: <a href="https://developers.google.com/search/docs/crawling-indexing/301-redirects" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google Search Central — 301 redirects</a> · <a href="https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google — Mobile-first indexing</a> · InkFlow platform data across 500+ studios (2026).</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Skip the Builder. Claim Your Page.</h2>
+    <p class="mt-3 text-gray-400">Free. Live in minutes.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+  </section>
+
+  <Footer />
+</BaseLayout>
