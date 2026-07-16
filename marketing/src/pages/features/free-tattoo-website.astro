@@ -1,294 +1,296 @@
----
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import SEOHead from '../../components/SEOHead.astro';
-import Navbar from '../../components/Navbar.astro';
-import Footer from '../../components/Footer.astro';
-import FAQSchema from '../../components/FAQSchema.astro';
----
-
-<BaseLayout lastUpdated="2026-06-30" author="InkFlow Team">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "InkFlow",
-  "applicationCategory": "BusinessApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock"
-  }
-}
-</script>
-  <SEOHead slot="head" title="Free Tattoo Website Builder — Short Bio Link | InkFlow" description="Free tattoo shop website builder. Booking form, portfolio, reviews, SEO. Custom short link for your Instagram bio. Set up in 5 minutes." />
-  <FAQSchema questions={[
-    { question: "Is the free website really free? Do I need a credit card?", answer: "Yes, it's genuinely free. No credit card required. Claim your page, share your short link, and start getting bookings — no time limit, no hidden fees." },
-    { question: "I already have a website. Can I still use the short link?", answer: "Yes. Your short link at ink-flows.com/s/yourstudio works as a standalone page. You can also connect a custom domain if you prefer to use your own URL." },
-    { question: "Will my page show up on Google?", answer: "Yes. Every page is server-side rendered with SEO meta tags, Schema.org structured data, and automatically submitted for Google indexing via sitemap." },
-    { question: "I'm not tech-savvy. Can I still set this up?", answer: "Absolutely. We auto-generate your page from Google Maps data. You just claim it with your email, optionally add your Instagram handle, and share your link. That's it." },
-    { question: "How is this different from Linktree or Lnk.Bio?", answer: "Linktree and Lnk.Bio are link-in-bio pages — they're just a list of links. Your InkFlow page is a full website: portfolio gallery, booking form, reviews, Google-friendly SEO, and 100+ design themes. It's a real site, not a link aggregator." },
-    { question: "Can I add my Instagram photos?", answer: "Yes. After claiming, enter your Instagram handle and your recent posts appear automatically on your page." },
-    { question: "Can I use my own domain name?", answer: "Yes. Pro and Plus plans support custom domains. Free plan includes ink-flows.com/s/yourstudio." },
-  ]} />
-  <Navbar />
-
-  <!-- HERO -->
-  <section class="pt-24 pb-16 sm:pt-32">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-3xl text-center">
-        <p class="text-sm font-semibold text-accent-400 mb-3">FREE TATTOO SHOP WEBSITE</p>
-        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free Tattoo Shop Website + Short Link for Your Bio</h1>
-        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Most tattoo studio websites cost $500+ to build and take weeks. Link-in-bio tools like Linktree don't help you rank on Google or book clients.</p>
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives every studio a free, SEO-optimized website at ink-flows.com/s/yourstudio. 100+ themes, booking form, portfolio gallery, and client reviews — all in one page.</p>
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Claim your site in 30 seconds. Studios using InkFlow websites appear on Google search within 2-4 weeks and start receiving booking inquiries immediately.</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-4">
-          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
-          <a href="/templates" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Browse 100+ Themes</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- COMPARISON: vs Lnk.Bio / Linktree -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Not Another Link-in-Bio. A Real Website.</h2>
-      <p class="mt-3 text-center text-gray-400">Link-in-bio tools like Lnk.Bio and Linktree are link aggregators — they don't show up on Google and they don't convert. InkFlow gives you a full website with a short URL. Here's the difference:</p>
-      <div class="mt-8 overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="border-b border-ink-700">
-              <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
-              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Free Site</th>
-              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Lnk.Bio</th>
-              <th class="text-center py-3 text-gray-500 font-medium">Linktree</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">URL format</td><td class="text-center py-3 pr-4 text-accent-400 font-mono text-xs">ink-flows.com/s/studio</td><td class="text-center py-3 pr-4 text-gray-600 font-mono text-xs">lnk.bio/you</td><td class="text-center py-3 text-gray-600 font-mono text-xs">linktr.ee/you</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full website, not link list</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Google indexed (SEO)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External links</td><td class="text-center py-3 text-gray-600">External links</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External link</td><td class="text-center py-3 text-gray-600">External link</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Design themes</td><td class="text-center py-3 pr-4 text-accent-400">100+ full themes</td><td class="text-center py-3 pr-4 text-gray-600">Page-only templates</td><td class="text-center py-3 text-gray-600">Limited</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Price</td><td class="text-center py-3 pr-4 text-accent-400">Free</td><td class="text-center py-3 pr-4 text-gray-600">$9.99 lifetime</td><td class="text-center py-3 text-gray-600">$5/mo</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- USE CASES: 3 scenarios -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Three Ways Your Short Link Works for You</h2>
-      <p class="mt-3 text-center text-gray-400">Your InkFlow page isn't just another link — it's a tool that works across every channel where clients find you.</p>
-      <div class="mt-12 grid gap-8 md:grid-cols-3">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-4xl mb-4">📱</div>
-          <h3 class="text-lg font-bold text-white">Instagram Bio Link</h3>
-          <p class="mt-3 text-sm text-gray-400">Replace your Linktree or Lnk.Bio with a real website. Your short link at <span class="font-mono text-accent-400">ink-flows.com/s/studio</span> shows your portfolio, lets clients book, and builds your Google presence — all from one tap.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-4xl mb-4">📇</div>
-          <h3 class="text-lg font-bold text-white">Business Cards & Flyers</h3>
-          <p class="mt-3 text-sm text-gray-400">Short URLs are easy to remember and type. Put <span class="font-mono text-accent-400">ink-flows.com/s/studio</span> on your business cards, flyers, and window decals. No QR code needed — clients just type it.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-4xl mb-4">🔍</div>
-          <h3 class="text-lg font-bold text-white">Google Search</h3>
-          <p class="mt-3 text-sm text-gray-400">Every page is server-side rendered with SEO meta tags, Schema.org structured data, and auto-submitted to Google via sitemap. When someone searches "tattoo shop in [your city]", your page can show up. Pair your website with <a href="/features/tattoo-marketing-automation" class="text-accent-400 hover:underline">InkFlow's tattoo marketing automation for email campaigns, SMS, and re-engagement sequences</a>.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FEATURES -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Everything Included in Your Free Page</h2>
-      <p class="mt-3 text-center text-gray-400">Not just a link — a complete shop presence that works for you.</p>
-      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">🎨</div>
-          <h3 class="text-white font-semibold">100+ Design Themes</h3>
-          <p class="mt-1 text-sm text-gray-400">From Minimal to Gothic, Brutalist to Watercolor. Each theme is a complete design with matching colors, fonts, and layout. Switch anytime — your content stays.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">🖼️</div>
-          <h3 class="text-white font-semibold">Portfolio Gallery</h3>
-          <p class="mt-1 text-sm text-gray-400">Auto-import from Instagram or upload your own. Your best work displayed in a responsive gallery that looks great on mobile and desktop.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">📅</div>
-          <h3 class="text-white font-semibold">Online Booking Form</h3>
-          <p class="mt-1 text-sm text-gray-400">Clients fill in their name, phone, and message — you get notified instantly. No integration needed, works out of the box.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">⭐</div>
-          <h3 class="text-white font-semibold">Reviews & Social Proof</h3>
-          <p class="mt-1 text-sm text-gray-400">Display your Google rating and review count automatically. Build trust before clients even contact you.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">🔗</div>
-          <h3 class="text-white font-semibold">Custom Domain (Pro)</h3>
-          <p class="mt-1 text-sm text-gray-400">On Pro and Plus plans, use your own domain — <span class="font-mono text-xs">yourstudio.com</span> — instead of the short link. Same page, your brand.</p>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
-          <div class="text-2xl mb-2">📊</div>
-          <h3 class="text-white font-semibold">Auto SEO & Sitemap</h3>
-          <p class="mt-1 text-sm text-gray-400">Every page gets Schema.org structured data, SEO meta tags, and automatic sitemap submission. Your page is built to be found.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TEMPLATE PREVIEW -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Pick Your Style — 100+ Themes to Choose From</h2>
-      <p class="mt-3 text-center text-gray-400 mb-10">Every theme is a complete look. Switch anytime for free.</p>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <div class="rounded-xl border border-ink-700 bg-white p-4 text-center">
-          <div class="h-24 rounded-lg bg-gray-100 flex items-center justify-center text-ink-950 font-bold text-xs">Minimal</div>
-          <p class="mt-2 text-xs font-semibold text-ink-950">Minimal</p>
-          <span class="text-[10px] text-gray-400">Free</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-[#f5f0e8] p-4 text-center">
-          <div class="h-24 rounded-lg bg-[#e8e0d0] flex items-center justify-center text-amber-900 font-bold text-xs">Vintage</div>
-          <p class="mt-2 text-xs font-semibold text-amber-900">Vintage</p>
-          <span class="text-[10px] text-gray-400">Free</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-[#0d0d0d] p-4 text-center">
-          <div class="h-24 rounded-lg bg-[#1a1a1a] flex items-center justify-center text-yellow-600 font-bold text-xs">Moody</div>
-          <p class="mt-2 text-xs font-semibold text-white">Moody</p>
-          <span class="text-[10px] text-gray-400">Free</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-[#0a0a0a] p-4 text-center">
-          <div class="h-24 rounded-lg bg-[#0d0d0d] flex items-center justify-center text-white font-bold text-xs">Brutalist</div>
-          <p class="mt-2 text-xs font-semibold text-white">Brutalist</p>
-          <span class="text-[10px] text-accent-400">Pro</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-[#f8f8f8] p-4 text-center">
-          <div class="h-24 rounded-lg bg-gray-100 flex items-center justify-center text-amber-800 font-bold text-xs">Studio</div>
-          <p class="mt-2 text-xs font-semibold text-ink-950">Studio</p>
-          <span class="text-[10px] text-accent-400">Pro</span>
-        </div>
-        <div class="rounded-xl border border-ink-700 bg-[#0a0a0a] p-4 text-center">
-          <div class="h-24 rounded-lg bg-[#0d0d0d] flex items-center justify-center text-purple-400 font-bold text-xs">Gothic</div>
-          <p class="mt-2 text-xs font-semibold text-white">Gothic</p>
-          <span class="text-[10px] text-accent-400">Plus</span>
-        </div>
-      </div>
-      <div class="text-center mt-8">
-        <a href="/templates" class="inline-block rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800 transition-all">Browse All 100+ Themes →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS: 3 steps -->
-  <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Get Your Page Live in 30 Seconds</h2>
-      <p class="mt-3 text-center text-gray-400 mb-12">We already have your shop info from Google Maps. You just claim it.</p>
-      <div class="grid gap-8 md:grid-cols-3">
-        <div class="text-center">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">1</div>
-          <h3 class="mt-4 text-lg font-bold text-white">Search Your Shop</h3>
-          <p class="mt-2 text-sm text-gray-400">We've already built pages for thousands of tattoo shops from Google Maps data. Yours is probably ready.</p>
-        </div>
-        <div class="text-center">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">2</div>
-          <h3 class="mt-4 text-lg font-bold text-white">Claim With Your Email</h3>
-          <p class="mt-2 text-sm text-gray-400">Enter your email, get a verification code, and the page is yours. Edit your bio, add your Instagram, pick a theme.</p>
-        </div>
-        <div class="text-center">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">3</div>
-          <h3 class="mt-4 text-lg font-bold text-white">Share Your Short Link</h3>
-          <p class="mt-2 text-sm text-gray-400">Put <span class="font-mono text-accent-400">ink-flows.com/s/yourstudio</span> in your Instagram bio, business cards, and Google Business profile. Done.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WHAT PEOPLE ASK -->
-  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
-      <div class="space-y-4">
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">Is the free website really free? Do I need a credit card?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes, it's genuinely free. No credit card required. Claim your page, share your short link, and start getting bookings — no time limit, no hidden fees. We make money when you upgrade to Pro for custom domains and advanced features, but the free page is yours to keep.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">I already have a website. Can I still use the short link?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes. Your short link at <span class="font-mono text-xs">ink-flows.com/s/yourstudio</span> works as a standalone page — perfect for Instagram bio, business cards, or Google Business. You can also connect a custom domain if you prefer your own URL.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">Will my page show up on Google?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes. Every page is server-side rendered with full SEO meta tags, Schema.org structured data, and automatically submitted for Google indexing via sitemap. Unlike link-in-bio pages that are invisible to search engines, your InkFlow page is built to rank.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">I'm not tech-savvy. Can I still set this up?</summary>
-          <p class="mt-2 text-sm text-gray-400">Absolutely. We auto-generate your page from Google Maps data. You just claim it with your email, optionally add your Instagram handle, and share your link. No coding, no design skills, no setup — it takes 30 seconds.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">How is this different from Linktree or Lnk.Bio?</summary>
-          <p class="mt-2 text-sm text-gray-400">Linktree and Lnk.Bio are link-in-bio pages — they display a list of buttons that open other apps or sites. They don't show up in Google search results. Your InkFlow page is a full website: portfolio gallery, booking form, Google reviews, SEO optimization, and 100+ complete design themes. It's a real website that works as a short link — not a link aggregator. <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">See the full comparison →</a></p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">Can I add my Instagram photos?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes. After you claim your page, enter your Instagram handle in the management panel. Your recent posts appear automatically in a gallery on your page. You can also upload photos directly.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">Can I use my own domain name?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes. Pro and Plus plans support custom domains — use <span class="font-mono text-xs">yourstudio.com</span> instead of the short link. Same page, your brand. Free plan includes the short link at <span class="font-mono text-xs">ink-flows.com/s/yourstudio</span> at no cost.</p>
-        </details>
-        <details class="rounded-xl border border-ink-800 p-4">
-          <summary class="cursor-pointer text-sm font-medium text-white">My shop isn't on Google Maps yet. Can I still get a page?</summary>
-          <p class="mt-2 text-sm text-gray-400">Yes. Sign up for InkFlow and use the Website Wizard to create your page from scratch. Choose your theme, upload your photos, and get your short link in minutes.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="border-t border-ink-800/50 py-16 text-center">
-    <h2 class="text-2xl font-bold text-white">Your Shop Page Is Waiting. Claim It Free.</h2>
-    <p class="mt-3 text-gray-400">No credit card. No time limit. No tech skills needed.</p>
-    <div class="mt-6 inline-block rounded-xl border border-ink-700 bg-ink-900/50 px-6 py-4">
-      <p class="text-sm text-gray-400">Your link would be: <span class="font-mono text-accent-400 font-semibold">ink-flows.com/s/</span><span class="font-mono text-white font-semibold">yourstudio</span></p>
-    </div>
-    <div class="mt-6">
-      <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
-    </div>
-    <p class="mt-4 text-sm text-gray-600">Also available: <a href="
-  <!-- INDUSTRY DATA -->
-  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Free Tattoo Studio Website — What to Expect</h2>
-      <div class="mt-10 grid gap-6 sm:grid-cols-3">
-        
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">5 min</div>
-          <div class="mt-2 text-sm text-gray-400">Average setup time for a complete studio website (InkFlow)</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">87%</div>
-          <div class="mt-2 text-sm text-gray-400">Of clients check a studio website before booking (survey)</div>
-        </div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">100+</div>
-          <div class="mt-2 text-sm text-gray-400">Themes and layouts included</div>
-        </div>
-      </div>
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
-    </div>
-  </section>/pricing" class="text-accent-400 hover:underline">Compare plans</a> · <a href="/templates" class="text-accent-400 hover:underline">Browse themes</a> · <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">All features</a></p>
-  </section>
-
-  <Footer />
-</BaseLayout>
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-06-30" author="InkFlow Team">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InkFlow",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock"
+  }
+}
+</script>
+  <SEOHead slot="head" title="Free Tattoo Website Builder — Short Bio Link | InkFlow" description="Free tattoo shop website builder. Booking form, portfolio, reviews, SEO. Custom short link for your Instagram bio. Set up in 5 minutes." />
+  <FAQSchema questions={[
+    { question: "Is the free website really free? Do I need a credit card?", answer: "Yes, it's genuinely free. No credit card required. Claim your page, share your short link, and start getting bookings — no time limit, no hidden fees." },
+    { question: "I already have a website. Can I still use the short link?", answer: "Yes. Your short link at ink-flows.com/s/yourstudio works as a standalone page. You can also connect a custom domain if you prefer to use your own URL." },
+    { question: "Will my page show up on Google?", answer: "Yes. Every page is server-side rendered with SEO meta tags, Schema.org structured data, and automatically submitted for Google indexing via sitemap." },
+    { question: "I'm not tech-savvy. Can I still set this up?", answer: "Absolutely. We auto-generate your page from Google Maps data. You just claim it with your email, optionally add your Instagram handle, and share your link. That's it." },
+    { question: "How is this different from Linktree or Lnk.Bio?", answer: "Linktree and Lnk.Bio are link-in-bio pages — they're just a list of links. Your InkFlow page is a full website: portfolio gallery, booking form, reviews, Google-friendly SEO, and 100+ design themes. It's a real site, not a link aggregator." },
+    { question: "Can I add my Instagram photos?", answer: "Yes. After claiming, enter your Instagram handle and your recent posts appear automatically on your page." },
+    { question: "Can I use my own domain name?", answer: "Yes. Pro and Plus plans support custom domains. Free plan includes ink-flows.com/s/yourstudio." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-sm font-semibold text-accent-400 mb-3">FREE TATTOO SHOP WEBSITE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free Tattoo Shop Website + Short Link for Your Bio</h1>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Most tattoo studio websites cost $500+ to build and take weeks. Link-in-bio tools like Linktree don't help you rank on Google or book clients.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives every studio a free, SEO-optimized website at ink-flows.com/s/yourstudio. 100+ themes, booking form, portfolio gallery, and client reviews — all in one page.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Claim your site in 30 seconds. Studios using InkFlow websites appear on Google search within 2-4 weeks and start receiving booking inquiries immediately.</p>
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
+          <a href="/templates" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">Browse 100+ Themes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON: vs Lnk.Bio / Linktree -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Not Another Link-in-Bio. A Real Website.</h2>
+      <p class="mt-3 text-center text-gray-400">Link-in-bio tools like Lnk.Bio and Linktree are link aggregators — they don't show up on Google and they don't convert. InkFlow gives you a full website with a short URL. Here's the difference:</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Free Site</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Lnk.Bio</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Linktree</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">URL format</td><td class="text-center py-3 pr-4 text-accent-400 font-mono text-xs">ink-flows.com/s/studio</td><td class="text-center py-3 pr-4 text-gray-600 font-mono text-xs">lnk.bio/you</td><td class="text-center py-3 text-gray-600 font-mono text-xs">linktr.ee/you</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full website, not link list</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Google indexed (SEO)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External links</td><td class="text-center py-3 text-gray-600">External links</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External link</td><td class="text-center py-3 text-gray-600">External link</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Design themes</td><td class="text-center py-3 pr-4 text-accent-400">100+ full themes</td><td class="text-center py-3 pr-4 text-gray-600">Page-only templates</td><td class="text-center py-3 text-gray-600">Limited</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Price</td><td class="text-center py-3 pr-4 text-accent-400">Free</td><td class="text-center py-3 pr-4 text-gray-600">$9.99 lifetime</td><td class="text-center py-3 text-gray-600">$5/mo</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES: 3 scenarios -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Three Ways Your Short Link Works for You</h2>
+      <p class="mt-3 text-center text-gray-400">Your InkFlow page isn't just another link — it's a tool that works across every channel where clients find you.</p>
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-4xl mb-4">📱</div>
+          <h3 class="text-lg font-bold text-white">Instagram Bio Link</h3>
+          <p class="mt-3 text-sm text-gray-400">Replace your Linktree or Lnk.Bio with a real website. Your short link at <span class="font-mono text-accent-400">ink-flows.com/s/studio</span> shows your portfolio, lets clients book, and builds your Google presence — all from one tap.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-4xl mb-4">📇</div>
+          <h3 class="text-lg font-bold text-white">Business Cards & Flyers</h3>
+          <p class="mt-3 text-sm text-gray-400">Short URLs are easy to remember and type. Put <span class="font-mono text-accent-400">ink-flows.com/s/studio</span> on your business cards, flyers, and window decals. No QR code needed — clients just type it.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-4xl mb-4">🔍</div>
+          <h3 class="text-lg font-bold text-white">Google Search</h3>
+          <p class="mt-3 text-sm text-gray-400">Every page is server-side rendered with SEO meta tags, Schema.org structured data, and auto-submitted to Google via sitemap. When someone searches "tattoo shop in [your city]", your page can show up. Pair your website with <a href="/features/tattoo-marketing-automation" class="text-accent-400 hover:underline">InkFlow's tattoo marketing automation for email campaigns, SMS, and re-engagement sequences</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Everything Included in Your Free Page</h2>
+      <p class="mt-3 text-center text-gray-400">Not just a link — a complete shop presence that works for you.</p>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🎨</div>
+          <h3 class="text-white font-semibold">100+ Design Themes</h3>
+          <p class="mt-1 text-sm text-gray-400">From Minimal to Gothic, Brutalist to Watercolor. Each theme is a complete design with matching colors, fonts, and layout. Switch anytime — your content stays.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🖼️</div>
+          <h3 class="text-white font-semibold">Portfolio Gallery</h3>
+          <p class="mt-1 text-sm text-gray-400">Auto-import from Instagram or upload your own. Your best work displayed in a responsive gallery that looks great on mobile and desktop.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📅</div>
+          <h3 class="text-white font-semibold">Online Booking Form</h3>
+          <p class="mt-1 text-sm text-gray-400">Clients fill in their name, phone, and message — you get notified instantly. No integration needed, works out of the box.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">⭐</div>
+          <h3 class="text-white font-semibold">Reviews & Social Proof</h3>
+          <p class="mt-1 text-sm text-gray-400">Display your Google rating and review count automatically. Build trust before clients even contact you.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔗</div>
+          <h3 class="text-white font-semibold">Custom Domain (Pro)</h3>
+          <p class="mt-1 text-sm text-gray-400">On Pro and Plus plans, use your own domain — <span class="font-mono text-xs">yourstudio.com</span> — instead of the short link. Same page, your brand.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📊</div>
+          <h3 class="text-white font-semibold">Auto SEO & Sitemap</h3>
+          <p class="mt-1 text-sm text-gray-400">Every page gets Schema.org structured data, SEO meta tags, and automatic sitemap submission. Your page is built to be found.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATE PREVIEW -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Pick Your Style — 100+ Themes to Choose From</h2>
+      <p class="mt-3 text-center text-gray-400 mb-10">Every theme is a complete look. Switch anytime for free.</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="rounded-xl border border-ink-700 bg-white p-4 text-center">
+          <div class="h-24 rounded-lg bg-gray-100 flex items-center justify-center text-ink-950 font-bold text-xs">Minimal</div>
+          <p class="mt-2 text-xs font-semibold text-ink-950">Minimal</p>
+          <span class="text-[10px] text-gray-400">Free</span>
+        </div>
+        <div class="rounded-xl border border-ink-700 bg-[#f5f0e8] p-4 text-center">
+          <div class="h-24 rounded-lg bg-[#e8e0d0] flex items-center justify-center text-amber-900 font-bold text-xs">Vintage</div>
+          <p class="mt-2 text-xs font-semibold text-amber-900">Vintage</p>
+          <span class="text-[10px] text-gray-400">Free</span>
+        </div>
+        <div class="rounded-xl border border-ink-700 bg-[#0d0d0d] p-4 text-center">
+          <div class="h-24 rounded-lg bg-[#1a1a1a] flex items-center justify-center text-yellow-600 font-bold text-xs">Moody</div>
+          <p class="mt-2 text-xs font-semibold text-white">Moody</p>
+          <span class="text-[10px] text-gray-400">Free</span>
+        </div>
+        <div class="rounded-xl border border-ink-700 bg-[#0a0a0a] p-4 text-center">
+          <div class="h-24 rounded-lg bg-[#0d0d0d] flex items-center justify-center text-white font-bold text-xs">Brutalist</div>
+          <p class="mt-2 text-xs font-semibold text-white">Brutalist</p>
+          <span class="text-[10px] text-accent-400">Pro</span>
+        </div>
+        <div class="rounded-xl border border-ink-700 bg-[#f8f8f8] p-4 text-center">
+          <div class="h-24 rounded-lg bg-gray-100 flex items-center justify-center text-amber-800 font-bold text-xs">Studio</div>
+          <p class="mt-2 text-xs font-semibold text-ink-950">Studio</p>
+          <span class="text-[10px] text-accent-400">Pro</span>
+        </div>
+        <div class="rounded-xl border border-ink-700 bg-[#0a0a0a] p-4 text-center">
+          <div class="h-24 rounded-lg bg-[#0d0d0d] flex items-center justify-center text-purple-400 font-bold text-xs">Gothic</div>
+          <p class="mt-2 text-xs font-semibold text-white">Gothic</p>
+          <span class="text-[10px] text-accent-400">Plus</span>
+        </div>
+      </div>
+      <div class="text-center mt-8">
+        <a href="/templates" class="inline-block rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800 transition-all">Browse All 100+ Themes →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS: 3 steps -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Get Your Page Live in 30 Seconds</h2>
+      <p class="mt-3 text-center text-gray-400 mb-12">We already have your shop info from Google Maps. You just claim it.</p>
+      <div class="grid gap-8 md:grid-cols-3">
+        <div class="text-center">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">1</div>
+          <h3 class="mt-4 text-lg font-bold text-white">Search Your Shop</h3>
+          <p class="mt-2 text-sm text-gray-400">We've already built pages for thousands of tattoo shops from Google Maps data. Yours is probably ready.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">2</div>
+          <h3 class="mt-4 text-lg font-bold text-white">Claim With Your Email</h3>
+          <p class="mt-2 text-sm text-gray-400">Enter your email, get a verification code, and the page is yours. Edit your bio, add your Instagram, pick a theme.</p>
+        </div>
+        <div class="text-center">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/20 text-xl font-bold text-accent-400">3</div>
+          <h3 class="mt-4 text-lg font-bold text-white">Share Your Short Link</h3>
+          <p class="mt-2 text-sm text-gray-400">Put <span class="font-mono text-accent-400">ink-flows.com/s/yourstudio</span> in your Instagram bio, business cards, and Google Business profile. Done.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT PEOPLE ASK -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is the free website really free? Do I need a credit card?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes, it's genuinely free. No credit card required. Claim your page, share your short link, and start getting bookings — no time limit, no hidden fees. We make money when you upgrade to Pro for custom domains and advanced features, but the free page is yours to keep.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">I already have a website. Can I still use the short link?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Your short link at <span class="font-mono text-xs">ink-flows.com/s/yourstudio</span> works as a standalone page — perfect for Instagram bio, business cards, or Google Business. You can also connect a custom domain if you prefer your own URL.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Will my page show up on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every page is server-side rendered with full SEO meta tags, Schema.org structured data, and automatically submitted for Google indexing via sitemap. Unlike link-in-bio pages that are invisible to search engines, your InkFlow page is built to rank.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">I'm not tech-savvy. Can I still set this up?</summary>
+          <p class="mt-2 text-sm text-gray-400">Absolutely. We auto-generate your page from Google Maps data. You just claim it with your email, optionally add your Instagram handle, and share your link. No coding, no design skills, no setup — it takes 30 seconds.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How is this different from Linktree or Lnk.Bio?</summary>
+          <p class="mt-2 text-sm text-gray-400">Linktree and Lnk.Bio are link-in-bio pages — they display a list of buttons that open other apps or sites. They don't show up in Google search results. Your InkFlow page is a full website: portfolio gallery, booking form, Google reviews, SEO optimization, and 100+ complete design themes. It's a real website that works as a short link — not a link aggregator. <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">See the full comparison →</a></p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I add my Instagram photos?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. After you claim your page, enter your Instagram handle in the management panel. Your recent posts appear automatically in a gallery on your page. You can also upload photos directly.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use my own domain name?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Pro and Plus plans support custom domains — use <span class="font-mono text-xs">yourstudio.com</span> instead of the short link. Same page, your brand. Free plan includes the short link at <span class="font-mono text-xs">ink-flows.com/s/yourstudio</span> at no cost.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">My shop isn't on Google Maps yet. Can I still get a page?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Sign up for InkFlow and use the Website Wizard to create your page from scratch. Choose your theme, upload your photos, and get your short link in minutes.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Your Shop Page Is Waiting. Claim It Free.</h2>
+    <p class="mt-3 text-gray-400">No credit card. No time limit. No tech skills needed.</p>
+    <div class="mt-6 inline-block rounded-xl border border-ink-700 bg-ink-900/50 px-6 py-4">
+      <p class="text-sm text-gray-400">Your link would be: <span class="font-mono text-accent-400 font-semibold">ink-flows.com/s/</span><span class="font-mono text-white font-semibold">yourstudio</span></p>
+    </div>
+    <div class="mt-6">
+      <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+    </div>
+    <p class="mt-4 text-sm text-gray-600">Also available: <a href="
+  <!-- INDUSTRY DATA -->
+  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Free Tattoo Studio Website — What to Expect</h2>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">5 min</div>
+          <div class="mt-2 text-sm text-gray-400">Average setup time for a complete studio website (InkFlow)</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">87%</div>
+          <div class="mt-2 text-sm text-gray-400">Of clients check a studio website before booking (survey)</div>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+          <div class="text-3xl font-bold text-accent-400">100+</div>
+          <div class="mt-2 text-sm text-gray-400">Themes and layouts included</div>
+        </div>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+    </div>
+  </section>
+
+    <p class="mt-4 text-sm text-gray-600">Also available: <a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a> · <a href="/templates" class="text-accent-400 hover:underline">Browse themes</a> · <a href="/features/tattoo-booking-software" class="text-accent-400 hover:underline">All features</a></p>
+  </section>
+
+  <Footer />
+</BaseLayout>
