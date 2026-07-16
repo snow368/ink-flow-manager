@@ -4,6 +4,16 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://ink-flows.com',
+  // i18n routing: English at root (/pricing), Spanish under /es/ (/es/pricing).
+  // Astro auto-generates hreflang alternates in the sitemap from this config.
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'es'],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false,
+    },
+  },
   integrations: [
     tailwind(),
     sitemap({

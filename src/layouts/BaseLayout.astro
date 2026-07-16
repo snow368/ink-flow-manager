@@ -3,6 +3,8 @@ import DevGate from "../components/DevGate.astro";
 import PageSchema from "../components/PageSchema.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
 import PageMeta from "../components/PageMeta.astro";
+import { t, stripLocale } from "../i18n/utils";
+import { DEFAULT_LOCALE, type Locale } from "../i18n/config";
 
 interface BreadcrumbItem {
   label: string;
@@ -24,10 +26,14 @@ interface Props {
 
 const { breadcrumbs, pageTitle, lastUpdated, author, reviewedBy } = Astro.props as Props;
 
+const locale: Locale = (Astro.currentLocale as Locale) || DEFAULT_LOCALE;
+
 // 鑷姩浠?URL 璺緞鐢熸垚闈㈠寘灞?
 function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
-  const parts = pathname.replace(/\/$/, "").split("/").filter(Boolean);
-  const items: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+  const prefix = locale === 'es' ? '/es' : '';
+  const cleaned = stripLocale(pathname);
+  const parts = cleaned.replace(/\/$/, "").split("/").filter(Boolean);
+  const items: BreadcrumbItem[] = [{ label: t(locale, 'breadcrumb.home'), href: prefix || '/' }];
 
   let current = "";
   for (let i = 0; i < parts.length; i++) {
@@ -38,22 +44,23 @@ function autoBreadcrumbs(pathname: string, title?: string): BreadcrumbItem[] {
       : parts[i].replace(/-/g, " ");
     items.push(isLast
       ? { label: label }
-      : { label: label, href: current }
+      : { label: label, href: `${prefix}${current}` }
     );
   }
   return items;
 }
 
 const crumbs = breadcrumbs || autoBreadcrumbs(Astro.url.pathname, pageTitle);
-const showBreadcrumb = Astro.url.pathname !== "/";  // 棣栭〉涓嶆樉绀?
+const showBreadcrumb = stripLocale(Astro.url.pathname) !== "/";  // 棣栭〉涓嶆樉绀?
 
 // EEAT: 璺緞鎺掗櫎瑙勫垯 鈥?棣栭〉/瀹氫环/About 绛変笉鏄剧ず PageMeta
+const pathForMeta = stripLocale(Astro.url.pathname);
 const excludePageMeta = ["/", "/pricing", "/about", "/contact", "/privacy", "/terms", "/templates", "/blog"]
-  .some((p) => Astro.url.pathname === p || Astro.url.pathname.startsWith(p + "/"));
+  .some((p) => pathForMeta === p || pathForMeta.startsWith(p + "/"));
 const showPageMeta = !!lastUpdated && !excludePageMeta;
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

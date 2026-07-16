@@ -1,11 +1,16 @@
 ---
+import { t } from "../i18n/utils";
+import { DEFAULT_LOCALE, type Locale } from "../i18n/config";
+
+const locale: Locale = (Astro.currentLocale as Locale) || DEFAULT_LOCALE;
+const base = locale === 'es' ? '/es' : '';
 const { currentPath = '' } = Astro.props;
 ---
-
+<!-- prettier-ignore -->
 <nav class="fixed top-0 left-0 right-0 z-50 border-b border-ink-800/50 bg-ink-950/80 backdrop-blur-lg">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div class="flex h-16 items-center justify-between">
-      <a href="/" class="flex items-center gap-2 text-xl font-bold text-white">
+      <a href={`${base}/`} class="flex items-center gap-2 text-xl font-bold text-white">
         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500 text-ink-950 font-bold text-sm">IF</span>
         InkFlow
       </a>
@@ -14,57 +19,62 @@ const { currentPath = '' } = Astro.props;
       <div class="hidden md:flex items-center gap-8">
         <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
-            Features
+            {t(locale, 'nav.features')}
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </button>
           <div class="absolute top-full left-0 mt-2 w-48 rounded-lg border border-ink-800 bg-ink-900 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-            <a href="/features/tattoo-booking-software" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Booking</a>
-            <a href="/features/tattoo-payment-processing" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Deposits & Payments</a>
-            <a href="/features/tattoo-waiver-software" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Digital Waivers</a>
-            <a href="/features/tattoo-crm-software" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Client CRM</a>
-            <a href="/features/tattoo-inventory-management" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Inventory</a>
-            <a href="/features/tattoo-aftercare-software-automation" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Aftercare</a>
-            <a href="/features/free-tattoo-website" class="block px-4 py-2 text-sm text-accent-400 hover:text-white hover:bg-ink-800 font-semibold">Free Website</a>
+            <a href={`${base}/features/tattoo-booking-software`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.booking')}</a>
+            <a href={`${base}/features/tattoo-payment-processing`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.payments')}</a>
+            <a href={`${base}/features/tattoo-waiver-software`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.waivers')}</a>
+            <a href={`${base}/features/tattoo-crm-software`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.crm')}</a>
+            <a href={`${base}/features/tattoo-inventory-management`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.inventory')}</a>
+            <a href={`${base}/features/tattoo-aftercare-software-automation`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'feat.aftercare')}</a>
+            <a href={`${base}/features/free-tattoo-website`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800 font-semibold">{t(locale, 'feat.freeWebsite')}</a>
           </div>
         </div>
-        <a href="/templates" class="text-sm text-gray-300 hover:text-white transition-colors">Templates</a>
+        <a href={`${base}/templates`} class="text-sm text-gray-300 hover:text-white transition-colors">{t(locale, 'nav.templates')}</a>
         <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
-            Free Tools
+            {t(locale, 'nav.freeTools')}
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </button>
           <div class="absolute top-full left-0 mt-2 w-56 rounded-lg border border-ink-800 bg-ink-900 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-            <a href="/free-tools/no-show-calculator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">No-Show Cost Calculator</a>
-            <a href="/free-tools/tattoo-price-calculator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Tattoo Price Calculator</a>
-            <a href="/free-tools/free-waiver-generator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Free Waiver Generator</a>
-            <a href="/free-tools/aftercare-email-generator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Aftercare Email Generator</a>
-            <a href="/free-tools/tattoo-meaning-finder" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Tattoo Meaning Finder</a>
+            <a href={`${base}/free-tools/tattoo-no-show-calculator`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.noShow')}</a>
+            <a href={`${base}/free-tools/tattoo-price-calculator`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.price')}</a>
+            <a href={`${base}/free-tools/tattoo-consent-form-generator`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.waiver')}</a>
+            <a href={`${base}/free-tools/tattoo-aftercare-email-generator`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.aftercare')}</a>
+            <a href={`${base}/free-tools/tattoo-meaning-finder`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.meaning')}</a>
+            <a href={`${base}/free-tools/tattoo-commission-calculator`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'tool.commission')}</a>
           </div>
         </div>
-        <a href="/pricing" class="text-sm text-gray-300 hover:text-white transition-colors">Pricing</a>
+        <a href={`${base}/pricing`} class="text-sm text-gray-300 hover:text-white transition-colors">{t(locale, 'nav.pricing')}</a>
         <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
-            Compare
+            {t(locale, 'nav.compare')}
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </button>
           <div class="absolute top-full left-0 mt-2 w-56 rounded-lg border border-ink-800 bg-ink-900 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
-            <a href="/compare/tattoo-studio-pro" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">vs Tattoo Studio Pro</a>
-            <a href="/compare/tattoogenda" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">vs Tattoogenda</a>
-            <a href="/compare/booksy" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">vs Booksy</a>
-            <a href="/compare/vagaro" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">vs Vagaro</a>
+            <a href={`${base}/compare/tattoo-studio-pro`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.studioPro')}</a>
+            <a href={`${base}/compare/tattoogenda`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.tattoogenda')}</a>
+            <a href={`${base}/compare/booksy`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.booksy')}</a>
+            <a href={`${base}/compare/vagaro`} class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.vagaro')}</a>
           </div>
         </div>
-        <a href="/blog" class="text-sm text-gray-300 hover:text-white transition-colors">Blog</a>
+        <a href={`${base}/blog`} class="text-sm text-gray-300 hover:text-white transition-colors">{t(locale, 'nav.blog')}</a>
       </div>
 
-      <!-- Right side: mobile hamburger + CTA -->
+      <!-- Right side: language switcher + mobile hamburger + CTA -->
       <div class="flex items-center gap-3">
+        <a href={locale === 'es' ? '/' : '/es/'} class="hidden md:flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors" aria-label={t(locale, 'lang.label')}>
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m-3 8l3-3 3 3M3 11h6m4 0h4m-4-4v8"/></svg>
+          <span>{locale === 'es' ? 'EN' : 'ES'}</span>
+        </a>
         <button id="mobileMenuBtn" class="md:hidden flex items-center justify-center w-10 h-10 text-gray-300 hover:text-white" aria-label="Toggle menu">
           <svg id="menuIconOpen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
           <svg id="menuIconClose" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
         <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-5 py-2 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-colors whitespace-nowrap">
-          Start Free Trial
+          {t(locale, 'nav.startFreeTrial')}
         </a>
       </div>
     </div>
@@ -73,49 +83,53 @@ const { currentPath = '' } = Astro.props;
   <!-- Mobile menu -->
   <div id="mobileMenu" class="md:hidden hidden border-t border-ink-800/50 bg-ink-950/95 backdrop-blur-lg">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 py-4 space-y-1">
+      <a href={locale === 'es' ? '/' : '/es/'} class="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
+        {t(locale, 'lang.label')}: {locale === 'es' ? 'English' : 'Español'}
+      </a>
 
       <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
-        Features
+        {t(locale, 'nav.features')}
         <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
-        <a href="/features/tattoo-booking-software" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Booking</a>
-        <a href="/features/tattoo-payment-processing" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Deposits & Payments</a>
-        <a href="/features/tattoo-waiver-software" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Digital Waivers</a>
-        <a href="/features/tattoo-crm-software" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Client CRM</a>
-        <a href="/features/tattoo-inventory-management" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Inventory</a>
-        <a href="/features/tattoo-aftercare-software-automation" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Aftercare</a>
-        <a href="/features/free-tattoo-website" class="block rounded-lg px-3 py-2 text-sm text-accent-400 hover:text-white hover:bg-ink-800 font-semibold">Free Website</a>
+        <a href={`${base}/features/tattoo-booking-software`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.booking')}</a>
+        <a href={`${base}/features/tattoo-payment-processing`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.payments')}</a>
+        <a href={`${base}/features/tattoo-waiver-software`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.waivers')}</a>
+        <a href={`${base}/features/tattoo-crm-software`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.crm')}</a>
+        <a href={`${base}/features/tattoo-inventory-management`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.inventory')}</a>
+        <a href={`${base}/features/tattoo-aftercare-software-automation`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'feat.aftercare')}</a>
+        <a href={`${base}/features/free-tattoo-website`} class="block rounded-lg px-3 py-2 text-sm text-accent-400 hover:text-white hover:bg-ink-800 font-semibold">{t(locale, 'feat.freeWebsite')}</a>
       </div>
 
       <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
-        Free Tools
+        {t(locale, 'nav.freeTools')}
         <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
-        <a href="/free-tools/no-show-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">No-Show Cost Calculator</a>
-        <a href="/free-tools/tattoo-price-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Tattoo Price Calculator</a>
-        <a href="/free-tools/free-waiver-generator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Free Waiver Generator</a>
-        <a href="/free-tools/aftercare-email-generator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Aftercare Email Generator</a>
-        <a href="/free-tools/tattoo-meaning-finder" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Tattoo Meaning Finder</a>
+        <a href={`${base}/free-tools/tattoo-no-show-calculator`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.noShow')}</a>
+        <a href={`${base}/free-tools/tattoo-price-calculator`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.price')}</a>
+        <a href={`${base}/free-tools/tattoo-consent-form-generator`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.waiver')}</a>
+        <a href={`${base}/free-tools/tattoo-aftercare-email-generator`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.aftercare')}</a>
+        <a href={`${base}/free-tools/tattoo-meaning-finder`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.meaning')}</a>
+        <a href={`${base}/free-tools/tattoo-commission-calculator`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'tool.commission')}</a>
       </div>
 
-      <a href="/pricing" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Pricing</a>
+      <a href={`${base}/pricing`} class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">{t(locale, 'nav.pricing')}</a>
 
       <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
-        Compare
+        {t(locale, 'nav.compare')}
         <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
-        <a href="/compare/tattoo-studio-pro" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Tattoo Studio Pro</a>
-        <a href="/compare/tattoogenda" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Tattoogenda</a>
-        <a href="/compare/booksy" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Booksy</a>
-        <a href="/compare/vagaro" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">vs Vagaro</a>
+        <a href={`${base}/compare/tattoo-studio-pro`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.studioPro')}</a>
+        <a href={`${base}/compare/tattoogenda`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.tattoogenda')}</a>
+        <a href={`${base}/compare/booksy`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.booksy')}</a>
+        <a href={`${base}/compare/vagaro`} class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">{t(locale, 'cmp.vagaro')}</a>
       </div>
 
-      <a href="/blog" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Blog</a>
+      <a href={`${base}/blog`} class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">{t(locale, 'nav.blog')}</a>
       <hr class="border-ink-800 my-2">
-      <a href="https://app.ink-flows.com/login" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Sign In</a>
+      <a href="https://app.ink-flows.com/login" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">{t(locale, 'nav.signIn')}</a>
     </div>
   </div>
 </nav>

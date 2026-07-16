@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SEOHead from '../../../components/SEOHead.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <SEOHead slot="head" title="Tattoo Website Builder — Resources & Guides | InkFlow" description="Everything your studio needs to build a tattoo website that ranks on Google: how-to guides, design ideas, portfolio examples, and the best builders compared." appSchema={false} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Tattoo Website Builder — Resource Collection",
+    "description": "Guides, templates, and tools to build a tattoo artist or studio website that gets found on Google.",
+    "url": "https://ink-flows.com/blog/topic/website-builder/",
+    "isPartOf": { "@type": "WebSite", "name": "InkFlow", "url": "https://ink-flows.com" }
+  })} />
+
+  <section class="pt-24 pb-12 sm:pt-32">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-sm font-semibold text-accent-400 mb-3">TOPIC CLUSTER</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Website Builder — Complete Resource Collection</h1>
+      <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Everything your studio needs to get a real website that ranks on Google — from free setup to design inspiration.</p>
+    </div>
+  </section>
+
+  <!-- Pillar: Free Tattoo Website -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-8">
+        <h2 class="text-2xl font-bold text-white">Free Tattoo Website + Short Link</h2>
+        <p class="mt-3 text-gray-400">The fastest way to get online: a free, SEO-optimized website at ink-flows.com/s/yourstudio with 100+ themes, booking form, portfolio gallery, and client reviews. Optional custom domain on Pro.</p>
+        <a href="/features/free-tattoo-website" class="mt-6 inline-block rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">Get Your Free Page →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resource Grid -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white mb-2">All Website Builder Resources</h2>
+      <p class="text-sm text-gray-400 mb-8">How-to guides, design inspiration, and the best builders compared.</p>
+      <div class="grid gap-6 md:grid-cols-2">
+        <a href="/blog/how-to-make-a-tattoo-website" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">How to Make a Tattoo Website (Free)</h3>
+          <p class="mt-2 text-sm text-gray-400">Step-by-step: launch a tattoo artist or studio website in 30 minutes — no code.</p>
+          <p class="mt-3 text-xs text-gray-500">Blog · July 16, 2026</p>
+        </a>
+        <a href="/blog/tattoo-website-design-ideas" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Tattoo Website Design Ideas</h3>
+          <p class="mt-2 text-sm text-gray-400">Theme inspiration and layout patterns that convert visitors into bookings.</p>
+          <p class="mt-3 text-xs text-gray-500">Blog · July 16, 2026</p>
+        </a>
+        <a href="/blog/tattoo-portfolio-website-examples" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Tattoo Portfolio Website Examples</h3>
+          <p class="mt-2 text-sm text-gray-400">Real portfolio sites done right — what works and how to stand out.</p>
+          <p class="mt-3 text-xs text-gray-500">Blog · July 16, 2026</p>
+        </a>
+        <a href="/features/tattoo-artist-website" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Tattoo Artist Website</h3>
+          <p class="mt-2 text-sm text-gray-400">A personal brand site with portfolio, booking, and Instagram built for solo artists.</p>
+          <p class="mt-3 text-xs text-gray-500">Feature · Free</p>
+        </a>
+        <a href="/features/tattoo-studio-website" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Tattoo Studio Website</h3>
+          <p class="mt-2 text-sm text-gray-400">Multi-artist scheduling, location info, and team portfolios on one page.</p>
+          <p class="mt-3 text-xs text-gray-500">Feature · Free</p>
+        </a>
+        <a href="/features/tattoo-portfolio-website" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Tattoo Portfolio Website</h3>
+          <p class="mt-2 text-sm text-gray-400">Showcase your best work in a gallery that gets found on Google.</p>
+          <p class="mt-3 text-xs text-gray-500">Feature · Free</p>
+        </a>
+        <a href="/alternatives/best-tattoo-website-builders" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">Best Website Builders for Tattoo Artists</h3>
+          <p class="mt-2 text-sm text-gray-400">5 builders ranked and reviewed — find the right fit for your studio.</p>
+          <p class="mt-3 text-xs text-gray-500">Comparison · Updated 2026</p>
+        </a>
+        <a href="/features/tattoo-website-builder" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">InkFlow Website Builder</h3>
+          <p class="mt-2 text-sm text-gray-400">Why a tattoo-specific builder beats a generic drag-and-drop tool.</p>
+          <p class="mt-3 text-xs text-gray-500">Feature · Free</p>
+        </a>
+        <a href="/templates" class="group rounded-xl border border-ink-800 bg-ink-900/30 p-6 hover:border-accent-500/30 transition-all">
+          <h3 class="text-lg font-semibold text-white group-hover:text-accent-300 transition-colors">100+ Themes</h3>
+          <p class="mt-2 text-sm text-gray-400">Browse complete design themes you can apply in one click.</p>
+          <p class="mt-3 text-xs text-gray-500">Templates · Free</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Build Your Tattoo Website Free</h2>
+    <p class="mt-3 text-gray-400 max-w-xl mx-auto">Claim your page at ink-flows.com/s/yourstudio. No credit card, no designer needed.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

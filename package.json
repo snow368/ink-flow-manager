@@ -8,7 +8,9 @@
     "build:prod": "astro build",
     "preview": "astro preview",
     "submit-indexnow": "node scripts/submit-indexnow.mjs",
-    "deploy": "wrangler pages deploy dist --project-name ink-flow && npm run submit-indexnow"
+    "i18n:extract": "node scripts/extract-strings.mjs",
+    "i18n:build": "astro build && node scripts/build-es.mjs",
+    "deploy": "npm run i18n:build && wrangler pages deploy dist --project-name ink-flow && npm run submit-indexnow"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.0.0",
