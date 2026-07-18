@@ -3,10 +3,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
 <BaseLayout>
   <SEOHead slot="head" title="Best Tattoo Studio Software 2026 — Top 5 Compared" description="We compared the best tattoo studio software: InkFlow vs Booksy vs Vagaro vs DaySmart vs Tattoo Studio Pro. Features, pricing, and who should use what." />
+  <FAQSchema questions={[
+    { question: "What is the best tattoo studio software for solo artists?", answer: "InkFlow (free plan) or Goldie. Both offer booking, deposits, and reminders at $0/month." },
+    { question: "Which platform has the best tattoo waiver features?", answer: "InkFlow and DaySmart Body Art both include built-in digital waivers." },
+    { question: "Is free tattoo studio software any good?", answer: "Yes — InkFlow's free plan includes booking, waivers, CRM, and reminders at $0/month." },
+  ]} />
   <Navbar />
 
   <section class="pt-24 pb-16 sm:pt-32">

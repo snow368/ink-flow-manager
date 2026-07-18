@@ -57,6 +57,100 @@ import FAQSchema from '../../components/FAQSchema.astro';
     </div>
   </section>
 
+  <!-- Editorial Scorecard -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">How They Score for Tattoo Studios</h2>
+      <p class="mt-2 max-w-3xl text-sm text-gray-400">Our editorial ratings across the five areas that matter most to a tattoo studio. Methodology note is below the table.</p>
+      <div class="mt-6 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-ink-800 bg-ink-900/50">
+              <th class="p-4 text-left font-semibold text-white w-2/5">Category</th>
+              <th class="p-4 text-center font-semibold text-accent-400">InkFlow</th>
+              <th class="p-4 text-center font-semibold text-gray-400">Tattoo Studio Pro</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-800/50">
+            {[
+              { c: 'Tattoo-specific features', i: 5.0, t: 4.3 },
+              { c: 'Pricing & value', i: 4.8, t: 3.6 },
+              { c: 'Automation (aftercare)', i: 4.9, t: 2.5 },
+              { c: 'Enterprise scaling (25+ artists)', i: 4.2, t: 4.7 },
+              { c: 'Ease of getting started', i: 4.8, t: 3.5 },
+            ].map(row => (
+              <tr class="hover:bg-ink-900/30 transition-colors">
+                <td class="p-4 text-gray-300 font-medium">{row.c}</td>
+                <td class="p-4 text-center"><span class="font-semibold text-accent-300">{row.i.toFixed(1)}</span><span class="text-gray-600"> / 5</span></td>
+                <td class="p-4 text-center"><span class="font-semibold text-gray-400">{row.t.toFixed(1)}</span><span class="text-gray-600"> / 5</span></td>
+              </tr>
+            ))}
+            <tr class="bg-ink-900/40 font-semibold">
+              <td class="p-4 text-white">Overall</td>
+              <td class="p-4 text-center text-accent-300">4.7 / 5</td>
+              <td class="p-4 text-center text-gray-400">3.7 / 5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-gray-500"><strong class="text-gray-400">Rating methodology:</strong> Scores reflect InkFlow's editorial assessment of each platform's publicly listed features and pricing as of July 2026, weighted for tattoo-studio needs. They are our own analysis — not third-party review aggregates. Verify current features on each vendor's site before deciding.</p>
+    </div>
+  </section>
+
+  <!-- Pros & Cons -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Tattoo Studio Pro: Pros & Cons</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-accent-400">What Tattoo Studio Pro does well</h3>
+          <ul class="mt-4 space-y-3 text-sm text-gray-300">
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Purpose-built for tattoo studios, with waivers included.</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Enterprise "Legion" tier designed for studios with 25+ artists.</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Commission splitting and deposit collection out of the box.</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Established platform with a track record among large shops.</span></li>
+          </ul>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-400">Where it falls short</h3>
+          <ul class="mt-4 space-y-3 text-sm text-gray-300">
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>No aftercare automation to bring clients back.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>No free-forever plan — only a 30-day trial.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>English only; no multi-language support.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>Limited SMS reminders vs InkFlow's unlimited.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Which One Is Right for You?</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
+          <h3 class="text-lg font-bold text-accent-300">Choose InkFlow if…</h3>
+          <ul class="mt-4 space-y-2 text-sm text-gray-300">
+            <li>• You're a solo artist or small-to-mid studio watching costs.</li>
+            <li>• You want aftercare automation to drive repeat bookings.</li>
+            <li>• You'd rather start free than commit to a 30-day trial.</li>
+            <li>• You need multi-language support for your clients.</li>
+          </ul>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-gray-300">Choose Tattoo Studio Pro if…</h3>
+          <ul class="mt-4 space-y-2 text-sm text-gray-300">
+            <li>• You run a large studio with 25+ artists needing enterprise scaling.</li>
+            <li>• Its Legion tier's advanced controls justify the premium.</li>
+            <li>• Aftercare automation isn't a priority for your shop.</li>
+            <li>• English-only, US-focused operation fits your needs.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="border-t border-ink-800/50 py-12 text-center">
     <h2 class="text-2xl font-bold text-white">Try InkFlow Free</h2>
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free Trial</a>
@@ -79,6 +173,28 @@ import FAQSchema from '../../components/FAQSchema.astro';
         <li><a href="/compare/tattoogenda" class="text-accent-400 hover:underline font-medium">Tattoo Studio Pro vs Tattoogenda</a> — enterprise vs EU-focused.</li>
         <li><a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline font-medium">Best Tattoo Studio Software in 2026</a> — the full landscape.</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+      <div class="mt-6 space-y-3">
+        {[
+          { q: "What is Tattoo Studio Pro?", a: "Tattoo Studio Pro is a tattoo-studio management platform with enterprise plans (its Legion tier) aimed at studios with 25+ artists. It includes booking, waivers, and commission splitting." },
+          { q: "How does Tattoo Studio Pro compare to Booksy?", a: "Tattoo Studio Pro is built for larger studios and offers enterprise scaling, while Booksy is a general salon-booking marketplace. Neither includes aftercare automation, which InkFlow provides out of the box. See our Booksy vs Tattoo Studio Pro breakdown." },
+          { q: "How much does Tattoo Studio Pro cost?", a: "Tattoo Studio Pro starts at $29/mo, while InkFlow starts at $0/mo with waivers and aftercare automation included. Tattoo Studio Pro's enterprise Legion plan costs more for 25+ artist scaling." },
+        ].map(item => (
+          <details class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+            <summary class="flex cursor-pointer items-center justify-between text-base font-semibold text-white marker:content-none">
+              {item.q}
+              <span class="ml-4 text-accent-400 transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-gray-400">{item.a}</p>
+          </details>
+        ))}
+      </div>
     </div>
   </section>
 

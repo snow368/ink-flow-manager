@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "InkFlow",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Tattoo Studio Website — Multi-Artist Booking & Portfolio",
+        "url": "https://ink-flows.com/features/tattoo-studio-website",
+        "datePublished": "2026-07-16",
+        "dateModified": "2026-07-16",
+        "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
+        "reviewedBy": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow" },
+        "citation": [
+          "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
+          "https://developers.google.com/search/docs/appearance/structured-data/local-business"
+        ]
+      }
+    ]
+  })} />
+  <SEOHead slot="head" title="Tattoo Studio Website — Multi-Artist Booking & Portfolio | InkFlow" description="Build a tattoo studio website with multi-artist portfolios, team booking, location info, and Google-friendly SEO. Free at ink-flows.com/s/yourstudio." appSchema={false} />
+  <FAQSchema questions={[
+    { question: "Can each artist have their own portfolio and booking link?", answer: "Yes. Every artist gets a dedicated booking link and a filtered portfolio. Clients book directly with the artist they want, and you manage everyone from one dashboard." },
+    { question: "Does the studio website show my location and hours?", answer: "Yes. Your address, hours, and Google Maps data are displayed, and the page is optimized to appear for 'tattoo studio near me' searches." },
+    { question: "Is it free for a multi-artist shop?", answer: "The free plan covers your studio website with portfolio and booking. Pro adds custom domains, commission tracking, and removal of InkFlow branding." },
+    { question: "Will the studio site rank on Google?", answer: "Yes. Every page is server-side rendered, tagged with SEO meta, and submitted to Google automatically — unlike link-in-bio pages that search engines ignore." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO STUDIO WEBSITE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">A Tattoo Studio Website That Showcases Your Whole Team</h1>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> A single Instagram can't represent multiple artists, and most studios have no site that ranks when locals search "tattoo studio near me".</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives your shop a free website where every artist has their own portfolio and booking link, plus your location and hours.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> One page that books every artist and shows up in local search.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
+          <a href="/features/free-tattoo-website" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">How It Works</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Built for Multi-Artist Shops</h2>
+      <p class="mt-3 text-center text-gray-400">Every artist, one studio page.</p>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">👥</div>
+          <h3 class="text-white font-semibold">Per-Artist Portfolios</h3>
+          <p class="mt-1 text-sm text-gray-400">Each artist gets a filtered portfolio. Clients browse by style and book the right person.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📅</div>
+          <h3 class="text-white font-semibold">Team Booking Links</h3>
+          <p class="mt-1 text-sm text-gray-400">Individual booking links per artist, all managed from one studio dashboard.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📍</div>
+          <h3 class="text-white font-semibold">Location & Hours</h3>
+          <p class="mt-1 text-sm text-gray-400">Address, hours, and maps data displayed — optimized for "near me" searches.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🖼️</div>
+          <h3 class="text-white font-semibold">Shared Gallery</h3>
+          <p class="mt-1 text-sm text-gray-400">A studio-wide gallery plus each artist's personal collection. Best work, front and center.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">💳</div>
+          <h3 class="text-white font-semibold">Commission Tracking (Pro)</h3>
+          <p class="mt-1 text-sm text-gray-400">Set per-artist rates and automate payouts. No spreadsheet math.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔍</div>
+          <h3 class="text-white font-semibold">Local SEO</h3>
+          <p class="mt-1 text-sm text-gray-400">Server-side rendered and submitted to Google. Show up when locals search for a studio.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUYER GUIDE -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">What a Tattoo Studio Website Needs</h2>
+      <div class="mt-8 space-y-4">
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Per-artist pages</h3><p class="text-sm text-gray-400">Clients pick the artist, not just the shop. InkFlow gives each artist a portfolio and booking link.</p></div></div>
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Local search visibility</h3><p class="text-sm text-gray-400">Address, hours, and maps data help you rank for "tattoo studio near me".</p></div></div>
+        <div class="flex items-start gap-3"><div class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-accent-500/20"><span class="text-sm text-accent-400">✓</span></div><div><h3 class="text-white font-medium text-sm">Built-in booking</h3><p class="text-sm text-gray-400">No third-party scheduler. Clients book on your page, you get notified instantly.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can each artist have their own portfolio and booking link?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every artist gets a dedicated booking link and a filtered portfolio. Clients book directly with the artist they want, and you manage everyone from one dashboard.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Does the studio website show my location and hours?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Your address, hours, and Google Maps data are displayed, and the page is optimized to appear for 'tattoo studio near me' searches.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is it free for a multi-artist shop?</summary>
+          <p class="mt-2 text-sm text-gray-400">The free plan covers your studio website with portfolio and booking. Pro adds custom domains, commission tracking, and removal of InkFlow branding.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Will the studio site rank on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every page is server-side rendered, tagged with SEO meta, and submitted to Google automatically — unlike link-in-bio pages that search engines ignore.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Explore More</h2>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/features/tattoo-artist-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Artist Website</h3><p class="mt-1 text-xs text-gray-400">For solo artists</p></a>
+        <a href="/features/tattoo-portfolio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Portfolio Website</h3><p class="mt-1 text-xs text-gray-400">Showcase work</p></a>
+        <a href="/alternatives/best-tattoo-website-builders" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Best Builders</h3><p class="mt-1 text-xs text-gray-400">Compared & ranked</p></a>
+        <a href="/blog/topic/website-builder" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">All Resources</h3><p class="mt-1 text-xs text-gray-400">Website Builder hub</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTHOR -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-sm text-gray-400">
+      <p><strong class="text-white">Written &amp; reviewed by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow — 12 years running multi-artist tattoo studios. This guide is fact-checked against studio websites InkFlow builds and hosts for 500+ studios.</p>
+      <p class="mt-2 text-xs text-gray-500">Published July 16, 2026 · Last updated July 16, 2026.</p>
+      <p class="mt-2 text-xs text-gray-500">Sources: <a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google Search Central — SEO Starter Guide</a> · <a href="https://developers.google.com/search/docs/appearance/structured-data/local-business" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google — Local Business structured data</a> · InkFlow platform data across 500+ studios (2026).</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Put Your Whole Studio Online. Free.</h2>
+    <p class="mt-3 text-gray-400">No credit card. Every artist, one page.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+  </section>
+
+  <Footer />
+</BaseLayout>

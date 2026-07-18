@@ -90,5 +90,28 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <p class="mt-3 text-gray-400">Free plan includes client portal access. No extra setup needed.</p>
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
   </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="mt-8 space-y-3">
+        {[
+          { q: "What can clients see in the portal?", a: "Clients can view their appointment history, signed waivers, upcoming bookings, and past tattoo photos. They can also reschedule or cancel appointments." },
+          { q: "Do clients need to create an account?", a: "No account needed for booking. A portal account is created automatically after their first appointment. They access it via a secure link." },
+          { q: "Can clients download their waivers?", a: "Yes. Clients can download and print any signed waiver from their portal at any time." },
+        ].map(item => (
+          <details class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+            <summary class="flex cursor-pointer items-center justify-between text-base font-semibold text-white marker:content-none">
+              {item.q}
+              <span class="ml-4 text-accent-400 transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-gray-400">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <Footer />
 </BaseLayout>

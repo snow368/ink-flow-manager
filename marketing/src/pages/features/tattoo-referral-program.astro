@@ -92,5 +92,28 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
     <p class="mt-3 text-sm text-gray-600">Also available in <a href="/features/tattoo-crm-software" class="text-accent-400 hover:underline">CRM Features</a></p>
   </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="mt-8 space-y-3">
+        {[
+          { q: "How does automated referral tracking work?", a: "Every new client is tagged with their referral source. Track conversion rates by referrer. Reward advocates automatically based on referral volume." },
+          { q: "Can I set up automatic rewards?", a: "Yes. Set reward rules — 5 referrals = $50 credit, 10 referrals = free touch-up. InkFlow tracks and notifies both parties automatically." },
+          { q: "Do referred clients convert at higher rates?", a: "Yes. Referred clients book at 40% higher rates than organic leads. They arrive with trust already established." },
+        ].map(item => (
+          <details class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+            <summary class="flex cursor-pointer items-center justify-between text-base font-semibold text-white marker:content-none">
+              {item.q}
+              <span class="ml-4 text-accent-400 transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-gray-400">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <Footer />
 </BaseLayout>
