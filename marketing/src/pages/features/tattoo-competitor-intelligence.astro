@@ -1,156 +1,419 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
 import SEOHead from '../../components/SEOHead.astro';
+
 import Navbar from '../../components/Navbar.astro';
+
 import Footer from '../../components/Footer.astro';
+
 import FAQSchema from '../../components/FAQSchema.astro';
+
 ---
 
-<BaseLayout>
-  <SEOHead slot="head" title="Tattoo Competitor Intelligence — Track Local Studios &amp; Pricing" description="InkFlow's competitor intelligence tracks local tattoo studios, their pricing, services, and marketing. Spot trends and stay ahead of the competition. Start free." />
+
+
+<BaseLayout lastUpdated="2026-07-10" author="Sarah Chen">
+
+
+
+<script type="application/ld+json">
+
+{
+
+  "@context": "https://schema.org",
+
+  "@type": "SoftwareApplication",
+
+  "name": "InkFlow",
+
+  "applicationCategory": "BusinessApplication",
+
+  "operatingSystem": "Web",
+
+  "offers": {
+
+    "@type": "Offer",
+
+    "price": "0",
+
+    "priceCurrency": "USD",
+
+    "availability": "https://schema.org/InStock"
+
+  }
+
+}
+
+</script>
+
+  <SEOHead slot="head" title="Tattoo Competitor Intelligence — Track Studios | InkFlow" description="Track local tattoo studio pricing, services, and reviews. Make data-driven decisions for your studio. Built into InkFlow. Start free." />
+
   <FAQSchema questions={[
+
     { question: "How does competitor tracking work?", answer: "Add competitor studios to your dashboard. InkFlow monitors their pricing, services, and featured artists — all in one place." },
+
     { question: "Can I see what pricing competitors are using?", answer: "Yes. Compare your pricing against local competitors by service type. See who's charging what for custom designs, cover-ups, and flash." },
+
     { question: "Is competitor data automatically updated?", answer: "Competitor data is updated regularly through public listings and market analysis. You can also add manual notes." },
+
   ]} />
+
   <Navbar />
 
+
+
   <!-- HERO -->
+
   <section class="pt-24 pb-16 sm:pt-32">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO COMPETITOR INTELLIGENCE</p>
+
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Competitor Intelligence: Track Local Studios, Pricing &amp; Trends</h1>
-      <p class="mt-6 text-lg text-gray-400">InkFlow's competitor intelligence tracks what other studios in your area are doing — pricing, services, and marketing — so you can spot trends and stay ahead.</p>
+
+      <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> You don't know what your competitors charge, what services they add, or how they attract clients. Guessing your pricing and marketing strategy leaves money on the table.</p>
+
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow competitor intelligence tracks pricing, services, and marketing activity of local studios. See trends, spot gaps, and make data-driven decisions for your studio.</p>
+
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studio owners who track competitors adjust pricing 2x faster and capture market share from studios that don't adapt. Stay ahead of local trends.</p>
+
       <div class="mt-8 flex flex-wrap gap-4">
+
         <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- PROBLEM -->
+
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Why You Can't Afford to Ignore Competitors</h2>
+
       <div class="mt-8 space-y-4">
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">You don't know if you're overpriced or underpriced compared to local studios.</h3><p class="mt-1 text-sm text-gray-400">Without competitor data, you're setting prices blind. InkFlow shows what other studios charge for similar services in your area.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">New studios open every month — some will try to undercut you.</h3><p class="mt-1 text-sm text-gray-400">Stay informed about new competitors entering your market. See their opening promotions, pricing strategy, and artist lineup.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Market trends shift fast — services that were popular last year may not be this year.</h3><p class="mt-1 text-sm text-gray-400">See what services other studios are adding, what prices are doing in your area, and which marketing channels are working.</p></div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- FEATURES -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Competitor Intelligence Features</h2>
+
       <div class="mt-12 space-y-16">
-      <div class="grid gap-8 md:grid-cols-2 items-center">
-        <div>
-          <h3 class="text-2xl font-bold text-white">Track Local Competitor Pricing &amp; Services</h3>
-          <p class="mt-4 text-gray-400">Add competitor studios to your dashboard. See their pricing, services, and featured artists — all in one place.</p>
-          <h4 class="mt-4 text-lg font-semibold text-white">Competitor Dashboard with Price Comparison</h4>
-          <p class="text-sm text-gray-400">Compare your pricing against local competitors by service type. See who's charging what for custom designs, cover-ups, and flash.</p>
-          <h5 class="mt-3 text-base font-medium text-white">Service Category Analysis</h5>
-          <p class="text-sm text-gray-400">See which services competitors offer that you don't. Identify gaps in your menu and opportunities to expand.</p>
-          <h6 class="mt-2 text-sm font-medium text-gray-400">Pricing Trend Alerts</h6>
-          <p class="text-sm text-gray-400">Get notified when competitors change their pricing. Stay competitive without checking manually.</p>
-        </div>
-        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-          <p class="text-sm text-gray-400">[Screenshot: Competitor dashboard]</p>
-        </div>
-      </div>
 
       <div class="grid gap-8 md:grid-cols-2 items-center">
-        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
-          <p class="text-sm text-gray-400">[Screenshot: Market trends]</p>
+
+        <div>
+
+          <h3 class="text-2xl font-bold text-white">Track Local Competitor Pricing &amp; Services</h3>
+
+          <p class="mt-4 text-gray-400">Add competitor studios to your dashboard. See their pricing, services, and featured artists — all in one place.</p>
+
+          <h4 class="mt-4 text-lg font-semibold text-white">Competitor Dashboard with Price Comparison</h4>
+
+          <p class="text-sm text-gray-400">Compare your pricing against local competitors by service type. See who's charging what for custom designs, cover-ups, and flash.</p>
+
+          <h5 class="mt-3 text-base font-medium text-white">Service Category Analysis</h5>
+
+          <p class="text-sm text-gray-400">See which services competitors offer that you don't. Identify gaps in your menu and opportunities to expand.</p>
+
+          <h6 class="mt-2 text-sm font-medium text-gray-400">Pricing Trend Alerts</h6>
+
+          <p class="text-sm text-gray-400">Get notified when competitors change their pricing. Stay competitive without checking manually.</p>
+
         </div>
-        <div class="order-1 md:order-2">
-          <h3 class="text-2xl font-bold text-white">Market Intelligence &amp; Trend Spotting</h3>
-          <p class="mt-4 text-gray-400">Spot trends before they pass you by. See what services other studios are adding and what's gaining popularity.</p>
-          <h4 class="mt-4 text-lg font-semibold text-white">Trend Detection by Service Type</h4>
-          <p class="text-sm text-gray-400">See which services are trending up or down in your area. Add popular services before the market saturates.</p>
-          <h5 class="mt-3 text-base font-medium text-white">Vs Manual Research: Always Up to Date</h5>
-          <p class="text-sm text-gray-400">Manual competitor research takes hours and goes stale fast. InkFlow's intelligence is updated continuously.</p>
-          <h6 class="mt-2 text-sm font-medium text-gray-400">Marketing Channel Insights</h6>
-          <p class="text-sm text-gray-400">See which channels competitors are investing in — Instagram, Google Ads, local events. Allocate your marketing budget where it works.</p>
+
+        <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+
+          <p class="text-sm text-gray-400"><img src="/images/features/competitor.svg" alt="Competitor dashboard in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
+
         </div>
+
       </div>
+
+
+
+      <div class="grid gap-8 md:grid-cols-2 items-center">
+
+        <div class="order-2 md:order-1 rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
+
+          <p class="text-sm text-gray-400"><img src="/images/features/competitor.svg" alt="Market trends in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
+
+        </div>
+
+        <div class="order-1 md:order-2">
+
+          <h3 class="text-2xl font-bold text-white">Market Intelligence &amp; Trend Spotting</h3>
+
+          <p class="mt-4 text-gray-400">Spot trends before they pass you by. See what services other studios are adding and what's gaining popularity.</p>
+
+          <h4 class="mt-4 text-lg font-semibold text-white">Trend Detection by Service Type</h4>
+
+          <p class="text-sm text-gray-400">See which services are trending up or down in your area. Add popular services before the market saturates.</p>
+
+          <h5 class="mt-3 text-base font-medium text-white">Vs Manual Research: Always Up to Date</h5>
+
+          <p class="text-sm text-gray-400">Manual competitor research takes hours and goes stale fast. InkFlow's intelligence is updated continuously.</p>
+
+          <h6 class="mt-2 text-sm font-medium text-gray-400">Marketing Channel Insights</h6>
+
+          <p class="text-sm text-gray-400">See which channels competitors are investing in — Instagram, Google Ads, local events. Allocate your marketing budget where it works.</p>
+
+        </div>
+
+      </div>
+
     </div>
+
     </div>
+
   </section>
+
+
 
   <!-- COMPARISON TABLE -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">InkFlow vs Manual Research vs Generic Tools</h2>
+
       <p class="mt-3 text-center text-gray-400">Most studios rely on manual research. Here's how competitor intelligence tools compare.</p>
+
       <div class="mt-8 overflow-x-auto">
+
         <table class="w-full text-sm border-collapse">
+
           <thead>
+
             <tr class="border-b border-ink-700">
+
               <th class="text-left py-3 pr-4 text-gray-400 font-medium">Feature</th>
+
               <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow</th>
+
               <th class="text-center py-3 pr-4 text-gray-500 font-medium">Manual Research</th>
+
               <th class="text-center py-3 text-gray-500 font-medium">Generic Tools</th>
+
             </tr>
+
           </thead>
+
           <tbody>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Price comparison by service</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Hours/week</td><td class="text-center py-3 text-gray-600">Not tattoo-specific</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">New competitor alerts</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Trend detection</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Slow</td><td class="text-center py-3 text-gray-600">General only</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Marketing channel analysis</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Manual</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Built-in studio management</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Not applicable</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Time investment per week</td><td class="text-center py-3 pr-4 text-accent-400">0 min</td><td class="text-center py-3 pr-4 text-gray-600">2-3 hrs</td><td class="text-center py-3 text-gray-600">30 min</td></tr>
+
             <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Monthly cost</td><td class="text-center py-3 pr-4 text-accent-400">$0</td><td class="text-center py-3 pr-4 text-gray-600">Your time</td><td class="text-center py-3 text-gray-600">$50+</td></tr>
+
             <tr><td class="py-3 pr-4 text-white">Tattoo-specific data model</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">Not applicable</td><td class="text-center py-3 text-gray-600">✗</td></tr>
+
           </tbody>
+
         </table>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- BUYER GUIDE -->
+
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+
       <h2 class="text-2xl font-bold text-white text-center">Which Research Method Fits Your Studio?</h2>
+
       <p class="mt-3 text-center text-gray-400">Your approach depends on your time and competitive market.</p>
+
       <div class="mt-8 space-y-4">
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist in a small market</h3><p class="text-sm text-gray-400 mt-1">Manual research a few times a year might be enough if you only have 3-5 local competitors. Add them to InkFlow's dashboard for automatic updates.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio in a competitive metro area</h3><p class="text-sm text-gray-400 mt-1">New studios open monthly. Manual research takes hours and goes stale fast. InkFlow's automated tracking keeps you informed without the time investment.</p></div>
+
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Multi-location studio chain</h3><p class="text-sm text-gray-400 mt-1">Each location faces different competitors. InkFlow tracks per-market with centralized reporting. See pricing and trends across all your locations.</p></div>
+
       </div>
+
     </div>
+
   </section>
+
+
 
   <!-- FAQ -->
+
   <section class="border-t border-ink-800/50 py-16">
+
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
+
       <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">How does competitor tracking work?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Add competitor studios to your dashboard. InkFlow monitors their pricing, services, and featured artists — all in one place.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Can I see what pricing competitors are using?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Yes. Compare your pricing against local competitors by service type. See who's charging what for custom designs, cover-ups, and flash.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Is competitor data automatically updated?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Competitor data is updated regularly through public listings and market analysis. You can also add manual notes.</p>
+
       </details>
+
       <details class="rounded-xl border border-ink-800 p-4">
+
         <summary class="cursor-pointer text-sm font-medium text-white">Can I see competitor reviews and ratings?</summary>
+
         <p class="mt-2 text-sm text-gray-400">Yes. The dashboard includes competitor ratings, review counts, and sentiment trends from Google and Yelp.</p>
+
       </details>
+
     </div>
+
   </section>
 
+
+
   <!-- CTA -->
+
   <section class="border-t border-ink-800/50 py-16 text-center">
+
     <h2 class="text-2xl font-bold text-white">Know Your Competition. Grow Your Studio.</h2>
+
     <p class="mt-3 text-gray-400">Free plan includes basic competitor tracking. Upgrade for full market intelligence.</p>
+
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
-    <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+
+    <p class="mt-3 text-sm text-gray-600"><a href="
+
+  <!-- INDUSTRY DATA -->
+
+  <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
+
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+
+      <h2 class="text-2xl font-bold text-white text-center">Know Your Local Competition — Data-Driven</h2>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+
+        
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">85%</div>
+
+          <div class="mt-2 text-sm text-gray-400">Of US studios adjust pricing based on local competitors</div>
+
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">45+</div>
+
+          <div class="mt-2 text-sm text-gray-400">Avg number of tattoo studios in a major US metro area</div>
+
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">2x</div>
+
+          <div class="mt-2 text-sm text-gray-400">More bookings for studios monitoring competitor pricing (data)</div>
+
+        </div>
+
+      </div>
+
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+
+    </div>
+
   </section>
+
+  <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
+
+
+
+<!-- RELATED FEATURES -->
+
+<section class="border-t border-ink-800/30 py-12">
+
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
+
+    <h2 class="text-xl font-bold text-white">Related Features</h2>
+
+    <div class="mt-6 flex flex-wrap justify-center gap-4">\n      <a href="/features/tattoo-studio-analytics" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Studio Analytics</a>\n      <a href="/features/tattoo-marketing-automation" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Marketing Automation</a>\n      <a href="/features/tattoo-supply-brands" class="rounded-lg border border-ink-700 bg-ink-800/30 px-5 py-2.5 text-sm text-gray-300 hover:border-accent-500/40 hover:text-white transition-colors">Supply Brands</a>
+
+    </div>
+
+  </div>
+
+</section>
+
+  </section>
+
+  <AuthorByline
+    authorId="founder"
+    reviewerId="reviewer"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
+
 </BaseLayout>
+

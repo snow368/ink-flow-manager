@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
@@ -195,5 +196,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <p class="mt-2 text-gray-400">Free plan includes deposit collection, payment links, and commission tracking.</p>
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Start Free →</a>
   </section>
+  <AuthorByline
+    authorId="founder"
+    reviewerId="reviewer"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 </BaseLayout>

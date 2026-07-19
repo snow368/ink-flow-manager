@@ -88,10 +88,12 @@
 - `topic-clusters-guide.md`【通用】— Hub-and-Spoke 主题集群（产品页不做支柱，在内容页链向产品）
 - `internal-linking-rules.md`【通用】— 每页 ≥3 描述性锚文本内链；功能页互链最紧急
 - `content-matrix.md`【通用】— 页面类型×格式×Schema×漏斗×意图×字数 总矩阵（速查）
-- `framework/page-content-checklist.md`【SaaS】【通用】— (InkFlow 框架) 每页上线硬验收单
+- `framework/faq-writing-standard.md`【通用】— **FAQ 权威标准（2026-07-17 新建）**：合并 6 处分散 FAQ 规则 + TanTan 206 + seo.md，裁定数量(3-5基线/pillar 5-8)/长度(甜点40-60/上限<300)/真实问题来源/两类FAQ/H3进PAA，消库内冲突
+- `framework/page-content-checklist.md`【SaaS】【通用】— (InkFlow 框架) 每页上线硬验收单（§5 = 写作文风标准 Anti-AI-Cliché，来自 seo.md 合并；§二对比页已按 v2 修正 Capterra/quote 归属）
 
 **🔍 原始来源（按价值摘）**
 - `sources/okara-ai-content-strategy.md`【通用】— Docs 每页独立回答一个真实问题 = SEO landing page
+- `sources/072-tantan-faq-206.md`【通用】— 两类FAQ(独立页vs产品模块)/全站禁复制同套/答案≤100字首句给答案/真实问题来源采集法(客服·竞品评论区·Reddit)/H3进PAA
 - `sources/kaicromwell-collection-blog-seo.md`【B2C】【SaaS】— 品类页补 5 类支撑博客建集群
 - `sources/rosshudgens-tofu-content-back.md`【通用】— TOFU 因 AI 引用 ROI 回升；仍 BOFU 优先
 - `sources/noelceta-seo-thin-content-paradox.md`【通用】— 长度≠质量；新站先建 authority 再写长文
@@ -105,7 +107,7 @@
 
 **📁 InkFlow 档案**：`inkflow-blog-strategy.md` · `inkflow-content-image-links.md` · `inkflow-content-plan.md` · `inkflow-content-plan-complete.md` · `inkflow-screenshot-guide.md` · `inkflow-pages-detailed.md` · `inkflow-website-execution-guide.md`
 
-**✅ 应用指引**：所有页面套 `seo-geo-writing-standard.md` 清单；对比页=买家决策工具；GEO 证据层写法（每条 claim 带值+样本+来源）。**这是用户最常调用的板块。**
+**✅ 应用指引**：所有页面套 `seo-geo-writing-standard.md` 清单；**FAQ 统一按 `framework/faq-writing-standard.md` 写**（3-5 个真实问题 + FAQPage JSON-LD + H3 包问题）；对比页=买家决策工具；GEO 证据层写法（每条 claim 带值+样本+来源）。**这是用户最常调用的板块。**
 
 ---
 

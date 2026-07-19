@@ -1,0 +1,205 @@
+---
+import AuthorByline from '../../components/AuthorByline.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+---
+
+<BaseLayout lastUpdated="2026-07-16">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "InkFlow",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" }
+      },
+      {
+        "@type": "WebPage",
+        "name": "Tattoo Portfolio Website — Free Gallery That Ranks on Google",
+        "url": "https://ink-flows.com/features/tattoo-portfolio-website",
+        "datePublished": "2026-07-16",
+        "dateModified": "2026-07-16",
+        "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
+        "reviewedBy": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow" },
+        "citation": [
+          "https://developers.google.com/search/docs/appearance/google-images",
+          "https://web.dev/articles/vitals"
+        ]
+      }
+    ]
+  })} />
+  <SEOHead slot="head" title="Tattoo Portfolio Website — Free Gallery That Ranks on Google | InkFlow" description="Build a free tattoo portfolio website with a fast, responsive gallery that gets indexed by Google. Import Instagram or upload your work. Start at ink-flows.com/s/yourstudio." appSchema={false} />
+  <FAQSchema questions={[
+    { question: "Is the portfolio website really free?", answer: "Yes. The free plan includes a full portfolio website at ink-flows.com/s/yourstudio with gallery, booking, and Google indexing. No credit card required." },
+    { question: "Will my portfolio show up on Google?", answer: "Yes. Every portfolio page is server-side rendered with SEO meta tags and submitted to Google via sitemap automatically. That's what lets your work appear in image and web search — unlike link-in-bio pages." },
+    { question: "Can I import my Instagram photos?", answer: "Yes. Enter your Instagram handle and recent posts appear in your gallery automatically. You can also upload images directly." },
+    { question: "Can I use my own domain?", answer: "Yes. Pro lets you use your own independent domain — yourname.com — instead of the short link. That's your own domain, not a subdomain." },
+  ]} />
+  <Navbar />
+
+  <!-- HERO -->
+  <section class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <p class="text-sm font-semibold text-accent-400 mb-3">TATTOO PORTFOLIO WEBSITE</p>
+        <h1 class="text-4xl font-extrabold text-white sm:text-5xl">A Tattoo Portfolio Website That Gets Found on Google</h1>
+        <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Instagram hides your portfolio behind an algorithm, and a link-in-bio page isn't indexed by Google — so clients searching for tattoo styles never see your work.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow gives you a <a href="/features/free-tattoo-website" class="text-accent-400 hover:underline">free portfolio website</a> with a fast, responsive gallery that Google actually indexes.</p>
+        <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Your work shows up in search. Clients find you through your art, not just your handle.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim Your Free Page →</a>
+          <a href="/blog/tattoo-portfolio-website-examples" class="inline-block rounded-lg border border-ink-700 px-8 py-3.5 text-base font-semibold text-white hover:bg-ink-800 transition-all">See Examples</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">A Gallery Built to Be Seen</h2>
+      <p class="mt-3 text-center text-gray-400">Fast, responsive, and indexed by Google.</p>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🖼️</div>
+          <h3 class="text-white font-semibold">Responsive Gallery</h3>
+          <p class="mt-1 text-sm text-gray-400">Your best work in a grid that looks sharp on phone and desktop. Most clients browse on mobile.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📸</div>
+          <h3 class="text-white font-semibold">Instagram Import</h3>
+          <p class="mt-1 text-sm text-gray-400">One handle and your recent posts fill the gallery. Keep posting on Instagram; it flows to your site.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔍</div>
+          <h3 class="text-white font-semibold">Google-Indexed</h3>
+          <p class="mt-1 text-sm text-gray-400">Server-side rendered with alt text and meta. Your portfolio can appear in both web and image search.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">📅</div>
+          <h3 class="text-white font-semibold">Booking on Every View</h3>
+          <p class="mt-1 text-sm text-gray-400">A booking CTA stays visible as clients browse. Inspiration turns into a booking.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🎨</div>
+          <h3 class="text-white font-semibold">100+ Themes</h3>
+          <p class="mt-1 text-sm text-gray-400">Match the gallery to your style — Minimal, Dark, Vintage, Brutalist, and more.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          <div class="text-2xl mb-2">🔗</div>
+          <h3 class="text-white font-semibold">Custom Domain (Pro)</h3>
+          <p class="mt-1 text-sm text-gray-400">Use your own independent domain — yourname.com — instead of the short link.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRUCTURE THAT RANKS -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">The Gallery Structure That Actually Gets Indexed</h2>
+      <p class="mt-4 text-gray-300"><strong class="text-white">Short answer:</strong> a tattoo portfolio gets found on Google when each style has its own indexable section, every image carries descriptive alt text, and the page loads fast on mobile. The prettiest portfolios rarely rank — the most <em>structured</em> ones do.</p>
+      <p class="mt-3 text-sm text-gray-400">We build and host portfolio pages for 500+ tattoo studios, so we can see which structures pull search traffic and which sit invisible. Six patterns separate the two:</p>
+      <div class="mt-8 space-y-4">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">1. Name the page after the work, not the shop</h3><p class="mt-1 text-sm text-gray-400">A title like "Fine Line Tattoo Portfolio — Austin" matches how clients actually search (style + city). A page titled only with your shop name competes for one query; a style-named page competes for dozens. This mirrors <a href="https://developers.google.com/search/docs/appearance/google-images" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google's own image SEO guidance</a> on descriptive, keyword-relevant context.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">2. Group by style so each section can rank on its own</h3><p class="mt-1 text-sm text-gray-400">Blackwork, Japanese, fine-line — separate, labelled categories let each block rank for its own term and let clients self-select. Across our studios, style-grouped galleries consistently surface for more long-tail image searches than one undifferentiated grid.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">3. Give every image real alt text</h3><p class="mt-1 text-sm text-gray-400">"Fine line rose, forearm, 2026" tells Google what the image is; "IMG_4857.jpg" tells it nothing. Alt text is what puts tattoo photos into image search — one of the largest discovery channels for artists. InkFlow generates alt text from your captions automatically, so no image ships blank.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">4. Show healed work, clearly labelled</h3><p class="mt-1 text-sm text-gray-400">Healed photos are the single strongest trust signal a tattoo portfolio can carry — they prove the work ages well, not just that it looks sharp on day one. Caption each with how long it has healed ("healed, 14 months") and keep a dedicated healed section. It converts browsers who already trust your style but want proof of longevity.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">5. Put a booking CTA on every view</h3><p class="mt-1 text-sm text-gray-400">A visitor who loves one photo should be one tap from booking that artist — not hunting for a contact button. A gallery that ranks but can't convert is a missed booking. InkFlow keeps the booking action visible as clients scroll.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold">6. Keep it fast and mobile-first</h3><p class="mt-1 text-sm text-gray-400">Most clients browse on a phone, and Google indexes the mobile version of your page first. Heavy, uncompressed galleries fail <a href="https://web.dev/articles/vitals" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Core Web Vitals</a> and slide down the results. InkFlow compresses images and serves a mobile-built grid by default, so speed isn't something you have to manage.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FREE VS PAID -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Free Portfolio Website vs Paid Builders</h2>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Free</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Custom Dev ($500+)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Setup time</td><td class="text-center py-3 pr-4 text-accent-400">30 seconds</td><td class="text-center py-3 text-gray-600">Weeks</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Cost</td><td class="text-center py-3 pr-4 text-accent-400">Free</td><td class="text-center py-3 text-gray-600">$500–$5,000</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Google indexed</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">✓ (if done right)</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Booking built-in</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">Extra cost</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="mb-8 text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+      <div class="space-y-4">
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Is the portfolio website really free?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. The free plan includes a full portfolio website at ink-flows.com/s/yourstudio with gallery, booking, and Google indexing. No credit card required.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Will my portfolio show up on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Every portfolio page is server-side rendered with SEO meta tags and submitted to Google via sitemap automatically. That's what lets your work appear in image and web search — unlike link-in-bio pages.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I import my Instagram photos?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Enter your Instagram handle and recent posts appear in your gallery automatically. You can also upload images directly.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Can I use my own domain?</summary>
+          <p class="mt-2 text-sm text-gray-400">Yes. Pro lets you use your own independent domain — yourname.com — instead of the short link. That's your own domain, not a subdomain.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- RELATED -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Explore More</h2>
+      <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/features/free-tattoo-website" class="rounded-xl border border-accent-500/30 bg-accent-500/5 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Free Tattoo Website</h3><p class="mt-1 text-xs text-gray-400">Start here — your page</p></a>
+        <a href="/features/tattoo-artist-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Artist Website</h3><p class="mt-1 text-xs text-gray-400">Personal brand</p></a>
+        <a href="/features/tattoo-studio-website" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Studio Website</h3><p class="mt-1 text-xs text-gray-400">Multi-artist</p></a>
+        <a href="/blog/tattoo-portfolio-website-examples" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">Examples</h3><p class="mt-1 text-xs text-gray-400">Real portfolios</p></a>
+        <a href="/blog/topic/website-builder" class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/50 transition-all"><h3 class="text-sm font-semibold text-white">All Resources</h3><p class="mt-1 text-xs text-gray-400">Website Builder hub</p></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTHOR -->
+  <section class="border-t border-ink-800/50 py-10">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-sm text-gray-400">
+      <p><strong class="text-white">Written &amp; reviewed by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow — 12 years running multi-artist tattoo studios. This guide is fact-checked against portfolio pages InkFlow builds and hosts for 500+ tattoo studios.</p>
+      <p class="mt-2 text-xs text-gray-500">Published July 16, 2026 · Last updated July 16, 2026.</p>
+      <p class="mt-2 text-xs text-gray-500">Sources: <a href="https://developers.google.com/search/docs/appearance/google-images" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google Search Central — Image SEO best practices</a> · <a href="https://web.dev/articles/vitals" class="text-accent-400 hover:underline" target="_blank" rel="noopener">web.dev — Core Web Vitals</a> · InkFlow platform data across 500+ studios (2026).</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="border-t border-ink-800/50 py-16 text-center">
+    <h2 class="text-2xl font-bold text-white">Show Your Work to Google. Free.</h2>
+    <p class="mt-3 text-gray-400">No credit card. Your portfolio, indexed and bookable.</p>
+    <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
+  </section>
+
+  <AuthorByline
+    authorId="founder"
+    reviewerId="reviewer"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
+  <Footer />
+</BaseLayout>

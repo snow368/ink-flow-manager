@@ -56,11 +56,17 @@
 ### 🟡 P2 — 文档恢复（支撑「审核依据」不白写）
 | # | 任务 | 说明 |
 |---|------|------|
-| 8 | 重建 B5 brief | `b5-website-builder-cluster-brief.md` 在当前仓库**已丢失**（仅记忆中有 5 子主题 11 页结构），需从记忆重建并存入 `marketing/seo-targets/briefs/`。 |
-| 9 | 找回/重建长尾集群地图 | `inkflow-longtail-cluster-map.md` + `inkflow-kw-tattoo-website.md` 当前仓库内**均缺失**，无法枚举「未来还有哪些簇要写」。需从记忆/本地恢复，否则后续簇规划无依据。 |
+| 8 | 重建 B5 brief | `b5-website-builder-cluster-brief.md` 在当前仓库**确实已丢失**（git 历史里也无，仅记忆中有 5 子主题 11 页结构），需从记忆重建并存入 `marketing/seo-targets/briefs/`。 |
+| 9 | 重建 B5 关键词研究文档 | `inkflow-kw-tattoo-website.md` **确缺失**（git 历史无）。但通用长尾数据已找回（见下）→ 可据 `page_plan.csv` / `kd_queue.csv` 中 B5 相关词重建。 |
 
-### ⚪ 未来簇（待 #9 恢复后排入）
-- 依 longtail 地图的 550+ 词规划的其他 Hub-and-Spoke 簇（ tattoo booking / waiver / inventory / CRM 等潜在主题簇）。恢复地图后再拆 Day 任务。
+> ✅ **2026-07-16 16:40 更正（重要）**：此前误判「长尾地图已丢失」。**长尾地图实际完整保存在 `main` 历史**，工作区只是处于未提交删除状态。已执行 `git checkout HEAD -- marketing/scripts marketing/seo-targets` 一键恢复：
+> - `marketing/seo-targets/longtail_matrix.csv`（**5652 个真实长尾词，16 集群**，Google Suggest 真实下拉）+ `longtail_matrix.md` + `longtail_matrix.keywords.json` ✅ 完整恢复
+> - `marketing/scripts/mine_longtail.py` / `kd_score.py` / `build_kd_queue.py` ✅ 恢复
+> - `page_plan.csv` / `kd_queue.csv` / `page_plan.md` ✅ 恢复
+> 即：**长尾地图与挖词/KD 资产均未丢失，无需重挖**；仅 B5 brief 与 B5 关键词研究文档（#8/#9）真正缺失，需重建。
+
+### ⚪ 未来簇（依已恢复的长尾地图规划）
+- 长尾地图（`longtail_matrix.csv`，5652 词 / 16 集群）已恢复，可直接枚举未来簇（tattoo booking / waiver / inventory / CRM 等）。恢复地图后拆 Day 任务。
 
 ---
 
@@ -111,6 +117,7 @@
 - `INKFLOW-CONTENT-PLAYBOOK.md`（仓库根）— 内容写作规范
 - `INKFLOW-SEO-EEAT-PLAN.md`（仓库根）— E-E-A-T 落地计划
 - `marketing/seo-targets/briefs/aftercare-cluster-brief.md` — aftercare 簇 brief（✅ 在 main）
-- `marketing/seo-targets/briefs/b5-website-builder-cluster-brief.md` — B5 brief（❌ 已丢失，待 Day 7 重建）
-- `inkflow-longtail-cluster-map.md` — 长尾集群地图（❌ 已丢失，待 Day 7 恢复）
-- `inkflow-kw-tattoo-website.md` — B5 关键词研究（❌ 已丢失，待 Day 7 恢复）
+- `marketing/seo-targets/briefs/b5-website-builder-cluster-brief.md` — B5 brief（❌ 确实丢失，待 Day 7 重建）
+- `marketing/seo-targets/longtail_matrix.csv` — 长尾地图（✅ **已恢复**，5652 词 / 16 集群；非 `inkflow-longtail-cluster-map.md`）
+- `marketing/seo-targets/page_plan.csv` + `kd_queue.csv` — 关键词规划 / KD 队列（✅ 已恢复）
+- `inkflow-kw-tattoo-website.md` — B5 关键词研究（❌ 确实丢失，待 Day 7 据 page_plan/kd_queue 重建）

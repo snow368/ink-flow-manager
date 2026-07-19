@@ -44,18 +44,18 @@ const jsonLd = JSON.stringify({
 });
 ---
 <slot name="head" />
-<title>{title} | InkFlow</title>
+<title>{title.includes('InkFlow') ? title : `${title} | InkFlow`}</title>
 <meta name="description" content={description} />
 <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 <link rel="canonical" href={canonicalUrl} />
-<meta property="og:title" content={`${title} | InkFlow`} />
+<meta property="og:title" content={title.includes('InkFlow') ? title : `${title} | InkFlow`} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={`${title} | InkFlow`} />
+<meta name="twitter:title" content={title.includes('InkFlow') ? title : `${title} | InkFlow`} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
 <script type="application/ld+json" set:html={jsonLd} />

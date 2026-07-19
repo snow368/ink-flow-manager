@@ -4,6 +4,7 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
 ---
 
 <BaseLayout>
@@ -216,6 +217,13 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
     <p class="mt-3 text-sm text-gray-600">Also available: <a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a> · <a href="/compare/best-tattoo-studio-software" class="text-accent-400 hover:underline">See vs alternatives</a></p>
   </section>
+
+  <AuthorByline
+    authorId="founder"
+    reviewerId="reviewer"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
 
   <Footer />
 </BaseLayout>

@@ -4,6 +4,7 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
+import AuthorByline from '../../components/AuthorByline.astro';
 ---
 
 <BaseLayout>
@@ -65,6 +66,100 @@ import FAQSchema from '../../components/FAQSchema.astro';
     </div>
   </section>
 
+  <!-- Editorial Scorecard -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">How They Score for Tattoo Studios</h2>
+      <p class="mt-2 max-w-3xl text-sm text-gray-400">Our editorial ratings, scored across the five areas that matter most to a tattoo studio. See the methodology note below the table.</p>
+      <div class="mt-6 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-ink-800 bg-ink-900/50">
+              <th class="p-4 text-left font-semibold text-white w-2/5">Category</th>
+              <th class="p-4 text-center font-semibold text-accent-400">InkFlow</th>
+              <th class="p-4 text-center font-semibold text-gray-400">Booksy</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-ink-800/50">
+            {[
+              { c: 'Tattoo-specific features', i: 5.0, b: 2.5 },
+              { c: 'Pricing & value', i: 4.8, b: 3.5 },
+              { c: 'Booking & scheduling', i: 4.7, b: 4.5 },
+              { c: 'Compliance & waivers', i: 5.0, b: 1.5 },
+              { c: 'Inventory & aftercare', i: 4.9, b: 1.0 },
+            ].map(row => (
+              <tr class="hover:bg-ink-900/30 transition-colors">
+                <td class="p-4 text-gray-300 font-medium">{row.c}</td>
+                <td class="p-4 text-center"><span class="font-semibold text-accent-300">{row.i.toFixed(1)}</span><span class="text-gray-600"> / 5</span></td>
+                <td class="p-4 text-center"><span class="font-semibold text-gray-400">{row.b.toFixed(1)}</span><span class="text-gray-600"> / 5</span></td>
+              </tr>
+            ))}
+            <tr class="bg-ink-900/40 font-semibold">
+              <td class="p-4 text-white">Overall</td>
+              <td class="p-4 text-center text-accent-300">4.9 / 5</td>
+              <td class="p-4 text-center text-gray-400">2.6 / 5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-3 text-xs text-gray-500"><strong class="text-gray-400">Rating methodology:</strong> Scores reflect InkFlow's editorial assessment of each platform's publicly listed features and pricing as of July 2026, weighted for tattoo-studio needs. They are our own analysis — not third-party review aggregates. Verify current features on each vendor's site before deciding.</p>
+    </div>
+  </section>
+
+  <!-- Pros & Cons -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Booksy: Pros & Cons for Tattoo Studios</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-accent-400">What Booksy does well</h3>
+          <ul class="mt-4 space-y-3 text-sm text-gray-300">
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Large consumer marketplace that can drive walk-in discovery for solo artists.</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Slightly lower card-present processing rate (2.49% + $0.10).</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Card-on-file deposits and unlimited online booking.</span></li>
+            <li class="flex gap-3"><span class="text-accent-400">✓</span><span>Mature, well-known brand with a polished mobile app.</span></li>
+          </ul>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-sm font-semibold uppercase tracking-wide text-gray-400">Where it falls short</h3>
+          <ul class="mt-4 space-y-3 text-sm text-gray-300">
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>No digital waivers, aftercare automation, or supply inventory — core tattoo needs.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>Cost scales quickly: $29.99/mo base plus $20 per additional provider.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>SMS reminders billed per message ($0.07/SMS) on top of the plan.</span></li>
+            <li class="flex gap-3"><span class="text-gray-500">✕</span><span>General salon platform — not designed around tattoo workflows or portfolios.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best For -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Which One Is Right for You?</h2>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        <div class="rounded-xl border border-accent-500/20 bg-accent-500/5 p-6">
+          <h3 class="text-lg font-bold text-accent-300">Choose InkFlow if…</h3>
+          <ul class="mt-4 space-y-2 text-sm text-gray-300">
+            <li>• You run a tattoo studio and need waivers, aftercare, and inventory built in.</li>
+            <li>• You want predictable pricing that doesn't spike per artist.</li>
+            <li>• You're growing a team and need auto-calculated commission splitting.</li>
+            <li>• You want to start free with no credit card.</li>
+          </ul>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-gray-300">Choose Booksy if…</h3>
+          <ul class="mt-4 space-y-2 text-sm text-gray-300">
+            <li>• You're a solo artist who relies on the Booksy marketplace for discovery.</li>
+            <li>• You don't need tattoo-specific compliance or inventory features.</li>
+            <li>• Card-present processing rate is your top priority.</li>
+            <li>• You already use Booksy across multiple salon service types.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Quick Verdict -->
   <section class="border-t border-ink-800/50 py-12">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -95,6 +190,35 @@ import FAQSchema from '../../components/FAQSchema.astro';
       </ul>
     </div>
   </section>
+
+  <!-- FAQ -->
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Frequently Asked Questions</h2>
+      <div class="mt-6 space-y-3">
+        {[
+          { q: "Is Booksy good for tattoo studios?", a: "Booksy works for solo artists who want basic booking and marketplace discoverability. But it's a general salon platform — it lacks tattoo-specific features like digital waivers, aftercare automation, and inventory tracking that dedicated tattoo software includes." },
+          { q: "How much does Booksy cost?", a: "Booksy's base plan starts at $29.99/mo plus $20 per additional provider, and SMS reminders cost extra ($0.07/SMS). InkFlow starts at $0/mo with waivers, aftercare, and inventory included." },
+          { q: "What is the best Booksy alternative for tattoo studios?", a: "For tattoo-specific needs, InkFlow is purpose-built with digital waivers, deposit collection, commission splitting, and aftercare automation. Other options include Tattoo Studio Pro and Tattoogenda — see our side-by-side comparisons." },
+        ].map(item => (
+          <details class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+            <summary class="flex cursor-pointer items-center justify-between text-base font-semibold text-white marker:content-none">
+              {item.q}
+              <span class="ml-4 text-accent-400 transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-sm leading-relaxed text-gray-400">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <AuthorByline
+    authorId="founder"
+    reviewerId="reviewer"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
 
   <Footer />
 </BaseLayout>
