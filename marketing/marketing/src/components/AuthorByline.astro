@@ -1,0 +1,78 @@
+---
+import { getAuthor } from '../data/authors';
+
+interface Props {
+  authorId: string;
+  reviewerId?: string;
+  datePublished: string;
+  dateModified?: string;
+}
+
+const { authorId, reviewerId, datePublished, dateModified } = Astro.props;
+const author = getAuthor(authorId);
+const reviewer = reviewerId ? getAuthor(reviewerId) : undefined;
+
+// 占位检测：name 含 "TODO" 说明真实作者尚未填写，跳过渲染 + 不注入 schema，
+// 避免上线暴露占位文本或编造的 Person 信号。
+const isPlaceholder = !!author && author.name.includes('TODO');
+
+const authorSchema =
+  !isPlaceholder && author
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: author.name,
+        jobTitle: author.jobTitle,
+        ...(author.image ? { image: author.image } : {}),
+        ...(author.bio ? { description: author.bio } : {}),
+        ...(author.sameAs.length ? { sameAs: author.sameAs } : {}),
+      }
+    : null;
+
+const reviewerSchema =
+  !isPlaceholder && reviewer
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: reviewer.name,
+        jobTitle: reviewer.jobTitle,
+      }
+    : null;
+---
+
+{
+  !isPlaceholder && author && (
+    <section class="border-t border-ink-800/50 py-8">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-5">
+          {author.image && (
+            <img
+              src={author.image}
+              alt={author.name}
+              class="h-12 w-12 rounded-full object-cover"
+            />
+          )}
+          <div class="text-sm leading-relaxed">
+            <p class="text-gray-300">
+              <span class="text-gray-500">Written by </span>
+              <span class="font-semibold text-white">{author.name}</span>
+              <span class="text-gray-500"> · {author.jobTitle}</span>
+            </p>
+            {
+              reviewer && (
+                <p class="mt-1 text-gray-500">
+                  Reviewed by <span class="text-gray-300">{reviewer.name}</span>
+                  <span class="text-gray-500"> · {reviewer.jobTitle}</span>
+                </p>
+              )
+            }
+            <p class="mt-1 text-gray-500">Last updated {dateModified || datePublished}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+{authorSchema && <script type="application/ld+json" set:html={JSON.stringify(authorSchema)} />}
+{reviewerSchema && <script type="application/ld+json" set:html={JSON.stringify(reviewerSchema)} />}

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="How to make a tattoo website hero">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#15131f"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0a35e"/>
+      <stop offset="1" stop-color="#e07a4f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#f0a35e" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f0a35e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <g fill="none" stroke="url(#acc)" stroke-width="3" opacity="0.9">
+    <path d="M150 520 C 320 360, 520 360, 700 470 S 980 520, 1080 430" stroke-linecap="round"/>
+  </g>
+  <!-- Website / browser mockup -->
+  <g transform="translate(360,240)" fill="none" stroke="url(#acc)" stroke-width="2.5" opacity="0.8">
+    <rect x="0" y="0" width="200" height="150" rx="8"/>
+    <circle cx="20" cy="18" r="5" opacity="0.6"/>
+    <circle cx="40" cy="18" r="5" opacity="0.4"/>
+    <circle cx="60" cy="18" r="5" opacity="0.3"/>
+    <line x1="90" y1="18" x2="180" y2="18" opacity="0.4"/>
+    <line x1="15" y1="45" x2="185" y2="45" opacity="0.5"/>
+    <line x1="15" y1="65" x2="140" y2="65" opacity="0.35"/>
+    <line x1="15" y1="85" x2="160" y2="85" opacity="0.35"/>
+    <line x1="15" y1="105" x2="120" y2="105" opacity="0.25"/>
+  </g>
+  <text x="80" y="160" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#ffffff">How to Make a Tattoo Website</text>
+  <text x="82" y="215" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#f0a35e">Step-by-step — no code needed</text>
+</svg>

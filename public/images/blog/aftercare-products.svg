@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Tattoo aftercare products hero">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#15131f"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0a35e"/>
+      <stop offset="1" stop-color="#e07a4f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#f0a35e" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f0a35e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <g fill="none" stroke="url(#acc)" stroke-width="3" opacity="0.9">
+    <path d="M150 520 C 320 360, 520 360, 700 470 S 980 520, 1080 430" stroke-linecap="round"/>
+  </g>
+  <!-- Product bottles icon -->
+  <g transform="translate(340,280)">
+    <rect x="10" y="20" width="30" height="70" rx="6" fill="none" stroke="url(#acc)" stroke-width="2.5"/>
+    <rect x="15" y="5" width="20" height="20" rx="4" fill="none" stroke="url(#acc)" stroke-width="2"/>
+    <rect x="65" y="15" width="30" height="75" rx="6" fill="none" stroke="url(#acc)" stroke-width="2.5" opacity="0.7"/>
+    <rect x="70" y="0" width="20" height="20" rx="4" fill="none" stroke="url(#acc)" stroke-width="2" opacity="0.7"/>
+  </g>
+  <text x="80" y="160" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#ffffff">Aftercare Products</text>
+  <text x="82" y="215" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#f0a35e">Best lotions, balms &amp; washes</text>
+</svg>

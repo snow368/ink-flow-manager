@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="Tattoo aftercare issues hero">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0b10"/>
+      <stop offset="1" stop-color="#15131f"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0a35e"/>
+      <stop offset="1" stop-color="#e07a4f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.42" r="0.55">
+      <stop offset="0" stop-color="#f0a35e" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#f0a35e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <g fill="none" stroke="url(#acc)" stroke-width="3" opacity="0.9">
+    <path d="M150 520 C 320 360, 520 360, 700 470 S 980 520, 1080 430" stroke-linecap="round"/>
+  </g>
+  <!-- Warning/caution icon -->
+  <g transform="translate(560,280)">
+    <polygon points="40,0 80,70 0,70" fill="none" stroke="url(#acc)" stroke-width="2.5"/>
+    <line x1="40" y1="25" x2="40" y2="50" stroke="url(#acc)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="40" cy="60" r="3" fill="url(#acc)"/>
+  </g>
+  <text x="80" y="160" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#ffffff">Tattoo Aftercare Issues</text>
+  <text x="82" y="215" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#f0a35e">Spot problems early — heal safely</text>
+</svg>
