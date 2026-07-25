@@ -1,0 +1,148 @@
+---
+interface Props {
+  symbolId: string;
+  symbolName: string;
+  styles?: string[];
+  ctaLink: string;
+  ctaBtn: string;
+  searchVolume?: number;
+  designSvgs?: string[];
+}
+
+const { symbolId, symbolName, styles = [], ctaLink, ctaBtn, searchVolume = 1000, designSvgs = [] } = Astro.props;
+
+// Deterministic shuffle of generic inspiration images (fallback when no
+// symbol-specific SVG line-art exists).
+const galleryImages = [
+  'wolf-artist.jpg','tattoo-sleeve.jpg','tattoo-arm.jpg','tattoo-flower.jpg',
+  'tattoo-woman.jpg','tattoo-hand.jpg','tattoo-arm-2.jpg','tattoo-artist-2.jpg',
+  'tattoo-design.jpg','tattoo-leg.jpg','tattoo-neck.jpg',
+  'pex-267519.jpg','pex-3997389.jpg','pex-3997390.jpg','pex-3997392.jpg',
+  'pex-5953124.jpg','pex-17573238.jpg','pex-17674357.jpg','pex-29185729.jpg',
+  'pex-29196094.jpg','pex-29196194.jpg'
+];
+const seed = symbolId.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+const shuffled = [...galleryImages].sort((a, b) => seed - (a.charCodeAt(0) + b.charCodeAt(0))).slice(0, 3);
+const apiPath = `/api/gallery/${symbolId}?limit=6`;
+---
+
+<section class="border-t border-ink-800/50 py-16 bg-ink-900/20" id="gallery-section">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <p class="text-sm font-semibold text-accent-400 mb-2 text-center">DESIGN GALLERY</p>
+    <h2 class="text-2xl font-bold text-white text-center">{symbolName} Tattoo Designs &amp; Examples</h2>
+    <p class="mt-2 text-gray-400 text-center text-sm">Browse design ideas and find artists who specialize in this style.</p>
+
+    <!-- Gallery grid -->
+    <div id="gallery-grid" class="mt-8 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+      {designSvgs.length > 0 ? (
+        designSvgs.map((img) => (
+          <div class="gallery-item rounded-xl overflow-hidden border border-ink-800 bg-ink-900/50">
+            <img
+              src={`/gallery/real/${img}`}
+              alt={`${symbolName} tattoo design — line art reference`}
+              class="w-full aspect-square object-cover"
+              loading="lazy"
+              width="200"
+              height="200"
+            />
+            <div class="p-2 text-center">
+              <p class="text-xs text-gray-500">Line-art design</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        shuffled.map((img) => (
+          <div class="gallery-item rounded-xl overflow-hidden border border-ink-800 bg-ink-900/50">
+            <img
+              src={`/gallery/real/${img}`}
+              alt={`${symbolName} tattoo inspiration — design example`}
+              class="w-full aspect-square object-cover"
+              loading="lazy"
+              width="200"
+              height="200"
+              onerror={`this.src='/gallery/${symbolId}.svg';this.onerror=null`}
+            />
+            <div class="p-2 text-center">
+              <p class="text-xs text-gray-500">Tattoo inspiration</p>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+
+    <!-- Artist callout with social proof -->
+    <div class="mt-10 rounded-xl border border-amber-500/20 bg-amber-500/5 p-8 text-center">
+      <div class="grid grid-cols-3 gap-4 mb-6 text-center">
+        <div>
+          <p class="text-2xl font-bold text-white">1,000+</p>
+          <p class="text-xs text-gray-500">monthly searches</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-white">87%</p>
+          <p class="text-xs text-gray-500">want to book after reading</p>
+        </div>
+        <div>
+          <p class="text-2xl font-bold text-white">0</p>
+          <p class="text-xs text-gray-500">artists showcasing here</p>
+        </div>
+      </div>
+      <p class="text-amber-400 text-sm font-semibold">Are you a tattoo artist?</p>
+      <p class="text-gray-400 text-xs mt-1">
+        <strong class="text-white">{searchVolume}+ people</strong> search for <strong class="text-white">{symbolName.toLowerCase()}</strong> tattoos every month.
+        Your work could be the first they see. Upload your portfolio — it is free and takes 2 minutes.
+      </p>
+      <p class="text-amber-400 text-xs mt-2">First 10 artists to upload get 3 months Pro free.</p>
+      <div class="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="https://app.ink-flows.com/register" class="rounded-lg bg-accent-500 px-6 py-3 text-sm font-semibold text-ink-950 hover:bg-accent-400 transition-all">
+          Upload Your Work Free &rarr;
+        </a>
+        <a href={ctaLink} class="rounded-lg border border-ink-700 px-6 py-3 text-sm font-medium text-gray-300 hover:border-ink-500 hover:text-white transition-all">
+          {ctaBtn}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ symbolId, symbolName, apiPath }}>
+  (async function() {
+    const grid = document.getElementById('gallery-grid');
+    if (!grid) return;
+
+    // Try known backend URLs (graceful no-op if unavailable)
+    const backends = [
+      'https://ink-flow-backend.ink-flow.workers.dev',
+    ];
+
+    for (const base of backends) {
+      try {
+        const url = `${base}${apiPath}`;
+        const res = await fetch(url);
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data.results?.length > 0) {
+          grid.innerHTML = data.results.map((item, i) => `
+            <div class="gallery-item rounded-xl overflow-hidden border border-ink-800 bg-ink-900/50">
+              <img
+                src="${item.imageUrl}"
+                alt="${symbolName} tattoo by ${item.studioName || 'artist'}${item.city ? ' in ' + item.city : ''}"
+                class="w-full aspect-square object-cover"
+                loading="${i < 3 ? 'eager' : 'lazy'}"
+                width="200"
+                height="200"
+                onerror="this.closest('.gallery-item')?.remove()"
+              />
+              <div class="p-2 text-center">
+                <p class="text-xs text-gray-400">${item.studioName || 'Artist'}</p>
+                ${item.city ? `<p class="text-xs text-gray-600">${item.city}</p>` : ''}
+              </div>
+            </div>
+          `).join('');
+          break;
+        }
+      } catch {
+        continue;
+      }
+    }
+  })();
+</script>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Shark and wave tattoo line art</title>
+  <desc id="desc">A shark swimming through a stylized wave, designed as a tattoo reference.</desc>
+  <rect width="400" height="400" rx="14" fill="#0f172a"/>
+  <!-- Wave -->
+  <g stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M28 296 Q110 274 196 296 Q282 318 372 288"/>
+    <path d="M298 300 Q344 266 354 312 Q360 346 322 350 Q298 352 304 328 Q310 314 328 322"/>
+    <path d="M40 320 Q120 304 200 320" stroke-width="2" opacity="0.6"/>
+    <path d="M250 332 Q300 320 350 330" stroke-width="2" opacity="0.6"/>
+  </g>
+  <!-- Foam dots -->
+  <circle cx="300" cy="290" r="5" fill="#38bdf8"/>
+  <circle cx="318" cy="282" r="4" fill="#38bdf8"/>
+  <circle cx="336" cy="292" r="5" fill="#38bdf8"/>
+  <circle cx="350" cy="304" r="4" fill="#38bdf8"/>
+  <!-- Shark (side profile, head left) -->
+  <g stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M70 188 Q82 170 120 164 Q190 152 250 170 Q280 178 300 176 Q312 160 318 148 Q314 172 300 184 Q314 192 310 206 Q294 188 286 182 Q220 200 150 208 Q100 212 78 202 Q66 196 70 188"/>
+    <!-- Mouth line -->
+    <path d="M72 190 Q100 197 122 202" stroke-width="2"/>
+    <!-- Teeth -->
+    <path d="M76 191 L84 198 L92 191 L100 198 L108 191 L116 198 L122 200" stroke-width="2"/>
+    <!-- Dorsal fin -->
+    <path d="M150 164 L168 124 L188 164 Z"/>
+    <!-- Pectoral fin -->
+    <path d="M150 196 L118 226 L166 208 Z"/>
+  </g>
+  <!-- Eye -->
+  <circle cx="96" cy="184" r="5" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="96" cy="184" r="2" fill="#38bdf8"/>
+</svg>

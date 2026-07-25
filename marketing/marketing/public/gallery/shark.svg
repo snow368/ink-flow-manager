@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Shark tattoo line art</title>
+  <desc id="desc">Simple shark silhouette line drawing, tattoo design reference.</desc>
+  <rect width="400" height="400" rx="14" fill="#0f172a"/>
+  <g stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M60 200 Q80 175 130 168 Q220 155 300 178 Q345 188 368 184 Q384 158 392 140 Q386 172 368 190 Q384 200 380 222 Q358 200 350 192 Q258 220 150 230 Q92 238 66 218 Q54 210 60 200"/>
+    <path d="M214 172 L240 110 L268 172 Z"/>
+    <path d="M168 210 L120 256 L188 228 Z"/>
+    <path d="M200 296 Q178 326 168 366 Q186 342 200 312"/>
+  </g>
+  <circle cx="104" cy="194" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+</svg>

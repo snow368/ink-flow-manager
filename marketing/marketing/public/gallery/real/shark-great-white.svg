@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Great white shark tattoo line art</title>
+  <desc id="desc">Side-profile line drawing of a great white shark with open jaw and teeth, designed as a tattoo reference.</desc>
+  <rect width="400" height="400" rx="14" fill="#0f172a"/>
+  <g stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Body outline (open at the mouth) -->
+    <path d="M52 205 Q66 182 112 174 Q205 158 292 178 Q338 188 362 184 Q380 156 390 138 Q384 172 366 190 Q382 200 378 222 Q356 200 348 192 Q256 220 150 232 Q92 240 64 220"/>
+    <!-- Upper jaw line -->
+    <path d="M52 205 Q100 214 150 229"/>
+    <!-- Teeth (upper pointing down, lower pointing up) -->
+    <path d="M58 208 L66 217 L74 208 L82 217 L90 208 L98 217 L106 208 L114 217 L122 208 L130 217 L138 209 L146 218" stroke-width="2"/>
+    <path d="M70 221 L78 213 L86 221 L94 213 L102 221 L110 213 L118 221 L126 213 L134 221 L142 214 L150 223" stroke-width="2"/>
+    <!-- Gill slits -->
+    <path d="M122 186 Q118 198 122 210" stroke-width="2"/>
+    <path d="M132 184 Q128 197 132 211" stroke-width="2"/>
+    <path d="M142 184 Q138 197 142 211" stroke-width="2"/>
+    <path d="M152 186 Q148 198 152 210" stroke-width="2"/>
+    <path d="M162 189 Q158 200 162 209" stroke-width="2"/>
+    <!-- Dorsal fin -->
+    <path d="M214 172 L240 106 L270 172 Z"/>
+    <!-- Pectoral fin -->
+    <path d="M168 212 L120 258 L188 230 Z"/>
+    <!-- Pelvic fin -->
+    <path d="M250 214 L236 250 L266 224 Z"/>
+    <!-- Anal fin -->
+    <path d="M292 206 L284 234 L306 216 Z"/>
+  </g>
+  <!-- Eye -->
+  <circle cx="100" cy="196" r="6" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="100" cy="196" r="2.5" fill="#38bdf8"/>
+</svg>

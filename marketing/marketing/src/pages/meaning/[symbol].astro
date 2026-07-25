@@ -7,6 +7,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 import { ALL_MEANINGS, getMeaningBySlug, TATTOO_CATEGORIES } from '../../data/tattoo-meanings';
 import { CUSTOM_SECTIONS } from '../../data/tattoo-meanings-custom-sections';
 import { EEAT_AUTHOR, EEAT_PUBLISHED, CATEGORY_EEAT } from '../../data/tattoo-category-content';
+import GallerySection from '../../components/GallerySection.astro';
 
 export async function getStaticPaths() {
   return ALL_MEANINGS.map(m => ({
@@ -168,6 +169,7 @@ const symbolFaqs = [
             {meaning.slug === 'egyptian' && '🔺'}
             {meaning.slug === 'tree-of-life' && '🌳'}
             {meaning.slug === 'wave' && '🌊'}
+            {meaning.slug === 'shark' && '🦈'}
             {meaning.slug === 'mountain' && '⛰️'}
             {meaning.slug === 'feather' && '🪶'}
             {meaning.slug === 'anchor' && '⚓'}
@@ -204,6 +206,15 @@ const symbolFaqs = [
       </div>
     </section>
   ))}
+
+  <!-- Design Gallery (shark has SVG line-art; others fall back to inspiration shuffle) -->
+  <GallerySection
+    symbolId={meaning.slug}
+    symbolName={meaning.name}
+    ctaLink="/meaning"
+    ctaBtn="Browse All Meanings"
+    designSvgs={meaning.slug === 'shark' ? ['shark-hammerhead.svg','shark-great-white.svg','shark-tooth.svg','shark-wave.svg'] : []}
+  />
 
   <!-- Variants -->
   {meaning.variants && meaning.variants.length > 0 && (

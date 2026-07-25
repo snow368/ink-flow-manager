@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Hammerhead shark tattoo line art</title>
+  <desc id="desc">Top-down line drawing of a hammerhead shark, designed as a tattoo reference.</desc>
+  <rect width="400" height="400" rx="14" fill="#0f172a"/>
+  <g stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Cephalofoil (hammer head) -->
+    <path d="M72 92 Q58 74 90 70 Q140 60 200 70 Q260 60 310 70 Q342 74 328 92 Q330 106 302 108 Q258 96 200 104 Q142 96 98 108 Q70 106 72 92 Z"/>
+    <!-- Body -->
+    <path d="M178 104 Q160 158 172 218 Q178 268 200 296 Q222 268 228 218 Q240 158 222 104 Q200 116 178 104 Z"/>
+    <!-- Pectoral fins -->
+    <path d="M180 162 Q142 170 120 198 Q152 188 182 186 Z"/>
+    <path d="M220 162 Q258 170 280 198 Q248 188 218 186 Z"/>
+    <!-- Pelvic / anal fins -->
+    <path d="M183 215 Q165 225 158 248 Q178 238 186 234 Z"/>
+    <path d="M217 215 Q235 225 242 248 Q222 238 214 234 Z"/>
+    <!-- Dorsal ridge -->
+    <path d="M200 108 L200 286" stroke-width="2"/>
+    <!-- Forked caudal tail -->
+    <path d="M200 296 Q178 326 168 368 Q186 344 200 314"/>
+    <path d="M200 296 Q222 318 232 350 Q214 330 200 312"/>
+    <path d="M200 296 L200 312"/>
+  </g>
+  <!-- Eyes -->
+  <circle cx="92" cy="84" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="308" cy="84" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="92" cy="84" r="3" fill="#38bdf8"/>
+  <circle cx="308" cy="84" r="3" fill="#38bdf8"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Shark tooth (niho) tattoo line art</title>
+  <desc id="desc">A single shark tooth framed by a Polynesian niho zigzag pattern, designed as a tattoo reference.</desc>
+  <rect width="400" height="400" rx="14" fill="#0f172a"/>
+  <g stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Tooth -->
+    <path d="M165 116 Q200 106 235 116 L218 252 Q210 292 200 310 Q190 292 182 252 Z"/>
+    <!-- Scalloped root -->
+    <path d="M170 113 Q183 124 200 118 Q217 124 230 113" stroke-width="2"/>
+    <!-- Inner vein + shading -->
+    <path d="M200 122 L200 300" stroke-width="2"/>
+    <path d="M185 124 Q200 134 215 124" stroke-width="2"/>
+  </g>
+  <!-- Niho (tooth / zigzag) frame -->
+  <g stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.85">
+    <path d="M40 56 L66 78 L92 56 L118 78 L144 56 L170 78 L196 56 L222 78 L248 56 L274 78 L300 56 L326 78 L352 56 L368 66"/>
+    <path d="M40 344 L66 322 L92 344 L118 322 L144 344 L170 322 L196 344 L222 322 L248 344 L274 322 L300 344 L326 322 L352 344 L368 334"/>
+    <path d="M56 40 L78 66 L56 92 L78 118 L56 144 L78 170 L56 196 L78 222 L56 248 L78 274 L56 300 L78 326 L66 344" stroke-width="2.5"/>
+    <path d="M344 40 L322 66 L344 92 L322 118 L344 144 L322 170 L344 196 L322 222 L344 248 L322 274 L344 300 L322 326 L334 344" stroke-width="2.5"/>
+  </g>
+  <!-- Corner accents -->
+  <circle cx="50" cy="66" r="5" fill="#38bdf8"/>
+  <circle cx="350" cy="66" r="5" fill="#38bdf8"/>
+  <circle cx="50" cy="334" r="5" fill="#38bdf8"/>
+  <circle cx="350" cy="334" r="5" fill="#38bdf8"/>
+</svg>
