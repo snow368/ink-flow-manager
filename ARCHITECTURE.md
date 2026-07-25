@@ -45,7 +45,7 @@ flowchart TD
 | **本地工作目录** | `D:/ink-flow-manager` | 所有 ink-flows 生产改动在此 |
 | **Cloudflare Pages 项目名** | `inkflow-marketing` | 注意：项目名含 "marketing"，但仓库是 `ink-flow-manager.git`，**名字不同，别搞混** |
 | **自定义域** | `ink-flows.com` / `www.ink-flows.com` / `inkflow-marketing.pages.dev` | |
-| **部署分支** | `main` | Cloudflare Git 集成监听 `main`，push 即自动重建 |
+| **部署分支** | Cloudflare Git 集成监听 `production`（或 `master`），**不是 `main`** | 见 §1.1；推到 `main` 不会触发生产部署 |
 | **本地代理推送** | `git -c http.sslBackend=openssl -c http.proxy=socks5h://127.0.0.1:10808 push ...` | V2RayN 10808=SOCKS5；直连常遇 `TLS unexpected eof`，加重试即可 |
 
 ### 🔑 两个 Cloudflare 账号（今天踩坑的核心，务必分清）
@@ -106,23 +106,29 @@ flowchart TD
 
 ## 4. 部署命令（可直接复制，**已修正**）
 
-### ✅ 推荐路径 A：Git 集成自动部署（push 即上线）
+### ✅ 推荐路径 A：Git 集成自动部署（push 到 production 分支即上线）
 ```powershell
 cd D:/ink-flow-manager
-git push origin mybranch:main
+git push origin mybranch:production
 # 若遇 TLS unexpected eof：
-git -c http.sslBackend=openssl -c http.proxy=socks5h://127.0.0.1:10808 push origin mybranch:main
+git -c http.sslBackend=openssl -c http.proxy=socks5h://127.0.0.1:10808 push origin mybranch:production
 ```
-> 只要 Cloudflare 的 Git 集成连着 `ink-flow-manager.git` 的 `main`，push 后网站自动重建上线。这是最省事的路。
+> ⚠️ **Cloudflare Git 集成监听的是 `production`（或 `master`）分支，不是 `main`！**
+> 推到 `main` 不会触发任何部署（已踩坑：shark 推到 main 后生产部署仍是 2 周前的旧版）。
+> 推到 `production` 分支才会自动重建上线。若不确定集成监听哪个分支，用路径 B 直接打 production 最稳。
 
-### ✅ 推荐路径 B：沙箱 wrangler 直部署（绕过 GitHub / 网络卡死时）
+### ✅ 推荐路径 B：沙箱 wrangler 直部署到 production（绕过 GitHub / 网络卡死时，最可靠）
 ```bash
 cd D:/ink-flow-manager
-# ⚠️ 必须显式写 CLOUDFLARE_ACCOUNT_ID=5ee6e81f，否则 pages 命令会指到 76a99ad37a 账号报 auth 1000
+npm run build   # 先生成 dist/
+# ⚠️ 必须：① 显式 CLOUDFLARE_ACCOUNT_ID=5ee6e81f（否则指到 76a99ad37a 报 auth 1000）
+#         ② --branch production（否则只是 Preview 部署，自定义域不会更新）
 env -u ALL_PROXY -u HTTPS_PROXY -u HTTP_PROXY \
   CLOUDFLARE_ACCOUNT_ID=5ee6e81f1376d7f00c9dcfa141991816 \
-  npx wrangler pages deploy dist/ --project-name inkflow-marketing
+  npx wrangler pages deploy dist/ --project-name inkflow-marketing --branch production
 ```
+> 部署成功会返回别名 `https://production.inkflow-marketing-8mg.pages.dev` —— 这就是生产环境部署，自定义域 ink-flows.com 服务的就是它。
+> 2026-07-25 实测：shark 标杆页靠这条命令（而非推 main）才真正上线。
 > 本地先 `npm run build` 生成 `dist/`，再跑上面这条。已实测成功（2026-07-25 22:00，shark 标杆页上线）。
 
 ### 🔧 Worker 部署（到 76a99ad37a 账号，正常走 Action 或本地）
