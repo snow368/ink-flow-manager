@@ -1,7 +1,7 @@
 /**
  * Tattoo Meaning Variant Pages — species / sub-style spokes for pillar meaning pages.
- * Rendered by src/pages/meaning/[symbol]/[variation].astro
- * Example: /meaning/shark/great-white-shark-tattoo-meaning/
+ * Rendered by src/pages/tattoo-meaning/[category]/[symbol]/[variation].astro
+ * Example: /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-tattoo-meaning/
  *
  * Last updated: 2026-07-29
  * E-E-A-T: author Sarah Chen (InkFlow founder, 12y studio ops);
@@ -32,7 +32,7 @@ export interface TattooVariantMeaning {
 export const VARIANT_MEANINGS: TattooVariantMeaning[] = [
   {
     symbolSlug: 'shark',
-    slug: 'great-white-shark-tattoo-meaning',
+    slug: 'great-white-tattoo-meaning',
     name: 'Great White Shark Tattoo',
     meaning: 'Raw power, dominance, fearlessness, and the confidence to confront anything head-on',
     desc: 'A great white shark tattoo is the boldest statement in the shark family. As the ocean’s apex predator with no natural enemy, the great white reads as pure dominance and unshakeable self-assurance — the wearer who refuses to be intimidated.',
@@ -75,7 +75,7 @@ export const VARIANT_MEANINGS: TattooVariantMeaning[] = [
   },
   {
     symbolSlug: 'shark',
-    slug: 'hammerhead-shark-tattoo-meaning',
+    slug: 'hammerhead-tattoo-meaning',
     name: 'Hammerhead Shark Tattoo',
     meaning: 'Vision, perspective, protective awareness, and the confidence to stand out',
     desc: 'A hammerhead shark tattoo is the thinking person’s shark. Its unmistakable wide-set head gives it a near-360-degree field of view — so the design reads as awareness, strategy, and the ability to see threats (and opportunities) from every angle.',

@@ -5,6 +5,12 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
+
+// Public category segment: urlSegment override (sea-life -> "ocean") when present.
+const catSeg = (catId: string): string => {
+  const c = TATTOO_CATEGORIES.find((x) => x.id === catId);
+  return c?.urlSegment ?? catId;
+};
 ---
 
 <BaseLayout lastUpdated="2026-07-07" author="Sarah Chen">
@@ -26,19 +32,19 @@ import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
 
   <!-- Categories -->
   {TATTOO_CATEGORIES.map(cat => (
-    <section class="border-t border-ink-800/50 py-12" id={cat.id}>
+    <section class="border-t border-ink-800/50 py-12" id={catSeg(cat.id)}>
       <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div class="flex items-baseline justify-between mb-6">
           <div>
             <h2 class="text-2xl font-bold text-white">{cat.name}</h2>
             <p class="text-sm text-gray-500 mt-1">{cat.desc}</p>
-            <a href={`/meaning/category/${cat.id}`} class="mt-2 inline-block text-xs font-medium text-accent-400 hover:underline">View all {cat.name} meanings →</a>
+            <a href={`/tattoo-meaning/${catSeg(cat.id)}`} class="mt-2 inline-block text-xs font-medium text-accent-400 hover:underline">View all {cat.name} meanings →</a>
           </div>
           <span class="text-xs text-gray-600">{cat.symbols.length} symbols</span>
         </div>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cat.symbols.map(s => (
-            <a href={`/meaning/${s.slug}`} class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all">
+            <a href={`/tattoo-meaning/${catSeg(s.category)}/${s.slug}-tattoo-meaning`} class="group rounded-xl border border-ink-800 bg-ink-900/30 p-5 hover:border-accent-500/30 transition-all">
               <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink-800/50 text-lg text-gray-400 group-hover:text-accent-400 transition-colors">
                   {s.name[0]}

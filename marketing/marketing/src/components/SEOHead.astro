@@ -15,7 +15,7 @@ interface Props {
   appSchema?: boolean;
   /**
    * Set true on pages that emit their own BreadcrumbList JSON-LD
-   * (e.g. /meaning/[symbol] uses a category-aware 4-level trail). When
+   * (e.g. /tattoo-meaning/[category]/[symbol] uses a category-aware 4-level trail). When
    * false/omitted, SEOHead auto-derives a BreadcrumbList from the URL path,
    * giving site-wide breadcrumb structured data with zero per-page config.
    */
@@ -73,7 +73,7 @@ const jsonLd = JSON.stringify({
 
 // ── Auto BreadcrumbList (site-wide, zero per-page config) ──
 // Derives a trail from the URL path. Pages that ship their own BreadcrumbList
-// (e.g. /meaning/[symbol] with a category-aware trail) pass `disableBreadcrumb`.
+// (e.g. /tattoo-meaning/[category]/[symbol] with a category-aware trail) pass `disableBreadcrumb`.
 const disableBreadcrumb = Astro.props.disableBreadcrumb ?? false;
 const SECTION_LABELS: Record<string, string> = {
   'features': 'Features',

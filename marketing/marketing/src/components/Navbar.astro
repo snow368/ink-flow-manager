@@ -30,6 +30,34 @@ const { currentPath = '' } = Astro.props;
         <a href="/templates" class="text-sm text-gray-300 hover:text-white transition-colors">Templates</a>
         <div class="group relative">
           <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
+            Meanings
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="absolute top-full left-0 mt-2 w-96 rounded-lg border border-ink-800 bg-ink-900 py-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div class="grid grid-cols-2 gap-x-1">
+              <a href="/tattoo-meaning/animals" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Animals</a>
+              <a href="/tattoo-meaning/flowers" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Flowers</a>
+              <a href="/tattoo-meaning/mythological" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Mythological</a>
+              <a href="/tattoo-meaning/geometric" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Geometric &amp; Celestial</a>
+              <a href="/tattoo-meaning/religious" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Religious &amp; Spiritual</a>
+              <a href="/tattoo-meaning/cultural" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Cultural &amp; Tribal</a>
+              <a href="/tattoo-meaning/nature" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Nature</a>
+              <a href="/tattoo-meaning/objects" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Objects &amp; Symbols</a>
+              <a href="/tattoo-meaning/modern" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Modern Styles</a>
+              <a href="/tattoo-meaning/birds" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Birds</a>
+              <a href="/tattoo-meaning/zodiac" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Zodiac &amp; Astrology</a>
+              <a href="/tattoo-meaning/insects" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Insects</a>
+              <a href="/tattoo-meaning/ocean" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Sea Life</a>
+              <a href="/tattoo-meaning/time" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Time &amp; Mortality</a>
+              <a href="/tattoo-meaning/words" class="block px-4 py-1.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Words &amp; Lettering</a>
+            </div>
+            <div class="mt-1 border-t border-ink-800 pt-1">
+              <a href="/tattoo-meaning" class="block px-4 py-2 text-sm font-semibold text-accent-400 hover:text-white hover:bg-ink-800">All Meanings &rarr;</a>
+            </div>
+          </div>
+        </div>
+        <div class="group relative">
+          <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
             Free Tools
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
           </button>
@@ -103,6 +131,8 @@ const { currentPath = '' } = Astro.props;
       </div>
 
       <a href="/pricing" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Pricing</a>
+
+      <a href="/tattoo-meaning" class="block rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">Meanings</a>
 
       <button onclick="toggleMobileSub(this)" class="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-ink-800 transition-colors">
         Compare

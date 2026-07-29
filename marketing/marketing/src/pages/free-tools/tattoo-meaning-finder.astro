@@ -6,6 +6,13 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
 import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
+
+// Public category segment: urlSegment override (sea-life -> "ocean") when present.
+const catSeg = (catId: string): string => {
+  const c = TATTOO_CATEGORIES.find((x) => x.id === catId);
+  return c?.urlSegment ?? catId;
+};
+
 ---
 
 <BaseLayout lastUpdated="2026-06-15">
@@ -78,7 +85,7 @@ import { TATTOO_CATEGORIES, ALL_MEANINGS } from '../../data/tattoo-meanings';
       <p class="mt-3 text-center text-gray-400">{TATTOO_CATEGORIES.length} categories · {ALL_MEANINGS.length} symbols — jump to a group to explore its meanings.</p>
       <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {TATTOO_CATEGORIES.map((c) => (
-          <a href={`/meaning/category/${c.id}`} class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 transition-all hover:border-accent-500/40">
+          <a href={`/tattoo-meaning/${catSeg(c.id)}`} class="rounded-xl border border-ink-800 bg-ink-900/30 p-4 transition-all hover:border-accent-500/40">
             <div class="flex items-baseline justify-between">
               <h3 class="text-sm font-semibold text-white">{c.name}</h3>
               <span class="text-xs text-gray-600">{c.symbols.length}</span>

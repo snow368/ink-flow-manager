@@ -8,6 +8,12 @@ const CATEGORY_EMOJI: Record<string, string> = {
   modern: '✺', birds: '🕊️', zodiac: '✦', insects: '🐝',
   'sea-life': '🌊', time: '⏳', words: '🔤',
 };
+
+// Public category segment: urlSegment override (sea-life -> "ocean") when present.
+const catSeg = (catId: string): string => {
+  const c = TATTOO_CATEGORIES.find((x) => x.id === catId);
+  return c?.urlSegment ?? catId;
+};
 ---
 
 <div class="rounded-2xl border border-ink-800 bg-ink-900/40 p-5 sm:p-7">
@@ -42,7 +48,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
   <div id="tmf-results" class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
     {ALL_MEANINGS.map((m) => (
       <a
-        href={`/meaning/${m.slug}`}
+        href={`/tattoo-meaning/${catSeg(m.category)}/${m.slug}-tattoo-meaning`}
         data-category={m.category}
         data-search={`${m.name} ${m.meaning} ${m.slug} ${m.origin ?? ''}`.toLowerCase()}
         class="tmf-card group rounded-xl border border-ink-800 bg-ink-900/30 p-4 transition-all hover:border-accent-500/40"
