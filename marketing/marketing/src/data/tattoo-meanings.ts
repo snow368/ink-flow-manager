@@ -34,6 +34,10 @@ export interface TattooCategory {
   name: string;
   desc: string;
   symbols: TattooMeaning[];
+  /** Public URL segment override. When present, category routes emit this
+   *  instead of `id` (e.g. sea-life → "ocean" to match search vocabulary).
+   *  Falls back to `id` when absent. */
+  urlSegment?: string;
 }
 
 export const TATTOO_CATEGORIES: TattooCategory[] = [
@@ -754,6 +758,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
   // ===== 13. SEA LIFE (4) — NEW CATEGORY =====
   {
     id: 'sea-life',
+    urlSegment: 'ocean',
     name: 'Sea Life',
     desc: 'Ocean creatures — depth, emotion, and the freedom of the sea.',
     symbols: [
