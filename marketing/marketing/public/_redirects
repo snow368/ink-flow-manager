@@ -119,3 +119,7 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning /tattoo-meaning 301
 /meaning/ /tattoo-meaning/ 301
 /meaning/style-guide /tattoo-meaning/style-guide 301
+
+# Catch-all: any path not matched above returns the real 404 page (not the SPA index).
+# Keep this LAST so it never shadows the 301 rules above.
+/* /404.html 404

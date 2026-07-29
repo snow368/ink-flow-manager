@@ -6,7 +6,7 @@ import Footer from '../../../components/Footer.astro';
 import FAQSchema from '../../../components/FAQSchema.astro';
 import { ALL_MEANINGS, getMeaningBySlug, TATTOO_CATEGORIES } from '../../../data/tattoo-meanings';
 import { CUSTOM_SECTIONS } from '../../../data/tattoo-meanings-custom-sections';
-import { EEAT_AUTHOR, EEAT_PUBLISHED, CATEGORY_EEAT } from '../../../data/tattoo-category-content';
+import { EEAT_AUTHOR, EEAT_PUBLISHED, EEAT_UPDATED, CATEGORY_EEAT } from '../../../data/tattoo-category-content';
 import GallerySection from '../../../components/GallerySection.astro';
 
 // Public category segment: urlSegment override (sea-life -> "ocean") when present.
@@ -33,6 +33,9 @@ const related = ALL_MEANINGS
 const category = TATTOO_CATEGORIES.find((c) => c.id === meaning.category);
 const eeat = CATEGORY_EEAT[meaning.category] ?? {};
 const reviewer = eeat.reviewer;
+// Per-symbol last-updated date (SEO rule: bump when content is substantially
+// rewritten). Falls back to the global publish date when a symbol has no entry.
+const lastUpdated = EEAT_UPDATED[meaning.slug] ?? EEAT_PUBLISHED;
 
 // Related Tools & Resources: default to the 2 meaning-relevant free tools;
 // per-symbol overrides via meaning.relatedTools (site-structure blueprint).
@@ -42,7 +45,8 @@ const DEFAULT_RELATED_TOOLS = [
 ];
 const relatedTools = meaning.relatedTools ?? DEFAULT_RELATED_TOOLS;
 const pageTitle = `${meaning.name} Tattoo Meaning & Symbolism — InkFlow`;
-const pageDesc = `${meaning.name} tattoo meaning: ${meaning.meaning}. Learn about the history, cultural significance, and popular styles for ${meaning.name.toLowerCase()} tattoos.`;
+const pageDesc = meaning.metaDescription
+  ?? `${meaning.name} tattoo meaning: ${meaning.meaning}. Learn about the history, cultural significance, and popular styles for ${meaning.name.toLowerCase()} tattoos.`;
 
 const site = 'https://ink-flows.com';
 const canonical = `${site}/tattoo-meaning/${seg}/${meaning.slug}-tattoo-meaning`;
@@ -66,7 +70,8 @@ const articleJson = JSON.stringify({
     logo: { '@type': 'ImageObject', url: `${site}/images/hero-screenshot-2.png` },
   },
   datePublished: EEAT_PUBLISHED,
-  dateModified: EEAT_PUBLISHED,
+  dateModified: EEAT_UPDATED[meaning.slug] ?? EEAT_PUBLISHED,
+  ...(reviewer ? { reviewedBy: { '@type': 'Organization', name: reviewer.name, ...(reviewer.title ? { sameAs: undefined } : {}) } } : {}),
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   image: {
     '@type': 'ImageObject',
@@ -100,8 +105,8 @@ const breadcrumbJson = JSON.stringify({
   ],
 });
 
-// FAQPage schema derived from REAL symbol fields (no fabricated content).
-// 3 Q&A when culturalNotes exists, 2 otherwise — every answer reuses source data.
+// FAQPage schema: start from REAL symbol fields (no fabricated content), then
+// append any per-symbol `faqs` entries declared in the data file (also real).
 const symbolFaqs = [
   {
     question: `What does a ${meaning.name} tattoo symbolize?`,
@@ -119,10 +124,11 @@ const symbolFaqs = [
         answer: meaning.culturalNotes,
       }]
     : []),
+  ...(meaning.faqs ?? []),
 ];
 ---
 
-<BaseLayout lastUpdated="2026-07-07" author="Sarah Chen">
+<BaseLayout lastUpdated={lastUpdated} author="Sarah Chen">
   <SEOHead slot="head" title={pageTitle} description={pageDesc} appSchema={false} disableBreadcrumb />
   <Navbar />
 
@@ -201,7 +207,7 @@ const symbolFaqs = [
   {meaning.culturalNotes && (
     <section class="border-t border-ink-800/50 py-12">
       <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-white">Cultural Significance</h2>
+        <h2 class="text-2xl font-bold text-white">Shark Tattoo Cultural Significance</h2>
         <p class="mt-4 text-gray-400 leading-relaxed">{meaning.culturalNotes}</p>
       </div>
     </section>
@@ -249,6 +255,35 @@ const symbolFaqs = [
         <p class="text-xs text-gray-600">
           Source: <a href={meaning.externalSource} target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">{meaning.sourceLabel || meaning.externalSource}</a>
         </p>
+      </div>
+    </section>
+  )}
+
+  <!-- Related Shark Designs (pillar -> subpage hub-and-spoke internal links) -->
+  {((meaning.relatedSymbols ?? []).length > 0) && (
+    <section class="border-t border-ink-800/50 py-12 bg-ink-900/20">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-white">Related {meaning.name} Designs</h2>
+        <p class="mt-2 text-sm text-gray-500">Explore the shark tattoo variations and related ocean symbols.</p>
+        <div class="mt-6 grid gap-4 sm:grid-cols-2">
+          {meaning.relatedSymbols!.map(slug => {
+            const r = ALL_MEANINGS.find(m => m.slug === slug);
+            const href = r ? `/tattoo-meaning/${catSeg(r.category)}/${r.slug}-tattoo-meaning` : `/tattoo-meaning/${seg}/${slug}-tattoo-meaning`;
+            const label = r ? r.name : slug;
+            const sub = r ? r.meaning : '';
+            return (
+              <a href={href} class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
+                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-ink-800/50 text-center text-2xl text-gray-400 group-hover:text-accent-400 transition-colors">
+                  {label[0]}
+                </div>
+                <div>
+                  <p class="font-semibold text-white group-hover:text-accent-300 transition-colors">{label}</p>
+                  <p class="mt-0.5 text-xs text-gray-500">{sub}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
       </div>
     </section>
   )}
