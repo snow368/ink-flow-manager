@@ -25,6 +25,8 @@ export interface TattooMeaning {
   externalSource?: string;
   /** EEAT: source label */
   sourceLabel?: string;
+  /** Gallery images — SVG line-art filenames in /public/gallery/real/ */
+  gallerySvgs?: string[];
   /** Internal links to related commercial pages / free tools (site-structure blueprint) */
   relatedTools?: { label: string; href: string }[];
 }
@@ -54,6 +56,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         origin: 'Native American, Norse, Celtic',
         culturalNotes: 'In Native American traditions, the wolf is a teacher and pathfinder. In Norse mythology, Fenrir is a monstrous wolf. Celtic lore sees the wolf as a guide through the wilderness.',
         variants: ['howling wolf', 'wolf pack', 'lone wolf', 'wolf and moon', 'tribal wolf', 'geometric wolf', 'wolf paw', 'dire wolf'],
+        gallerySvgs: ['wolf-1.svg','wolf-2.svg','wolf-3.svg'],
         externalSource: 'https://www.britannica.com/animal/wolf',
         sourceLabel: 'Britannica — Wolf',
         customSections: [
@@ -68,11 +71,13 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         origin: 'African, European heraldry, Biblical',
         culturalNotes: 'In African cultures, the lion is a symbol of royalty and strength. In Christian tradition, the Lion of Judah represents Jesus. Heraldic lions appear on coats of arms across Europe.',
         variants: ['lion head', 'lion and crown', 'lioness', 'lion and lamb', 'tribal lion'],
+        gallerySvgs: ['lion-1.svg','lion-2.svg','lion-3.svg'],
         externalSource: 'https://www.britannica.com/animal/lion',
         sourceLabel: 'Britannica — Lion',
       },
       {
         slug: 'snake', name: 'Snake', category: 'animals',
+        gallerySvgs: ["snake-1.svg", "snake-2.svg"],
         meaning: 'Transformation, rebirth, healing, temptation, wisdom',
         desc: 'The snake tattoo carries dual symbolism — danger and healing, death and rebirth. The Ouroboros (snake eating its own tail) represents eternity and the cycle of life. Snakes are associated with medical healing (Rod of Asclepius) and temptation in Biblical tradition.',
         origin: 'Greek, Egyptian, Norse, Biblical',
@@ -83,6 +88,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'eagle', name: 'Eagle', category: 'animals',
+        gallerySvgs: ["eagle-1.svg", "eagle-2.svg"],
         meaning: 'Freedom, vision, power, courage, spiritual protection',
         desc: 'The eagle tattoo embodies freedom, far-sighted vision, and supreme power. Eagles soar above earthly concerns — a symbol of spiritual aspiration. The bald eagle represents American patriotism, while the golden eagle symbolizes nobility in many cultures.',
         origin: 'Native American, Roman, American, Nordic',
@@ -93,6 +99,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'butterfly', name: 'Butterfly', category: 'animals',
+        gallerySvgs: ["butterfly-1.svg", "butterfly-2.svg"],
         meaning: 'Transformation, freedom, rebirth, beauty, new beginnings',
         desc: 'Butterfly tattoos mark major life changes and personal growth. The metamorphosis from caterpillar to butterfly represents profound transformation. In many cultures, butterflies also symbolize the soul and spiritual evolution.',
         origin: 'Global, Japanese, Greek',
@@ -103,6 +110,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'owl', name: 'Owl', category: 'animals',
+        gallerySvgs: ["owl-1.svg", "owl-2.svg"],
         meaning: 'Wisdom, knowledge, mystery, intuition, nocturnal vision',
         desc: 'The owl tattoo represents wisdom, keen observation, and the ability to see what others miss. Owls are associated with Athena, the Greek goddess of wisdom. Their nocturnal nature also connects them to mystery, magic, and the unseen world.',
         origin: 'Greek, Native American, Celtic, Japanese',
@@ -122,6 +130,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'rose', name: 'Rose', category: 'flowers',
+        gallerySvgs: ["rose-1.svg", "rose-2.svg"],
         meaning: 'Love, passion, beauty, balance, secrecy',
         desc: 'The rose is the most popular tattoo design worldwide. Red roses symbolize passionate love. Black roses represent loss, rebellion, or grief. Yellow roses mean friendship. A rose with thorns shows beauty with hardship. A budding rose signifies new love or new beginnings.',
         origin: 'Greek, Roman, Christian, Victorian',
@@ -132,6 +141,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'lotus', name: 'Lotus', category: 'flowers',
+        gallerySvgs: ["lotus-1.svg", "lotus-2.svg"],
         meaning: 'Enlightenment, rebirth, purity, spiritual awakening',
         desc: 'The lotus flower grows from muddy water yet blooms pristine — a powerful metaphor for rising above suffering to achieve enlightenment. Lotus tattoos are deeply spiritual, rooted in Buddhist and Hindu traditions. A closed bud represents potential, a full bloom represents enlightenment.',
         origin: 'Buddhist, Hindu, Egyptian',
@@ -142,6 +152,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'cherry-blossom', name: 'Cherry Blossom', category: 'flowers',
+        gallerySvgs: ["cherry-blossom-1.svg", "cherry-blossom-2.svg"],
         meaning: 'Mortality, beauty, renewal, fleeting nature of life',
         desc: 'Cherry blossom (sakura) tattoos celebrate the transient beauty of life. In Japanese culture, the brief blooming period of cherry blossoms reminds us that life is beautiful but short. These delicate pink flowers represent renewal, hope, and the spring season.',
         origin: 'Japanese',
@@ -152,6 +163,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'sunflower', name: 'Sunflower', category: 'flowers',
+        gallerySvgs: ["sunflower-1.svg", "sunflower-2.svg"],
         meaning: 'Devotion, loyalty, warmth, happiness, adoration',
         desc: 'Sunflower tattoos symbolize unwavering faith and loyalty — the flower always turns toward the sun. They represent warmth, positivity, and the pursuit of light. Sunflowers are also associated with harvest, abundance, and summer.',
         origin: 'Greek (myth), Native American',
@@ -162,6 +174,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'peony', name: 'Peony', category: 'flowers',
+        gallerySvgs: ["peony-1.svg", "peony-2.svg"],
         meaning: 'Wealth, honor, prosperity, romance, bravery',
         desc: 'Peony tattoos are rich in symbolism — prosperity, honor, and romantic love. In traditional Japanese tattooing, the peony is a classic motif paired with dragons, lions, or koi. Its layered petals represent abundance and a full, rich life.',
         origin: 'Chinese, Japanese',
@@ -181,6 +194,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'phoenix', name: 'Phoenix', category: 'mythological',
+        gallerySvgs: ["phoenix-1.svg", "phoenix-2.svg"],
         meaning: 'Resurrection, renewal, triumph over adversity, immortality',
         desc: 'The phoenix is a mythical firebird that cyclically rises from its own ashes. Phoenix tattoos represent overcoming devastating loss, personal transformation, and the indomitable human spirit. Each time it rises, it emerges stronger than before.',
         origin: 'Greek, Egyptian, Chinese',
@@ -196,11 +210,13 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         origin: 'Chinese, Japanese, European',
         culturalNotes: 'In Chinese culture, dragons are symbols of imperial power, strength, and good luck. In Japanese tattooing, dragons represent wisdom and protection. European dragons are typically malevolent, representing greed and destruction — the knight\'s foe.',
         variants: ['japanese dragon', 'chinese dragon', 'dragon and tiger', 'geometric dragon', 'dragon sleeve'],
+        gallerySvgs: ['dragon-1.svg','dragon-2.svg','dragon-3.svg'],
         externalSource: 'https://www.britannica.com/topic/dragon',
         sourceLabel: 'Britannica — Dragon',
       },
       {
         slug: 'koi-fish', name: 'Koi Fish', category: 'mythological',
+        gallerySvgs: ["koi-fish-1.svg", "koi-fish-2.svg"],
         meaning: 'Perseverance, determination, ambition, good fortune',
         desc: 'The koi fish tattoo represents overcoming adversity through determination. According to legend, a koi that swims upstream and climbs a waterfall becomes a dragon. Koi colors carry specific meanings: gold = wealth, black = success, red = love, blue = peace.',
         origin: 'Japanese, Chinese',
@@ -211,6 +227,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'griffin', name: 'Griffin', category: 'mythological',
+        gallerySvgs: ["griffin-1.svg", "griffin-2.svg"],
         meaning: 'Guardianship, courage, nobility, vigilance, divine power',
         desc: 'The griffin — part eagle, part lion — combines the king of birds and king of beasts. Griffin tattoos represent guardianship, nobility, and divine power. In heraldry, griffins protect treasures and symbolize military courage.',
         origin: 'Greek, Persian, Medieval heraldry',
@@ -221,6 +238,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'mermaid', name: 'Mermaid', category: 'mythological',
+        gallerySvgs: ["mermaid-1.svg", "mermaid-2.svg"],
         meaning: 'Mystery, seduction, duality, freedom, the unknown',
         desc: 'Mermaid tattoos blend human and oceanic elements — representing duality, mystery, and the allure of the unknown. They symbolize feminine power, independence, and the depth of emotion. Mermaids can also represent a connection to the sea.',
         origin: 'Greek, Norse, European folklore',
@@ -240,6 +258,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'mandala', name: 'Mandala', category: 'geometric',
+        gallerySvgs: ["mandala-1.svg", "mandala-2.svg"],
         meaning: 'Wholeness, unity, harmony, spiritual journey, cosmic order',
         desc: 'Mandala tattoos represent the universe and the self in perfect balance. Based on Hindu and Buddhist spiritual symbols, mandalas are circular designs that draw the eye inward toward the center — the point of focus and meditation.',
         origin: 'Hindu, Buddhist, Native American',
@@ -250,6 +269,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'compass', name: 'Compass', category: 'geometric',
+        gallerySvgs: ["compass-1.svg", "compass-2.svg"],
         meaning: 'Guidance, direction, travel, purpose, exploration',
         desc: 'Compass tattoos represent finding your way — both literally and metaphorically. They symbolize guidance, purpose, and the journey of life. A compass points true north, reminding the wearer to stay true to their path.',
         origin: 'Maritime, European exploration',
@@ -260,6 +280,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'moon', name: 'Moon', category: 'geometric',
+        gallerySvgs: ["moon-1.svg", "moon-2.svg"],
         meaning: 'Femininity, intuition, change, mystery, the subconscious',
         desc: 'Moon tattoos represent the cycles of life, feminine energy, and the mysterious power of the night. The crescent moon is associated with growth and new beginnings. A full moon represents completion and spiritual fullness.',
         origin: 'Global (all cultures)',
@@ -270,6 +291,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'arrow', name: 'Arrow', category: 'geometric',
+        gallerySvgs: ["arrow-1.svg", "arrow-2.svg"],
         meaning: 'Direction, focus, moving forward, survival, protection',
         desc: 'Arrow tattoos symbolize moving forward — an arrow can only be shot by pulling it backward. They represent focus, determination, and hitting your target. A broken arrow signifies peace or the end of a conflict.',
         origin: 'Native American, Greek, Global',
@@ -280,6 +302,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'star', name: 'Star', category: 'geometric',
+        gallerySvgs: ["star-1.svg", "star-2.svg"],
         meaning: 'Aspiration, guidance, excellence, hope, destiny',
         desc: 'Star tattoos represent reaching for the highest aspirations. A five-pointed star has varied meanings — from military rank to magical protection. The North Star (Nautical star) represents guidance and staying on course through life\'s journey.',
         origin: 'Global, Maritime, American',
@@ -290,6 +313,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'infinity', name: 'Infinity', category: 'geometric',
+        gallerySvgs: ["infinity-1.svg", "infinity-2.svg"],
         meaning: 'Eternity, limitlessness, unity, endless cycle',
         desc: 'The infinity symbol (∞) represents something without end — eternal love, limitless possibility, and the endless cycle of life. Infinity tattoos often pair with other symbols (arrows, hearts, names) to show a bond that has no end. A double infinity represents two lives intertwined forever.',
         origin: 'Mathematics (17th c.), Modern tattoo',
@@ -300,6 +324,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'sun', name: 'Sun', category: 'geometric',
+        gallerySvgs: ["sun-1.svg", "sun-2.svg"],
         meaning: 'Life, energy, vitality, truth, rebirth',
         desc: 'Sun tattoos represent the source of all life — energy, vitality, and the triumph of light over darkness. The rising sun symbolizes new beginnings and hope. A sun with a face (sunface) draws from Indigenous and Japanese imagery. The sun and moon together represent balance of masculine and feminine, day and night.',
         origin: 'Egyptian, Japanese, Inca, Global',
@@ -310,6 +335,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'galaxy', name: 'Galaxy', category: 'geometric',
+        gallerySvgs: ["galaxy-1.svg", "galaxy-2.svg"],
         meaning: 'Wonder, infinite possibility, the cosmos, perspective',
         desc: 'Galaxy tattoos capture the vastness of the universe — a reminder of how small our problems are against the cosmic scale. They represent wonder, infinite possibility, and the mystery of creation. Spiral galaxies echo the Fibonacci patterns found throughout nature.',
         origin: 'Modern / Scientific',
@@ -320,6 +346,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'comet', name: 'Comet', category: 'geometric',
+        gallerySvgs: ["comet-1.svg", "comet-2.svg"],
         meaning: 'Change, rare opportunity, destiny, a wish',
         desc: 'Comet tattoos symbolize rare and transformative moments — a once-in-a-lifetime opportunity or a wish made on a falling star. They represent change, destiny, and the beauty of fleeting events. A comet trailing across the skin suggests movement toward a fateful encounter.',
         origin: 'Global, Astronomical',
@@ -330,6 +357,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'planet', name: 'Planet', category: 'geometric',
+        gallerySvgs: ["planet-1.svg", "planet-2.svg"],
         meaning: 'Exploration, the unknown, individuality, the cosmos',
         desc: 'Planet tattoos represent exploration, curiosity, and our place in the universe. Saturn with its rings is the most popular — symbolizing time, boundaries, and structure. A planet can represent a personal world, a child, or the unknown awaiting discovery.',
         origin: 'Modern / Scientific',
@@ -340,6 +368,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'aurora', name: 'Aurora', category: 'geometric',
+        gallerySvgs: ["aurora-1.svg", "aurora-2.svg"],
         meaning: 'Hope, magic, transformation, wonder',
         desc: 'Aurora (northern lights) tattoos capture one of nature\'s most magical displays — shifting curtains of green and violet light. They represent hope after darkness, transformation, and the quiet wonder of the natural world. An aurora often marks a journey to see something rare and beautiful.',
         origin: 'Nordic, Indigenous (Sami, Inuit)',
@@ -359,6 +388,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'cross', name: 'Cross', category: 'religious',
+        gallerySvgs: ["cross-1.svg", "cross-2.svg"],
         meaning: 'Faith, sacrifice, salvation, hope, divine love',
         desc: 'The cross is the most recognized Christian symbol, representing Jesus Christ\'s sacrifice and the promise of eternal life. Cross tattoos express deep religious faith, hope, and spiritual devotion.',
         origin: 'Christian',
@@ -369,6 +399,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'eye-of-horus', name: 'Eye of Horus', category: 'religious',
+        gallerySvgs: ["eye-of-horus-1.svg", "eye-of-horus-2.svg"],
         meaning: 'Protection, royal power, good health, wisdom, intuition',
         desc: 'The Eye of Horus (Wedjat) is an ancient Egyptian symbol of protection, royal power, and good health. According to myth, Horus lost his left eye in battle with Set, and it was restored by Thoth — making it a symbol of healing and wholeness.',
         origin: 'Ancient Egyptian',
@@ -379,6 +410,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'hamsa', name: 'Hamsa', category: 'religious',
+        gallerySvgs: ["hamsa-1.svg", "hamsa-2.svg"],
         meaning: 'Protection, blessings, power, divine feminine, luck',
         desc: 'The hamsa (hand of Fatima / hand of Miriam) is a palm-shaped amulet protecting against the evil eye. Hamsa tattoos represent divine protection, blessings, and feminine power. Eyes, fish, or flowers often decorate the palm.',
         origin: 'Middle Eastern, Jewish, North African',
@@ -389,6 +421,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'om', name: 'Om / Aum', category: 'religious',
+        gallerySvgs: ["om-1.svg", "om-2.svg"],
         meaning: 'Universal sound, spiritual essence, creation, divine consciousness',
         desc: 'The Om symbol represents the primordial sound of the universe — the vibration from which all creation emerged. Om tattoos connect the wearer to higher consciousness, inner peace, and the unity of body, mind, and spirit.',
         origin: 'Hindu, Buddhist, Jain',
@@ -408,6 +441,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'tribal', name: 'Tribal', category: 'cultural',
+        gallerySvgs: ["tribal-1.svg", "tribal-2.svg"],
         meaning: 'Identity, heritage, strength, belonging, ancestral connection',
         desc: 'Tribal tattoo designs draw from Polynesian, Maori, Native American, and African traditions. Each pattern carries specific meanings — spirals for new life, waves for ocean journeys, spearheads for warriors. Tribal tattoos mark identity, status, and life achievements.',
         origin: 'Polynesian, Maori, Native American, African',
@@ -418,6 +452,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'celtic-knot', name: 'Celtic Knot', category: 'cultural',
+        gallerySvgs: ["celtic-knot-1.svg", "celtic-knot-2.svg"],
         meaning: 'Eternity, interconnectedness, continuity, spiritual unity',
         desc: 'Celtic knot tattoos feature continuous, interlaced paths with no beginning or end — symbolizing eternity and the interconnected cycle of life, death, and rebirth. Each design carries specific meanings in Celtic tradition.',
         origin: 'Celtic (Irish, Scottish, Welsh)',
@@ -428,6 +463,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'dreamcatcher', name: 'Dreamcatcher', category: 'cultural',
+        gallerySvgs: ["dreamcatcher-1.svg", "dreamcatcher-2.svg"],
         meaning: 'Protection, filtering negativity, good dreams, spiritual guidance',
         desc: 'Dreamcatcher tattoos are based on the Ojibwe tradition of weaving a web to catch bad dreams and let good ones through. They represent protection, filtering negativity, and spiritual connection. Feathers and beads add personal meaning.',
         origin: 'Ojibwe (Chippewa), Native American',
@@ -438,6 +474,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'egyptian', name: 'Egyptian Symbols', category: 'cultural',
+        gallerySvgs: ["egyptian-1.svg", "egyptian-2.svg"],
         meaning: 'Eternal life, divine power, protection, wisdom, judgment',
         desc: 'Ancient Egyptian tattoo symbols include the ankh (eternal life), the scarab beetle (rebirth), the eye of Horus (protection), and the pyramid (ascension). Egyptian-inspired tattoos draw from a 3,000-year-old civilization of powerful mythology and iconic art.',
         origin: 'Ancient Egyptian',
@@ -457,6 +494,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'tree-of-life', name: 'Tree of Life', category: 'nature',
+        gallerySvgs: ["tree-of-life-1.svg", "tree-of-life-2.svg"],
         meaning: 'Growth, family roots, connection, strength, immortality',
         desc: 'The tree of life tattoo represents the connection between heaven, earth, and the underworld. Its roots dig deep while its branches reach for the sky — symbolizing personal growth, family heritage, and the cycle of life.',
         origin: 'Norse, Celtic, Biblical, Buddhist',
@@ -467,6 +505,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'wave', name: 'Wave', category: 'nature',
+        gallerySvgs: ["wave-1.svg", "wave-2.svg"],
         meaning: 'Power, change, flow of life, resilience, freedom',
         desc: 'The wave tattoo embodies the raw power and constant motion of the ocean. The Great Wave off Kanagawa by Hokusai is the most referenced wave image in tattooing. Waves represent life\'s ups and downs, resilience, and the flow of change.',
         origin: 'Japanese, Maritime, Global',
@@ -477,6 +516,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'mountain', name: 'Mountain', category: 'nature',
+        gallerySvgs: ["mountain-1.svg", "mountain-2.svg"],
         meaning: 'Stability, ambition, endurance, solitude, perspective',
         desc: 'Mountain tattoos represent standing tall against adversity, reaching for higher goals, and finding peace in solitude. Mountains symbolize the journey of life — the climb is hard but the view from the top is worth it.',
         origin: 'Japanese, Native American, Global',
@@ -487,6 +527,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'feather', name: 'Feather', category: 'nature',
+        gallerySvgs: ["feather-1.svg", "feather-2.svg"],
         meaning: 'Freedom, flight, truth, lightness, spiritual connection',
         desc: 'Feather tattoos symbolize freedom, flight, and spiritual elevation. In many Native American cultures, feathers are sacred gifts representing honor and connection to the divine. A feather can also represent truth (weighing the heart against Maat\'s feather in Egyptian tradition).',
         origin: 'Native American, Egyptian, Global',
@@ -506,6 +547,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'anchor', name: 'Anchor', category: 'objects',
+        gallerySvgs: ["anchor-1.svg", "anchor-2.svg"],
         meaning: 'Stability, hope, steadfastness, maritime tradition, grounding',
         desc: 'Anchor tattoos have been a sailor tradition for centuries — representing stability, hope, and staying grounded through life\'s storms. An anchor keeps a ship secure in rough waters, just as faith or love keeps a person steady.',
         origin: 'Maritime, Christian',
@@ -516,6 +558,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'skull', name: 'Skull', category: 'objects',
+        gallerySvgs: ["skull-1.svg", "skull-2.svg"],
         meaning: 'Mortality, remembrance, transformation, fearlessness, rebellion',
         desc: 'Skull tattoos are among the most powerful and versatile designs. They represent the acceptance of mortality — memento mori (remember you must die). Skulls can signify rebellion (biker culture), remembrance of the dead (Day of the Dead), or triumph over fear.',
         origin: 'Global, Mexican, European, Pirate',
@@ -526,6 +569,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'heart', name: 'Heart', category: 'objects',
+        gallerySvgs: ["heart-1.svg", "heart-2.svg"],
         meaning: 'Love, life, emotion, courage, compassion, romance',
         desc: 'The heart is the universal symbol of love and emotion. Heart tattoos can represent romantic love, familial bonds, friendship, or self-love. A sacred heart adds religious devotion. A broken heart represents loss. Multiple hearts can symbolize family.',
         origin: 'Global, Sacred Heart (Christian)',
@@ -536,6 +580,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'key', name: 'Key', category: 'objects',
+        gallerySvgs: ["key-1.svg", "key-2.svg"],
         meaning: 'Unlocking potential, mystery, freedom, knowledge, new beginnings',
         desc: 'Key tattoos symbolize unlocking new possibilities, secrets waiting to be discovered, and access to hidden knowledge. A key can represent a new chapter — the key to a new home, a new relationship, or personal growth.',
         origin: 'Global, European, Christian',
@@ -555,6 +600,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'geometric', name: 'Geometric', category: 'modern',
+        gallerySvgs: ["geometric-1.svg", "geometric-2.svg"],
         meaning: 'Precision, order, balance, mathematical beauty, harmony',
         desc: 'Geometric tattoo styles use precise shapes — triangles, circles, lines, and patterns — to create aesthetically striking designs. They represent order in chaos, mathematical beauty, and the search for balance. Sacred geometry elements like the flower of life add spiritual depth.',
         origin: 'Global contemporary',
@@ -565,6 +611,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'watercolor', name: 'Watercolor', category: 'modern',
+        gallerySvgs: ["watercolor-1.svg", "watercolor-2.svg"],
         meaning: 'Creativity, emotion, flow, artistic expression, freedom',
         desc: 'Watercolor tattoos mimic brush strokes and pigment blooms, creating soft, flowing designs without bold outlines. They represent artistic freedom, emotional depth, and the beauty of imperfection. Popular subjects include flowers, animals, and abstract shapes.',
         origin: 'Global contemporary (emerged 2010s)',
@@ -575,6 +622,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'minimalist', name: 'Minimalist', category: 'modern',
+        gallerySvgs: ["minimalist-1.svg", "minimalist-2.svg"],
         meaning: 'Simplicity, elegance, clarity, intentionality, modern aesthetic',
         desc: 'Minimalist tattoo designs use fine lines, simple shapes, and negative space to create elegant, understated statements. The philosophy is less is more — each line carries meaning without excessive detail.',
         origin: 'Global contemporary',
@@ -585,6 +633,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'abstract', name: 'Abstract', category: 'modern',
+        gallerySvgs: ["abstract-1.svg", "abstract-2.svg"],
         meaning: 'Creativity, individuality, emotion, breaking conventions, depth',
         desc: 'Abstract tattoos move beyond literal representation into expressive shapes, splashes, and forms. They represent individuality and creative freedom — each design is unique to the wearer. Abstract work often responds to body contours and movement.',
         origin: 'Global contemporary (emerged late 2000s)',
@@ -604,6 +653,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'swallow', name: 'Swallow', category: 'birds',
+        gallerySvgs: ["swallow-1.svg", "swallow-2.svg"],
         meaning: 'Loyalty, return, hope, a sailor’s journey home',
         desc: 'Swallow tattoos are a classic maritime tradition — sailors earned a swallow for every 5,000 nautical miles sailed, and believed a swallow would carry their soul home if they died at sea. Swallows represent loyalty, return, and the hope of coming back. A pair of swallows often symbolizes two people who always find their way back to each other.',
         origin: 'Maritime, Sailor Jerry tradition',
@@ -618,6 +668,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'hummingbird', name: 'Hummingbird', category: 'birds',
+        gallerySvgs: ["hummingbird-1.svg", "hummingbird-2.svg"],
         meaning: 'Joy, resilience, energy, living in the moment',
         desc: 'Hummingbird tattoos celebrate the small but mighty — a creature with extraordinary energy and a zest for life. They represent joy, resilience, and the ability to find sweetness even in hard times. In many traditions, a hummingbird is a visiting spirit or a messenger of love.',
         origin: 'Native American, Aztec',
@@ -628,6 +679,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'dove', name: 'Dove', category: 'birds',
+        gallerySvgs: ["dove-1.svg", "dove-2.svg"],
         meaning: 'Peace, love, purity, hope, the Holy Spirit',
         desc: 'Dove tattoos are universal symbols of peace and love. A dove with an olive branch represents hope and reconciliation. In Christian art, a white dove embodies the Holy Spirit and purity. Doves also symbolize the soul released from the body and enduring love between partners.',
         origin: 'Biblical, Global',
@@ -638,6 +690,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'raven', name: 'Raven', category: 'birds',
+        gallerySvgs: ["raven-1.svg", "raven-2.svg"],
         meaning: 'Intelligence, mystery, transformation, messenger',
         desc: 'Raven tattoos carry deep, dual symbolism — wisdom and omen, creation and death. The raven is a clever trickster and a messenger between worlds. In some cultures it is a bringer of light; in others, a companion of the battlefield. A raven represents intelligence, mystery, and transformation.',
         origin: 'Norse, Native American, Celtic',
@@ -657,6 +710,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'constellation', name: 'Constellation', category: 'zodiac',
+        gallerySvgs: ["constellation-1.svg", "constellation-2.svg"],
         meaning: 'Guidance, destiny, connection to the stars',
         desc: 'Constellation tattoos map the night sky onto skin — a personal piece of the cosmos. They represent guidance, destiny, and our connection to something larger. A custom constellation can encode a birth date, a lost loved one’s sign, or a meaningful place and time.',
         origin: 'Global, Astronomical',
@@ -671,6 +725,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'pisces', name: 'Pisces', category: 'zodiac',
+        gallerySvgs: ["pisces-1.svg", "pisces-2.svg"],
         meaning: 'Intuition, empathy, duality, flow',
         desc: 'Pisces tattoos represent the final zodiac sign — intuitive, empathetic, and deeply feeling. The two fish swimming in opposite directions symbolize duality: the material and the spiritual, the conscious and the subconscious. Pisces imagery suits those who live by emotion and intuition.',
         origin: 'Astrological (Western), Greco-Roman',
@@ -681,6 +736,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'scorpio', name: 'Scorpio', category: 'zodiac',
+        gallerySvgs: ["scorpio-1.svg", "scorpio-2.svg"],
         meaning: 'Passion, transformation, intensity, protection',
         desc: 'Scorpio tattoos embody intensity — passion, transformation, and magnetic mystery. As a fixed water sign, Scorpio is associated with death and rebirth, secrecy, and fierce loyalty. The scorpion’s sting represents protection and the power to defend what matters.',
         origin: 'Astrological (Western), Mesopotamian',
@@ -691,6 +747,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'gemini', name: 'Gemini', category: 'zodiac',
+        gallerySvgs: ["gemini-1.svg", "gemini-2.svg"],
         meaning: 'Duality, balance, communication, curiosity',
         desc: 'Gemini tattoos celebrate the twins — duality, balance, and the meeting of opposites. They represent communication, curiosity, and the many facets of a single person. Gemini imagery suits siblings, best friends, or anyone who embraces their contradictions.',
         origin: 'Astrological (Western), Greco-Roman',
@@ -710,6 +767,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'bee', name: 'Bee', category: 'insects',
+        gallerySvgs: ["bee-1.svg", "bee-2.svg"],
         meaning: 'Community, hard work, sweetness, loyalty',
         desc: 'Bee tattoos celebrate the power of community — tireless work, cooperation, and the sweetness that comes from it. Bees represent loyalty to the hive, productivity, and the importance of every small role. A bee can honor a hardworking spirit or a close-knit family.',
         origin: 'Global, Egyptian, Neolithic',
@@ -724,6 +782,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'spider', name: 'Spider', category: 'insects',
+        gallerySvgs: ["spider-1.svg", "spider-2.svg"],
         meaning: 'Creation, patience, destiny, feminine power',
         desc: 'Spider tattoos weave themes of creation and patience — the spinner of fate and the maker of intricate plans. The spider represents feminine power (the weaver goddess), careful strategy, and the interconnectedness of all things. A spider’s web suggests destiny and the paths we spin.',
         origin: 'Global, Native American, Greek',
@@ -734,6 +793,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'dragonfly', name: 'Dragonfly', category: 'insects',
+        gallerySvgs: ["dragonfly-1.svg", "dragonfly-2.svg"],
         meaning: 'Change, adaptability, lightness, rebirth',
         desc: 'Dragonfly tattoos symbolize change and the lightness of being. Their iridescent wings represent adaptability and the beauty of living in the moment. In many cultures, dragonflies are messengers from the spirit world or symbols of renewal after hardship.',
         origin: 'Japanese, Native American, Global',
@@ -744,6 +804,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'ladybug', name: 'Ladybug', category: 'insects',
+        gallerySvgs: ["ladybug-1.svg", "ladybug-2.svg"],
         meaning: 'Luck, protection, love, childhood joy',
         desc: 'Ladybug tattoos are small charms of good fortune — a symbol of protection, luck, and simple joy. They represent love (a "love bug"), childhood innocence, and the belief that good things are coming. A ladybug is a lighthearted, hopeful design.',
         origin: 'European folklore, Global',
@@ -764,6 +825,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'whale', name: 'Whale', category: 'sea-life',
+        gallerySvgs: ["whale-1.svg", "whale-2.svg"],
         meaning: 'Wisdom, calm, family, emotional depth',
         desc: 'Whale tattoos embody the quiet giant — wisdom, emotional depth, and the strength of family bonds. Whales communicate across vast oceans, symbolizing connection that transcends distance. A humpback’s song represents expression and the call of the deep.',
         origin: 'Global, Maori, Inuit',
@@ -778,6 +840,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'dolphin', name: 'Dolphin', category: 'sea-life',
+        gallerySvgs: ["dolphin-1.svg", "dolphin-2.svg"],
         meaning: 'Playfulness, friendship, protection, harmony',
         desc: 'Dolphin tattoos capture joy and intelligence — playful, social, and protective. Dolphins are seen as guardians of the sea, guiding sailors and swimmers to safety. They represent friendship, harmony, and the lighter side of the ocean’s power.',
         origin: 'Greek, Global, Polynesian',
@@ -788,6 +851,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'octopus', name: 'Octopus', category: 'sea-life',
+        gallerySvgs: ["octopus-1.svg", "octopus-2.svg"],
         meaning: 'Intelligence, adaptability, mystery, multiplicity',
         desc: 'Octopus tattoos are rich with meaning — intelligence, adaptability, and the ability to slip through any challenge. Eight arms suggest many paths and skills; the octopus’s ink and camouflage represent mystery and strategic retreat. It is a symbol of clever survival.',
         origin: 'Global, Hawaiian, Inuit',
@@ -803,6 +867,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         origin: 'Polynesian (tohu protector), Hawaiian (ʻaumākua guardian), Maori, Western sailor tradition, modern surf culture',
         culturalNotes: 'In Polynesian tattooing the shark (tohu) is a powerful protector — a symbol of strength, guidance, and safe passage over water. Hawaiian culture honors the shark as an ʻaumākua, a family guardian spirit. The niho (shark-tooth) pattern is worn as armor against harm across Polynesian and surf traditions. In modern surf and beach culture the shark reads as fearless drive and respect for the ocean power.',
         variants: ['hammerhead shark', 'shark tooth pattern (niho)', 'great white shark', 'shark silhouette', 'shark and wave'],
+        gallerySvgs: ['shark-great-white.svg','shark-hammerhead.svg','shark-tooth.svg','shark-wave.svg'],
         externalSource: 'https://www.britannica.com/animal/shark',
         sourceLabel: 'Britannica — Shark',
         metaDescription: 'Shark tattoo meaning: power, survival, fearlessness. Explore species (great white, hammerhead), pose, conservation, Jaws, and cultural roots.',
@@ -842,6 +907,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'clock', name: 'Clock', category: 'time',
+        gallerySvgs: ["clock-1.svg", "clock-2.svg"],
         meaning: 'Time, mortality, living in the moment, urgency',
         desc: 'Clock tattoos are reminders that time is finite — live now. A working clock face suggests punctuality and the passage of life; a broken or melting clock (in the style of Dalí) represents timelessness and defiance of mortality. Clocks often mark a specific hour that mattered.',
         origin: 'Victorian, Global',
@@ -856,6 +922,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'hourglass', name: 'Hourglass', category: 'time',
+        gallerySvgs: ["hourglass-1.svg", "hourglass-2.svg"],
         meaning: 'Mortality, urgency, balance of time, transition',
         desc: 'Hourglass tattoos visualize time running out — a symbol of mortality, urgency, and the balance between what was and what will be. The falling sand represents transition and the inevitability of change. An hourglass paired with wings (tempus fugit) means "time flies."',
         origin: 'Global, Medieval',
@@ -866,6 +933,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'pocket-watch', name: 'Pocket Watch', category: 'time',
+        gallerySvgs: ["pocket-watch-1.svg", "pocket-watch-2.svg"],
         meaning: 'Memory, legacy, lost time, remembrance',
         desc: 'Pocket watch tattoos carry a vintage, sentimental weight — memory, legacy, and the time we cannot get back. Often inherited and worn close to the heart, a pocket watch represents a connection to those who came before. It is a popular memorial and family tattoo.',
         origin: 'Victorian, Global',
@@ -885,6 +953,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
     symbols: [
       {
         slug: 'name-initial', name: 'Name / Initial', category: 'words',
+        gallerySvgs: ["name-initial-1.svg", "name-initial-2.svg"],
         meaning: 'Identity, love, remembrance of a person',
         desc: 'Name and initial tattoos turn a person into permanent art — a partner, child, parent, or self. They represent love, identity, and remembrance. A name keeps someone close; an initial distills identity to its essence. This is one of the oldest and most personal tattoo forms.',
         origin: 'Global, All eras',
@@ -899,6 +968,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'quote', name: 'Quote / Word', category: 'words',
+        gallerySvgs: ["quote-1.svg", "quote-2.svg"],
         meaning: 'Personal belief, inspiration, a life motto',
         desc: 'Quote and single-word tattoos make a private philosophy public. A word like "breathe," "strength," or "free" is a daily anchor; a short quote captures a turning point or value. The right words become a lifelong mantra worn on the skin.',
         origin: 'Global, Contemporary',
@@ -909,6 +979,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'coordinate', name: 'Coordinate', category: 'words',
+        gallerySvgs: ["coordinate-1.svg", "coordinate-2.svg"],
         meaning: 'A meaningful place, journey, belonging',
         desc: 'Coordinate tattoos encode a location — latitude and longitude of a birthplace, a home, a meeting spot, or a place that changed you. They are subtle, deeply personal, and readable only to those who know. A coordinate turns geography into identity.',
         origin: 'Global, Contemporary',
@@ -919,6 +990,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'roman-numeral', name: 'Roman Numeral', category: 'words',
+        gallerySvgs: ["roman-numeral-1.svg", "roman-numeral-2.svg"],
         meaning: 'A significant date, order, permanence',
         desc: 'Roman numeral tattoos mark dates and numbers with timeless elegance — a birthday, anniversary, or the date of a life event. They read as refined and permanent, avoiding the dated look of Arabic digits. A numeral can also signify rank, order, or a chapter number.',
         origin: 'Global, Classical',
