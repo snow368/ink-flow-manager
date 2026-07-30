@@ -167,6 +167,9 @@ export const EEAT_PUBLISHED = '2026-07-12';
 // actually changes, not when it is merely pushed live.
 export const EEAT_UPDATED: Record<string, string> = {
   shark: '2026-07-15',
+  'great-white': '2026-07-30',
+  hammerhead: '2026-07-30',
+  'shark-tooth': '2026-07-30',
 };
 export const EEAT_EXPERIENCE =
   'Drawn from meaning-intake notes across 500+ InkFlow studios: clients most often ask what a design symbolizes during the first consultation. We built this directory so artists can answer those questions on the spot, accurately. For scale: about 30% of U.S. adults now have at least one tattoo (Ipsos, 2019), up from 21% in 2012, and the U.S. tattoo industry reached $1.3 billion in 2025 (IBISWorld) — tattoo is now mainstream, not fringe.';
