@@ -1,16 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Eye of Horus tattoo design line art">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Eye of Horus tattoo design">
   <defs>
     <radialGradient id="bg" cx="50%" cy="42%" r="75%">
       <stop offset="0%" stop-color="#16213a"/>
       <stop offset="100%" stop-color="#0f172a"/>
     </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fde68a"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </radialGradient>
   </defs>
   <rect width="512" height="512" fill="url(#bg)"/>
-  <rect x="20" y="20" width="472" height="472" rx="18" fill="none" stroke="#c9a227" stroke-width="2" opacity="0.85"/>
-  <rect x="30" y="30" width="452" height="452" rx="12" fill="none" stroke="#c9a227" stroke-width="1" opacity="0.35"/>
-  <text x="256" y="64" text-anchor="middle" font-family="Georgia, serif" font-size="12" letter-spacing="3" fill="#64748b">TATTOO MEANING</text>
-  <g stroke="#2dd4bf" stroke-width="2.5" fill="none"><rect x="204" y="144" width="104" height="104" transform="rotate(45 256 196)"/><circle cx="256" cy="196" r="20"/></g><text x="256" y="210" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-weight="700" fill="#2dd4bf">E</text>
-  <line x1="176" y1="372" x2="336" y2="372" stroke="#c9a227" stroke-width="1" opacity="0.5"/>
-  <text x="256" y="408" text-anchor="middle" font-family="Georgia, serif" font-size="32" font-weight="700" letter-spacing="1" fill="#f1f5f9">EYE OF HORUS</text>
-  <text x="256" y="438" text-anchor="middle" font-family="Georgia, serif" font-size="13" letter-spacing="2" fill="#94a3b8">RELIGIOUS</text>
+  <rect x="20" y="20" width="472" height="472" rx="18" fill="none" stroke="#f59e0b" stroke-width="2" opacity="0.9"/>
+  <rect x="30" y="30" width="452" height="452" rx="12" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.35"/>
+  <text x="256" y="64" text-anchor="middle" font-family="Georgia, serif" font-size="12" letter-spacing="3" fill="#f59e0b" opacity="0.85">TATTOO MEANING</text>
+  <g><circle cx="256" cy="196" r="92" fill="url(#glow)"/><rect x="204" y="144" width="104" height="104" rx="10" transform="rotate(45 256 196)" fill="#fde68a" opacity="0.18" stroke="#f59e0b" stroke-width="2.5"/><circle cx="256" cy="196" r="20" fill="none" stroke="#f59e0b" stroke-width="2"/><text x="256" y="210" text-anchor="middle" font-family="Georgia, serif" font-size="34" font-weight="700" fill="#f59e0b">E</text></g>
+  <line x1="176" y1="372" x2="336" y2="372" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+  <text x="256" y="408" text-anchor="middle" font-family="Georgia, serif" font-size="32" font-weight="700" letter-spacing="1" fill="#f8fafc">EYE OF HORUS</text>
+  <text x="256" y="438" text-anchor="middle" font-family="Georgia, serif" font-size="13" letter-spacing="2" fill="#fde68a">RELIGIOUS</text>
 </svg>
