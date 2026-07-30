@@ -5,6 +5,7 @@ import Navbar from '../../../components/Navbar.astro';
 import Footer from '../../../components/Footer.astro';
 import FAQSchema from '../../../components/FAQSchema.astro';
 import { ALL_MEANINGS, getMeaningBySlug, TATTOO_CATEGORIES } from '../../../data/tattoo-meanings';
+import { getVariantsForSymbol } from '../../../data/tattoo-meaning-variants';
 import { CUSTOM_SECTIONS } from '../../../data/tattoo-meanings-custom-sections';
 import { EEAT_AUTHOR, EEAT_PUBLISHED, EEAT_UPDATED, CATEGORY_EEAT } from '../../../data/tattoo-category-content';
 import GallerySection from '../../../components/GallerySection.astro';
@@ -206,6 +207,16 @@ const symbolFaqs = [
       <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <h2 class="text-xl font-bold text-white">{section.heading}</h2>
         <p class="mt-3 text-gray-400 leading-relaxed">{section.text}</p>
+        {section.links && section.links.length > 0 && (
+          <p class="mt-3 text-sm">
+            {section.links.map((l, i) => (
+              <>
+                {i > 0 && <span class="text-gray-600 mx-2">·</span>}
+                <a href={l.href} class="text-accent-400 hover:underline">{l.label} →</a>
+              </>
+            ))}
+          </p>
+        )}
       </div>
     </section>
   ))}
@@ -254,10 +265,17 @@ const symbolFaqs = [
         <p class="mt-2 text-sm text-gray-500">Explore the shark tattoo variations and related ocean symbols.</p>
         <div class="mt-6 grid gap-4 sm:grid-cols-2">
           {meaning.relatedSymbols!.map(slug => {
-            const r = ALL_MEANINGS.find(m => m.slug === slug);
-            const href = r ? `/tattoo-meaning/${catSeg(r.category)}/${r.slug}-tattoo-meaning` : `/tattoo-meaning/${seg}/${slug}-tattoo-meaning`;
-            const label = r ? r.name : slug;
-            const sub = r ? r.meaning : '';
+            // 1) variation subpage of THIS symbol (hub-and-spoke, 3-level URL)
+            const v = getVariantsForSymbol(meaning.slug).find(x => x.slug === `${slug}-tattoo-meaning` || x.slug === slug);
+            // 2) top-level symbol page (2-level URL)
+            const r = v ? undefined : ALL_MEANINGS.find(m => m.slug === slug);
+            const href = v
+              ? `/tattoo-meaning/${seg}/${meaning.slug}-tattoo-meaning/${v.slug}`
+              : r
+                ? `/tattoo-meaning/${catSeg(r.category)}/${r.slug}-tattoo-meaning`
+                : `/tattoo-meaning/${seg}/${slug}-tattoo-meaning`;
+            const label = v ? v.name : r ? r.name : slug;
+            const sub = v ? v.meaning : r ? r.meaning : '';
             return (
               <a href={href} class="group flex items-center gap-4 rounded-xl border border-ink-800 bg-ink-900/30 p-4 hover:border-accent-500/30 transition-all">
                 <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-ink-800/50 text-center text-2xl text-gray-400 group-hover:text-accent-400 transition-colors">
