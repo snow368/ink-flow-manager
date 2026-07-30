@@ -88,46 +88,25 @@ const articleJson = JSON.stringify({
   about: { '@type': 'Thing', name: `${variant.name} meaning` },
 });
 
-const breadcrumbJson = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
-    { '@type': 'ListItem', position: 2, name: 'Tattoo Meanings', item: `${site}/tattoo-meaning` },
-    ...(category
-      ? [{
-          '@type': 'ListItem',
-          position: 3,
-          name: category.name,
-          item: `${site}/tattoo-meaning/${seg}`,
-        }]
-      : []),
-    ...(parent
-      ? [{
-          '@type': 'ListItem',
-          position: category ? 4 : 3,
-          name: parent.name,
-          item: parentHref,
-        }]
-      : []),
-    {
-      '@type': 'ListItem',
-      position: category ? 5 : (parent ? 4 : 3),
-      name: variant.name,
-      item: canonical,
-    },
-  ],
-});
+// Breadcrumb trail fed to BaseLayout (Home > Tattoo Meanings > Category > Symbol > Variant).
+// BaseLayout emits the single canonical BreadcrumbList JSON-LD + visible <nav> from this,
+// so we drop the separate breadcrumb <script> to avoid a duplicate breadcrumb block.
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Tattoo Meanings', href: '/tattoo-meaning' },
+  ...(category ? [{ label: category.name, href: `/tattoo-meaning/${seg}` }] : []),
+  ...(parent ? [{ label: parent.name, href: parentHref }] : []),
+  { label: variant.name },
+];
 
 const variantFaqs = variant.faqs ?? [];
 ---
 
-<BaseLayout lastUpdated={EEAT_PUBLISHED} author="Sarah Chen">
+<BaseLayout breadcrumbs={breadcrumbs} lastUpdated={EEAT_PUBLISHED} author="Sarah Chen">
   <SEOHead slot="head" title={pageTitle} description={pageDesc} appSchema={false} disableBreadcrumb />
   <Navbar />
 
   <script type="application/ld+json" set:html={articleJson} />
-  <script type="application/ld+json" set:html={breadcrumbJson} />
   {variantFaqs.length > 0 && <FAQSchema questions={variantFaqs} />}
 
   <!-- Hero -->

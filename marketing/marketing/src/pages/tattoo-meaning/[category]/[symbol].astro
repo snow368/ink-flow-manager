@@ -82,28 +82,16 @@ const articleJson = JSON.stringify({
   },
   about: { '@type': 'Thing', name: `${meaning.name} tattoo meaning` },
 });
-// Breadcrumb trail: Home > Meanings > Category > Symbol
-const breadcrumbJson = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: `${site}/` },
-    { '@type': 'ListItem', position: 2, name: 'Tattoo Meanings', item: `${site}/tattoo-meaning` },
-    ...(category
-      ? [{
-          '@type': 'ListItem',
-          position: 3,
-          name: category.name,
-          item: `${site}/tattoo-meaning/${seg}`,
-        }, {
-          '@type': 'ListItem',
-          position: 4,
-          name: meaning.name,
-          item: canonical,
-        }]
-      : [{ '@type': 'ListItem', position: 3, name: meaning.name, item: canonical }]),
-  ],
-});
+// Breadcrumb trail fed to BaseLayout (Home > Tattoo Meanings > Category > Symbol).
+// BaseLayout renders the visible <nav> AND a single BreadcrumbList JSON-LD from
+// this array, so we no longer emit a second breadcrumb <script> — keeps exactly
+// one canonical breadcrumb whose labels match the visible nav (Google requirement).
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Tattoo Meanings', href: '/tattoo-meaning' },
+  ...(category ? [{ label: category.name, href: `/tattoo-meaning/${seg}` }] : []),
+  { label: meaning.name },
+];
 
 // FAQPage schema: start from REAL symbol fields (no fabricated content), then
 // append any per-symbol `faqs` entries declared in the data file (also real).
@@ -128,12 +116,11 @@ const symbolFaqs = [
 ];
 ---
 
-<BaseLayout lastUpdated={lastUpdated} author="Sarah Chen">
+<BaseLayout breadcrumbs={breadcrumbs} lastUpdated={lastUpdated} author="Sarah Chen">
   <SEOHead slot="head" title={pageTitle} description={pageDesc} appSchema={false} disableBreadcrumb />
   <Navbar />
 
   <script type="application/ld+json" set:html={articleJson} />
-  <script type="application/ld+json" set:html={breadcrumbJson} />
   <FAQSchema questions={symbolFaqs} />
 
   <!-- Hero -->
