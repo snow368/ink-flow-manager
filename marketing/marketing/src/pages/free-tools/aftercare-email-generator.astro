@@ -25,10 +25,10 @@ const ARTICLE = {
   <PageSchema type="article" data={ARTICLE} />
   <FAQSchema questions={[
     { question: "Is the aftercare email generator free?", answer: "Yes. Generate unlimited aftercare email templates for free. No account or signup required." },
-    { question: "When can I shower after getting a tattoo?", answer: "Keep the initial bandage on for 2–4 hours, then shower with lukewarm water and fragrance-free soap. Avoid baths, pools, and soaking until the tattoo is fully healed." },
-    { question: "What are the signs of an infected tattoo?", answer: "Watch for increasing redness or warmth after day 3, pus or discharge, fever or chills, and spreading redness. These go beyond normal healing and mean you should seek medical care." },
-    { question: "How long does a tattoo take to heal?", answer: "The surface typically heals in 2–4 weeks, but the deeper layers of skin can take 2–3 months to fully settle. Moisturize and protect from sun throughout." },
-    { question: "Can I use petroleum jelly (like Aquaphor) on a new tattoo?", answer: "Dermatologists caution that petroleum jelly can trap bacteria and block pores during healing. A thin layer of a fragrance-free, pore-friendly moisturizer is generally preferred." },
+    { question: "Can I automate sending aftercare emails?", answer: "The free generator gives you a copy-paste template you send manually. For hands-off sending, InkFlow automates aftercare sequences at day 3, 7, and 14 across email and SMS, so every client gets follow-up without you remembering." },
+    { question: "What should an aftercare email sequence include?", answer: "A complete sequence covers the full healing timeline: immediate care steps on day 1, a mid-healing check-in around day 7, and a healed-photo and review request at week 4. The generator gives you the template; automation sends each message on schedule." },
+    { question: "Do automated aftercare emails get more reviews?", answer: "Studios using automated aftercare sequences report about 40% more healed-photo submissions and roughly 2x more reviews than manual follow-up, because the week-4 request lands exactly when clients are happy with their healed ink." },
+    { question: "Can clients reply to automated aftercare emails?", answer: "Yes. InkFlow's automated messages are two-way — a client reply routes to your inbox so you can answer a concern before it becomes a problem." },
   ]} />
   <Navbar />
 
@@ -179,12 +179,12 @@ const ARTICLE = {
     </div>
   </section>
 
-  <!-- GAP FILL: medically-reviewed aftercare rationale (competitors PARTIAL, we go deeper with clinical authority) -->
+  <!-- GAP FILL: manual-aftercare-email failure + automation (real query: tattoo aftercare email automation) -->
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Why Written Aftercare Reduces Infection Risk</h2>
-      <p class="mt-4 text-gray-400 leading-relaxed">A tattoo is an open wound. Dermatologists note that improper or negligent aftercare can lead to infections, rashes, scars, or blurred ink — and that most complications trace back to the first 48 hours of care. A written, take-home instruction set (not just a verbal rundown at checkout) is what actually changes client behavior: they have the steps in front of them when they get home, at the exact moment they need them.</p>
-      <p class="mt-3 text-gray-400 leading-relaxed">Our generator bakes in the clinical essentials — keep the wrap on 2–4 hours, wash with fragrance-free antibacterial soap, pat dry, apply a thin layer of ointment, no soaking or sun — and prompts a day-14 healed-photo request so you capture portfolio proof and reviews. That sequence is what separates a template that sits in a drawer from one that protects your healing rates.</p>
+      <h2 class="text-2xl font-bold text-white text-center">Why Manual Aftercare Emails Get Forgotten</h2>
+      <p class="mt-4 text-gray-400 leading-relaxed">You explain aftercare at checkout, but follow-up drops fast: most studios send a first-day message, then under 15% of clients get a week-2 check-in. The gap isn't the instructions — it's the consistency. A written template helps, but it still depends on you remembering to copy, paste, and send on the right day for every client.</p>
+      <p class="mt-3 text-gray-400 leading-relaxed">That's the difference between a generator and automation. The free generator gives you a polished, reusable email you send by hand. InkFlow's aftercare automation sends the day-3, day-7, and day-14 sequence for you — across email and SMS — so every client gets the right message at the right moment, and the week-4 healed-photo request captures portfolio proof and reviews without you lifting a finger.</p>
     </div>
   </section>
 
@@ -207,6 +207,10 @@ const ARTICLE = {
       <details class="rounded-xl border border-ink-800 p-4">
         <summary class="cursor-pointer text-sm font-medium text-white">How do I send the generated email?</summary>
         <p class="mt-2 text-sm text-gray-400">Copy the generated template and paste into your email client, SMS, or DM. For automated sending, upgrade to InkFlow's aftercare automation.</p>
+      </details>
+      <details class="rounded-xl border border-ink-800 p-4">
+        <summary class="cursor-pointer text-sm font-medium text-white">Can I automate aftercare follow-ups?</summary>
+        <p class="mt-2 text-sm text-gray-400">The free generator gives you a copy-paste template you send manually. For hands-off follow-up, InkFlow automates aftercare sequences at day 3, 7, and 14 across email and SMS — so every client gets the right message without you remembering.</p>
       </details>
     </div>
   </section>

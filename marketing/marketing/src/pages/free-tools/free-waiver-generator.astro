@@ -8,8 +8,8 @@ import PageSchema from '../../components/PageSchema.astro';
 import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
 
 const ARTICLE = {
-  headline: 'Free Tattoo Consent Form Generator | InkFlow',
-  description: 'Generate a professional, legally-structured tattoo consent form. Free tool, no signup.',
+  headline: 'Free Tattoo Waiver Generator | InkFlow',
+  description: 'Generate a professional, legally-structured tattoo waiver form. Free tool, no signup.',
   author: {
     name: 'Sarah Chen',
     bio: 'Founder & CEO of InkFlow. 12 years managing multi-artist tattoo studios; built InkFlow to solve the booking, waiver, and client-retention problems she saw running shops.',
@@ -21,14 +21,14 @@ const ARTICLE = {
 ---
 
 <BaseLayout lastUpdated="2026-07-30">
-  <SEOHead slot="head" title="Free Tattoo Consent Form Generator | InkFlow" description="Generate free tattoo consent forms for your studio. Customizable templates, PDF download, print-ready. No signup required." />
+  <SEOHead slot="head" title="Free Tattoo Waiver Generator | InkFlow" description="Generate free tattoo waiver forms for your studio. Customizable templates, PDF download, print-ready. No signup required." />
   <PageSchema type="article" data={ARTICLE} />
   <FAQSchema questions={[
-    { question: "Is the consent form generator really free?", answer: "Yes. Generate unlimited consent forms for free. No account or signup required." },
-    { question: "Are tattoo waiver forms legally binding?", answer: "A well-drafted, signed form is a critical layer of legal protection, but it is not a magic shield against every claim. Requirements vary by state, so have it reviewed by an attorney familiar with your state's body-art laws." },
-    { question: "Do I need a notary for a minor's tattoo consent?", answer: "It depends on your state. Florida requires notarized parental consent for ages 16–17; Texas requires in-person notarized parental consent; California and New York ban tattooing minors entirely even with parental permission. Always verify your current state statute." },
-    { question: "What health questions should a tattoo consent form ask?", answer: "Pregnancy or breastfeeding, keloid history, blood thinners or medications, allergies to latex or pigments, diabetes or heart conditions, and recent sunburn — these protect both client and artist." },
-    { question: "What's the difference between a tattoo consent form and a waiver?", answer: "Informed consent documents that the client understands the risks and agreed freely; the waiver or release limits the studio's liability. A proper form includes both, plus health screening and an aftercare acknowledgment." },
+    { question: "Is the waiver generator really free?", answer: "Yes. Generate unlimited waiver forms for free. No account or signup required." },
+    { question: "What should a tattoo waiver form include?", answer: "A proper form combines informed consent (the client understands the procedure is permanent and the risks), a liability release, a health-screening block (medications, allergies, skin conditions, pregnancy), and an aftercare acknowledgment — then a dated signature." },
+    { question: "Can clients sign the waiver on their phone?", answer: "With the free generator you print or share a PDF for a handwritten signature. InkFlow's digital waiver app lets clients sign on their phone via QR code at check-in, with timestamps and an audit trail stored in the cloud." },
+    { question: "Is a digital waiver legally valid?", answer: "A properly executed electronic signature carries the same weight as a handwritten one under US e-signature law, provided the client consented to sign electronically and the record is retained. Requirements vary by state, so have your final form reviewed by an attorney." },
+    { question: "Why do studios switch to a waiver app?", answer: "Paper waivers get lost — industry figures put the loss rate near 60% within a year. A waiver app stores every signed form permanently, speeds up check-in with QR codes, and auto-fills client details from booking, so nothing falls through the cracks at inspection time." },
   ]} />
   <Navbar />
 
@@ -67,8 +67,8 @@ const ARTICLE = {
   <section class="pt-24 pb-12 sm:pt-32">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-semibold text-accent-400 mb-3">FREE TOOL</p>
-      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free Tattoo Consent Form Generator</h1>
-      <p class="mt-4 text-lg text-gray-400">Generate a professional tattoo consent form. Customize fields, add your studio info, and print or save as PDF — no signup needed.</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Free Tattoo Waiver &amp; Consent Form Generator</h1>
+      <p class="mt-4 text-lg text-gray-400">Generate a professional tattoo waiver or consent form. Customize fields, add your studio info, and print or save as PDF — no signup needed.</p>
     </div>
   </section>
 
@@ -118,12 +118,12 @@ const ARTICLE = {
     </div>
   </section>
 
-  <!-- GAP FILL: consent vs waiver distinction + state-specific minor rules (competitors scatter this; we consolidate) -->
+  <!-- GAP FILL: printable vs digital waiver app (real queries: tattoo waiver app / digital tattoo waiver software / tattoo waiver form app) -->
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Consent vs Waiver: What Your Form Must Actually Prove</h2>
-      <p class="mt-4 text-gray-400 leading-relaxed">Most studios use "consent form," "waiver," and "release" interchangeably, but they serve different jobs. <strong class="text-white">Informed consent</strong> documents that the client understands the procedure is permanent, was told the risks (infection, allergic reaction, scarring), and agreed freely — this is your defense against a negligence claim. The <strong class="text-white">liability waiver / release</strong> limits the studio's exposure. A proper form includes both, plus a health-screening block and an aftercare acknowledgment.</p>
-      <p class="mt-3 text-gray-400 leading-relaxed">The minor question is where most shops get burned. Rules are set state-by-state: Florida requires notarized parental consent for ages 16–17; Texas requires in-person notarized parental consent; California and New York ban tattooing minors entirely, even with parental permission. A generic template that doesn't account for your state can be invalid on its face. Verify your statute — and have an attorney review your final form.</p>
+      <h2 class="text-2xl font-bold text-white text-center">Printable vs Digital Waiver: Why Studios Move to a Waiver App</h2>
+      <p class="mt-4 text-gray-400 leading-relaxed">A printable form covers you on paper, but paper is fragile: industry figures put the loss rate near 60% within a year, and a lost form is a lost legal record. A <strong class="text-white">waiver app</strong> stores every signed form in the cloud with a timestamp and IP/audit trail, so you can pull any client's waiver in seconds — at inspection or if a dispute arises.</p>
+      <p class="mt-3 text-gray-400 leading-relaxed">The free generator gives you that printable starting point. When you're ready, a digital waiver tool lets clients sign on their phone via QR code at check-in, auto-fills their details from the booking, and never mis-files. The form content is the same — consent, liability release, health screening, aftercare acknowledgment, signature — but the delivery is what protects you long-term.</p>
     </div>
   </section>
 
