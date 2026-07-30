@@ -30,6 +30,8 @@ const ARTICLE = {
     { question: "What is a tattoo shop minimum?", answer: "Most shops won't book anything under $80–$150 even for a tiny tattoo — setup time, needles, ink, and sterilization cost the same regardless of size." },
     { question: "How much should I tip a tattoo artist?", answer: "15–25% is standard in the US, cash preferred; 15% is the floor even on large pieces. The shop's cut covers rent and supplies, not the artist's take-home." },
     { question: "Is a $100 custom tattoo a red flag?", answer: "In 2026, a professional custom forearm piece can't be done safely for $100 — shop rent, supplies, and the artist's take-home don't work. Very low prices often signal unsafe practice." },
+    { question: "Does placement affect tattoo cost?", answer: "Yes. Ribs, sternum, spine, neck, hands, and feet take more precision and patience, so experienced artists charge more there. Flat, accessible areas like forearms and calves are usually the standard rate." },
+    { question: "What affects tattoo price the most?", answer: "Artist hourly rate and how long the piece takes. Size sets the floor, but style and detail drive the hours — a small fine-line piece can cost less than a large simple one, and a renowned artist's rate multiplies every hour." },
   ]} />
   <Navbar />
 
@@ -122,6 +124,32 @@ const ARTICLE = {
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Cost + Margin</h3><p class="mt-1 text-xs text-gray-400">Factor in supplies (ink, needles, gloves), studio rent, utilities, insurance, and your desired hourly rate. Set prices that cover costs plus 30-50% profit.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white">Tiered by Artist</h3><p class="mt-1 text-xs text-gray-400">Different rates for apprentice, junior, senior, and guest artists. InkFlow's commission system handles automatic split per artist rate.</p></div>
       </div>
+    </div>
+  </section>
+
+  <!-- SERP GAP FILL: cost-by-style table (competitors inkstudio/generatetattoo both show style tables; we were missing it) -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">How Style Changes the Price</h2>
+      <p class="mt-3 text-center text-gray-400">Same size, very different cost — because style dictates how long the needle is in the skin.</p>
+      <div class="mt-8 overflow-hidden rounded-xl border border-ink-800">
+        <table class="w-full text-sm">
+          <thead><tr class="border-b border-ink-800 bg-ink-900/50">
+            <th class="px-5 py-3 text-left text-gray-300">Style</th>
+            <th class="px-5 py-3 text-center text-gray-300">Typical effect on price</th>
+            <th class="px-5 py-3 text-left text-gray-300">Why</th>
+          </tr></thead>
+          <tbody class="divide-y divide-ink-800">
+            <tr><td class="px-5 py-3 text-white">Fine line / minimalist</td><td class="px-5 py-3 text-center text-gray-400">Lower–standard</td><td class="px-5 py-3 text-gray-400">Small, precise detail work; fewer passes.</td></tr>
+            <tr><td class="px-5 py-3 text-white">Traditional / neo-traditional</td><td class="px-5 py-3 text-center text-gray-400">Standard</td><td class="px-5 py-3 text-gray-400">Bold, readable outlines; predictable time.</td></tr>
+            <tr><td class="px-5 py-3 text-white">Realism / color realism</td><td class="px-5 py-3 text-center text-accent-400">Higher</td><td class="px-5 py-3 text-gray-400">Layered shading, color packing, photo-accurate gradients.</td></tr>
+            <tr><td class="px-5 py-3 text-white">Watercolor</td><td class="px-5 py-3 text-center text-gray-400">Moderate–high</td><td class="px-5 py-3 text-gray-400">Blending and color work beyond basic fill.</td></tr>
+            <tr><td class="px-5 py-3 text-white">Japanese / biomechanical</td><td class="px-5 py-3 text-center text-accent-400">Higher–premium</td><td class="px-5 py-3 text-gray-400">Large composition, background, and custom drawing.</td></tr>
+            <tr><td class="px-5 py-3 text-white">Dotwork / geometric</td><td class="px-5 py-3 text-center text-accent-400">Higher</td><td class="px-5 py-3 text-gray-400">Time-intensive precision; many short passes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-xs text-gray-500 text-center">Color typically adds 25–50% over the same black-and-grey design because of packing time.</p>
     </div>
   </section>
 
