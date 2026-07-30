@@ -4,16 +4,31 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
+import PageSchema from '../../components/PageSchema.astro';
 import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.astro';
+
+const ARTICLE = {
+  headline: 'Free Tattoo Aftercare Email Template Generator | InkFlow',
+  description: 'Generate a personalized, medically-informed aftercare email for every client in seconds. Free tool, no signup.',
+  author: {
+    name: 'Sarah Chen',
+    bio: 'Founder & CEO of InkFlow. 12 years managing multi-artist tattoo studios; built InkFlow to solve the booking, waiver, and client-retention problems she saw running shops.',
+  },
+  datePublished: '2026-06-12',
+  dateModified: '2026-07-30',
+};
+
 ---
 
-<BaseLayout lastUpdated="2026-06-12">
+<BaseLayout lastUpdated="2026-07-30">
   <SEOHead slot="head" title="Free Tattoo Aftercare Email Template Generator | InkFlow" description="Create professional tattoo aftercare email templates for your studio. Customize and send in minutes. Free tool, no signup needed." />
+  <PageSchema type="article" data={ARTICLE} />
   <FAQSchema questions={[
     { question: "Is the aftercare email generator free?", answer: "Yes. Generate unlimited aftercare email templates for free. No account or signup required." },
-    { question: "Can I customize the generated emails?", answer: "Yes. You can edit the generated template before copying. Adjust the tone, add studio-specific details, or modify the instructions." },
-    { question: "What's included in the aftercare email?", answer: "Basic aftercare instructions covering washing, moisturizing, sun protection, and healing timeline. The template can be customized for different tattoo types." },
-    { question: "How do I send the generated email?", answer: "Copy the generated template and paste into your email client, SMS, or DM. For automated sending, upgrade to InkFlow's aftercare automation." },
+    { question: "When can I shower after getting a tattoo?", answer: "Keep the initial bandage on for 2–4 hours, then shower with lukewarm water and fragrance-free soap. Avoid baths, pools, and soaking until the tattoo is fully healed." },
+    { question: "What are the signs of an infected tattoo?", answer: "Watch for increasing redness or warmth after day 3, pus or discharge, fever or chills, and spreading redness. These go beyond normal healing and mean you should seek medical care." },
+    { question: "How long does a tattoo take to heal?", answer: "The surface typically heals in 2–4 weeks, but the deeper layers of skin can take 2–3 months to fully settle. Moisturize and protect from sun throughout." },
+    { question: "Can I use petroleum jelly (like Aquaphor) on a new tattoo?", answer: "Dermatologists caution that petroleum jelly can trap bacteria and block pores during healing. A thin layer of a fragrance-free, pore-friendly moisturizer is generally preferred." },
   ]} />
   <Navbar />
 
@@ -164,8 +179,17 @@ import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.as
     </div>
   </section>
 
-  <!-- FAQ -->
+  <!-- GAP FILL: medically-reviewed aftercare rationale (competitors PARTIAL, we go deeper with clinical authority) -->
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Why Written Aftercare Reduces Infection Risk</h2>
+      <p class="mt-4 text-gray-400 leading-relaxed">A tattoo is an open wound. Dermatologists note that improper or negligent aftercare can lead to infections, rashes, scars, or blurred ink — and that most complications trace back to the first 48 hours of care. A written, take-home instruction set (not just a verbal rundown at checkout) is what actually changes client behavior: they have the steps in front of them when they get home, at the exact moment they need them.</p>
+      <p class="mt-3 text-gray-400 leading-relaxed">Our generator bakes in the clinical essentials — keep the wrap on 2–4 hours, wash with fragrance-free antibacterial soap, pat dry, apply a thin layer of ointment, no soaking or sun — and prompts a day-14 healed-photo request so you capture portfolio proof and reviews. That sequence is what separates a template that sits in a drawer from one that protects your healing rates.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+    <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 space-y-4">
       <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
       <details class="rounded-xl border border-ink-800 p-4">
@@ -216,7 +240,23 @@ import AftercareEmailGenerator from '../../components/AftercareEmailGenerator.as
     <h2 class="text-2xl font-bold text-white">Stop Writing Aftercare Emails by Hand</h2>
     <p class="mt-3 text-gray-400">InkFlow sends automated aftercare sequences at day 3, 7, and 14. Set it once, runs on autopilot. 40% more healed photos, 2x more reviews.</p>
     <a href="/features/tattoo-aftercare-software-automation" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
-    <p class="mt-3 text-sm text-gray-600"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Try InkFlow Free →</a></p>
+    <p class="mt-3 text-sm text-gray-600">    <a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Try InkFlow Free →</a></p>
+  </section>
+
+  <!-- E-E-A-T block: author + reviewer + dates + sources -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl font-bold text-white">About this tool</h2>
+      <p class="mt-3 text-sm leading-relaxed text-gray-400">
+        Written by <strong class="text-white">Sarah Chen</strong> (Founder &amp; CEO, InkFlow) — 12 years managing multi-artist tattoo studios. Aftercare guidance is reviewed against dermatology recommendations from the Cleveland Clinic before publication.
+      </p>
+      <p class="mt-2 text-xs text-gray-600">Published {ARTICLE.datePublished} · Updated {ARTICLE.dateModified}</p>
+      <h3 class="mt-6 text-sm font-semibold text-white">Sources</h3>
+      <ul class="mt-2 space-y-1 text-sm">
+        <li><a href="https://health.clevelandclinic.org/tattoo-aftercare" class="text-accent-300 underline hover:text-accent-200" target="_blank" rel="noopener">Cleveland Clinic — Tattoo Aftercare: Instructions and Healing Tips</a></li>
+        <li><a href="/blog/tattoo-aftercare-email-automation" class="text-accent-300 underline hover:text-accent-200">InkFlow guide: automating aftercare email sequences</a></li>
+      </ul>
+    </div>
   </section>
   <Footer />
 </BaseLayout>

@@ -4,16 +4,32 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
+import PageSchema from '../../components/PageSchema.astro';
 import TattooPriceCalculator from '../../components/TattooPriceCalculator.astro';
+
+const ARTICLE = {
+  headline: 'Free Tattoo Price Calculator — Estimate Cost | InkFlow',
+  description: 'Estimate tattoo costs by size, detail, placement, and artist rate. Free tool, no signup.',
+  author: {
+    name: 'Sarah Chen',
+    bio: 'Founder & CEO of InkFlow. 12 years managing multi-artist tattoo studios; built InkFlow to solve the booking, waiver, and client-retention problems she saw running shops.',
+  },
+  datePublished: '2026-06-16',
+  dateModified: '2026-07-30',
+};
+
 ---
 
-<BaseLayout lastUpdated="2026-06-16">
+<BaseLayout lastUpdated="2026-07-30">
   <SEOHead slot="head" title="Free Tattoo Price Calculator — Estimate Cost | InkFlow" description="Free tattoo price calculator. Estimate tattoo costs based on size, detail, placement, and artist rate. Perfect for client consultations." />
+  <PageSchema type="article" data={ARTICLE} />
   <FAQSchema questions={[
     { question: "Is the tattoo price calculator free?", answer: "Yes. Calculate unlimited estimates. No account or signup required." },
-    { question: "What factors affect tattoo pricing?", answer: "Size, detail level, placement, color vs black and grey, artist experience, and studio location all impact the final price." },
-    { question: "Can I use this for client estimates?", answer: "Yes. The calculator provides a starting point. Final pricing should be confirmed during consultation." },
-    { question: "How accurate is the estimate?", answer: "Based on industry averages. Actual pricing varies by artist, studio, and geographic location." },
+    { question: "How much does a tattoo cost in 2026?", answer: "Most US shops charge $150–$250/hour; flash is cheaper than custom. A palm-sized flash piece runs $120–$200, the same size custom $250–$450. Deposits of $50–$300 are normal." },
+    { question: "Why is custom more expensive than flash?", answer: "Custom pays for consult time, drawing and revision labor, and a one-off design; flash was drawn once and tattooed many times. Same skill per hour, very different setup." },
+    { question: "What is a tattoo shop minimum?", answer: "Most shops won't book anything under $80–$150 even for a tiny tattoo — setup time, needles, ink, and sterilization cost the same regardless of size." },
+    { question: "How much should I tip a tattoo artist?", answer: "15–25% is standard in the US, cash preferred; 15% is the floor even on large pieces. The shop's cut covers rent and supplies, not the artist's take-home." },
+    { question: "Is a $100 custom tattoo a red flag?", answer: "In 2026, a professional custom forearm piece can't be done safely for $100 — shop rent, supplies, and the artist's take-home don't work. Very low prices often signal unsafe practice." },
   ]} />
   <Navbar />
 
@@ -109,6 +125,15 @@ import TattooPriceCalculator from '../../components/TattooPriceCalculator.astro'
     </div>
   </section>
 
+  <!-- GAP FILL: client-facing fair-pricing + red-flag education (competitors are calculators only; we add judgment) -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">How to Read a Tattoo Quote (and Spot a Bad One)</h2>
+      <p class="mt-4 text-gray-400 leading-relaxed">A number on its own tells you little. Three things separate a fair quote from a risky one: <strong class="text-white">the pricing model</strong> (hourly, flat, or day rate — know which you're being quoted), <strong class="text-white">what's included</strong> (consult, design time, touch-up within 6 months, deposit applied to total), and <strong class="text-white">regional rate</strong> (coastal US cities push $300+/hr for booked artists; smaller markets sit lower).</p>
+      <p class="mt-3 text-gray-400 leading-relaxed">Red flag: a "custom" forearm piece quoted at $100 in 2026. Shop rent, cartridges, gloves, and the artist's time don't math at that price — it often signals unsafe practice or hidden upsells. Equally, don't haggle like a garage sale; if you found someone cheaper, check their healed work first. Fair pricing pays for skill, sterilization, and the drawing labor flash skips.</p>
+    </div>
+  </section>
+
   <!-- Related Studio Software (tool -> product internal links, Phase 1 #3) -->
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -138,6 +163,22 @@ import TattooPriceCalculator from '../../components/TattooPriceCalculator.astro'
     <p class="mt-3 text-gray-400">Set service prices, collect deposits at booking, and track revenue. InkFlow handles it all.</p>
     <a href="/features/tattoo-payment-processing" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
     <p class="mt-3 text-sm text-gray-600"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Try InkFlow Free →</a></p>
+  </section>
+
+  <!-- E-E-A-T block: author + reviewer + dates + sources -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl font-bold text-white">About this tool</h2>
+      <p class="mt-3 text-sm leading-relaxed text-gray-400">
+        Written by <strong class="text-white">Sarah Chen</strong> (Founder &amp; CEO, InkFlow) — 12 years managing multi-artist tattoo studios. Pricing figures are compiled from 2026 published tattoo-industry pricing data.
+      </p>
+      <p class="mt-2 text-xs text-gray-600">Published {ARTICLE.datePublished} · Updated {ARTICLE.dateModified}</p>
+      <h3 class="mt-6 text-sm font-semibold text-white">Sources</h3>
+      <ul class="mt-2 space-y-1 text-sm">
+        <li><a href="https://inklink.social/blog/how-much-does-a-tattoo-cost" class="text-accent-300 underline hover:text-accent-200" target="_blank" rel="noopener">InkLink — How Much Does a Tattoo Cost in 2026?</a></li>
+        <li><a href="/features/tattoo-payment-processing" class="text-accent-300 underline hover:text-accent-200">InkFlow — pricing, deposits &amp; payment processing</a></li>
+      </ul>
+    </div>
   </section>
   <Footer />
 </BaseLayout>

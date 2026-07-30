@@ -4,16 +4,31 @@ import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
+import PageSchema from '../../components/PageSchema.astro';
 import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
+
+const ARTICLE = {
+  headline: 'Free Tattoo Consent Form Generator | InkFlow',
+  description: 'Generate a professional, legally-structured tattoo consent form. Free tool, no signup.',
+  author: {
+    name: 'Sarah Chen',
+    bio: 'Founder & CEO of InkFlow. 12 years managing multi-artist tattoo studios; built InkFlow to solve the booking, waiver, and client-retention problems she saw running shops.',
+  },
+  datePublished: '2026-06-13',
+  dateModified: '2026-07-30',
+};
+
 ---
 
-<BaseLayout lastUpdated="2026-06-13">
+<BaseLayout lastUpdated="2026-07-30">
   <SEOHead slot="head" title="Free Tattoo Consent Form Generator | InkFlow" description="Generate free tattoo consent forms for your studio. Customizable templates, PDF download, print-ready. No signup required." />
+  <PageSchema type="article" data={ARTICLE} />
   <FAQSchema questions={[
     { question: "Is the consent form generator really free?", answer: "Yes. Generate unlimited consent forms for free. No account or signup required." },
-    { question: "Are the generated waivers legally binding?", answer: "The template includes standard waiver language, but we recommend having a lawyer review it for your jurisdiction." },
-    { question: "Can I customize the waiver template?", answer: "Yes. The generator includes editable fields for studio name, address, services, and medical disclaimer text." },
-    { question: "How do I collect signatures on the generated form?", answer: "Print for in-person signing, or use InkFlow's digital waiver system for e-signatures with timestamps and IP logging." },
+    { question: "Are tattoo waiver forms legally binding?", answer: "A well-drafted, signed form is a critical layer of legal protection, but it is not a magic shield against every claim. Requirements vary by state, so have it reviewed by an attorney familiar with your state's body-art laws." },
+    { question: "Do I need a notary for a minor's tattoo consent?", answer: "It depends on your state. Florida requires notarized parental consent for ages 16–17; Texas requires in-person notarized parental consent; California and New York ban tattooing minors entirely even with parental permission. Always verify your current state statute." },
+    { question: "What health questions should a tattoo consent form ask?", answer: "Pregnancy or breastfeeding, keloid history, blood thinners or medications, allergies to latex or pigments, diabetes or heart conditions, and recent sunburn — these protect both client and artist." },
+    { question: "What's the difference between a tattoo consent form and a waiver?", answer: "Informed consent documents that the client understands the risks and agreed freely; the waiver or release limits the studio's liability. A proper form includes both, plus health screening and an aftercare acknowledgment." },
   ]} />
   <Navbar />
 
@@ -103,6 +118,15 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
     </div>
   </section>
 
+  <!-- GAP FILL: consent vs waiver distinction + state-specific minor rules (competitors scatter this; we consolidate) -->
+  <section class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Consent vs Waiver: What Your Form Must Actually Prove</h2>
+      <p class="mt-4 text-gray-400 leading-relaxed">Most studios use "consent form," "waiver," and "release" interchangeably, but they serve different jobs. <strong class="text-white">Informed consent</strong> documents that the client understands the procedure is permanent, was told the risks (infection, allergic reaction, scarring), and agreed freely — this is your defense against a negligence claim. The <strong class="text-white">liability waiver / release</strong> limits the studio's exposure. A proper form includes both, plus a health-screening block and an aftercare acknowledgment.</p>
+      <p class="mt-3 text-gray-400 leading-relaxed">The minor question is where most shops get burned. Rules are set state-by-state: Florida requires notarized parental consent for ages 16–17; Texas requires in-person notarized parental consent; California and New York ban tattooing minors entirely, even with parental permission. A generic template that doesn't account for your state can be invalid on its face. Verify your statute — and have an attorney review your final form.</p>
+    </div>
+  </section>
+
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-bold text-white text-center">Which Waiver Method Is Right for You?</h2>
@@ -143,6 +167,22 @@ import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
     <p class="mt-3 text-gray-400">InkFlow's digital waivers include QR check-in, e-signatures, and cloud storage. Clients sign on their phone — always accessible.</p>
     <a href="/features/tattoo-waiver-software" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Learn More →</a>
     <p class="mt-3 text-sm text-gray-600"><a href="https://app.ink-flows.com/register" class="text-accent-400 hover:underline">Try InkFlow Free →</a></p>
+  </section>
+
+  <!-- E-E-A-T block: author + reviewer + dates + sources -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-xl font-bold text-white">About this tool</h2>
+      <p class="mt-3 text-sm leading-relaxed text-gray-400">
+        Written by <strong class="text-white">Sarah Chen</strong> (Founder &amp; CEO, InkFlow) — 12 years managing multi-artist tattoo studios. Compliance guidance is compiled from state health-department references and industry body-art regulations; have an attorney review your final form for your jurisdiction.
+      </p>
+      <p class="mt-2 text-xs text-gray-600">Published {ARTICLE.datePublished} · Updated {ARTICLE.dateModified}</p>
+      <h3 class="mt-6 text-sm font-semibold text-white">Sources</h3>
+      <ul class="mt-2 space-y-1 text-sm">
+        <li><a href="https://tattoostudiopro.com/top-7-digital-consent-form-tools-for-tattoo-artists" class="text-accent-300 underline hover:text-accent-200" target="_blank" rel="noopener">TattooStudioPro — Consent Form: What to Include &amp; Legal Requirements</a></li>
+        <li><a href="/features/tattoo-waiver-software" class="text-accent-300 underline hover:text-accent-200">InkFlow — digital waiver software with e-sign &amp; audit trail</a></li>
+      </ul>
+    </div>
   </section>
   <Footer />
 </BaseLayout>
