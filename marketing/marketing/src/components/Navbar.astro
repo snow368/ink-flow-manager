@@ -57,10 +57,10 @@ const { currentPath = '' } = Astro.props;
           </div>
         </div>
         <div class="group relative">
-          <button class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
+          <a href="/free-tools" class="flex items-center gap-1 text-sm text-gray-300 hover:text-white transition-colors">
             Free Tools
             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-          </button>
+          </a>
           <div class="absolute top-full left-0 mt-2 w-56 rounded-lg border border-ink-800 bg-ink-900 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
             <a href="/free-tools/no-show-calculator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">No-Show Cost Calculator</a>
             <a href="/free-tools/tattoo-price-calculator" class="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-ink-800">Tattoo Price Calculator</a>
@@ -122,6 +122,7 @@ const { currentPath = '' } = Astro.props;
         <svg class="h-3 w-3 transition-transform sub-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
       </button>
       <div class="mobile-sub hidden pl-4 space-y-1 pb-1">
+        <a href="/free-tools" class="block rounded-lg px-3 py-2 text-sm font-semibold text-accent-400 hover:text-white hover:bg-ink-800">All Free Tools</a>
         <a href="/free-tools/no-show-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">No-Show Cost Calculator</a>
         <a href="/free-tools/tattoo-price-calculator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Tattoo Price Calculator</a>
         <a href="/free-tools/free-waiver-generator" class="block rounded-lg px-3 py-2 text-sm text-gray-400 hover:text-white hover:bg-ink-800">Free Waiver Generator</a>

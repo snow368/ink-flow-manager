@@ -5,6 +5,7 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 import PageSchema from '../../components/PageSchema.astro';
+import RelatedFreeTools from '../../components/RelatedFreeTools.astro';
 import FreeWaiverGenerator from '../../components/FreeWaiverGenerator.astro';
 
 const ARTICLE = {
@@ -221,5 +222,7 @@ const ARTICLE = {
       </ul>
     </div>
   </section>
+    <RelatedFreeTools current="free-waiver-generator" />
+
   <Footer />
 </BaseLayout>
