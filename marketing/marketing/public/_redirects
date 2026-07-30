@@ -17,17 +17,18 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 # NOTE: also need Cloudflare route rule sending ink-flows.com/s/* → ink-flow-api worker
 /s/*       /s/:splat           200
 
+# ============================================================
 # Tattoo meaning section migration: /meaning/* -> /tattoo-meaning/*
-# Cloudflare _redirects uses first-match-wins, so specific rules MUST precede the catch-all.
-# sea-life category public segment renamed sea-life -> ocean (data urlSegment); route BEFORE generic.
+# Cloudflare _redirects is FIRST-MATCH-WINS. SPECIFIC rules MUST precede
+# the generic catch-all, otherwise the generic eats them (dead rules -> 404).
+# Order: sea-life->ocean (direct) -> all specific symbols/categories -> generics.
+# ============================================================
 /meaning/category/sea-life       /tattoo-meaning/ocean       301
 /meaning/category/sea-life/*     /tattoo-meaning/ocean/:splat 301
 /tattoo-meaning/sea-life         /tattoo-meaning/ocean       301
 /tattoo-meaning/sea-life/*       /tattoo-meaning/ocean/:splat 301
-# generic: old /meaning/category/:category drops the /category/ segment
-/meaning/category/:category    /tattoo-meaning/:category    301
-/meaning/*                     /tattoo-meaning/:splat       301
-# === Meaning URL migration 2026-07-29: /meaning/* -> /tattoo-meaning/* ===
+/meaning/sea-life                /tattoo-meaning/ocean       301
+/meaning/sea-life/*              /tattoo-meaning/ocean/:splat 301
 /meaning/wolf /tattoo-meaning/animals/wolf-tattoo-meaning 301
 /meaning/lion /tattoo-meaning/animals/lion-tattoo-meaning 301
 /meaning/snake /tattoo-meaning/animals/snake-tattoo-meaning 301
@@ -110,7 +111,6 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/category/birds /tattoo-meaning/birds 301
 /meaning/category/zodiac /tattoo-meaning/zodiac 301
 /meaning/category/insects /tattoo-meaning/insects 301
-/meaning/category/sea-life /tattoo-meaning/ocean 301
 /meaning/category/time /tattoo-meaning/time 301
 /meaning/category/words /tattoo-meaning/words 301
 /meaning/shark/great-white-shark-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-tattoo-meaning 301
@@ -119,7 +119,8 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning /tattoo-meaning 301
 /meaning/ /tattoo-meaning/ 301
 /meaning/style-guide /tattoo-meaning/style-guide 301
-
+/meaning/category/:category    /tattoo-meaning/:category    301
+/meaning/*                     /tattoo-meaning/:splat       301
 # Catch-all: any path not matched above returns the real 404 page (not the SPA index).
 # Keep this LAST so it never shadows the 301 rules above.
 /* /404.html 404
