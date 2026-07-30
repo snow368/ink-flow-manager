@@ -25,6 +25,14 @@ export interface TattooMeaning {
   externalSource?: string;
   /** EEAT: source label */
   sourceLabel?: string;
+  /** Gallery images — SVG line-art filenames in /public/gallery/real/ */
+  gallerySvgs?: string[];
+  /** SEO: custom meta description override */
+  metaDescription?: string;
+  /** Internal links — slugs of related symbols/variations for cross-linking */
+  relatedSymbols?: string[];
+  /** FAQ entries rendered on-page + FAQPage schema */
+  faqs?: Array<{ question: string; answer: string }>;
   /** Internal links to related commercial pages / free tools (site-structure blueprint) */
   relatedTools?: { label: string; href: string }[];
 }
@@ -34,6 +42,10 @@ export interface TattooCategory {
   name: string;
   desc: string;
   symbols: TattooMeaning[];
+  /** Public URL segment override. When present, category routes emit this
+   *  instead of `id` (e.g. sea-life → "ocean" to match search vocabulary).
+   *  Falls back to `id` when absent. */
+  urlSegment?: string;
 }
 
 export const TATTOO_CATEGORIES: TattooCategory[] = [
@@ -843,6 +855,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
   // ===== 13. SEA LIFE (4) — NEW CATEGORY =====
   {
     id: 'sea-life',
+    urlSegment: 'ocean',
     name: 'Sea Life',
     desc: 'Ocean creatures — depth, emotion, and the freedom of the sea.',
     symbols: [
@@ -893,11 +906,30 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         variants: ['hammerhead shark', 'shark tooth pattern (niho)', 'great white shark', 'shark silhouette', 'shark and wave'],
         externalSource: 'https://www.britannica.com/animal/shark',
         sourceLabel: 'Britannica — Shark',
+        metaDescription: 'Shark tattoo meaning: power, survival, fearlessness. Explore species (great white, hammerhead), pose, conservation, Jaws, and cultural roots.',
+        relatedSymbols: ['great-white', 'hammerhead', 'shark-tooth', 'whale', 'octopus', 'dragon', 'compass'],
+        faqs: [
+          { question: 'Which shark species should I choose for my tattoo?', answer: 'The species shifts the meaning: a great white reads as pure power and dominance; a hammerhead as vision and protective awareness; a whale shark as peace and quiet strength; a mako as speed and agility. Pick the story that matches your intent.' },
+          { question: 'Does the shark pose change the tattoo meaning?', answer: 'Yes. An open-jaw, head-on shark reads as confrontation and reclaimed fear; a cruising side-profile reads as calm, patrolling authority. Swimming upward suggests ambition; diving downward evokes depth and the unknown.' },
+          { question: 'What does a shark tattoo mean in Japanese culture?', answer: 'In Japanese tattoo culture the shark is a noble water-deity messenger bringing good luck in fishing and trade and protecting the wearer — an auspicious, protective reading that contrasts with the Western Jaws fear narrative.' },
+          { question: 'Is a shark tattoo a conservation statement?', answer: 'For many wearers, yes. Sharks have patrolled the oceans for over 400 million years, yet roughly a third of shark and ray species are now threatened. The tattoo can be a quiet act of respect for a keystone ocean species.' },
+          { question: 'What does a shark tattoo mean for a woman?', answer: 'A shark is not gendered, but women most often choose it as fierce independence and self-reliance — owning power on their own terms rather than dominance over others. The posture and style carry the intent more than the wearer’s gender.' },
+          { question: 'What does a shark tattoo mean for a guy?', answer: 'For men the shark most often reads as raw courage, drive, and quiet dominance — the apex predator who moves through life without hesitation. Pair it with waves or a compass to stress direction and resolve.' },
+          { question: 'What does a shark tattoo with friends mean?', answer: 'Matching or group shark tattoos among friends symbolize loyalty, shared resilience, and protection of the crew. As a guardian symbol across Polynesian and surf culture, the shark marks a bond built to survive rough water together.' },
+          { question: 'What does a "keep moving" shark tattoo mean?', answer: 'Sharks must keep swimming to breathe, so a shark in motion reads as relentless forward drive — keep moving, never quit, refuse to stall. It is a survivor’s tattoo for anyone pushing through a hard chapter.' },
+          { question: 'What does a black shark tattoo mean?', answer: 'A blackwork or solid-black shark strips the design to pure silhouette: bold, minimal, and a little ominous. Black reads as raw power and foreboding rather than the lighter, decorative tones of a color piece.' },
+          { question: 'What does a shark tattoo mean for mental health?', answer: 'Many wearers choose the shark as a survivor symbol — resilience after anxiety, fear, or trauma, and the courage to keep moving. As a protector across ocean cultures, it marks having come through and refusing to be prey to the past.' },
+          { question: 'What does a "3 shark" tattoo mean?', answer: 'Three sharks repeat the symbol for emphasis and unity — a trio of friends or family, or past-present-future strength. Repetition turns a single shark’s drive into a shared, reinforced promise.' },
+        ],
         customSections: [
-          { heading: 'Shark Tooth (Niho) Meaning', text: 'In Polynesian and surf culture, shark-tooth (niho) patterns are worn as armor against harm — a symbol of defense, resilience, and protection. A single shark-tooth tattoo carries the same guardian energy in a minimal mark.' },
-          { heading: 'Hammerhead vs Great White', text: 'The hammerhead reads as seeing from many angles — adaptability, perspective, and breaking the mold. The great white embodies pure power, fearlessness, and determination — a favorite for hyper-realistic black and grey pieces.' },
-          { heading: 'Best Placements for a Shark Tattoo', text: 'Sharks suit longer, flowing areas that let the body move: forearm, calf, back, chest, shoulder, and thigh. A forearm or calf shark reads as constant forward motion; a back piece can show the full predator in motion.' },
-          { heading: 'Recommended Styles', text: 'Black and grey realism, neo-traditional, Japanese irezumi, watercolor, dotwork, and geometric all suit shark designs. Black and grey is the most popular for a lifelike, fierce shark; watercolor softens the predator into flowing motion.' },
+          { heading: 'Great White, Hammerhead, or Whale Shark? Picking Your Species', text: "The species you choose shifts the meaning. A great white reads as pure power, dominance, and fearlessness — the apex of the food chain with no natural predator. A hammerhead reads as vision, perspective, and protective awareness, thanks to its wide-set eyes and near-360-degree field of view. A whale shark is the gentle giant: peace, calm, and quiet strength. A mako brings speed, agility, and swift adaptation; a tiger shark brings survival instinct and raw adaptability. Choose the species whose story matches your intent — or wear a shark-tooth (niho mano) pattern for pure protective symbolism without a full predator." },
+          { heading: 'Shark Tattoo Pose: Does It Change the Meaning? Attacking vs. Cruising Sharks', text: "One detail most guides skip: the shark's pose changes the story as much as the species. An open-jaw, head-on shark reads as confrontation, aggression, and reclaimed fear — the come-at-me statement. A cruising side-profile reads as calm, patrolling authority — power that has nothing to prove. Direction matters too: a shark swimming upward suggests ascent, ambition, and rising through pressure, while a shark diving downward (popular on the calf) evokes depth, mystery, and going into the unknown. Decide the emotional tone before your artist sketches — it is far harder to change once inked." },
+          { heading: 'The Conservation Statement: Wearing a Shark to Honor the Ocean', text: "For a growing number of wearers, a shark tattoo is also an ecological statement. Sharks have patrolled the oceans for more than 400 million years — predating the dinosaurs — yet roughly a third of shark and ray species are now assessed as threatened, largely from overfishing and the fin trade. Choosing the ocean's apex predator as permanent body art can be a quiet act of respect: a reminder that this animal is in fact a keystone species holding entire ecosystems in balance. If this angle speaks to you, tell your artist — many will lean into realistic, reverent renderings rather than the snarling-monster cliché." },
+          { heading: 'Reclaiming the Jaws Fear: From Movie Monster to Personal Badge', text: "No animal carries heavier pop-culture baggage than the shark. Steven Spielberg's Jaws (1975) recast the great white as the ultimate symbol of primal fear — and that is exactly why many people choose it. Wearing the creature the world is afraid of flips the narrative: the shark tattoo becomes a badge of edge, resilience, and control rather than terror. It is the same instinct behind a skull tattoo — turning a symbol of fear into a personal statement of fearlessness." },
+          { heading: 'Shark Tattoo Combinations & Minimalist Styles', text: "Not every shark tattoo needs to be a full realistic predator. A shark silhouette strips the design down to its unmistakable outline — perfect for fine-line and geometric work where the meaning is minimalist focus and relentless forward motion. Pairing a shark with a wave ties the predator to its element and doubles down on the push through life's currents metaphor — a natural fit alongside an anchor for a full maritime story. Other popular pairings: coral and light rays for an immersive ocean scene, a trident for dominion over the sea, and roses for raw power against delicate beauty, prized in neo-traditional work." },
+          { heading: 'The Japanese Shark: Water Deities, Good Luck, and Protection', text: "In Japanese tattoo culture the shark is not a monster to be feared but a noble creature with a place in the spiritual order of the sea. It is often read as a messenger of the water deities — a being that can bring good luck in fishing and trade, and that protects the wearer rather than threatening them. Irezumi frequently pairs the shark with waves, koi, or dragons to build a larger master of the water composition. This protective, auspicious reading contrasts with the Western Jaws fear narrative, where a great white signals reclaimed terror; in Japanese work the shark more often signals respect for the ocean's power and a quiet confidence in moving through it." },
+          { heading: 'Shark Tattoo Maritime Roots: The Sailor and the Sea', text: "Long before the shark tattoo became a studio staple, it lived on the arms of people whose lives depended on the sea. Sailors cherished the shark as a defensive amulet — a talisman carried to ride safely through dangerous waters and, in the old belief, to keep the wearer from drowning. The tattoo was both protection and boast: it announced that its owner was not afraid of death or the mysteries of the deep. In American Traditional style — bold outlines, saturated color, a lived on the edge swagger — the shark became a rebellious talisman, and the mid-1900s tattooer Sailor Jerry helped cement it, alongside anchors and swallows, as classic seafarer imagery. That is why a shark paired with an anchor or crashing waves still reads, decades later, as a maritime power statement rather than just a picture of a fish." },
+          { heading: 'Shark Tattoos for Men vs. Women: Same Predator, Different Stories', text: "A shark tattoo is not gendered, but the story a wearer tells with it often shifts by who is wearing it. For men, the design tends to read as raw courage and dominance — a top of the food chain statement of strength, control, and the willingness to face anything head-on. For women, the same predator is more often chosen as a symbol of fierce independence: power claimed on her own terms, with the shark's constant forward motion standing in for self-reliance and unapologetic drive. Both readings share the same core traits — fearlessness, keen instinct, clarity of focus — but the emphasis differs. Choose the posture and style that match your story, not the one a chart assigns to your gender." },
         ],
       },
     ],
