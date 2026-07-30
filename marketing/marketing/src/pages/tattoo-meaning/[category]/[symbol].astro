@@ -266,7 +266,7 @@ const symbolFaqs = [
         <div class="mt-6 grid gap-4 sm:grid-cols-2">
           {meaning.relatedSymbols!.map(slug => {
             // 1) variation subpage of THIS symbol (hub-and-spoke, 3-level URL)
-            const v = getVariantsForSymbol(meaning.slug).find(x => x.slug === `${slug}-tattoo-meaning` || x.slug === slug);
+            const v = getVariantsForSymbol(meaning.slug).find(x => x.slug === `${slug}-tattoo-meaning` || x.slug === slug || x.slug.startsWith(`${slug}-`));
             // 2) top-level symbol page (2-level URL)
             const r = v ? undefined : ALL_MEANINGS.find(m => m.slug === slug);
             const href = v

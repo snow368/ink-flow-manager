@@ -73,7 +73,7 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/koi /tattoo-meaning/ocean/koi-tattoo-meaning 301
 /meaning/jellyfish /tattoo-meaning/ocean/jellyfish-tattoo-meaning 301
 /meaning/stingray /tattoo-meaning/ocean/stingray-tattoo-meaning 301
-/meaning/hammerhead /tattoo-meaning/ocean/hammerhead-tattoo-meaning 301
+/meaning/hammerhead /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-shark-tattoo-meaning 301
 /meaning/clock /tattoo-meaning/time/clock-tattoo-meaning 301
 /meaning/hourglass /tattoo-meaning/time/hourglass-tattoo-meaning 301
 /meaning/infinity /tattoo-meaning/time/infinity-tattoo-meaning 301
@@ -127,9 +127,14 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/capricorn /tattoo-meaning/zodiac/capricorn-tattoo-meaning 301
 /meaning/aquarius /tattoo-meaning/zodiac/aquarius-tattoo-meaning 301
 /meaning/pisces /tattoo-meaning/zodiac/pisces-tattoo-meaning 301
-/meaning/shark/great-white-shark-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-tattoo-meaning 301
-/meaning/shark/hammerhead-shark-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-tattoo-meaning 301
+/meaning/shark/great-white-shark-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-shark-tattoo-meaning 301
+/meaning/shark/hammerhead-shark-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-shark-tattoo-meaning 301
 /meaning/shark/shark-tooth-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/shark-tooth-tattoo-meaning 301
+# 2026-07-30 slug rename: short spoke slugs -> full search-phrase slugs (live pages since 7-29)
+/tattoo-meaning/ocean/shark-tattoo-meaning/great-white-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-shark-tattoo-meaning 301
+/tattoo-meaning/ocean/shark-tattoo-meaning/great-white-tattoo-meaning/ /tattoo-meaning/ocean/shark-tattoo-meaning/great-white-shark-tattoo-meaning/ 301
+/tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-tattoo-meaning /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-shark-tattoo-meaning 301
+/tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-tattoo-meaning/ /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-shark-tattoo-meaning/ 301
 /meaning /tattoo-meaning 301
 /meaning/ /tattoo-meaning/ 301
 /meaning/style-guide /tattoo-meaning/style-guide 301

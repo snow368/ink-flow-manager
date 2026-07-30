@@ -7,7 +7,7 @@ import FAQSchema from '../../../../components/FAQSchema.astro';
 import GallerySection from '../../../../components/GallerySection.astro';
 import { ALL_MEANINGS, getMeaningBySlug, TATTOO_CATEGORIES } from '../../../../data/tattoo-meanings';
 import { VARIANT_MEANINGS, getVariantsForSymbol } from '../../../../data/tattoo-meaning-variants';
-import { EEAT_AUTHOR, EEAT_PUBLISHED, CATEGORY_EEAT } from '../../../../data/tattoo-category-content';
+import { EEAT_AUTHOR, EEAT_PUBLISHED, EEAT_UPDATED, CATEGORY_EEAT } from '../../../../data/tattoo-category-content';
 
 // Public category segment: urlSegment override (sea-life -> "ocean") when present.
 const catSeg = (catId: string): string => {
@@ -39,6 +39,7 @@ const category = parent ? TATTOO_CATEGORIES.find((c) => c.id === parent.category
 const eeat = parent ? CATEGORY_EEAT[parent.category] ?? {} : {};
 const reviewer = eeat.reviewer;
 
+const lastUpdated = EEAT_UPDATED[variant.slug] ?? EEAT_PUBLISHED;
 const siblings = getVariantsForSymbol(variant.symbolSlug).filter((v) => v.slug !== variant.slug);
 const relatedSeaLife = parent
   ? ALL_MEANINGS.filter((m) => m.category === parent.category && m.slug !== parent.slug).slice(0, 3)
@@ -76,7 +77,7 @@ const articleJson = JSON.stringify({
     logo: { '@type': 'ImageObject', url: `${site}/images/hero-screenshot-2.png` },
   },
   datePublished: EEAT_PUBLISHED,
-  dateModified: EEAT_PUBLISHED,
+  dateModified: lastUpdated,
   mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   image: {
     '@type': 'ImageObject',
@@ -102,7 +103,7 @@ const breadcrumbs = [
 const variantFaqs = variant.faqs ?? [];
 ---
 
-<BaseLayout breadcrumbs={breadcrumbs} lastUpdated={EEAT_PUBLISHED} author="Sarah Chen">
+<BaseLayout breadcrumbs={breadcrumbs} lastUpdated={lastUpdated} author="Sarah Chen">
   <SEOHead slot="head" title={pageTitle} description={pageDesc} appSchema={false} disableBreadcrumb />
   <Navbar />
 
