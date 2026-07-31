@@ -139,6 +139,37 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/ /tattoo-meaning/ 301
 /meaning/style-guide /tattoo-meaning/style-guide 301
 
+# 2026-07-31 Convert legacy top-level stub pages from Astro meta-refresh (soft
+# redirect, HTTP 200) to real HTTP 301. Under output:'static' Astro.redirect()
+# only emits <meta http-equiv="refresh">, which passes link equity weakly and
+# wastes crawl budget. The matching .astro stubs are deleted in the same commit.
+/tattoo-appointment-booking /features/tattoo-booking-software/ 301
+/tattoo-appointment-booking/ /features/tattoo-booking-software/ 301
+/tattoo-appointment-scheduler /features/tattoo-booking-software/ 301
+/tattoo-appointment-scheduler/ /features/tattoo-booking-software/ 301
+/tattoo-booking-app /features/tattoo-booking-software/ 301
+/tattoo-booking-app/ /features/tattoo-booking-software/ 301
+/tattoo-scheduling-software /features/tattoo-booking-software/ 301
+/tattoo-scheduling-software/ /features/tattoo-booking-software/ 301
+/tattoo-business-management /features/ 301
+/tattoo-business-management/ /features/ 301
+/tattoo-client-management /features/tattoo-crm-software/ 301
+/tattoo-client-management/ /features/tattoo-crm-software/ 301
+/tattoo-crm-software /features/tattoo-crm-software/ 301
+/tattoo-crm-software/ /features/tattoo-crm-software/ 301
+/tattoo-commission-software /features/tattoo-payment-processing/ 301
+/tattoo-commission-software/ /features/tattoo-payment-processing/ 301
+/tattoo-deposit-software /features/tattoo-payment-processing/ 301
+/tattoo-deposit-software/ /features/tattoo-payment-processing/ 301
+/tattoo-payment-processing /features/tattoo-payment-processing/ 301
+/tattoo-payment-processing/ /features/tattoo-payment-processing/ 301
+/tattoo-pos-system /features/tattoo-payment-processing/ 301
+/tattoo-pos-system/ /features/tattoo-payment-processing/ 301
+/tattoo-consent-form-app /features/tattoo-waiver-software/ 301
+/tattoo-consent-form-app/ /features/tattoo-waiver-software/ 301
+/tattoo-waiver-app /features/tattoo-waiver-software/ 301
+/tattoo-waiver-app/ /features/tattoo-waiver-software/ 301
+
 # Catch-all: any path not matched above returns the real 404 page.
 # Keep LAST so it never shadows the 301 rules above.
 /* /404.html 404
