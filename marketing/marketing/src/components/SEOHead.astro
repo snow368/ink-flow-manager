@@ -47,6 +47,16 @@ function normalizeCanonical(input: string): string {
 }
 
 const canonicalUrl = normalizeCanonical(canonical || Astro.url.href);
+
+// ── Brand suffix: avoid double " | InkFlow" ──
+// Some pages pass "… | InkFlow" inside `title` while SEOHead also appends
+// " | InkFlow" (since 2026-07-08). Strip any pre-existing brand suffix, then
+// append exactly once. Fixes the "Page Title | InkFlow | InkFlow" double-brand
+// regression introduced for features pages on 2026-07-18.
+const BRAND = 'InkFlow';
+const cleanTitle = title.replace(/\s*[|\u2014\u2013-]\s*InkFlow\s*$/i, '').trim();
+const fullTitle = `${cleanTitle} | ${BRAND}`;
+
 const jsonLd = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -114,13 +124,13 @@ if (!disableBreadcrumb && !_isHome && !_isSpecial) {
 ---
 
 <slot name="head" />
-<title>{title} | InkFlow</title>
+<title>{fullTitle}</title>
 <meta name="description" content={description} />
 <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
 <link rel="canonical" href={canonicalUrl} />
 <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 <link rel="alternate" hreflang="en" href={canonicalUrl} />
-<meta property="og:title" content={`${title} | InkFlow`} />
+<meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonicalUrl} />
 <meta property="og:site_name" content="InkFlow" />
@@ -129,7 +139,7 @@ if (!disableBreadcrumb && !_isHome && !_isSpecial) {
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={`${title} | InkFlow`} />
+<meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
 {appSchema && <script type="application/ld+json" set:html={jsonLd} />}
