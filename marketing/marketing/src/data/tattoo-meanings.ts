@@ -845,7 +845,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'ladybug', name: 'Ladybug', category: 'insects',
-        gallerySvgs: ['ladybug-1.svg', 'ladybug-2.svg'],
+        gallerySvgs: ['ladybug-1.png', 'ladybug-2.png'],
         meaning: 'Luck, protection, love, childhood joy',
         desc: 'Ladybug tattoos are small charms of good fortune — a symbol of protection, luck, and simple joy. They represent love (a "love bug"), childhood innocence, and the belief that good things are coming. A ladybug is a lighthearted, hopeful design.',
         origin: 'European folklore, Global',
@@ -1044,7 +1044,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'roman-numeral', name: 'Roman Numeral', category: 'words',
-        gallerySvgs: ['roman-numeral-1.svg', 'roman-numeral-2.svg'],
+        gallerySvgs: ['roman-numeral-1.png', 'roman-numeral-2.png'],
         meaning: 'A significant date, order, permanence',
         desc: 'Roman numeral tattoos mark dates and numbers with timeless elegance — a birthday, anniversary, or the date of a life event. They read as refined and permanent, avoiding the dated look of Arabic digits. A numeral can also signify rank, order, or a chapter number.',
         origin: 'Global, Classical',
