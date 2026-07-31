@@ -15,6 +15,9 @@ const reviewer = reviewerId ? getAuthor(reviewerId) : undefined;
 // 占位检测：name 含 "TODO" 说明真实作者尚未填写，跳过渲染 + 不注入 schema，
 // 避免上线暴露占位文本或编造的 Person 信号。
 const isPlaceholder = !!author && author.name.includes('TODO');
+// 审核人占位检测：reviewer 名含 TODO 或为空时，不渲染 / 不注入 schema，
+// 避免上线暴露占位文本（如 "TODO: 真实审核人姓名"）破坏 E-E-A-T 信任信号、并避免伪造 Person 结构化数据。
+const reviewerIsPlaceholder = !!reviewer && (reviewer.name.includes('TODO') || !reviewer.name.trim());
 
 const authorSchema =
   !isPlaceholder && author
@@ -30,7 +33,7 @@ const authorSchema =
     : null;
 
 const reviewerSchema =
-  !isPlaceholder && reviewer
+  !isPlaceholder && !reviewerIsPlaceholder && reviewer
     ? {
         '@context': 'https://schema.org',
         '@type': 'Person',
@@ -59,7 +62,7 @@ const reviewerSchema =
               <span class="text-gray-500"> · {author.jobTitle}</span>
             </p>
             {
-              reviewer && (
+              reviewer && !reviewerIsPlaceholder && (
                 <p class="mt-1 text-gray-500">
                   Reviewed by <span class="text-gray-300">{reviewer.name}</span>
                   <span class="text-gray-500"> · {reviewer.jobTitle}</span>
