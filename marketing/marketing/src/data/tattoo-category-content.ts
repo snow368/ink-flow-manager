@@ -180,105 +180,90 @@ export const EEAT_EXPERIENCE =
 // shared EEAT_AUTHOR / EEAT_EXPERIENCE above. (Experience + Expertise + Trust)
 export const CATEGORY_EEAT: Record<string, CategoryEeat> = {
   animals: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Tattoo as human history — Ötzi & indigenous "biography" (Smithsonian, Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   flowers: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'Tattoo as personal story — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   nature: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Tattoo as human history — Ötzi (Smithsonian, Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   mythological: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   geometric: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Mandala & the psyche — Jung, Man and His Symbols (Doubleday, 1964)', url: 'https://www.worldcat.org/isbn/9780385052219' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   religious: {
-    reviewer: { name: 'British Museum', title: 'Museum collection & cultural authority' },
     sources: [
       { label: 'Eye of Horus in the British Museum collection', url: 'https://www.britishmuseum.org/collection' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   cultural: {
-    reviewer: { name: 'National Geographic', title: 'Cultural heritage authority' },
     sources: [
       { label: 'Polynesian tatau as identity — National Geographic', url: 'https://www.nationalgeographic.com/culture/article/in-polynesia-tattoos-are-more-than-skin-deep' },
       { label: 'Tattoo as biography — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   modern: {
-    reviewer: { name: 'IBISWorld', title: 'Tattoo industry research authority' },
     sources: [
       { label: 'U.S. tattoo industry $1.3B (2025) — IBISWorld', url: 'https://www.ibisworld.com/united-states/industry/tattoo-studios/4404/' },
       { label: '30% of U.S. adults tattooed (Ipsos, 2019)', url: 'https://www.ipsos.com/en-us/news-polls/more-americans-have-tattoos-today' },
     ],
   },
   objects: {
-    reviewer: { name: 'IBISWorld', title: 'Tattoo industry research authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'U.S. tattoo industry & mainstream adoption — IBISWorld', url: 'https://www.ibisworld.com/united-states/industry/tattoo-studios/4404/' },
     ],
   },
   birds: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   zodiac: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   insects: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   'sea-life': {
-    reviewer: { name: 'National Geographic', title: 'Cultural heritage authority' },
     sources: [
       { label: 'Polynesian tatau (shark as protector) — National Geographic', url: 'https://www.nationalgeographic.com/culture/article/in-polynesia-tattoos-are-more-than-skin-deep' },
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
     ],
   },
   time: {
-    reviewer: { name: 'British Museum', title: 'Museum collection & cultural authority' },
     sources: [
       { label: 'Memento mori in museum collections — British Museum', url: 'https://www.britishmuseum.org/collection' },
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
     ],
   },
   words: {
-    reviewer: { name: 'Smithsonian Institution', title: 'Tattoo history & anthropology authority' },
     sources: [
       { label: 'Motivations for getting tattooed — Wohlrab et al., Body Image (2007)', url: 'https://doi.org/10.1016/j.bodyim.2006.12.001' },
       { label: 'Tattoo as human history — Smithsonian (Krutak)', url: 'https://www.si.edu/stories/tattoos-telling-stories-flesh' },
