@@ -1049,9 +1049,48 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         desc: 'Roman numeral tattoos mark dates and numbers with timeless elegance — a birthday, anniversary, or the date of a life event. They read as refined and permanent, avoiding the dated look of Arabic digits. A numeral can also signify rank, order, or a chapter number.',
         origin: 'Global, Classical',
         culturalNotes: 'Roman numerals lend a classical, engraved quality (like monuments and clocks). They are a discreet way to tattoo a date — legible but not obvious. Common uses: wedding dates, children’s birth years, or a "III" marking a third chapter.',
+        metaDescription: 'Roman numeral tattoo meaning: dates, order, and permanence. Learn the history, what each numeral symbolizes, popular placements, font styles, and how to avoid conversion mistakes.',
         variants: ['wedding date', 'birth year', 'anniversary', 'chapter number', 'minimalist numeral'],
+        relatedSymbols: ['anchor', 'compass', 'infinity', 'star', 'heart', 'moon'],
         externalSource: 'https://www.britannica.com/topic/Roman-numeral',
         sourceLabel: 'Britannica — Roman Numerals',
+        customSections: [
+          {
+            heading: 'A Short History of Roman Numerals',
+            text: 'Roman numerals grew out of Etruscan tally marks and were standardized by the Romans for counting, dating, and monumental inscriptions. You still see them on clock faces, building cornerstones, and Super Bowl numbering. That classical, engraved look is exactly why they read as timeless on skin — a date set in Roman numerals looks like it was always meant to be there.',
+          },
+          {
+            heading: 'What Each Numeral Can Stand For',
+            text: 'Beyond the literal number, each glyph carries a small symbolic weight: I is unity or a first; V is change or the halfway point; X is completion or a full chapter; L, C, D, and M scale the same idea upward. Most wearers aren’t spelling out philosophy, though — they’re marking a year, an age, a countdown, or a rank, letting the numerals carry the meaning privately.',
+          },
+          {
+            heading: 'Popular Placements for Roman Numeral Tattoos',
+            text: 'Because the script is narrow and linear, Roman numerals suit long, clean placements: the inner forearm, the ribcage, the collarbone, or along the spine. Smaller dates work behind the ear, on the wrist, or on a finger. A single significant number (like a "III" for a third child) also reads well as a minimalist piece on the ankle or nape.',
+          },
+          {
+            heading: 'Font & Style Choices',
+            text: 'The two common directions are an engraved, serif "monument" style (think Trajan capitals on a building) or a thin, minimalist line. Match the style to the story: a wedding date often suits the formal, carved look; a personal milestone may read better as a quiet, fine-line numeral. Spacing matters more than size — cramped numerals lose legibility.',
+          },
+          {
+            heading: 'Getting the Math Right (Before You Ink)',
+            text: 'Roman numerals use a subtractive rule: 4 is "IV" (one before five), not "IIII" — though clocks famously use IIII, so don’t be surprised to see it. 9 is "IX", 40 is "XL", 90 is "XC". The most common tattoo regret is a transposed or mis-converted date, so write it out, double-check the conversion, and confirm it with your artist before the stencil goes on.',
+          },
+          {
+            heading: 'Sources & Further Reading',
+            text: 'Roman numerals and their history are documented in standard references; we used these for the cultural and historical notes above.',
+            links: [
+              { label: 'Britannica — Roman Numerals', href: 'https://www.britannica.com/topic/Roman-numeral' },
+              { label: 'Britannica — Numerals and Numeral Systems', href: 'https://www.britannica.com/topic/numeral' },
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'Why do people get Roman numeral tattoos?', answer: 'Most choose them to mark a significant date — a wedding, a child’s birth year, a loss, or a personal milestone — in a form that reads as refined and permanent rather than the dated look of Arabic digits. The numerals are legible but discreet, so the meaning stays personal.' },
+          { question: 'What does a Roman numeral tattoo mean?', answer: 'The core meaning is a significant date, order, or permanence. A numeral can mark when something happened, what place someone holds (a "first" or a "third"), or a chapter that closed. The exact meaning is the number itself plus the story only the wearer knows.' },
+          { question: 'Are Roman numerals on clocks IIII or IV?', answer: 'Clock faces almost always use IIII for four, while most Roman numeral tattoos use the standard IV. Both are "correct" in their context — clocks keep IIII for visual symmetry, tattoos follow the textbook subtractive rule. If you want authentic clock style, IIII is an option.' },
+          { question: 'Where is the best place to put a Roman numeral tattoo?', answer: 'Long, linear placements suit the script best: inner forearm, ribcage, collarbone, or spine for a date; behind the ear, wrist, or finger for a single small numeral. Pick a spot your artist can space cleanly — cramped numerals lose legibility over time.' },
+          { question: 'How do I make sure my Roman numeral tattoo is correct?', answer: 'Write the full date, convert it carefully (4 = IV, 9 = IX, 40 = XL, 90 = XC), then double-check the result and confirm it with your artist before the stencil. Most Roman numeral tattoo regrets come from a transposed or mis-converted number, not the design itself.' },
+        ],
       },
     ],
   },
