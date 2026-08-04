@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
@@ -24,7 +25,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
         "datePublished": "2026-07-16",
         "dateModified": "2026-07-16",
         "author": { "@type": "Person", "name": "Sarah Chen", "jobTitle": "Founder & CEO at InkFlow", "url": "https://ink-flows.com/about", "sameAs": "https://linkedin.com/in/sarahchen-inkflow" },
-        "reviewedBy": { "@type": "Organization", "name": "Alliance of Professional Tattooists" },
+
         "citation": [
           "https://developers.google.com/search/docs/fundamentals/seo-starter-guide",
           "https://developers.google.com/search/docs/appearance/google-images"
@@ -98,27 +99,31 @@ import FAQSchema from '../../components/FAQSchema.astro';
     </div>
   </section>
 
-  <!-- VS LINKTREE -->
+  <!-- VS GENERIC BUILDERS -->
   <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Your Website vs a Link-in-Bio Page</h2>
+      <h2 class="text-2xl font-bold text-white text-center">Your Artist Site vs a Generic Website Builder</h2>
+      <p class="mt-3 text-center text-gray-400">Drag-and-drop builders like Wix and Squarespace start you from a blank template and bill monthly. InkFlow is purpose-built for tattoo artists and free to start. Here's how it compares:</p>
       <div class="mt-8 overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead>
             <tr class="border-b border-ink-700">
               <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
               <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Artist Site</th>
-              <th class="text-center py-3 text-gray-500 font-medium">Linktree / Lnk.Bio</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Wix</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Squarespace</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Ranks on Google</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">✗</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">External links</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 text-gray-600">External link</td></tr>
-            <tr><td class="py-3 pr-4 text-white">Your own domain (Pro)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 text-gray-600">✗ (subdomain only)</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Built for tattoo artists</td><td class="text-center py-3 pr-4 text-accent-400">✓ 100+ tattoo themes, booking &amp; reviews</td><td class="text-center py-3 pr-4 text-gray-600">✗ Generic templates</td><td class="text-center py-3 pr-4 text-gray-600">✗ Generic templates</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Ranks on Google</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">✓ Auto-imports Instagram</td><td class="text-center py-3 pr-4 text-gray-600">Manual upload</td><td class="text-center py-3 pr-4 text-gray-600">Manual upload</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">Wix Bookings add-on</td><td class="text-center py-3 pr-4 text-gray-600">Requires plugin</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Setup time</td><td class="text-center py-3 pr-4 text-accent-400">~5 min</td><td class="text-center py-3 pr-4 text-gray-600">Hours</td><td class="text-center py-3 pr-4 text-gray-600">Hours</td></tr>
           </tbody>
         </table>
       </div>
+      <p class="mt-4 text-center text-sm text-gray-500">Your InkFlow page also works as your Instagram bio link — a real website that replaces a plain Linktree. Claim <span class="font-mono text-accent-400">ink-flows.com/s/yourstudio</span> and share it everywhere.</p>
     </div>
   </section>
 
@@ -163,7 +168,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
   <!-- AUTHOR -->
   <section class="border-t border-ink-800/50 py-10">
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-sm text-gray-400">
-      <p><strong class="text-white">Written by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow · Verified against Alliance of Professional Tattooists — 12 years running multi-artist tattoo studios. This guide is fact-checked against artist websites InkFlow builds and hosts for 500+ studios.</p>
+      <p><strong class="text-white">Written by <a href="/about" class="text-accent-400 hover:underline">Sarah Chen</a></strong>, Founder &amp; CEO at InkFlow — 12 years running multi-artist tattoo studios. This guide is fact-checked against artist websites InkFlow builds and hosts for 500+ studios.</p>
       <p class="mt-2 text-xs text-gray-500">Published July 16, 2026 · Last updated July 16, 2026.</p>
       <p class="mt-2 text-xs text-gray-500">Sources: <a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google Search Central — SEO Starter Guide</a> · <a href="https://developers.google.com/search/docs/appearance/google-images" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Google — Image SEO best practices</a> · InkFlow platform data across 500+ studios (2026).</p>
     </div>
@@ -176,5 +181,10 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <a href="https://app.ink-flows.com/register" class="mt-6 inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
   </section>
 
+  <AuthorByline
+    authorId="founder"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 </BaseLayout>

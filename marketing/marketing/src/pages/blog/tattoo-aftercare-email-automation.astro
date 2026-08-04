@@ -7,24 +7,13 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout lastUpdated="2026-06-18" breadcrumbs={[
+<BaseLayout breadcrumbs={[
     { label: 'Home', href: '/' },
     { label: 'Blog', href: '/blog' },
     { label: 'Aftercare Automation' },
   ]}>
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": "Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups",
-  "datePublished": "2026-07-01",
-  "dateModified": "2026-07-01",
-  "author": { "@type": "Organization", "name": "InkFlow" }
-}
-</script>
-  <BlogSchema title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." publishedDate="2026-06-05" tags={["aftercare emails", "client follow-up", "automation"]} />
-  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Guide 2026 | InkFlow" description="Stop manually chasing clients for aftercare updates. Automate healing check-ins, photo requests, and review prompts. Free guide." appSchema={false} />
+  <BlogSchema title="Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups" description="Automated aftercare emails save you hours a week and keep clients happy. Here's how tattoo studios are replacing scattered DMs with a system that actually works." publishedDate="2026-06-05" tags={["aftercare emails", "client follow-up", "automation"]} />
+  <SEOHead slot="head" title="Tattoo Aftercare Email Automation — Stop Chasing Clients for Follow-Ups" description="Automated aftercare emails save you hours a week and keep clients happy. Here's how tattoo studios are replacing scattered DMs with a system that actually works." />
   <Navbar />
 
   <article class="pt-24 pb-16 sm:pt-32">
@@ -112,7 +101,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
         <tbody>
           <tr class="border-b border-ink-800">
             <td class="py-2 pr-4 font-semibold">SMS</td>
-            <td class="py-2 pr-4">98% within 3 minutes</td>
+            <td class="py-2 pr-4">within minutes</td>
             <td class="py-2 pr-4">Short check-ins, reminders, time-sensitive messages</td>
             <td class="py-2 pr-4">160 chars, no rich media</td>
           </tr>
@@ -150,9 +139,9 @@ import FAQSchema from '../../components/FAQSchema.astro';
       <p>Beyond photos, automated aftercare delivers measurable business results:</p>
       <ul>
         <li><strong>35% higher client retention</strong> — clients return because they felt cared for</li>
-        <li><strong>2x more Google reviews</strong> — timed requests at day 21 convert best</li>
+        <li><strong>more Google reviews</strong> — timed requests at day 21 convert best</li>
         <li><strong>3+ hours saved per week</strong> — no more manual DM follow-ups</li>
-        <li><strong>40% more referral business</strong> — happy clients are prompted to refer friends</li>
+        <li><strong>more referral business</strong> — happy clients are prompted to refer friends</li>
       </ul>
 
       <h2>Comparison: Aftercare Automation Tools</h2>
@@ -232,7 +221,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
     questions={[
       { question: "Do clients find automated aftercare messages annoying?", answer: "Not if they're useful. A healing check-in at day 3 feels like good service. Space them out and keep the tone helpful, not salesy." },
       { question: "Can I customize aftercare automation messages?", answer: "Yes. Every message is fully customizable with personalization tokens for client name, artist name, and session date." },
-      { question: "Is SMS or email better for tattoo aftercare?", answer: "Use both. SMS for time-sensitive check-ins (98% open rate), email for detailed information like aftercare PDFs and photo upload links." },
+      { question: "Is SMS or email better for tattoo aftercare?", answer: "Use both. SMS for time-sensitive check-ins (high open rate), email for detailed information like aftercare PDFs and photo upload links." },
       { question: "How many healed photos can I expect with automation?", answer: "40-60% of clients submit healed photos with automation, compared to 10-15% with manual follow-up." },
     ]}
   />

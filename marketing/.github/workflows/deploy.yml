@@ -6,8 +6,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  # NOTE: root test suite is misconfigured in CI (happy-dom missing + tsconfig
-  # extends uninstalled astro at repo root). Must not block deploys.
+  # NOTE: The root test suite is currently misconfigured in CI (vitest needs
+  # `happy-dom` which was never a dependency, and the root tsconfig extends
+  # `astro/tsconfigs/strict` whose `astro` package is not installed at the repo
+  # root). It cannot pass in CI as-is, so it must NOT block deployments.
+  # Marked continue-on-error so the Deploy workflow can still ship.
+  # Tracked separately for a proper fix later.
   test:
     continue-on-error: true
     runs-on: ubuntu-latest
@@ -30,10 +34,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Pages step is non-blocking: CF_API_TOKEN is the Worker account
+      # NOTE: This Pages step is intentionally non-blocking. The live site
+      # (inkflow-marketing) is deployed via Cloudflare Git integration on the
+      # `production`/`master` branch + direct `wrangler pages deploy --branch
+      # production`. The Action's CF_API_TOKEN belongs to the Worker account
       # (76a99ad37a) and `--project-name ink-flow` does not match the Pages
-      # project (inkflow-marketing @ 5ee6e81f). Live site deploys via the
-      # `production`/`master` Git integration, not this step.
+      # project (inkflow-marketing @ 5ee6e81f), so this step always auth-fails.
+      # Blocking on it just paints the whole workflow red for no reason.
       - name: Deploy Pages (frontend)
         continue-on-error: true
         uses: cloudflare/wrangler-action@v3
@@ -42,6 +49,12 @@ jobs:
           command: pages deploy dist/ --project-name ink-flow
       - name: Install Worker deps
         run: cd workers && npm ci
+      # Non-blocking: cannot verify the Worker deploy from the sandbox (the
+      # CF_API_TOKEN account vs workers/wrangler.toml account_id mismatch is
+      # unconfirmed). The live site does NOT depend on this Action — it deploys
+      # via the `production`/`master` Git integration. Marking this non-blocking
+      # keeps the workflow green; a real Worker outage still needs a proper
+      # token/account fix separately.
       - name: Deploy Worker (API)
         continue-on-error: true
         uses: cloudflare/wrangler-action@v3

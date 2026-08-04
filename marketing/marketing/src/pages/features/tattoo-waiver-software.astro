@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -685,10 +686,10 @@ import FAQSchema from '../../components/FAQSchema.astro';
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
 
-          <div class="text-3xl font-bold text-accent-400">73%</div>
+          <div class="text-3xl font-bold text-accent-400">Required</div>
 
 
-          <div class="mt-2 text-sm text-gray-400">Of US states require written consent before tattooing (OSHA data)</div>
+          <div class="mt-2 text-sm text-gray-400">Most US states require written consent before tattooing — digital waivers make it effortless</div>
 
 
         </div>
@@ -709,10 +710,10 @@ import FAQSchema from '../../components/FAQSchema.astro';
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
 
-          <div class="text-3xl font-bold text-accent-400">100%</div>
+          <div class="text-3xl font-bold text-accent-400">Retrievable</div>
 
 
-          <div class="mt-2 text-sm text-gray-400">Digital waiver retrieval rate vs 30% paper loss (industry data)</div>
+          <div class="mt-2 text-sm text-gray-400">Digital waivers are always findable; paper copies get lost, damaged, or misfiled</div>
 
 
         </div>
@@ -721,7 +722,6 @@ import FAQSchema from '../../components/FAQSchema.astro';
       </div>
 
 
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: OSHA guidelines, InkFlow studio data 2026.</p>
 
 
     </div>
@@ -739,6 +739,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 
 
+  <AuthorByline
+    authorId="founder"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 
 

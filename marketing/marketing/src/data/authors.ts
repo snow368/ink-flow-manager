@@ -23,14 +23,6 @@ export const authors: Record<string, Author> = {
     image: '/images/authors/sarah-chen.jpg',
     sameAs: ['https://linkedin.com/in/sarahchen-inkflow'],
   },
-  reviewer: {
-    id: 'reviewer',
-    name: 'TODO: 真实审核人姓名（如产品负责人或行业顾问）',
-    jobTitle: 'TODO: 职位',
-    bio: '',
-    image: '',
-    sameAs: [],
-  },
 };
 
 export function getAuthor(id: string): Author | undefined {

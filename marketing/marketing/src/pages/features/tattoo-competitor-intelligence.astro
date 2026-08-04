@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
@@ -354,31 +355,31 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
-          <div class="text-3xl font-bold text-accent-400">85%</div>
+          <div class="text-3xl font-bold text-accent-400">Local</div>
 
-          <div class="mt-2 text-sm text-gray-400">Of US studios adjust pricing based on local competitors</div>
-
-        </div>
-
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-
-          <div class="text-3xl font-bold text-accent-400">45+</div>
-
-          <div class="mt-2 text-sm text-gray-400">Avg number of tattoo studios in a major US metro area</div>
+          <div class="mt-2 text-sm text-gray-400">Studios benchmark pricing against nearby competitors to stay competitive</div>
 
         </div>
 
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
-          <div class="text-3xl font-bold text-accent-400">2x</div>
+          <div class="text-3xl font-bold text-accent-400">Crowded</div>
 
-          <div class="mt-2 text-sm text-gray-400">More bookings for studios monitoring competitor pricing (data)</div>
+          <div class="mt-2 text-sm text-gray-400">Most metro areas have dozens of tattoo studios competing for the same clients</div>
+
+        </div>
+
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
+
+          <div class="text-3xl font-bold text-accent-400">Proactive</div>
+
+          <div class="mt-2 text-sm text-gray-400">Studios that track competitor pricing adjust faster and capture more demand</div>
 
         </div>
 
       </div>
 
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+      
 
     </div>
 
@@ -406,6 +407,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
   </section>
 
+  <AuthorByline
+    authorId="founder"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 
 </BaseLayout>

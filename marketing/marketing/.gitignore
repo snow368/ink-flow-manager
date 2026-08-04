@@ -3,3 +3,21 @@ dist/
 .astro/
 .env
 .wrangler/
+
+# Secrets & Credentials
+gsc-key.json
+gsc-key.backup.json
+*.local.json
+*-key-*.json
+SECRETS_BACKUP*.md
+
+# Marketing Astro site (managed separately)
+marketing/.git/
+marketing/node_modules/
+marketing/dist/
+marketing/.astro/
+marketing/.wrangler/
+__pycache__/
+
+# Claude plugin nested repo — never track as submodule
+.claude/skills/marketingskills/

@@ -17,18 +17,18 @@ export interface Author {
 export const authors: Record<string, Author> = {
   founder: {
     id: 'founder',
-    name: 'Sarah Chen',
-    jobTitle: 'Founder & CEO at InkFlow',
-    bio: '12 years managing multi-artist tattoo studios. Built InkFlow to solve the booking, waiver, and retention problems she experienced running shops.',
-    image: '/images/authors/sarah-chen.jpg',
-    sameAs: ['https://linkedin.com/in/sarahchen-inkflow'],
+    name: 'TODO: 真实姓名',
+    jobTitle: 'TODO: 职位，如 Founder & CEO',
+    bio: 'TODO: 一句话简介，突出纹身 / 软件行业经验',
+    image: '/images/authors/founder.jpg',
+    sameAs: ['TODO: 真实 LinkedIn / 社媒 URL'],
   },
   reviewer: {
     id: 'reviewer',
-    name: 'TODO: 真实审核人姓名（如产品负责人或行业顾问）',
-    jobTitle: 'TODO: 职位',
+    name: 'TODO: 真实审核人姓名',
+    jobTitle: 'TODO: 职位，如 Product Lead',
     bio: '',
-    image: '',
+    image: '/images/authors/reviewer.jpg',
     sameAs: [],
   },
 };

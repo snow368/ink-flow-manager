@@ -3,21 +3,16 @@ import { getAuthor } from '../data/authors';
 
 interface Props {
   authorId: string;
-  reviewerId?: string;
   datePublished: string;
   dateModified?: string;
 }
 
-const { authorId, reviewerId, datePublished, dateModified } = Astro.props;
+const { authorId, datePublished, dateModified } = Astro.props;
 const author = getAuthor(authorId);
-const reviewer = reviewerId ? getAuthor(reviewerId) : undefined;
 
 // 占位检测：name 含 "TODO" 说明真实作者尚未填写，跳过渲染 + 不注入 schema，
 // 避免上线暴露占位文本或编造的 Person 信号。
 const isPlaceholder = !!author && author.name.includes('TODO');
-// 审核人占位检测：reviewer 名含 TODO 或为空时，不渲染 / 不注入 schema，
-// 避免上线暴露占位文本（如 "TODO: 真实审核人姓名"）破坏 E-E-A-T 信任信号、并避免伪造 Person 结构化数据。
-const reviewerIsPlaceholder = !!reviewer && (reviewer.name.includes('TODO') || !reviewer.name.trim());
 
 const authorSchema =
   !isPlaceholder && author
@@ -29,16 +24,6 @@ const authorSchema =
         ...(author.image ? { image: author.image } : {}),
         ...(author.bio ? { description: author.bio } : {}),
         ...(author.sameAs.length ? { sameAs: author.sameAs } : {}),
-      }
-    : null;
-
-const reviewerSchema =
-  !isPlaceholder && !reviewerIsPlaceholder && reviewer
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name: reviewer.name,
-        jobTitle: reviewer.jobTitle,
       }
     : null;
 ---
@@ -61,14 +46,6 @@ const reviewerSchema =
               <span class="font-semibold text-white">{author.name}</span>
               <span class="text-gray-500"> · {author.jobTitle}</span>
             </p>
-            {
-              reviewer && !reviewerIsPlaceholder && (
-                <p class="mt-1 text-gray-500">
-                  Reviewed by <span class="text-gray-300">{reviewer.name}</span>
-                  <span class="text-gray-500"> · {reviewer.jobTitle}</span>
-                </p>
-              )
-            }
             <p class="mt-1 text-gray-500">Last updated {dateModified || datePublished}</p>
           </div>
         </div>
@@ -78,4 +55,3 @@ const reviewerSchema =
 }
 
 {authorSchema && <script type="application/ld+json" set:html={JSON.stringify(authorSchema)} />}
-{reviewerSchema && <script type="application/ld+json" set:html={JSON.stringify(reviewerSchema)} />}

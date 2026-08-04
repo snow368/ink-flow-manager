@@ -79,6 +79,7 @@ const StudioSettings = lazy(() => import('./pages/StudioSettings'));
 const BusinessSettings = lazy(() => import('./pages/BusinessSettings'));
 const AccountSettings = lazy(() => import('./pages/AccountSettings'));
 const ProPlusSetup = lazy(() => import('./pages/ProPlusSetup'));
+const InkPassportPage = lazy(() => import('./pages/InkPassportPage'));
 import LocationSelector from './components/LocationSelector';
 const NewClientForm = lazy(() => import('./pages/NewClientForm'));
 import { db, type UserRecord } from './db';
@@ -329,6 +330,7 @@ export default function App() {
             <Route path="/owner-dashboard" element={<OwnerDashboard />} />
             <Route path="/staff-management" element={<StaffManagementPage />} />
             <Route path="/audit-log" element={<AuditLogPage />} />
+            <Route path="/ink-passport" element={<InkPassportPage />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/case-studies" element={<CaseStudiesPage />} />
             <Route path="/walkin/:artistId" element={<WalkinPage />} />

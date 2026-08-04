@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SEOHead from '../../components/SEOHead.astro';
 import Navbar from '../../components/Navbar.astro';
@@ -38,7 +39,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
       <h1 class="text-4xl font-extrabold text-white sm:text-5xl">Tattoo Marketing Automation: Auto Reviews, Referrals & Lead Capture</h1>
       <p class="mt-6 text-lg text-gray-400"><strong class="text-white">Problem:</strong> Marketing your studio means juggling Mailchimp, Instagram, Google Business, and referral tracking across separate tools. Most studios give up and rely on word of mouth alone.</p>
       <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow marketing automation sends review requests, tracks referral chains, and captures leads — all built into your studio management platform. No separate tools or monthly fees.</p>
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios automatically collect 2x more Google reviews. Referred clients book at 40% higher rates. Marketing happens whether you remember or not — fully automated.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios automatically collect more Google reviews. Referred clients book at higher rates. Marketing happens whether you remember or not — fully automated.</p>
       <div class="mt-8 flex flex-wrap gap-4">
         <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Try InkFlow Free →</a>
       </div>
@@ -50,7 +51,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-bold text-white text-center">Why Most Studios Leave Money on the Table</h2>
       <div class="mt-8 space-y-4">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Review requests are forgotten — 80% of happy clients never get asked.</h3><p class="mt-1 text-sm text-gray-400">Artists forget to ask for reviews at the end of a session. Automation sends the request when the client's experience is freshest.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Review requests are forgotten — Most happy clients never get asked.</h3><p class="mt-1 text-sm text-gray-400">Artists forget to ask for reviews at the end of a session. Automation sends the request when the client's experience is freshest.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Referral tracking is guesswork without a system.</h3><p class="mt-1 text-sm text-gray-400">"How did you hear about us?" spreadsheets are unreliable. InkFlow tracks every referral automatically from the booking source.</p></div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Leads slip through the cracks without follow-up.</h3><p class="mt-1 text-sm text-gray-400">Booking inquiries that don't convert immediately are lost forever without automated follow-up nurturing.</p></div>
       </div>
@@ -71,7 +72,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <h5 class="mt-3 text-base font-medium text-white">Multi-Platform: Google, Yelp, Facebook</h5>
           <p class="text-sm text-gray-400">Direct clients to your preferred platform based on their feedback. Happy clients go to Google. Neutral feedback goes to a private feedback form.</p>
           <h6 class="mt-2 text-sm font-medium text-gray-400">2x More Reviews Than Manual Requests</h6>
-          <p class="text-sm text-gray-400">Studios using automated review requests see 2x more reviews. Each Google review increases click-through rate by ~10%.</p>
+          <p class="text-sm text-gray-400">Studios using automated review requests see more reviews. Each Google review increases click-through rate by ~10%.</p>
         </div>
         <div class="rounded-xl bg-ink-900/50 border border-ink-800 p-8 text-center">
           <p class="text-sm text-gray-400"><img src="/images/features/aftercare.svg" alt="Review request settings in InkFlow" class="rounded-lg border border-ink-800 w-full" /></p>
@@ -231,11 +232,16 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <div class="mt-2 text-sm text-gray-400">Avg cost per acquired client via automated referrals (US studios)</div>
         </div>
       </div>
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+      
     </div>
   </section>
 
   <p class="mt-3 text-sm text-gray-600"><a href="/pricing" class="text-accent-400 hover:underline">Compare plans</a></p>
   </section>
+  <AuthorByline
+    authorId="founder"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 </BaseLayout>

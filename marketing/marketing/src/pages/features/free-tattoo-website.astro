@@ -7,7 +7,7 @@ import Footer from '../../components/Footer.astro';
 import FAQSchema from '../../components/FAQSchema.astro';
 ---
 
-<BaseLayout lastUpdated="2026-06-30" author="Sarah Chen">
+<BaseLayout lastUpdated="2026-08-03" author="Sarah Chen">
 
 <script type="application/ld+json">
 {
@@ -33,6 +33,10 @@ import FAQSchema from '../../components/FAQSchema.astro';
     { question: "How is this different from Linktree or Lnk.Bio?", answer: "Linktree and Lnk.Bio are link-in-bio pages — they're just a list of links. Your InkFlow page is a full website: portfolio gallery, booking form, reviews, Google-friendly SEO, and 100+ design themes. It's a real site, not a link aggregator." },
     { question: "Can I add my Instagram photos?", answer: "Yes. After claiming, enter your Instagram handle and your recent posts appear automatically on your page." },
     { question: "Can I use my own domain name?", answer: "Yes. Pro and Plus plans support custom domains. Free plan includes ink-flows.com/s/yourstudio." },
+    { question: "My shop isn't on Google Maps yet. Can I still get a page?", answer: "Yes. Sign up for InkFlow and use the Website Wizard to create your page from scratch. Choose your theme, upload your photos, and get your short link in minutes." },
+    { question: "How much does a tattoo website cost?", answer: "A custom agency site runs $500-$3,000+ and takes weeks. Drag-and-drop builders like Wix ($17/mo) and Squarespace ($16/mo) bill monthly. InkFlow's base studio site is free - no credit card, yours to keep." },
+    { question: "Do I need a website, or is Instagram enough?", answer: "Instagram is where most clients discover tattoo artists (about 42% of new clients), but it isn't where high-intent searches happen - roughly 18% find artists through Google search and Maps, and that slice is growing. A free InkFlow page catches people actively searching 'tattoo artist near me' and gives you a booking form, reviews, and a link you fully own." },
+    { question: "How do I get my tattoo site to show up on Google?", answer: "Every InkFlow page is server-side rendered with SEO meta tags, Schema.org structured data, and submitted via sitemap. To rank locally: add your city and shop name, connect your Google Business Profile, and ask happy clients to leave a Google review (97% of consumers read them)." },
   ]} />
   <Navbar />
 
@@ -53,33 +57,34 @@ import FAQSchema from '../../components/FAQSchema.astro';
     </div>
   </section>
 
-  <!-- COMPARISON: vs Lnk.Bio / Linktree -->
+  <!-- COMPARISON: vs website builders (Wix / Squarespace) -->
   <section class="border-t border-ink-800/50 py-16">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-white text-center">Not Another Link-in-Bio. A Real Website.</h2>
-      <p class="mt-3 text-center text-gray-400">Link-in-bio tools like Lnk.Bio and Linktree are link aggregators — they don't show up on Google and they don't convert. InkFlow gives you a full website with a short URL. Here's the difference:</p>
+      <h2 class="text-2xl font-bold text-white text-center">Not a Generic Builder. A Website Built for Tattoo Artists.</h2>
+      <p class="mt-3 text-center text-gray-400">Drag-and-drop builders like Wix and Squarespace start you from a blank template, bill monthly, and leave the tattoo-specific work to you. InkFlow is purpose-built for studios and free to start. Here's how it compares:</p>
       <div class="mt-8 overflow-x-auto">
         <table class="w-full text-sm border-collapse">
           <thead>
             <tr class="border-b border-ink-700">
               <th class="text-left py-3 pr-4 text-gray-400 font-medium"></th>
               <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Free Site</th>
-              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Lnk.Bio</th>
-              <th class="text-center py-3 text-gray-500 font-medium">Linktree</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Wix</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Squarespace</th>
             </tr>
           </thead>
           <tbody>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">URL format</td><td class="text-center py-3 pr-4 text-accent-400 font-mono text-xs">ink-flows.com/s/studio</td><td class="text-center py-3 pr-4 text-gray-600 font-mono text-xs">lnk.bio/you</td><td class="text-center py-3 text-gray-600 font-mono text-xs">linktr.ee/you</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full website, not link list</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Google indexed (SEO)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✗</td><td class="text-center py-3 text-gray-600">✗</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External links</td><td class="text-center py-3 text-gray-600">External links</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">External link</td><td class="text-center py-3 text-gray-600">External link</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Design themes</td><td class="text-center py-3 pr-4 text-accent-400">100+ full themes</td><td class="text-center py-3 pr-4 text-gray-600">Page-only templates</td><td class="text-center py-3 text-gray-600">Limited</td></tr>
-            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Price</td><td class="text-center py-3 pr-4 text-accent-400">Free</td><td class="text-center py-3 pr-4 text-gray-600">$9.99 lifetime</td><td class="text-center py-3 text-gray-600">$5/mo</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Built for tattoo studios</td><td class="text-center py-3 pr-4 text-accent-400">✓ 100+ tattoo themes, booking &amp; reviews</td><td class="text-center py-3 pr-4 text-gray-600">✗ Generic templates</td><td class="text-center py-3 pr-4 text-gray-600">✗ Generic templates</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Full website, Google-indexed</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">Wix Bookings add-on</td><td class="text-center py-3 pr-4 text-gray-600">Requires plugin</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Portfolio gallery</td><td class="text-center py-3 pr-4 text-accent-400">Built-in, auto-imports Instagram</td><td class="text-center py-3 pr-4 text-gray-600">Manual upload</td><td class="text-center py-3 text-gray-600">Manual upload</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Setup time</td><td class="text-center py-3 pr-4 text-accent-400">~5 min (auto from Google Maps)</td><td class="text-center py-3 pr-4 text-gray-600">Hours</td><td class="text-center py-3 text-gray-600">Hours</td></tr>
+            <!-- Design themes covered in the templates section -->
+            <!-- Pricing covered in #cost section -->
           </tbody>
         </table>
       </div>
     </div>
+    <p class="mt-4 text-center text-sm text-gray-500">Your InkFlow page also works as your Instagram bio link - a real website that replaces a plain Linktree. See the <a href="#cost" class="text-accent-400 hover:underline">full cost breakdown</a> below.</p>
   </section>
 
   <!-- USE CASES: 3 scenarios -->
@@ -252,7 +257,90 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <summary class="cursor-pointer text-sm font-medium text-white">My shop isn't on Google Maps yet. Can I still get a page?</summary>
           <p class="mt-2 text-sm text-gray-400">Yes. Sign up for InkFlow and use the Website Wizard to create your page from scratch. Choose your theme, upload your photos, and get your short link in minutes.</p>
         </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How much does a tattoo website cost?</summary>
+          <p class="mt-2 text-sm text-gray-400">A custom agency site runs $500–$3,000+ and takes weeks. Drag-and-drop builders like Wix ($17/mo) and Squarespace ($16/mo) bill monthly. InkFlow's base studio site is free — no credit card, yours to keep. See the <a href="#cost" class="text-accent-400 hover:underline">full cost comparison</a> above.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">Do I need a website, or is Instagram enough?</summary>
+          <p class="mt-2 text-sm text-gray-400">Instagram is where most clients discover tattoo artists (about 42% of new clients), but it isn't where high-intent searches happen — roughly 18% find artists through Google search and Maps, and that slice is growing. A free InkFlow page catches people actively searching "tattoo artist near me" and gives you a booking form, reviews, and a link you fully own. Instagram plus a website is stronger than either alone.</p>
+        </details>
+        <details class="rounded-xl border border-ink-800 p-4">
+          <summary class="cursor-pointer text-sm font-medium text-white">How do I get my tattoo site to show up on Google?</summary>
+          <p class="mt-2 text-sm text-gray-400">Every InkFlow page is server-side rendered with SEO meta tags, Schema.org structured data, and submitted via sitemap. To rank locally: add your city and shop name, connect your Google Business Profile, and ask happy clients to leave a Google review (97% of consumers read them). See our <a href="#local-seo" class="text-accent-400 hover:underline">local SEO guide</a> above.</p>
+        </details>
       </div>
+    </div>
+  </section>
+
+  <!-- COST COMPARISON -->
+  <section id="cost" class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">How Much Does a Tattoo Website Cost?</h2>
+      <p class="mt-3 text-center text-gray-400">A custom studio site from an agency runs $500–$3,000+ and takes weeks. Drag-and-drop builders bill monthly. InkFlow's base site is free — here's the real breakdown:</p>
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-ink-700">
+              <th class="text-left py-3 pr-4 text-gray-400 font-medium">Option</th>
+              <th class="text-center py-3 pr-4 text-accent-400 font-semibold">InkFlow Free Site</th>
+              <th class="text-center py-3 pr-4 text-gray-500 font-medium">Wix (Light)</th>
+              <th class="text-center py-3 text-gray-500 font-medium">Squarespace (Personal)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Monthly cost</td><td class="text-center py-3 pr-4 text-accent-400 font-semibold">$0</td><td class="text-center py-3 pr-4 text-gray-600">$17/mo</td><td class="text-center py-3 pr-4 text-gray-600">$16/mo</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Your own domain</td><td class="text-center py-3 pr-4 text-accent-400">Pro plan</td><td class="text-center py-3 pr-4 text-gray-600">Paid plan</td><td class="text-center py-3 pr-4 text-gray-600">Paid plan</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Booking form</td><td class="text-center py-3 pr-4 text-accent-400">Built-in</td><td class="text-center py-3 pr-4 text-gray-600">Wix Bookings add-on</td><td class="text-center py-3 pr-4 text-gray-600">Requires plugin</td></tr>
+            <tr class="border-b border-ink-800/50"><td class="py-3 pr-4 text-white">Google indexed (SEO)</td><td class="text-center py-3 pr-4 text-accent-400">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td><td class="text-center py-3 pr-4 text-gray-600">✓</td></tr>
+            <tr><td class="py-3 pr-4 text-white">Setup time</td><td class="text-center py-3 pr-4 text-accent-400">~5 min</td><td class="text-center py-3 pr-4 text-gray-600">Hours</td><td class="text-center py-3 pr-4 text-gray-600">Hours</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-4 text-center text-sm text-gray-500">Builder prices from <a href="https://framekit.ai/blog/best-website-builder-for-tattoo-artists-2026" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Framekit's 2026 builder comparison</a>. Free plan includes ink-flows.com/s/yourstudio.</p>
+      <p class="mt-4 text-center"><a href="/pricing" class="inline-block rounded-lg border border-ink-700 px-6 py-3 text-sm font-semibold text-white hover:bg-ink-800 transition-all">Compare all plans →</a></p>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO PHOTOGRAPHY -->
+  <section class="border-t border-ink-800/50 py-16 bg-ink-900/20">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Portfolio Photography: Why Healed Work Wins</h2>
+      <p class="mt-3 text-center text-gray-400">Your website is only as strong as your photos. Fresh tattoos always look sharp — healed photos prove your work lasts. Three tips that separate booked artists from the rest:</p>
+      <div class="mt-10 grid gap-6 sm:grid-cols-3">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Shoot in natural light</h3>
+          <p class="mt-2 text-sm text-gray-400">Window light on an overcast day, clean neutral background, no harsh flash. Consistency across every shot makes your grid look like a curated gallery.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Show healed results</h3>
+          <p class="mt-2 text-sm text-gray-400">Fresh vs healed side-by-sides are the strongest trust signal in tattooing — they prove quality ages well, not just that it pops on day one. Ask clients for photos at 3–6 months.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Caption with intent</h3>
+          <p class="mt-2 text-sm text-gray-400">Describe each piece: "fine line floral on forearm, healed 14 months." Good alt text also helps Google image search send you tattoo clients. Need a consent workflow for client photos? See our <a href="/features/tattoo-waiver-software" class="text-accent-400 hover:underline">tattoo waiver software</a> and <a href="/features/tattoo-aftercare-software-automation" class="text-accent-400 hover:underline">aftercare automation</a>.</p>
+        </div>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">Photography tips adapted from <a href="https://tattoobizguide.com/blog/best-portfolio-websites-tattoo-artists" class="text-accent-400 hover:underline" target="_blank" rel="noopener">TattooBizGuide's portfolio guide</a>.</p>
+    </div>
+  </section>
+
+  <!-- LOCAL SEO -->
+  <section id="local-seo" class="border-t border-ink-800/50 py-16">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white text-center">Get Found on Google: Local SEO for Tattoo Artists</h2>
+      <p class="mt-3 text-center text-gray-400">Instagram brings discovery, but Google captures high-intent searchers — people typing "tattoo artist near me" or "custom tattoo [your city]." Your InkFlow page is built to catch them.</p>
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Reviews are the ranking signal</h3>
+          <p class="mt-2 text-sm text-gray-400"><a href="https://www.brightlocal.com/research/local-consumer-review-survey" class="text-accent-400 hover:underline" target="_blank" rel="noopener">97% of consumers read reviews</a> before picking a local business, and 54% visit the official website after a positive review. InkFlow auto-displays your Google rating — ask happy clients to leave one.</p>
+        </div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6">
+          <h3 class="text-lg font-bold text-white">Own your name, not rented land</h3>
+          <p class="mt-2 text-sm text-gray-400">A free InkFlow page at ink-flows.com/s/yourstudio is indexable and yours to keep. On Pro, point your own domain. Pair it with <a href="/features/tattoo-marketing-automation" class="text-accent-400 hover:underline">tattoo marketing automation</a> to re-engage searchers who didn't book.</p>
+        </div>
+      </div>
+      <p class="mt-8 text-center text-sm text-gray-500">Tattoo client discovery: Instagram 42%, Google search/Maps 18% (growing), referrals 23% — <a href="https://tattoobizguide.com/blog/tattoo-industry-statistics-2026" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Tattoo Industry Statistics 2026</a>.</p>
     </div>
   </section>
 
@@ -266,7 +354,6 @@ import FAQSchema from '../../components/FAQSchema.astro';
     <div class="mt-6">
       <a href="https://app.ink-flows.com/register" class="inline-block rounded-lg bg-accent-500 px-8 py-3.5 text-base font-semibold text-ink-950 hover:bg-accent-400 transition-all">Claim My Free Page →</a>
     </div>
-    <p class="mt-4 text-sm text-gray-600">Also available: <a href="
   <!-- INDUSTRY DATA -->
   <section class="border-t border-ink-800/30 py-16 bg-ink-900/20">
     <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -278,15 +365,15 @@ import FAQSchema from '../../components/FAQSchema.astro';
           <div class="mt-2 text-sm text-gray-400">Average setup time for a complete studio website (InkFlow)</div>
         </div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
-          <div class="text-3xl font-bold text-accent-400">87%</div>
-          <div class="mt-2 text-sm text-gray-400">Of clients check a studio website before booking (survey)</div>
+          <div class="text-3xl font-bold text-accent-400">97%</div>
+          <div class="mt-2 text-sm text-gray-400">Of clients read online reviews before choosing a local business (<a href="https://www.brightlocal.com/research/local-consumer-review-survey" class="text-accent-400 hover:underline" target="_blank" rel="noopener">BrightLocal 2026</a>)</div>
         </div>
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
           <div class="text-3xl font-bold text-accent-400">100+</div>
           <div class="mt-2 text-sm text-gray-400">Themes and layouts included</div>
         </div>
       </div>
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+      <p class="mt-8 text-center text-sm text-gray-500">Sources: <a href="https://www.brightlocal.com/research/local-consumer-review-survey" class="text-accent-400 hover:underline" target="_blank" rel="noopener">BrightLocal — Local Consumer Review Survey 2026</a> · <a href="https://tattoobizguide.com/blog/tattoo-industry-statistics-2026" class="text-accent-400 hover:underline" target="_blank" rel="noopener">Tattoo Industry Statistics 2026</a></p>
     </div>
   </section>
 
@@ -295,9 +382,8 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
   <AuthorByline
     authorId="founder"
-    reviewerId="reviewer"
     datePublished="2026-07-18"
-    dateModified="2026-07-18"
+    dateModified="2026-08-03"
   />
   <Footer />
 </BaseLayout>

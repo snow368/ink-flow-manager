@@ -26,10 +26,16 @@ export interface TattooMeaning {
     links?: { label: string; href: string }[];
   }>;
   variants?: string[];
-  /** EEAT: external source URL */
+  /** EEAT: external source URL (legacy single-source field; prefer `sources[]`) */
   externalSource?: string;
   /** EEAT: source label */
   sourceLabel?: string;
+  /**
+   * EEAT (CORE-EEAT): 2+ real citations per page. Every URL must be
+   * fetch-verified before being added. Wikipedia is banned as a citation.
+   * When present, this replaces the single `externalSource` render.
+   */
+  sources?: Array<{ label: string; url: string }>;
   /** Gallery images — SVG line-art filenames in /public/gallery/real/ */
   gallerySvgs?: string[];
   /** SEO: custom meta description override */
@@ -911,6 +917,12 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         variants: ['hammerhead shark', 'shark tooth pattern (niho)', 'great white shark', 'shark silhouette', 'shark and wave'],
         externalSource: 'https://www.britannica.com/animal/shark',
         sourceLabel: 'Britannica — Shark',
+        // CORE-EEAT: 3 fetch-verified citations (2026-08-04). No Wikipedia.
+        sources: [
+          { label: 'Britannica — Shark (animal profile)', url: 'https://www.britannica.com/animal/shark' },
+          { label: 'Smithsonian Ocean — Sharks (500+ species, 400-million-year lineage, keystone predator role)', url: 'https://ocean.si.edu/ocean-life/sharks-rays/sharks' },
+          { label: 'IUCN SSC Shark Specialist Group — 2021 Red List assessment (37% of sharks, rays and chimaeras threatened)', url: 'https://www.iucnssg.org/news/2022-iucn-ssc-shark-specialist-groups-annual-report' },
+        ],
         metaDescription: 'Shark tattoo meaning: power, survival, fearlessness. Explore species (great white, hammerhead), pose, conservation, Jaws, and cultural roots.',
         relatedSymbols: ['great-white', 'hammerhead', 'shark-tooth', 'whale', 'octopus', 'dragon', 'compass'],
         faqs: [

@@ -11,6 +11,19 @@ const TAGS = ['japanese', 'realism', 'traditional', 'neo-traditional', 'blackwor
   'geometric', 'watercolor', 'tribal', 'minimalist', 'sketch', 'portrait',
   'lettering', 'cover-up', 'arm', 'leg', 'back', 'chest', 'sleeve', 'hand', 'neck'];
 
+/** Tattoo symbol IDs from the meaning-finder system. Used to connect gallery images to SEO symbol pages. */
+const SYMBOL_TAGS = [
+  'wolf', 'snake', 'lion', 'butterfly', 'owl', 'fox', 'bear', 'deer', 'elephant',
+  'rose', 'lotus', 'sunflower', 'cherry-blossom', 'peony', 'daisy',
+  'koi', 'hannya', 'foo-dog', 'japanese-wave', 'oni', 'samurai',
+  'cross', 'om', 'evil-eye', 'hamsa', 'mandala',
+  'phoenix', 'dragon', 'unicorn',
+  'moon', 'mountain', 'sun', 'tree-of-life',
+  'anchor', 'compass', 'ship',
+  'feather', 'arrow', 'infinity',
+  'skull',
+];
+
 type GroupView = 'grid' | 'session' | 'client' | 'timeline';
 
 export default function Portfolio() {
@@ -32,6 +45,7 @@ export default function Portfolio() {
   const [dragIdx, setDragIdx] = useState(-1);
   const [editImageUrl, setEditImageUrl] = useState<string | null>(null);
   const [showEmbed, setShowEmbed] = useState(false);
+  const [showWelcome] = useState(() => new URLSearchParams(window.location.search).get('welcome') === '1');
 
   // Grouped view data
   const [sessionGroups, setSessionGroups] = useState<{ sessionId: string; session: any; photos: PortfolioRecord[] }[]>([]);
@@ -139,6 +153,7 @@ export default function Portfolio() {
       id: i.id,
       thumbnailUrl: i.thumbnailUrl || i.imageUrl,
       tags: i.tags,
+      symbols: i.symbols || [],
       createdAt: i.createdAt,
     }));
     const backendUrl = localStorage.getItem('inkflow_backend_url') || 'http://localhost:8787';
@@ -160,6 +175,17 @@ export default function Portfolio() {
     await db.portfolio.update(item.id, { tags });
     setItems(prev => prev.map(i => i.id === item.id ? { ...i, tags } : i));
     if (selected?.id === item.id) setSelected({ ...selected, tags });
+    if (user) syncPortfolio(user.id);
+  };
+
+  const toggleSymbol = async (item: PortfolioRecord, sym: string) => {
+    const current = item.symbols || [];
+    const symbols = current.includes(sym)
+      ? current.filter(s => s !== sym)
+      : [...current, sym];
+    await db.portfolio.update(item.id, { symbols });
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, symbols } : i));
+    if (selected?.id === item.id) setSelected({ ...selected, symbols });
     if (user) syncPortfolio(user.id);
   };
 
@@ -442,6 +468,20 @@ export default function Portfolio() {
         </div>
       </div>
 
+      {showWelcome && (
+        <div style={{ marginBottom: 16, padding: "16px 20px", borderRadius: 12, border: "1px solid #a855f740", background: "linear-gradient(135deg, #a855f710, transparent)" }}>
+          <p style={{ fontSize: 16, fontWeight: "bold", color: "#c084fc", margin: 0 }}>🎨 Welcome! Upload your first artwork</p>
+          <p style={{ fontSize: 13, color: "#94a3b8", marginTop: 6 }}>
+            Your uploaded work can appear on the <strong>ink-flows.com</strong> meaning pages. Add symbol tags to get matched.
+          </p>
+          <ol style={{ fontSize: 12, color: "#64748b", marginTop: 8, paddingLeft: 20 }}>
+            <li>Click <strong>+ Upload</strong> to add your first image</li>
+            <li>Click the image and add <strong>symbol tags</strong></li>
+            <li>Set it to <strong>Public</strong> to appear in the gallery</li>
+          </ol>
+        </div>
+      )}
+
       {/* Share & Embed */}
       {user && publicCount > 0 && (
         <>
@@ -642,6 +682,29 @@ export default function Portfolio() {
                   {tag}
                 </button>
               ))}
+            </div>
+
+            {/* Symbol tags (for gallery matching) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <p style={{ fontSize: 12, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tattoo Symbols</p>
+              <span style={{ fontSize: 10, color: '#64748b' }}>appears on matching meaning pages</span>
+            </div>
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
+              {SYMBOL_TAGS.map(sym => {
+                const active = (selected.symbols || []).includes(sym);
+                return (
+                  <button key={sym} onClick={() => toggleSymbol(selected, sym)}
+                    style={{
+                      padding: '3px 8px', borderRadius: 6, border: '1px solid',
+                      borderColor: active ? '#a855f7' : '#334155',
+                      background: active ? '#a855f720' : 'transparent',
+                      color: active ? '#c084fc' : '#64748b',
+                      fontSize: 10, cursor: 'pointer',
+                    }}>
+                    {sym}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Service type */}

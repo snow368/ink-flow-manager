@@ -1105,6 +1105,8 @@ export interface UserRecord {
   verificationStatus?: 'pending' | 'approved' | 'rejected';
   verificationScore?: number;
   socialLinks?: string[];
+  /** Used for P1 nearby artist matching */
+  city?: string;
   studioName?: string;
   licenseShopName?: string;
   googleDriveConnected?: boolean;
@@ -1360,6 +1362,8 @@ export interface PosTransactionRecord {
 export interface PortfolioRecord {
   id: string; artistId: string; projectId?: string; clientId?: string;
   sessionId?: string; imageUrl: string; thumbnailUrl?: string; tags: string[];
+  /** Symbol IDs from the tattoo-meaning system (e.g. "wolf", "lotus", "koi") */
+  symbols?: string[];
   isPublic: boolean; consentForSocial: boolean; consentForPromotion: boolean;
   source: 'upload' | 'session'; sortOrder: number; createdAt: number;
   serviceType?: string; isFlash?: boolean; isSold?: boolean;

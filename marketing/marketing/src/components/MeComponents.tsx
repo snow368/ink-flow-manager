@@ -8,7 +8,7 @@ export function BookingLinkShare({ artistId, user }: { artistId: string; user: U
     try { return localStorage.getItem('inkflow_booking_deposit') || ''; } catch { return ''; }
   });
   const slug = (user as any)?.bioProfile?.slug || user?.instagramHandle?.replace(/^@/, '') || '';
-  const shortUrl = slug ? `${window.location.origin}/${slug}` : `${window.location.origin}/bio/${artistId}`;
+  const shortUrl = slug ? `${window.location.origin}/s/${slug}` : `${window.location.origin}/bio/${artistId}`;
   const displayUrl = slug ? `${window.location.origin.replace(/^https?:\/\//, '')}/${slug}` : `book/${artistId}`;
 
   const handleCopy = async () => {

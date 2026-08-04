@@ -23,15 +23,18 @@ export default function Me() {
     if (stored) db.users.get(stored).then(u => setUser(u || null));
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) e.preventDefault();
     localStorage.removeItem('inkflow_current_user');
-    navigate('/register');
+    localStorage.removeItem('inkflow_current_user_data');
+    /* Use window.location for iOS reliability — navigate() can fail on WebKit */
+    window.location.href = '/register';
   };
 
   if (!user) return <div style={{ padding: 24, color: 'white' }}>Please log in</div>;
 
   return (
-    <div style={{ padding: 24, color: '#f1f5f9' }}>
+    <div style={{ padding: '24px 24px 96px', color: '#f1f5f9' }}>
       {/* ── Profile Card ── */}
       <div style={{ ...CARD_STYLE, padding: 20, marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -61,12 +64,18 @@ export default function Me() {
         {user.studioName && (
           <p style={{ fontSize: 12, color: '#64748b', marginTop: 8 }}>📍 {user.studioName}</p>
         )}
-        {(!user.plan || user.plan === 'free') && (
-          <button onClick={() => navigate('/pricing')}
-            style={{ marginTop: 10, padding: '10px 18px', borderRadius: 10, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%' }}>
-            View Plans →
-          </button>
-        )}
+        <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
+          {(!user.plan || user.plan === 'free') && (
+            <button onClick={() => navigate('/pricing')}
+              style={{ flex: 1, padding: '10px 18px', borderRadius: 10, border: '1px solid #4338ca', background: '#312e8120', color: '#a5b4fc', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              View Plans →
+            </button>
+          )}
+          <span onClick={handleLogout} onTouchEnd={(e) => handleLogout(e)}
+            style={{ fontSize: 12, color: '#ef444488', cursor: 'pointer', whiteSpace: 'nowrap', padding: '6px 12px', borderRadius: 8, touchAction: 'manipulation' }}>
+            Sign Out
+          </span>
+        </div>
       </div>
 
       {/* ── Studio info missing banner ── */}
@@ -115,6 +124,13 @@ export default function Me() {
           color="#3b82f6"
         />
         <NavCard
+          emoji="🪪"
+          title="Ink Passport"
+          desc="Digital ink records for EU REACH compliance"
+          onClick={() => navigate('/ink-passport')}
+          color="#a855f7"
+        />
+        <NavCard
           emoji="🎨"
           title="Social Content Studio"
           desc="Grid layouts, captions, copy all — share to IG/FB/Pin"
@@ -139,6 +155,9 @@ export default function Me() {
         )}
       </div>
 
+      {/* ── Short Link Panel ── */}
+      {(user as any)?.bioProfile?.slug && <ShortLinkPanel slug={(user as any).bioProfile.slug} />}
+
       {/* ── Dev Tools ── */}
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => setShowDevTools(!showDevTools)}
@@ -157,11 +176,76 @@ export default function Me() {
         )}
       </div>
 
-      {/* ── Logout ── */}
-      <button onClick={handleLogout}
-        style={{ width: '100%', padding: 14, borderRadius: 10, border: 'none', background: '#7f1d1d', color: '#fca5a5', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 32 }}>
-        {t(lang, 'logout')}
-      </button>
+      </div>
+    </div>
+  );
+}
+
+function ShortLinkPanel({ slug }: { slug: string }) {
+  const [copied, setCopied] = useState(false);
+  const shortLink = `https://app.ink-flows.com/s/${slug}`;
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(shortLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShare = () => {
+    const text = `Book a tattoo with me: ${shortLink}`;
+    if (navigator.share) {
+      navigator.share({ title: 'My Tattoo Shop', text, url: shortLink });
+    } else {
+      handleCopy();
+    }
+  };
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, #064e3b 0%, #1e293b 100%)',
+      border: '1px solid #22c55e40',
+      borderRadius: 14, padding: 18, marginBottom: 16,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: '#22c55e', marginBottom: 2 }}>🔗 Your Short Link</p>
+          <p style={{ fontSize: 11, color: '#94a3b8' }}>Share this link with your clients</p>
+        </div>
+      </div>
+      <div style={{
+        background: '#0f172a', borderRadius: 10, padding: '12px 14px',
+        border: '1px solid #22c55e20', marginBottom: 10,
+        fontSize: 15, fontWeight: 600, color: '#86efac', wordBreak: 'break-all',
+      }}>
+        {shortLink}
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={handleCopy}
+          style={{
+            flex: 1, padding: 12, borderRadius: 10, border: 'none',
+            background: copied ? '#166534' : '#22c55e',
+            color: copied ? '#86efac' : '#052e16',
+            fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          }}>
+          {copied ? '✅ Copied!' : '📋 Copy'}
+        </button>
+        <button onClick={handleShare}
+          style={{
+            flex: 1, padding: 12, borderRadius: 10, border: '1px solid #22c55e40',
+            background: 'transparent', color: '#4ade80',
+            fontSize: 14, fontWeight: 700, cursor: 'pointer',
+          }}>
+          📱 Share
+        </button>
+        <button onClick={() => window.open(shortLink, '_blank')}
+          style={{
+            flex: 1, padding: 12, borderRadius: 10, border: '1px solid #334155',
+            background: '#1e293b', color: '#94a3b8',
+            fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}>
+          👁️ Preview
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 ---
+import AuthorByline from '../../components/AuthorByline.astro';
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
@@ -48,7 +49,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 </script>
 
-  <SEOHead slot="head" title="Tattoo Aftercare Automation — 40% More Photos | InkFlow" description="Automated tattoo aftercare emails, healing check-ins, and photo requests. Get 40% more healed photo submissions. Start free at InkFlow." />
+  <SEOHead slot="head" title="Tattoo Aftercare Automation — More Healed Photos | InkFlow" description="Automated tattoo aftercare emails, healing check-ins, and photo requests. Get more healed photo submissions. Start free at InkFlow." />
 
   <FAQSchema questions={[
 
@@ -56,7 +57,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
     { question: "Can I customize the aftercare messages?", answer: "Yes. Every message template is fully customizable — timing, content, and channel (SMS, email, or both). Match your studio's voice and aftercare protocols." },
 
-    { question: "Does aftercare automation increase healed photo submissions?", answer: "Yes. Studios using InkFlow's automated requests see 40% more healed photo submissions compared to manual follow-ups." },
+    { question: "Does aftercare automation increase healed photo submissions?", answer: "Yes. Studios using InkFlow's automated requests see more healed photo submissions compared to manual follow-ups." },
 
     { question: "Can I send aftercare in different languages?", answer: "Yes. Templates support multiple languages. Set different sequences for different client segments." },
 
@@ -80,7 +81,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
       <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Solution:</strong> InkFlow aftercare automation sends healing check-ins at day 3, 7, and 14, requests healed photos at week 4, and asks for Google reviews — all on autopilot. No manual follow-ups needed.</p>
 
-      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios see 40% more healed photo submissions, 2x more Google reviews, and clients report feeling cared for long after they leave the chair. Stronger referrals, better online presence.</p>
+      <p class="mt-2 text-lg text-gray-400"><strong class="text-white">Result:</strong> Studios see more healed photo submissions, more Google reviews, and clients report feeling cared for long after they leave the chair. Stronger referrals, better online presence.</p>
 
       <div class="mt-8 flex flex-wrap gap-4">
 
@@ -130,11 +131,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
       <div class="mt-8 space-y-4">
 
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual aftercare follow-ups drop from 90% on day 1 to under 15% by day 14.</h3><p class="mt-1 text-sm text-gray-400">Artists remember to send aftercare instructions in person but forget follow-ups. Automated sequences deliver 100% consistency across the entire healing timeline.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Without automation, artists send aftercare instructions in person on day 1 but rarely follow through by day 14.</h3><p class="mt-1 text-sm text-gray-400">Artists remember to send aftercare instructions in person but forget follow-ups. Automated sequences deliver 100% consistency across the entire healing timeline.</p></div>
 
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Every missed follow-up costs potential revenue — healed photos generate 50-200+ Instagram visits each.</h3><p class="mt-1 text-sm text-gray-400">Google reviews increase CTR by ~10%. Manual follow-up misses 60-70% of these opportunities — automation captures them.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Every missed follow-up costs potential reach — healed photos are among your best organic marketing assets.</h3><p class="mt-1 text-sm text-gray-400">Automated follow-up captures reviews and healed-photo opportunities that manual outreach routinely misses.</p></div>
 
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual aftercare takes 3+ hours per week per studio.</h3><p class="mt-1 text-sm text-gray-400">Writing DMs, checking healing progress, requesting photos. For a 5-artist studio, that's 130 hours/year — worth $6,500+ in lost billable time.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Manual aftercare takes 3+ hours per week per studio.</h3><p class="mt-1 text-sm text-gray-400">Writing DMs, checking healing progress, requesting photos — hours each week that could go to paid work.</p></div>
 
       </div>
 
@@ -202,15 +203,15 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
           <h3 class="text-2xl font-bold text-white">Healed Photo Requests Build Your Portfolio on Autopilot</h3>
 
-          <p class="mt-4 text-gray-400">Request healed photos automatically at 4 weeks post-session. Studios using automated requests see 40% more healed photo submissions.</p>
+          <p class="mt-4 text-gray-400">Request healed photos automatically at 4 weeks post-session. Studios using automated requests see more healed photo submissions.</p>
 
-          <h4 class="mt-4 text-lg font-semibold text-white">40% More Submissions vs Manual Follow-Ups</h4>
+          <h4 class="mt-4 text-lg font-semibold text-white">More Submissions vs Manual Follow-Ups</h4>
 
-          <p class="text-sm text-gray-400">Manual follow-up misses 60-70% of potential healed photos. Automation captures them because the request arrives at the right time.</p>
+          <p class="text-sm text-gray-400">Manual follow-up misses most potential healed photos. Automation captures them because the request arrives at the right time.</p>
 
-          <h5 class="mt-3 text-base font-medium text-white">Instagram Profile Visits per Healed Photo: 50-200+</h5>
+          <h5 class="mt-3 text-base font-medium text-white">Instagram Profile Visits per Healed Photo</h5>
 
-          <p class="text-sm text-gray-400">Each healed photo generates significant social proof. Studios posting healed work 3x/week book 20% more consultations than those posting 1x/week.</p>
+          <p class="text-sm text-gray-400">Each healed photo generates significant social proof. Studios that post healed work consistently attract more consultation requests than those who post rarely.</p>
 
           <h6 class="mt-2 text-sm font-medium text-gray-400">Client Consent + Auto-Tagging Workflow</h6>
 
@@ -236,7 +237,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
           <h4 class="mt-4 text-lg font-semibold text-white">2x More Google Reviews Than Manual Requests</h4>
 
-          <p class="text-sm text-gray-400">InkFlow sends review requests at the perfect time, generating 2x more Google reviews. Each review increases CTR by ~10%.</p>
+          <p class="text-sm text-gray-400">InkFlow sends review requests at the perfect time, generating more Google reviews. Each review increases CTR by ~10%.</p>
 
           <h5 class="mt-3 text-base font-medium text-white">Review Volume → Local Ranking Signal</h5>
 
@@ -348,7 +349,7 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
         <summary class="cursor-pointer text-sm font-medium text-white">Does aftercare automation increase healed photo submissions?</summary>
 
-        <p class="mt-2 text-sm text-gray-400">Yes. Studios using InkFlow's automated requests see 40% more healed photo submissions compared to manual follow-ups.</p>
+        <p class="mt-2 text-sm text-gray-400">Yes. Studios using InkFlow's automated requests see more healed photo submissions compared to manual follow-ups.</p>
 
       </details>
 
@@ -378,11 +379,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
       <div class="mt-8 space-y-4">
 
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist with 5-10 clients per week</h3><p class="text-sm text-gray-400 mt-1">You might remember to check in on most clients. But you'll still miss 60-70% of potential healed photos. Automation captures them without extra effort.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Solo artist with 5-10 clients per week</h3><p class="text-sm text-gray-400 mt-1">You might remember to check in on most clients. But you'll still miss most potential healed photos. Automation captures them without extra effort.</p></div>
 
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Multi-artist studio with 30+ sessions/week</h3><p class="text-sm text-gray-400 mt-1">Manual aftercare is impossible at this scale. InkFlow's automation ensures every client gets follow-ups at day 3, 7, and 14 — 100% consistency.</p></div>
 
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio focused on portfolio growth</h3><p class="text-sm text-gray-400 mt-1">Healed photos are your best marketing asset. Automation generates 40% more submissions than manual requests. Set it once, collect photos forever. Track aftercare product inventory alongside <a href="/features/tattoo-inventory-management" class="text-accent-400 hover:underline">InkFlow's tattoo inventory management for supplies, cost tracking, and auto-restock alerts</a>.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-5"><h3 class="text-white font-semibold text-sm">Studio focused on portfolio growth</h3><p class="text-sm text-gray-400 mt-1">Healed photos are your best marketing asset. Automation consistently generates more submissions than manual requests. Set it once, collect photos forever. Track aftercare product inventory alongside <a href="/features/tattoo-inventory-management" class="text-accent-400 hover:underline">InkFlow's tattoo inventory management for supplies, cost tracking, and auto-restock alerts</a>.</p></div>
 
       </div>
 
@@ -424,23 +425,23 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
-          <div class="text-3xl font-bold text-accent-400">2.1x</div>
+          <div class="text-3xl font-bold text-accent-400">More reviews</div>
 
-          <div class="mt-2 text-sm text-gray-400">More Google reviews from studios using aftercare (US data)</div>
+          <div class="mt-2 text-sm text-gray-400">Studios using automated aftercare follow-up collect more Google reviews than manual outreach</div>
 
         </div>
 
         <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-6 text-center">
 
-          <div class="text-3xl font-bold text-accent-400">68%</div>
+          <div class="text-3xl font-bold text-accent-400">Return visits</div>
 
-          <div class="mt-2 text-sm text-gray-400">Of clients say automated aftercare increases return likelihood (survey)</div>
+          <div class="mt-2 text-sm text-gray-400">Clients who get structured aftercare follow-up are more likely to return and refer</div>
 
         </div>
 
       </div>
 
-      <p class="mt-8 text-center text-sm text-gray-500">Sources: InkFlow internal data, 2026. Based on 500+ tattoo studios.</p>
+      
 
     </div>
 
@@ -452,6 +453,11 @@ import FAQSchema from '../../components/FAQSchema.astro';
 
 
 
+  <AuthorByline
+    authorId="founder"
+    datePublished="2026-07-18"
+    dateModified="2026-07-18"
+  />
   <Footer />
 
 </BaseLayout>
