@@ -169,6 +169,56 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /tattoo-waiver-app /features/tattoo-waiver-software/ 301
 /tattoo-waiver-app/ /features/tattoo-waiver-software/ 301
 
+# ---- 2026-08-04 P0: trailing-slash consolidation (GSC-confirmed duplicates) ----
+# Canonical (SEOHead.normalizeCanonical) already forces https+non-www+trailing-slash.
+# These 301 the no-slash Google-indexed variant to the canonical slash form so
+# ranking signals stop splitting across URL twins. Exact-match only (no wildcards)
+# to avoid double-slash on already-slash URLs. /meaning/* excluded: those are legacy
+# 301 sources that already land on /tattoo-meaning/.../ (slash).
+/about /about/ 301
+/blog /blog/ 301
+/blog/multi-artist-commission-tracking /blog/multi-artist-commission-tracking/ 301
+/blog/reduce-no-shows-deposit-booking /blog/reduce-no-shows-deposit-booking/ 301
+/blog/tattoo-aftercare-automation /blog/tattoo-aftercare-automation/ 301
+/blog/tattoo-aftercare-email-automation /blog/tattoo-aftercare-email-automation/ 301
+/blog/tattoo-inventory-guide /blog/tattoo-inventory-guide/ 301
+/compare/best-tattoo-studio-software /compare/best-tattoo-studio-software/ 301
+/compare/booksy /compare/booksy/ 301
+/compare/tattoo-studio-pro /compare/tattoo-studio-pro/ 301
+/compare/tattoogenda /compare/tattoogenda/ 301
+/compare/vagaro /compare/vagaro/ 301
+/contact /contact/ 301
+/download /download/ 301
+/features /features/ 301
+/features/aftercare /features/aftercare/ 301
+/features/tattoo-aftercare-software-automation /features/tattoo-aftercare-software-automation/ 301
+/features/tattoo-booking-page /features/tattoo-booking-page/ 301
+/features/tattoo-booking-software /features/tattoo-booking-software/ 301
+/features/tattoo-compliance-software /features/tattoo-compliance-software/ 301
+/features/tattoo-crm-software /features/tattoo-crm-software/ 301
+/features/tattoo-ink-passport /features/tattoo-ink-passport/ 301
+/features/tattoo-inventory-management /features/tattoo-inventory-management/ 301
+/features/tattoo-payment-processing /features/tattoo-payment-processing/ 301
+/features/tattoo-waiver-software /features/tattoo-waiver-software/ 301
+/free-tools/aftercare-email-generator /free-tools/aftercare-email-generator/ 301
+/free-tools/free-waiver-generator /free-tools/free-waiver-generator/ 301
+/free-tools/no-show-calculator /free-tools/no-show-calculator/ 301
+/free-tools/tattoo-meaning-finder /free-tools/tattoo-meaning-finder/ 301
+/free-tools/tattoo-price-calculator /free-tools/tattoo-price-calculator/ 301
+/online-tattoo-booking /online-tattoo-booking/ 301
+/pricing /pricing/ 301
+/privacy /privacy/ 301
+/tattoo-meaning/geometric/compass-tattoo-meaning /tattoo-meaning/geometric/compass-tattoo-meaning/ 301
+/tattoo-meaning/insects/bee-tattoo-meaning /tattoo-meaning/insects/bee-tattoo-meaning/ 301
+/tattoo-meaning/nature /tattoo-meaning/nature/ 301
+/tattoo-meaning/nature/mountain-tattoo-meaning /tattoo-meaning/nature/mountain-tattoo-meaning/ 301
+/tattoo-meaning/ocean/dolphin-tattoo-meaning /tattoo-meaning/ocean/dolphin-tattoo-meaning/ 301
+/tattoo-meaning/ocean/octopus-tattoo-meaning /tattoo-meaning/ocean/octopus-tattoo-meaning/ 301
+/tattoo-meaning/religious/eye-of-horus-tattoo-meaning /tattoo-meaning/religious/eye-of-horus-tattoo-meaning/ 301
+/tattoo-meaning/zodiac/constellation-tattoo-meaning /tattoo-meaning/zodiac/constellation-tattoo-meaning/ 301
+/templates /templates/ 301
+/terms /terms/ 301
+
 # Catch-all: any path not matched above returns the real 404 page.
 # Keep LAST so it never shadows the 301 rules above.
 /* /404.html 404
