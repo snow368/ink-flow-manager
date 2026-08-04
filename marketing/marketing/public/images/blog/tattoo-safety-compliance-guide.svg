@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none" role="img" aria-label="Tattoo safety and compliance guide">
+  <rect width="1200" height="675" fill="#0b0f14"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11161d"/>
+      <stop offset="1" stop-color="#0b0f14"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#g)"/>
+  <g transform="translate(600 250)">
+    <path d="M0 -120 L100 -70 L100 40 Q100 130 0 170 Q-100 130 -100 40 L-100 -70 Z" fill="#0f1722" stroke="#22d3a8" stroke-width="6"/>
+    <path d="M-46 6 L-12 44 L52 -36" stroke="#22d3a8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  <text x="600" y="460" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="52" font-weight="800" fill="#f5f7fa">Tattoo Safety &amp; Compliance</text>
+  <text x="600" y="512" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="26" font-weight="600" fill="#22d3a8">Health rules · Ink rules · Studio licensing</text>
+  <text x="600" y="612" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" fill="#7c8794">Sourced from OSHA, FDA, EU REACH &amp; CDC — primary regulations, not opinion</text>
+</svg>

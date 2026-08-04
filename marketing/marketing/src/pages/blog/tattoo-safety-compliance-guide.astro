@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SEOHead from '../../components/SEOHead.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogSchema from "../../components/BlogSchema.astro";
+import Footer from '../../components/Footer.astro';
+import FAQSchema from '../../components/FAQSchema.astro';
+
+const TITLE = "Tattoo Safety & Compliance Guide: Health Rules, Ink Rules & Studio Licensing";
+const DESC = "What actually keeps a tattoo safe — studio licensing, bloodborne-pathogen controls, FDA ink rules, and EU REACH restrictions. Every claim links to the primary regulation, not opinion.";
+const URL = "https://ink-flows.com/blog/tattoo-safety-compliance-guide";
+const PUBLISHED = "2026-08-04";
+---
+
+<BaseLayout pageTitle="Tattoo Safety & Compliance Guide">
+  <BlogSchema title={TITLE} description={DESC} publishedDate={PUBLISHED} author="Sarah Chen" image="/images/blog/tattoo-safety-compliance-guide.svg" tags={["tattoo safety", "tattoo compliance", "tattoo regulations", "tattoo infection prevention"]} />
+  <SEOHead slot="head" title={TITLE} description={DESC} />
+  <Navbar />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ink-flows.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://ink-flows.com/blog" },
+      { "@type": "ListItem", "position": 3, "name": "Tattoo Safety & Compliance Guide", "item": URL }
+    ]
+  })} />
+
+  <article class="pt-24 pb-16 sm:pt-32">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-xs text-gray-500 mb-4" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-400">Home</a> <span class="mx-1">/</span>
+        <a href="/blog" class="hover:text-accent-400">Blog</a> <span class="mx-1">/</span>
+        <span class="text-gray-400">Tattoo Safety &amp; Compliance</span>
+      </nav>
+      <p class="text-sm text-accent-400 mb-4">August 4, 2026</p>
+      <h1 class="text-4xl font-extrabold text-white sm:text-4xl">Tattoo Safety &amp; Compliance Guide: Health Rules, Ink Rules &amp; Studio Licensing</h1>
+      <div class="mt-8 rounded-xl overflow-hidden border border-ink-800">
+        <img src="/images/blog/tattoo-safety-compliance-guide.svg" alt="Tattoo safety and compliance — health, ink, and licensing rules" class="w-full aspect-[16/9] object-cover" loading="eager" />
+      </div>
+      <p class="mt-6 text-lg text-gray-300">
+        A tattoo is a deliberate, controlled wound. Whether it heals clean comes down to a stack of rules — who is allowed to operate, how they stop infection, what goes into your skin, and how you look after it. This guide covers the rules that actually exist, and every claim links to the primary regulation so you can verify it yourself.
+      </p>
+    </div>
+  </article>
+
+  <section class="border-t border-ink-800/50 py-12">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 prose prose-invert">
+
+      <h2>Studio licensing &amp; inspections</h2>
+      <p>In most U.S. states, tattoo studios must hold a license, and inspectors check the things that prevent outbreaks: sterilization records, a per-client record for every person tattooed, reporting of infections or adverse reactions, and the conditions under which a minor can be tattooed. Texas, for example, sets those minor-consent conditions under <a href="https://www.dshs.texas.gov/tattoo-body-piercing-studios/licensing-requirements-tattoo-body-piercing-studios" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">25 TAC §229.406</a>.</p>
+      <p><strong>What you can do:</strong> a current license should be displayed. If you don't see one, ask. A studio that can't show its license is telling you something.</p>
+
+      <h2>Bloodborne-pathogen controls (OSHA 29 CFR 1910.1030)</h2>
+      <p>Needles and ink are blood-exposed, so U.S. workplaces — including tattoo studios — fall under OSHA's Bloodborne Pathogens standard. It requires a <strong>written Exposure Control Plan reviewed at least annually</strong>, rules for handling and disposing of contaminated sharps, a <strong>sharps injury log</strong>, and <strong>training at initial assignment and at least every year after</strong>. The point of the plan is that safety stops relying on anyone's memory.</p>
+      <p>Read the standard directly: <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.1030" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">29 CFR 1910.1030 — Bloodborne Pathogens</a>.</p>
+
+      <h2>Standard precautions (CDC)</h2>
+      <p>The CDC's <a href="https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">Standard Precautions</a> are the baseline for any setting where blood or body fluid exposure is possible. The core elements are straightforward: hand hygiene, personal protective equipment whenever exposure is expected, safe injection and sharps handling, and cleaning and disinfection of equipment and surfaces between clients.</p>
+
+      <h2>Ink safety (FDA)</h2>
+      <p>The U.S. FDA regulates tattoo inks as <strong>cosmetics</strong>. That matters because contaminated inks have triggered recalls in <strong>2004, 2012, and 2017</strong>, plus a <strong>2019 safety advisory</strong> — and the FDA notes infections have resulted from contaminated ink <em>even when the artist followed hygienic procedure</em>. In other words, clean needle technique is necessary but not sufficient; the ink itself has to be clean.</p>
+      <p>Source: <a href="https://www.fda.gov/cosmetics/cosmetic-products/tattoos-permanent-makeup-fact-sheet" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">FDA — Tattoos &amp; Permanent Makeup: Fact Sheet</a>.</p>
+      <p><strong>What you can do:</strong> ink should come in a fresh, single-use cap opened in front of you. Be wary of "custom mixes" poured from unlabeled bottles you can't trace.</p>
+
+      <h2>EU rules (Regulation (EU) 2020/2081)</h2>
+      <p>In the European Union, tattoo inks and permanent make-up are covered by <a href="https://eur-lex.europa.eu/eli/reg/2020/2081/oj" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">Commission Regulation (EU) 2020/2081</a>, which <strong>restricts a listed set of substances from 4 January 2022</strong> and requires mandatory pack labelling from the same date. Two pigments — Pigment Blue 15:3 and Pigment Green 7 — were given a limited derogation until <strong>4 January 2023</strong>. This is a restriction on specific substances, not a ban on tattoo ink.</p>
+      <p>If you're getting tattooed in the EU, you can ask whether the inks in use are REACH-compliant and labelled accordingly.</p>
+
+      <h2>What to check before you sit</h2>
+      <p>You don't need to be a regulator to spot a safe studio. Run this checklist:</p>
+      <ul>
+        <li><strong>License:</strong> current and displayed.</li>
+        <li><strong>Needles:</strong> from sealed, single-use packaging, opened in front of you.</li>
+        <li><strong>Sterilization:</strong> an autoclave with validation; tubes and jewellery are either single-use or autoclaved.</li>
+        <li><strong>Ink:</strong> a fresh ink cap per client, no double-dipping.</li>
+        <li><strong>Gloves:</strong> worn by the artist and changed between tasks.</li>
+        <li><strong>Surfaces:</strong> cleaned and disinfected between clients.</li>
+      </ul>
+
+      <h2>Healing is the last link in safety</h2>
+      <p>A clean procedure still needs clean aftercare. What you do in the first 48 hours decides a lot of how it heals — see our <a href="/blog/tattoo-aftercare-guide" class="text-accent-400 hover:underline">tattoo aftercare guide</a> for the day-by-day plan.</p>
+
+      <h2>About this guide</h2>
+      <p>
+        Written by <strong>Sarah Chen</strong>, Founder &amp; CEO at InkFlow, with 12 years running multi-artist tattoo studios. Sourced from primary regulations: <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.1030" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">OSHA 29 CFR 1910.1030</a>, the <a href="https://www.fda.gov/cosmetics/cosmetic-products/tattoos-permanent-makeup-fact-sheet" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">FDA Tattoos &amp; Permanent Makeup Fact Sheet</a>, <a href="https://eur-lex.europa.eu/eli/reg/2020/2081/oj" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">Commission Regulation (EU) 2020/2081 (EUR-Lex)</a>, the <a href="https://www.cdc.gov/infection-control/hcp/basics/standard-precautions.html" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">CDC Standard Precautions</a>, and the <a href="https://www.dshs.texas.gov/tattoo-body-piercing-studios/licensing-requirements-tattoo-body-piercing-studios" target="_blank" rel="noopener noreferrer" class="text-accent-400 hover:underline">Texas DSHS studio licensing requirements</a>. Published August 4, 2026.
+      </p>
+
+      <h2>FAQ</h2>
+      <h3>Are tattoo inks regulated by the FDA?</h3>
+      <p>Yes — the FDA regulates tattoo inks as cosmetics. Contaminated inks have led to recalls in 2004, 2012, and 2017 and a 2019 safety advisory, and infections have occurred from contaminated ink even with hygienic technique.</p>
+      <h3>What does OSHA require of tattoo studios?</h3>
+      <p>The Bloodborne Pathogens standard (29 CFR 1910.1030): a written Exposure Control Plan reviewed at least yearly, safe sharps handling and disposal, a sharps injury log, and training at hire and at least annually.</p>
+      <h3>Is tattoo ink banned in the EU?</h3>
+      <p>No. Regulation (EU) 2020/2081 restricts specific listed substances in tattoo inks from 4 January 2022 and requires pack labelling; it is a restriction, not a ban. Pigment Blue 15:3 and Pigment Green 7 had a limited derogation to 4 January 2023.</p>
+      <h3>How do I know a studio is safe before I book?</h3>
+      <p>Look for a current license on display, needles from sealed single-use packaging opened in front of you, an autoclave with validation, fresh ink caps per client, and gloved artists who change gloves between tasks.</p>
+      <h3>Can a tattoo get infected even if the artist is careful?</h3>
+      <p>Yes. The FDA notes infections have resulted from contaminated ink even when the artist followed hygienic procedure — which is why ink sourcing and single-use caps matter as much as needle hygiene.</p>
+    </div>
+  </section>
+
+  <FAQSchema
+    questions={[
+      { question: "Are tattoo inks regulated by the FDA?", answer: "Yes — the FDA regulates tattoo inks as cosmetics. Contaminated inks have led to recalls in 2004, 2012, and 2017 and a 2019 safety advisory, and infections have occurred from contaminated ink even with hygienic technique." },
+      { question: "What does OSHA require of tattoo studios?", answer: "The Bloodborne Pathogens standard (29 CFR 1910.1030) requires a written Exposure Control Plan reviewed at least yearly, safe sharps handling and disposal, a sharps injury log, and training at hire and at least annually." },
+      { question: "Is tattoo ink banned in the EU?", answer: "No. Regulation (EU) 2020/2081 restricts specific listed substances in tattoo inks from 4 January 2022 and requires pack labelling; it is a restriction, not a ban. Pigment Blue 15:3 and Pigment Green 7 had a limited derogation to 4 January 2023." },
+      { question: "How do I know a studio is safe before I book?", answer: "Look for a current license on display, needles from sealed single-use packaging opened in front of you, an autoclave with validation, fresh ink caps per client, and gloved artists who change gloves between tasks." },
+      { question: "Can a tattoo get infected even if the artist is careful?", answer: "Yes. The FDA notes infections have resulted from contaminated ink even when the artist followed hygienic procedure, which is why ink sourcing and single-use caps matter as much as needle hygiene." },
+    ]}
+  />
+
+  <section class="py-16 text-center border-t border-ink-800/50">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-white">Related InkFlow guides</h2>
+      <div class="mt-6 grid grid-cols-2 gap-3 text-center">
+        <a href="/blog/tattoo-aftercare-guide" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Tattoo aftercare</p><p class="text-xs text-gray-500 mt-1">Heal it right</p></a>
+        <a href="/features/tattoo-compliance-software" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Compliance software</p><p class="text-xs text-gray-500 mt-1">For studio owners</p></a>
+        <a href="/digital-tattoo-waiver" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">Digital waivers</p><p class="text-xs text-gray-500 mt-1">Consent &amp; records</p></a>
+        <a href="/blog" class="rounded-xl border border-ink-800 p-4 hover:border-accent-500/30 transition-all group"><p class="text-sm font-medium text-white group-hover:text-accent-300">All InkFlow guides</p><p class="text-xs text-gray-500 mt-1">Browse the blog</p></a>
+      </div>
+      <div class="mt-8 flex items-center justify-center gap-4 text-xs text-gray-600">
+        <a href="/" class="hover:text-accent-400">InkFlow home</a>
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
