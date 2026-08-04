@@ -22,7 +22,6 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/category/sea-life       /tattoo-meaning/ocean       301
 /meaning/category/sea-life/*     /tattoo-meaning/ocean/:splat 301
 /meaning/category/:category    /tattoo-meaning/:category    301
-/meaning/*                     /tattoo-meaning/:splat       301
 /meaning/wolf /tattoo-meaning/animals/wolf-tattoo-meaning 301
 /meaning/lion /tattoo-meaning/animals/lion-tattoo-meaning 301
 /meaning/snake /tattoo-meaning/animals/snake-tattoo-meaning 301
