@@ -64,7 +64,8 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /meaning/abstract /tattoo-meaning/modern/abstract-tattoo-meaning 301
 /meaning/cross /tattoo-meaning/religious/cross-tattoo-meaning 301
 /meaning/om-symbol /tattoo-meaning/religious/om-symbol-tattoo-meaning 301
-/meaning/shark /tattoo-meaning/ocean/shark-tattoo-meaning 301
+/meaning/shark /tattoo-meaning/ocean/shark-tattoo-meaning/ 301
+/meaning/shark/ /tattoo-meaning/ocean/shark-tattoo-meaning/ 301
 /meaning/whale /tattoo-meaning/ocean/whale-tattoo-meaning 301
 /meaning/dolphin /tattoo-meaning/ocean/dolphin-tattoo-meaning 301
 /meaning/octopus /tattoo-meaning/ocean/octopus-tattoo-meaning 301
