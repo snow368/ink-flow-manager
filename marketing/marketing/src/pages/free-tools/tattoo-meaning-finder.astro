@@ -10,10 +10,63 @@ import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
 <BaseLayout>
   <SEOHead slot="head" title="Tattoo Meaning Finder — Search Symbolism &amp; Design Meanings" description="Discover the meaning behind popular tattoo symbols, flowers, animals, and cultural designs. Free search tool. No signup required." />
   <FAQSchema questions={[
-    { question: "What symbols are included?", answer: "Hundreds of symbols across categories: animals, flowers, mythological, geometric, religious, cultural, and modern designs." },
-    { question: "Can I suggest a meaning to add?", answer: "Yes. Contact us with your suggestion and source. We review and add new meanings regularly." },
-    { question: "Are meanings based on cultural accuracy?", answer: "We cite cultural and historical sources for traditional meanings. Modern interpretations are labeled as such." },
+    { question: "What symbols are included?", answer: "70+ curated symbols across 15 categories: animals, flowers, mythological, geometric, religious, cultural, nature, objects, birds, zodiac, insects, sea life, time, and words. Use the search tool above or browse the full A–Z index." },
+    { question: "Can I suggest a meaning to add?", answer: "Yes. Contact us with your suggestion and a source. We review submissions and add new meanings regularly, citing cultural and historical references." },
+    { question: "Are meanings culturally accurate?", answer: "Traditional meanings cite cultural and historical sources. Where a symbol carries different meanings across cultures, we label each tradition separately rather than merging them." },
+    { question: "Is the Tattoo Meaning Finder free?", answer: "Yes. The finder is completely free and requires no signup. It is part of InkFlow's free tattoo-artist tools." },
+    { question: "How do I use the finder with clients?", answer: "Search a symbol during a consultation, show its meaning and cultural notes, then link out to the full meaning page. It helps clients choose designs with personal or cultural significance." },
+    { question: "Do you cover modern and style-based meanings?", answer: "Yes — alongside traditional symbolism we cover style meanings such as watercolor, minimalist, geometric, and abstract tattoos." },
+    { question: "Where can I see all meanings?", answer: "Browse the complete A–Z symbol index at /tattoo-meaning/ for every curated symbol with its full meaning, origin, and cultural notes." },
   ]} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tattoo Meaning Finder",
+    "url": "https://ink-flows.com/free-tools/tattoo-meaning-finder/",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "description": "Free tool to discover the meaning behind 70+ tattoo symbols across 15 categories — animals, flowers, mythological, geometric, religious, cultural, nature, objects, and more.",
+    "publisher": { "@type": "Organization", "name": "InkFlow", "url": "https://ink-flows.com" }
+  })} />
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "url": "https://ink-flows.com/tattoo-meaning/animals/wolf-tattoo-meaning/", "name": "Wolf Tattoo Meaning" },
+      { "@type": "ListItem", "position": 2, "url": "https://ink-flows.com/tattoo-meaning/animals/lion-tattoo-meaning/", "name": "Lion Tattoo Meaning" },
+      { "@type": "ListItem", "position": 3, "url": "https://ink-flows.com/tattoo-meaning/animals/snake-tattoo-meaning/", "name": "Snake Tattoo Meaning" },
+      { "@type": "ListItem", "position": 4, "url": "https://ink-flows.com/tattoo-meaning/animals/eagle-tattoo-meaning/", "name": "Eagle Tattoo Meaning" },
+      { "@type": "ListItem", "position": 5, "url": "https://ink-flows.com/tattoo-meaning/animals/butterfly-tattoo-meaning/", "name": "Butterfly Tattoo Meaning" },
+      { "@type": "ListItem", "position": 6, "url": "https://ink-flows.com/tattoo-meaning/flowers/rose-tattoo-meaning/", "name": "Rose Tattoo Meaning" },
+      { "@type": "ListItem", "position": 7, "url": "https://ink-flows.com/tattoo-meaning/flowers/lotus-tattoo-meaning/", "name": "Lotus Tattoo Meaning" },
+      { "@type": "ListItem", "position": 8, "url": "https://ink-flows.com/tattoo-meaning/flowers/cherry-blossom-tattoo-meaning/", "name": "Cherry Blossom Tattoo Meaning" },
+      { "@type": "ListItem", "position": 9, "url": "https://ink-flows.com/tattoo-meaning/mythological/phoenix-tattoo-meaning/", "name": "Phoenix Tattoo Meaning" },
+      { "@type": "ListItem", "position": 10, "url": "https://ink-flows.com/tattoo-meaning/mythological/dragon-tattoo-meaning/", "name": "Dragon Tattoo Meaning" },
+      { "@type": "ListItem", "position": 11, "url": "https://ink-flows.com/tattoo-meaning/mythological/koi-fish-tattoo-meaning/", "name": "Koi Fish Tattoo Meaning" },
+      { "@type": "ListItem", "position": 12, "url": "https://ink-flows.com/tattoo-meaning/geometric/mandala-tattoo-meaning/", "name": "Mandala Tattoo Meaning" },
+      { "@type": "ListItem", "position": 13, "url": "https://ink-flows.com/tattoo-meaning/geometric/compass-tattoo-meaning/", "name": "Compass Tattoo Meaning" },
+      { "@type": "ListItem", "position": 14, "url": "https://ink-flows.com/tattoo-meaning/geometric/moon-tattoo-meaning/", "name": "Moon Tattoo Meaning" },
+      { "@type": "ListItem", "position": 15, "url": "https://ink-flows.com/tattoo-meaning/religious/cross-tattoo-meaning/", "name": "Cross Tattoo Meaning" },
+      { "@type": "ListItem", "position": 16, "url": "https://ink-flows.com/tattoo-meaning/religious/eye-of-horus-tattoo-meaning/", "name": "Eye of Horus Tattoo Meaning" },
+      { "@type": "ListItem", "position": 17, "url": "https://ink-flows.com/tattoo-meaning/religious/hamsa-tattoo-meaning/", "name": "Hamsa Tattoo Meaning" },
+      { "@type": "ListItem", "position": 18, "url": "https://ink-flows.com/tattoo-meaning/cultural/tribal-tattoo-meaning/", "name": "Tribal Tattoo Meaning" },
+      { "@type": "ListItem", "position": 19, "url": "https://ink-flows.com/tattoo-meaning/cultural/celtic-knot-tattoo-meaning/", "name": "Celtic Knot Tattoo Meaning" },
+      { "@type": "ListItem", "position": 20, "url": "https://ink-flows.com/tattoo-meaning/nature/tree-of-life-tattoo-meaning/", "name": "Tree of Life Tattoo Meaning" },
+      { "@type": "ListItem", "position": 21, "url": "https://ink-flows.com/tattoo-meaning/nature/wave-tattoo-meaning/", "name": "Wave Tattoo Meaning" },
+      { "@type": "ListItem", "position": 22, "url": "https://ink-flows.com/tattoo-meaning/objects/anchor-tattoo-meaning/", "name": "Anchor Tattoo Meaning" },
+      { "@type": "ListItem", "position": 23, "url": "https://ink-flows.com/tattoo-meaning/objects/skull-tattoo-meaning/", "name": "Skull Tattoo Meaning" },
+      { "@type": "ListItem", "position": 24, "url": "https://ink-flows.com/tattoo-meaning/objects/heart-tattoo-meaning/", "name": "Heart Tattoo Meaning" },
+      { "@type": "ListItem", "position": 25, "url": "https://ink-flows.com/tattoo-meaning/ocean/whale-tattoo-meaning/", "name": "Whale Tattoo Meaning" },
+      { "@type": "ListItem", "position": 26, "url": "https://ink-flows.com/tattoo-meaning/ocean/shark-tattoo-meaning/", "name": "Shark Tattoo Meaning" },
+      { "@type": "ListItem", "position": 27, "url": "https://ink-flows.com/tattoo-meaning/birds/swallow-tattoo-meaning/", "name": "Swallow Tattoo Meaning" },
+      { "@type": "ListItem", "position": 28, "url": "https://ink-flows.com/tattoo-meaning/birds/dove-tattoo-meaning/", "name": "Dove Tattoo Meaning" },
+      { "@type": "ListItem", "position": 29, "url": "https://ink-flows.com/tattoo-meaning/zodiac/scorpio-tattoo-meaning/", "name": "Scorpio Tattoo Meaning" },
+      { "@type": "ListItem", "position": 30, "url": "https://ink-flows.com/tattoo-meaning/words/name-initial-tattoo-meaning/", "name": "Name / Initial Tattoo Meaning" }
+    ]
+  })} />
+
   <Navbar />
 
   <section class="pt-24 pb-12 sm:pt-32">
@@ -40,16 +93,40 @@ import TattooMeaningFinder from '../../components/TattooMeaningFinder.astro';
   </section>
 
   <section class="border-t border-ink-800/50 py-16">
-    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-bold text-white text-center">Popular Tattoo Meanings by Category</h2>
-      <p class="mt-3 text-center text-gray-400">Quick reference for the most searched tattoo symbols.</p>
+      <p class="mt-3 text-center text-gray-400">A quick reference of 30 popular symbols — <a href="/tattoo-meaning/" class="text-accent-400 hover:underline">browse all 70+ in the full A–Z index</a>.</p>
       <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/flowers/lotus-tattoo-meaning/" class="text-accent-400 hover:underline">Lotus Flower</a></h3><p class="mt-1 text-xs text-gray-400">Rebirth, enlightenment, purity. Rising from mud symbolizes overcoming hardship. Common in Buddhist traditions.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/wolf-tattoo-meaning/" class="text-accent-400 hover:underline">Wolf</a></h3><p class="mt-1 text-xs text-gray-400">Loyalty, family, protection, instinct. A symbol of strength and pack mentality. Popular in tribal and realism styles.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/geometric/compass-tattoo-meaning/" class="text-accent-400 hover:underline">Compass</a></h3><p class="mt-1 text-xs text-gray-400">Direction, travel, purpose. Often combined with maps, coordinates, or nautical elements. Popular with travelers.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/mythological/phoenix-tattoo-meaning/" class="text-accent-400 hover:underline">Phoenix</a></h3><p class="mt-1 text-xs text-gray-400">Resurrection, renewal, triumph over adversity. Rising from ashes. Popular for personal transformation stories.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/objects/skull-tattoo-meaning/" class="text-accent-400 hover:underline">Skull</a></h3><p class="mt-1 text-xs text-gray-400">Mortality, danger, remembrance. Varies by culture — Mexican Day of Dead skulls honor ancestors, Western skulls often symbolize rebellion.</p></div>
-        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/objects/anchor-tattoo-meaning/" class="text-accent-400 hover:underline">Anchor</a></h3><p class="mt-1 text-xs text-gray-400">Stability, grounding, hope. Traditional sailor tattoo. Can represent a person or value that keeps you steady.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/wolf-tattoo-meaning/" class="text-accent-400 hover:underline">Wolf</a></h3><p class="mt-1 text-xs text-gray-400">Loyalty, family, instinct, protection, freedom.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/lion-tattoo-meaning/" class="text-accent-400 hover:underline">Lion</a></h3><p class="mt-1 text-xs text-gray-400">Courage, royalty, strength, leadership, pride.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/snake-tattoo-meaning/" class="text-accent-400 hover:underline">Snake</a></h3><p class="mt-1 text-xs text-gray-400">Transformation, rebirth, healing, temptation, wisdom.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/eagle-tattoo-meaning/" class="text-accent-400 hover:underline">Eagle</a></h3><p class="mt-1 text-xs text-gray-400">Freedom, vision, power, courage, spiritual protection.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/animals/butterfly-tattoo-meaning/" class="text-accent-400 hover:underline">Butterfly</a></h3><p class="mt-1 text-xs text-gray-400">Transformation, freedom, rebirth, beauty, new beginnings.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/flowers/rose-tattoo-meaning/" class="text-accent-400 hover:underline">Rose</a></h3><p class="mt-1 text-xs text-gray-400">Love, passion, beauty, balance, secrecy.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/flowers/lotus-tattoo-meaning/" class="text-accent-400 hover:underline">Lotus</a></h3><p class="mt-1 text-xs text-gray-400">Enlightenment, rebirth, purity, spiritual awakening.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/flowers/cherry-blossom-tattoo-meaning/" class="text-accent-400 hover:underline">Cherry Blossom</a></h3><p class="mt-1 text-xs text-gray-400">Mortality, beauty, renewal, fleeting nature of life.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/mythological/phoenix-tattoo-meaning/" class="text-accent-400 hover:underline">Phoenix</a></h3><p class="mt-1 text-xs text-gray-400">Resurrection, renewal, triumph over adversity, immortality.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/mythological/dragon-tattoo-meaning/" class="text-accent-400 hover:underline">Dragon</a></h3><p class="mt-1 text-xs text-gray-400">Power, wisdom, protection, strength, good fortune.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/mythological/koi-fish-tattoo-meaning/" class="text-accent-400 hover:underline">Koi Fish</a></h3><p class="mt-1 text-xs text-gray-400">Perseverance, determination, ambition, good fortune.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/geometric/mandala-tattoo-meaning/" class="text-accent-400 hover:underline">Mandala</a></h3><p class="mt-1 text-xs text-gray-400">Wholeness, unity, harmony, spiritual journey, cosmic order.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/geometric/compass-tattoo-meaning/" class="text-accent-400 hover:underline">Compass</a></h3><p class="mt-1 text-xs text-gray-400">Guidance, direction, travel, purpose, exploration.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/geometric/moon-tattoo-meaning/" class="text-accent-400 hover:underline">Moon</a></h3><p class="mt-1 text-xs text-gray-400">Femininity, intuition, change, mystery, the subconscious.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/religious/cross-tattoo-meaning/" class="text-accent-400 hover:underline">Cross</a></h3><p class="mt-1 text-xs text-gray-400">Faith, sacrifice, salvation, hope, divine love.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/religious/eye-of-horus-tattoo-meaning/" class="text-accent-400 hover:underline">Eye of Horus</a></h3><p class="mt-1 text-xs text-gray-400">Protection, royal power, good health, wisdom, intuition.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/religious/hamsa-tattoo-meaning/" class="text-accent-400 hover:underline">Hamsa</a></h3><p class="mt-1 text-xs text-gray-400">Protection, blessings, power, divine feminine, luck.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/cultural/tribal-tattoo-meaning/" class="text-accent-400 hover:underline">Tribal</a></h3><p class="mt-1 text-xs text-gray-400">Identity, heritage, strength, belonging, ancestral connection.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/cultural/celtic-knot-tattoo-meaning/" class="text-accent-400 hover:underline">Celtic Knot</a></h3><p class="mt-1 text-xs text-gray-400">Eternity, interconnectedness, continuity, spiritual unity.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/nature/tree-of-life-tattoo-meaning/" class="text-accent-400 hover:underline">Tree of Life</a></h3><p class="mt-1 text-xs text-gray-400">Growth, family roots, connection, strength, immortality.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/nature/wave-tattoo-meaning/" class="text-accent-400 hover:underline">Wave</a></h3><p class="mt-1 text-xs text-gray-400">Power, change, flow of life, resilience, freedom.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/objects/anchor-tattoo-meaning/" class="text-accent-400 hover:underline">Anchor</a></h3><p class="mt-1 text-xs text-gray-400">Stability, hope, steadfastness, maritime tradition, grounding.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/objects/skull-tattoo-meaning/" class="text-accent-400 hover:underline">Skull</a></h3><p class="mt-1 text-xs text-gray-400">Mortality, remembrance, transformation, fearlessness, rebellion.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/objects/heart-tattoo-meaning/" class="text-accent-400 hover:underline">Heart</a></h3><p class="mt-1 text-xs text-gray-400">Love, life, emotion, courage, compassion, romance.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/ocean/whale-tattoo-meaning/" class="text-accent-400 hover:underline">Whale</a></h3><p class="mt-1 text-xs text-gray-400">Wisdom, calm, family, emotional depth.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/ocean/shark-tattoo-meaning/" class="text-accent-400 hover:underline">Shark</a></h3><p class="mt-1 text-xs text-gray-400">Power, survival, fearlessness, focus, adaptability, protection.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/birds/swallow-tattoo-meaning/" class="text-accent-400 hover:underline">Swallow</a></h3><p class="mt-1 text-xs text-gray-400">Loyalty, return, hope, a sailor's journey home.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/birds/dove-tattoo-meaning/" class="text-accent-400 hover:underline">Dove</a></h3><p class="mt-1 text-xs text-gray-400">Peace, love, purity, hope, the Holy Spirit.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/zodiac/scorpio-tattoo-meaning/" class="text-accent-400 hover:underline">Scorpio</a></h3><p class="mt-1 text-xs text-gray-400">Passion, transformation, intensity, protection.</p></div>
+        <div class="rounded-xl border border-ink-800 bg-ink-900/30 p-4"><h3 class="text-sm font-semibold text-white"><a href="/tattoo-meaning/words/name-initial-tattoo-meaning/" class="text-accent-400 hover:underline">Name / Initial</a></h3><p class="mt-1 text-xs text-gray-400">Identity, love, remembrance of a person.</p></div>
       </div>
     </div>
   </section>
