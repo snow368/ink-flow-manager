@@ -3,6 +3,9 @@
 http://ink-flows.com/*    https://ink-flows.com/:splat    301
 https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 
+# Legacy /meaning root -> new meaning hub (bare root NOT covered by old /meaning/* rule)
+/meaning    /tattoo-meaning/    301
+
 # PWA SPA fallback
 /app/*    /app/index.html   200
 
