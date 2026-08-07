@@ -1,3 +1,7 @@
+# CANONICAL _redirects source of truth. CF serves dist/_redirects, which Astro copies
+# verbatim from this file (marketing/marketing/public/_redirects). Edit redirects HERE only.
+# 2026-08-07: aftercare repoint (/features/aftercare -> /features/tattoo-aftercare-software-automation/)
+# lives below; if live /features/aftercare still 404s, the deploy is stale (rebuild needed).
 # Force canonical scheme + host (https, non-www).
 # Consolidates http:// / https://www. duplicate URLs Google has indexed.
 http://ink-flows.com/*    https://ink-flows.com/:splat    301
