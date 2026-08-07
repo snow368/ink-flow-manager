@@ -23,8 +23,21 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 # === Meaning-page migration: /meaning/* -> /tattoo-meaning/* (sea-life -> ocean) ===
 # Generated from marketing/marketing/public/_redirects. Keep in sync.
 /meaning/category/sea-life       /tattoo-meaning/ocean/       301
-/meaning/category/sea-life/*     /tattoo-meaning/ocean/:splat 301
-/meaning/category/:category    /tattoo-meaning/:category    301
+/meaning/category/sea-life/      /tattoo-meaning/ocean/       301
+# 2026-08-07 replaced the sea-life splat rule with explicit one-to-one mappings.
+# The old rule `/meaning/category/sea-life/* -> /tattoo-meaning/ocean/:splat`
+# produced live 301->404 chains (e.g. .../sea-life/shark landed on
+# /tattoo-meaning/ocean/shark, but the real page is
+# /tattoo-meaning/ocean/shark-tattoo-meaning/). A 301 into a dead URL is the
+# exact pattern that deindexed this cluster on 2026-08-04. Slugs taken from the
+# sea-life category in src/data/tattoo-meanings.ts; every target verified 200.
+/meaning/category/sea-life/whale   /tattoo-meaning/ocean/whale-tattoo-meaning/   301
+/meaning/category/sea-life/dolphin /tattoo-meaning/ocean/dolphin-tattoo-meaning/ 301
+/meaning/category/sea-life/octopus /tattoo-meaning/ocean/octopus-tattoo-meaning/ 301
+/meaning/category/sea-life/shark   /tattoo-meaning/ocean/shark-tattoo-meaning/   301
+# 2026-08-07 added the trailing slash so this is a single 301 instead of a
+# 301 + 308 chain (Pages appends the slash itself otherwise).
+/meaning/category/:category    /tattoo-meaning/:category/    301
 /meaning/wolf /tattoo-meaning/animals/wolf-tattoo-meaning/ 301
 /meaning/lion /tattoo-meaning/animals/lion-tattoo-meaning/ 301
 /meaning/snake /tattoo-meaning/animals/snake-tattoo-meaning/ 301
@@ -105,7 +118,11 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-tattoo-meaning/ /tattoo-meaning/ocean/shark-tattoo-meaning/hammerhead-shark-tattoo-meaning/ 301
 /meaning /tattoo-meaning/ 301
 /meaning/ /tattoo-meaning/ 301
-/meaning/style-guide /tattoo-meaning/style-guide 301
+# 2026-08-07 removed: /meaning/style-guide -> /tattoo-meaning/style-guide was a
+# 301 pointing at a page that has never existed (live 404). A 301 to a dead URL
+# is the exact pattern that deindexed the meaning cluster on 2026-08-04; no
+# topically equivalent live page exists (no tattoo-style guide anywhere on the
+# site), so a native 404 is strictly better than a soft 301->404 chain.
 
 # 2026-07-31 Convert legacy top-level stub pages from Astro meta-refresh (soft
 # redirect, HTTP 200) to real HTTP 301. Under output:'static' Astro.redirect()
@@ -159,7 +176,12 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 /contact /contact/ 301
 /download /download/ 301
 /features /features/ 301
-/features/aftercare /features/aftercare/ 301
+# 2026-08-07 repointed: /features/aftercare/ has never been built (live 404).
+# The real aftercare feature page is tattoo-aftercare-software-automation
+# (verified 200), which is the topical match, so send the legacy URL there in a
+# single hop instead of 301-ing into a dead URL.
+/features/aftercare /features/tattoo-aftercare-software-automation/ 301
+/features/aftercare/ /features/tattoo-aftercare-software-automation/ 301
 /features/tattoo-aftercare-software-automation /features/tattoo-aftercare-software-automation/ 301
 /features/tattoo-booking-page /features/tattoo-booking-page/ 301
 /features/tattoo-booking-software /features/tattoo-booking-software/ 301
