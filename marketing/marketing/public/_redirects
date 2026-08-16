@@ -22,6 +22,7 @@ https://www.ink-flows.com/*    https://ink-flows.com/:splat    301
 # Cloudflare _redirects is FIRST-MATCH-WINS. SPECIFIC rules MUST precede
 # the generic catch-all, otherwise the generic eats them (dead rules -> 404).
 # Order: sea-life->ocean (direct) -> all specific symbols/categories -> generics.
+# /meaning/griffin and /meaning/shark intentionally fall through to 404.
 # ============================================================
 /meaning/category/sea-life       /tattoo-meaning/ocean       301
 /meaning/category/sea-life/*     /tattoo-meaning/ocean/:splat 301
