@@ -25,6 +25,8 @@ export interface TattooMeaning {
     /** In-body internal links rendered under the paragraph ("Deep dives") */
     links?: { label: string; href: string }[];
   }>;
+  /** Optional scan-friendly interpretation cards for symbols with several distinct meanings */
+  meaningBreakdown?: Array<{ label: string; meaning: string }>;
   variants?: string[];
   /** EEAT: external source URL */
   externalSource?: string;
@@ -239,11 +241,69 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       {
         slug: 'griffin', name: 'Griffin', category: 'mythological',
         gallerySvgs: ['griffin-1.svg', 'griffin-2.svg'],
-        meaning: 'Guardianship, courage, nobility, vigilance, divine power',
-        desc: 'The griffin — part eagle, part lion — combines the king of birds and king of beasts. Griffin tattoos represent guardianship, nobility, and divine power. In heraldry, griffins protect treasures and symbolize military courage.',
-        origin: 'Greek, Persian, Medieval heraldry',
-        culturalNotes: 'In Greek tradition, griffins guarded the gold of Scythia. In Persian art, the griffin (homa) was a mythical bird of happiness. Medieval heralds used griffins to symbolize vigilance and courage.',
-        variants: ['griffin head', 'flying griffin', 'griffin and shield', 'heraldic griffin', 'griffin warrior'],
+        meaning: 'Protection, courage, vigilance, nobility, strength, and mastery of two worlds',
+        desc: 'A griffin tattoo most often means fierce protection. The creature joins an eagle\'s vision and command of the sky with a lion\'s courage and strength on land, making it a symbol of a guardian who can see danger and act decisively. It can also represent noble leadership, loyalty to something precious, or balance between intelligence and instinct.',
+        origin: 'Ancient Near Eastern and Greek art; Scythian legend; European heraldry',
+        culturalNotes: 'Griffin-like creatures appeared in ancient art long before medieval coats of arms. Greek writers placed gold-guarding griffins near Scythia, and surviving Greek and Near Eastern objects show the eagle-headed, lion-bodied guardian in architecture, vessels, and ornament. European heraldry later used the griffin as an emblem of watchfulness, courage, and authority. The Persian Homa is a separate legendary bird and should not be treated as simply another name for the griffin.',
+        metaDescription: 'Griffin tattoo meaning explained: protection, courage, vigilance and noble strength, plus pose, style, placement and design choices for your tattoo.',
+        meaningBreakdown: [
+          { label: 'Protection', meaning: 'A guardian of family, values, memory, territory, or a hard-won achievement.' },
+          { label: 'Courage', meaning: 'The lion half represents physical bravery, resolve, and the will to confront danger.' },
+          { label: 'Vigilance', meaning: 'The eagle half adds far-seeing awareness, judgment, and readiness to defend.' },
+          { label: 'Nobility', meaning: 'Its heraldic history can communicate honor, disciplined leadership, and earned authority.' },
+          { label: 'Duality', meaning: 'Lion and eagle unite earth and sky, instinct and intellect, force and perspective.' },
+          { label: 'Guarded treasure', meaning: 'The treasure may be literal, but often stands for loved ones, identity, freedom, or purpose.' },
+        ],
+        variants: ['heraldic griffin', 'griffin rampant', 'flying griffin', 'griffin head', 'griffin and shield', 'griffin warrior', 'blackwork griffin', 'neo-traditional griffin', 'realistic griffin'],
+        relatedSymbols: ['eagle', 'lion', 'dragon', 'phoenix'],
+        customSections: [
+          {
+            heading: 'What Does a Griffin Tattoo Symbolize?',
+            text: 'The clearest interpretation is active guardianship, not aggression for its own sake. In ancient stories the griffin protects gold; in a personal tattoo, that treasure can become a child, partner, family name, recovery, independence, or a principle you refuse to surrender. The hybrid body makes the meaning more specific than a general strength tattoo: the lion supplies grounded power while the eagle supplies vision and control from above. Together they suggest someone who protects with both force and judgment. A griffin can therefore suit a person marking a new responsibility, surviving a threat, stepping into leadership, or promising to remain alert after a difficult lesson.',
+          },
+          {
+            heading: 'Ancient Griffin Origins and the Gold-Guardian Myth',
+            text: 'Griffins are older and more geographically widespread than the medieval European image alone suggests. Eagle-headed, lion-bodied creatures appear in ancient Near Eastern and Mediterranean art, including bronze cauldron fittings and architectural decoration. Greek accounts later described griffins guarding gold in the distant lands associated with Scythia. That history explains why protection, precious things, vigilance, and dangerous borders remain central to the tattoo today. Medieval heraldry adapted the creature into crests and coats of arms, reinforcing ideas of courage, rank, and watchful authority. If historical accuracy matters to your design, choose one visual tradition rather than mixing every era: an archaic profile, a heraldic rampant pose, and a modern fantasy griffin each tell a different story.',
+          },
+          {
+            heading: 'How Griffin Design Elements Change the Meaning',
+            text: 'A shield turns the griffin into a defender of a person, family, or belief. A crown emphasizes authority and self-command, while a sword shifts the message toward readiness and decisive action. Gold, a key, a jewel, or a closed chest makes the guarded-treasure theme explicit. Broken chains can frame the griffin as a protector of freedom; a compass can add guidance and vigilance; flowers can soften the composition and identify exactly what the creature protects. Keep one primary symbol and no more than one or two supporting elements. Too many objects compete with the griffin silhouette and make the personal meaning harder to read.',
+          },
+          {
+            heading: 'Griffin Pose Meaning: Rampant, Flying, or Guarding',
+            text: 'Pose controls the emotional tone. A rampant griffin standing upright with raised forelegs feels heraldic, bold, and prepared to fight. A flying griffin suggests freedom, expanded perspective, and power in motion; it needs enough space for the wings to read clearly. A crouched griffin over an object communicates vigilance and protection more directly than conquest. A forward-facing head or bust creates an intense emblem of focus, while a resting griffin can represent strength held in reserve. Ask your artist to sketch the silhouette at actual tattoo size before adding feathers, fur, armor, or background detail.',
+          },
+          {
+            heading: 'Best Griffin Tattoo Styles',
+            text: 'Blackwork gives the wings, beak, claws, and lion body a strong silhouette and usually remains readable at moderate sizes. Neo-traditional style suits a dramatic guardian because bold outlines can hold jewel tones, gold, red, or deep green without losing structure. Realism can make the hybrid anatomy convincing, but it needs a larger area and an artist comfortable combining bird and big-cat references. Fine-line work is best for a simplified profile, crest, or griffin head rather than a small full-body scene. Heraldic designs use controlled symmetry and flatter shapes, making them a good choice when lineage, honor, or disciplined authority is the main message.',
+          },
+          {
+            heading: 'Griffin Tattoo Placement and Size',
+            text: 'The back, chest, and thigh give a full griffin enough room for two wings, four limbs, a tail, and supporting scenery. The upper arm or calf works well for a vertical rampant pose. A flying griffin can wrap across the shoulder blade or follow the upper chest, while a simplified head, claw, or heraldic crest fits the forearm. Small tattoos should reduce the number of feathers, facial lines, and background objects rather than shrinking a complex illustration. As a practical test, view the stencil from several feet away: the beak, wings, lion body, and action should still be recognizable before fine detail is added.',
+          },
+          {
+            heading: 'How to Brief Your Tattoo Artist',
+            text: 'Start with one sentence: “This griffin protects ___.” Then decide whether the character should feel calm, watchful, or attacking; choose a pose that communicates that mood; and name the visual tradition you prefer, such as heraldic, blackwork, neo-traditional, or realistic. Tell the artist which feature must dominate, usually the eyes, wings, claws, or guarded object. Bring anatomical references for both eagles and lions, not only fantasy artwork, and ask how the design will age at the planned size. Finally, remove any symbol that does not strengthen the central story. This brief gives the artist creative freedom while keeping the finished tattoo personal and readable.',
+          },
+          {
+            heading: 'Griffin vs Dragon vs Phoenix Tattoo Meaning',
+            text: 'Choose a griffin when your central idea is guarding something valuable with courage and awareness. A dragon more often emphasizes immense power, wisdom, danger, or mastery, with meaning that changes significantly between cultural traditions. A phoenix centers on destruction followed by renewal, making it the clearest choice for rebirth after loss. An eagle communicates vision and freedom without the griffin\'s hybrid or treasure-guardian story, while a lion focuses on courage, pride, and leadership. The best choice is not the strongest-looking creature; it is the one whose traditional role matches the event or value you want the tattoo to preserve.',
+            links: [
+              { label: 'Dragon tattoo meaning', href: '/tattoo-meaning/mythological/dragon-tattoo-meaning' },
+              { label: 'Phoenix tattoo meaning', href: '/tattoo-meaning/mythological/phoenix-tattoo-meaning' },
+              { label: 'Eagle tattoo meaning', href: '/tattoo-meaning/animals/eagle-tattoo-meaning' },
+              { label: 'Lion tattoo meaning', href: '/tattoo-meaning/animals/lion-tattoo-meaning' },
+            ],
+          },
+        ],
+        faqs: [
+          { question: 'Is a griffin tattoo a symbol of good luck?', answer: 'It can be used that way, but protection and vigilance are more historically grounded meanings. A griffin guarding gold or another personal symbol can represent protecting the conditions, people, or values that make good fortune possible.' },
+          { question: 'What does a flying griffin tattoo mean?', answer: 'A flying griffin combines guardianship with freedom, perspective, and power in motion. Spread wings make the eagle half more prominent, so the design often feels more visionary and less territorial than a crouched guardian.' },
+          { question: 'What does a rampant griffin mean?', answer: 'A rampant griffin stands upright with its forelegs raised. The heraldic pose communicates courage, readiness, authority, and active defense.' },
+          { question: 'Are griffin, gryphon, and griffon different creatures?', answer: 'No. Griffin, gryphon, and griffon are spelling variants for the same legendary eagle-and-lion hybrid. Griffin is the most common modern English spelling.' },
+          { question: 'Where should I place a griffin tattoo?', answer: 'Use the back, chest, or thigh for a detailed full-body or flying griffin. The upper arm and calf suit a vertical rampant pose, while a simplified head or crest can work on the forearm.' },
+          { question: 'What is the difference between a griffin and dragon tattoo?', answer: 'A griffin is especially associated with guarding treasure, vigilance, courage, and noble authority. Dragon meanings vary by culture but more often center on elemental power, wisdom, danger, or mastery.' },
+        ],
         externalSource: 'https://www.britannica.com/topic/griffin-mythological-creature',
         sourceLabel: 'Britannica — Griffin',
       },
