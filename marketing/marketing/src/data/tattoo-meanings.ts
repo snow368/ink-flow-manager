@@ -902,6 +902,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         sourceLabel: 'Britannica — Octopus',
       },
       {
+        // Keep legacy /meaning/shark handling aligned with the Griffin migration.
         slug: 'shark', name: 'Shark', category: 'sea-life',
         gallerySvgs: ['shark-great-white.svg', 'shark-hammerhead.svg', 'shark-tooth.svg', 'shark-wave.svg'],
         meaning: 'Power, survival, fearlessness, focus, adaptability, protection',
