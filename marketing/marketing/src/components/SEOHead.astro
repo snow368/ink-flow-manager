@@ -4,6 +4,8 @@ interface Props {
   description: string;
   canonical?: string;
   ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   noindex?: boolean;
   /**
    * Emit the SoftwareApplication schema. TRUE for product/app pages
@@ -25,6 +27,8 @@ interface Props {
 const { title, description, canonical, noindex = false } = Astro.props;
 const appSchema = Astro.props.appSchema ?? true;
 const ogImage = Astro.props.ogImage || '/images/hero-screenshot-2.png';
+const ogImageWidth = Astro.props.ogImageWidth || 1200;
+const ogImageHeight = Astro.props.ogImageHeight || 630;
 const site = 'https://ink-flows.com';
 
 // Normalize canonical: force https + non-www + trailing slash + strip query/hash.
@@ -136,8 +140,8 @@ if (!disableBreadcrumb && !_isHome && !_isSpecial) {
 <meta property="og:site_name" content="InkFlow" />
 <meta property="og:type" content="website" />
 <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${site}${ogImage}`} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+<meta property="og:image:width" content={String(ogImageWidth)} />
+<meta property="og:image:height" content={String(ogImageHeight)} />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />

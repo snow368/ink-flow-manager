@@ -34,6 +34,15 @@ export interface TattooMeaning {
   sourceLabel?: string;
   /** Gallery images — SVG line-art filenames in /public/gallery/real/ */
   gallerySvgs?: string[];
+  /** Rich gallery metadata for raster images and placement references */
+  galleryImages?: Array<{
+    src: string;
+    alt: string;
+    title: string;
+    caption: string;
+  }>;
+  /** Optional social sharing image, relative to /public */
+  ogImage?: string;
   /** SEO: custom meta description override */
   metaDescription?: string;
   /** Internal links — slugs of related symbols/variations for cross-linking */
@@ -42,6 +51,10 @@ export interface TattooMeaning {
   faqs?: Array<{ question: string; answer: string }>;
   /** Internal links to related commercial pages / free tools (site-structure blueprint) */
   relatedTools?: { label: string; href: string }[];
+  /** Additional authoritative references shown in the source section */
+  sources?: Array<{ label: string; url: string }>;
+  /** Show jump links for long-form pages */
+  showTableOfContents?: boolean;
 }
 
 export interface TattooCategory {
@@ -240,7 +253,16 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
       },
       {
         slug: 'griffin', name: 'Griffin', category: 'mythological',
-        gallerySvgs: ['griffin-1.svg', 'griffin-2.svg'],
+        galleryImages: [
+          { src: 'griffin-guardian-tattoo-design.webp', alt: 'Blackwork griffin guarding a jewel tattoo design symbolizing protection', title: 'Guardian Griffin Tattoo Design - Protection Symbolism', caption: 'Guardian griffin protecting a jewel: a direct visual metaphor for defending what matters.' },
+          { src: 'heraldic-griffin-tattoo-design.webp', alt: 'Neo-traditional heraldic griffin rampant tattoo design in gold red and green', title: 'Heraldic Griffin Rampant Tattoo Design', caption: 'A rampant heraldic griffin emphasizing courage, readiness, and noble authority.' },
+          { src: 'flying-griffin-tattoo-design.webp', alt: 'Black and grey flying griffin tattoo design with fully extended wings', title: 'Flying Griffin Tattoo Design - Freedom and Vision', caption: 'A flying griffin representing freedom, perspective, and controlled power in motion.' },
+          { src: 'realistic-griffin-head-tattoo-design.webp', alt: 'Realistic black and grey griffin head and wing tattoo design', title: 'Realistic Griffin Head Tattoo Design', caption: 'A watchful griffin portrait focused on vigilance, intelligence, and far-seeing judgment.' },
+          { src: 'griffin-upper-arm-tattoo.webp', alt: 'Black and grey griffin head tattoo placement on the upper arm', title: 'Griffin Upper Arm Tattoo Placement', caption: 'Upper-arm placement gives a griffin portrait enough room for feather detail and a strong silhouette.' },
+          { src: 'flying-griffin-back-tattoo.webp', alt: 'Large blackwork flying griffin tattoo placement across the upper back', title: 'Flying Griffin Back Tattoo Placement', caption: 'The upper back accommodates a full wingspan and keeps the central lion body readable.' },
+          { src: 'heraldic-griffin-forearm-tattoo.webp', alt: 'Neo-traditional heraldic griffin tattoo placement on the outer forearm', title: 'Heraldic Griffin Forearm Tattoo Placement', caption: 'A vertical rampant griffin follows the outer forearm and remains readable from elbow to wrist.' },
+        ],
+        ogImage: '/gallery/real/griffin-tattoo-meaning-guide.webp',
         meaning: 'Protection, courage, vigilance, nobility, strength, and mastery of two worlds',
         desc: 'A griffin tattoo most often means fierce protection. The creature joins an eagle\'s vision and command of the sky with a lion\'s courage and strength on land, making it a symbol of a guardian who can see danger and act decisively. It can also represent noble leadership, loyalty to something precious, or balance between intelligence and instinct.',
         origin: 'Ancient Near Eastern and Greek art; Scythian legend; European heraldry',
@@ -256,6 +278,7 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         ],
         variants: ['heraldic griffin', 'griffin rampant', 'flying griffin', 'griffin head', 'griffin and shield', 'griffin warrior', 'blackwork griffin', 'neo-traditional griffin', 'realistic griffin'],
         relatedSymbols: ['eagle', 'lion', 'dragon', 'phoenix'],
+        showTableOfContents: true,
         customSections: [
           {
             heading: 'What Does a Griffin Tattoo Symbolize?',
@@ -306,6 +329,11 @@ export const TATTOO_CATEGORIES: TattooCategory[] = [
         ],
         externalSource: 'https://www.britannica.com/topic/griffin-mythological-creature',
         sourceLabel: 'Britannica — Griffin',
+        sources: [
+          { label: 'Britannica - Griffin mythology and artistic history', url: 'https://www.britannica.com/topic/griffin-mythological-creature' },
+          { label: 'The Metropolitan Museum of Art - Scythian art and gold-guarding griffins', url: 'https://www.metmuseum.org/essays/scythian-art' },
+          { label: 'British Museum - East Greek bronze griffin cauldron fitting, 700-600 BCE', url: 'https://www.britishmuseum.org/collection/object/G_1870-0315-16' },
+        ],
       },
       {
         slug: 'mermaid', name: 'Mermaid', category: 'mythological',

@@ -7,9 +7,10 @@ interface Props {
   ctaBtn: string;
   searchVolume?: number;
   designSvgs?: string[];
+  designImages?: Array<{ src: string; alt: string; title: string; caption: string }>;
 }
 
-const { symbolId, symbolName, styles = [], ctaLink, ctaBtn, searchVolume = 1000, designSvgs = [] } = Astro.props;
+const { symbolId, symbolName, styles = [], ctaLink, ctaBtn, searchVolume = 1000, designSvgs = [], designImages = [] } = Astro.props;
 
 // Deterministic shuffle of generic inspiration images (fallback when no
 // symbol-specific SVG line-art exists).
@@ -34,12 +35,30 @@ const apiPath = `/api/gallery/${symbolId}?limit=6`;
 
     <!-- Gallery grid -->
     <div id="gallery-grid" class="mt-8 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-      {designSvgs.length > 0 ? (
+      {designImages.length > 0 ? (
+        designImages.map((img, i) => (
+          <figure class="gallery-item rounded-xl overflow-hidden border border-ink-800 bg-ink-900/50">
+            <img
+              src={`/gallery/real/${img.src}`}
+              alt={img.alt}
+              title={img.title}
+              class="w-full aspect-square object-cover"
+              loading={i < 2 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+              decoding="async"
+              width="900"
+              height="900"
+            />
+            <figcaption class="p-3 text-xs leading-relaxed text-gray-500">{img.caption}</figcaption>
+          </figure>
+        ))
+      ) : designSvgs.length > 0 ? (
         designSvgs.map((img) => (
           <div class="gallery-item rounded-xl overflow-hidden border border-ink-800 bg-ink-900/50">
             <img
               src={`/gallery/real/${img}`}
               alt={`${symbolName} tattoo design — line art reference`}
+              title={`${symbolName} tattoo line-art design`}
               class="w-full aspect-square object-cover"
               loading="lazy"
               width="200"
@@ -126,6 +145,7 @@ const apiPath = `/api/gallery/${symbolId}?limit=6`;
               <img
                 src="${item.imageUrl}"
                 alt="${symbolName} tattoo by ${item.studioName || 'artist'}${item.city ? ' in ' + item.city : ''}"
+                title="${symbolName} tattoo by ${item.studioName || 'tattoo artist'}"
                 class="w-full aspect-square object-cover"
                 loading="${i < 3 ? 'eager' : 'lazy'}"
                 width="200"

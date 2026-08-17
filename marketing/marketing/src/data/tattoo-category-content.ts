@@ -167,6 +167,7 @@ export const EEAT_PUBLISHED = '2026-07-12';
 // actually changes, not when it is merely pushed live.
 export const EEAT_UPDATED: Record<string, string> = {
   shark: '2026-07-15',
+  griffin: '2026-08-17',
   // Variant (spoke) pages keyed by full variant slug — content substantially
   // expanded 2026-07-30 (merged 9-11 FAQs + 6-8 deep sections per spoke).
   'great-white-shark-tattoo-meaning': '2026-07-30',
